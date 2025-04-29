@@ -69,6 +69,7 @@ class SearchApiString extends QueryTypePluginBase {
    */
   public function build() {
     $query_operator = $this->facet->getQueryOperator();
+    $unprocessed_active_items = $this->facet->getActiveItems();
 
     if (!empty($this->results)) {
       $facet_results = [];
@@ -81,11 +82,21 @@ class SearchApiString extends QueryTypePluginBase {
           if ($result_filter[strlen($result_filter) - 1] === '"') {
             $result_filter = substr($result_filter, 0, -1);
           }
+          if (($key = array_search($result_filter, $unprocessed_active_items)) !== false) {
+            unset($unprocessed_active_items[$key]);
+          }
           $count = $result['count'];
           $result = new Result($this->facet, $result_filter, $result_filter, $count);
           $result->setMissing($this->facet->isMissing() && $result_filter === '!');
           $facet_results[$result_filter] = $result;
         }
+      }
+
+      // Add unprocessed active values to the result. These are selected items that do not match the results anymore.
+      foreach ($unprocessed_active_items as $val) {
+        $result = new Result($this->facet, $val, $val, 0);
+        $result->setActiveState(TRUE);
+        $facet_results[] = $result;
       }
 
       if (isset($facet_results['!']) && $facet_results['!']->isMissing()) {

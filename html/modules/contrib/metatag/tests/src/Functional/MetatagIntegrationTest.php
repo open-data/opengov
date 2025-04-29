@@ -9,7 +9,7 @@ use Drupal\Tests\BrowserTestBase;
  *
  * @group metatag
  */
-class MetatagHooksTest extends BrowserTestBase {
+class MetatagIntegrationTest extends BrowserTestBase {
 
   /**
    * {@inheritdoc}

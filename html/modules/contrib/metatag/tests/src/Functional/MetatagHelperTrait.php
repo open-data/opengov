@@ -113,7 +113,7 @@ trait MetatagHelperTrait {
    * @param array $values
    *   Items passed to the term. Requires the 'vid' element.
    *
-   * @return \Drupal\taxonomy\Term
+   * @return \Drupal\taxonomy\Entity\Term
    *   A fully formatted term object.
    */
   private function createTerm(array $values = []): TermInterface {

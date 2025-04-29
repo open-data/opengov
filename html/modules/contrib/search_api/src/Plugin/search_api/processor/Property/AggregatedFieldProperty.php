@@ -132,6 +132,12 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
       'separator' => stripcslashes($form_state->getValue('separator')),
       'fields' => array_keys(array_filter($form_state->getValue('fields'))),
     ];
+    // Do not store the default value for "separator" if it is not even used.
+    // This avoids needlessly cluttering the config export.
+    if ($values['type'] !== 'concat'
+        && $values['separator'] === $this->defaultConfiguration()['separator']) {
+      unset($values['separator']);
+    }
     $field->setConfiguration($values);
   }
 

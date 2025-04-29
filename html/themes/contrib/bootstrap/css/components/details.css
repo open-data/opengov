@@ -1,0 +1,27 @@
+/**
+ * @file
+ * Collapsible details.
+ *
+ * @see collapse.js
+ * @see http://nicolasgallagher.com/css-background-image-hacks/
+ */
+
+details {
+  border: var(--bs-border-style) var(--bs-border-width) var(--bs-border-color);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+details summary {
+  cursor: pointer;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+details summary:hover {
+  background-color: var(--bs-secondary-bg);
+}
+
+details>.details-wrapper {
+  margin: 1rem;
+}

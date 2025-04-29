@@ -20,21 +20,32 @@ use Drupal\Core\Messenger\MessengerInterface;
 class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
 
   /**
+   * The layout manager.
+   *
    * @var \Drupal\Core\Layout\LayoutPluginManager
    */
-  protected $layoutManager;
+  protected LayoutPluginManager $layoutManager;
 
   /**
+   * The Bootstrap layout update manager.
+   *
    * @var \Drupal\bootstrap_layouts\BootstrapLayoutsUpdateManager
    */
-  protected $updateManager;
+  protected BootstrapLayoutsUpdateManager $updateManager;
 
   /**
    * The messenger.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
-  protected $messenger;
+  protected MessengerInterface $messenger;
+
+  /**
+   * The service container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
+   */
+  protected ContainerInterface $container;
 
   /**
    * Constructs a new \Drupal\bootstrap_layouts\BootstrapLayoutsManager object.
@@ -80,6 +91,13 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
       $container->get('plugin.manager.bootstrap_layouts.update'),
       $container->get('messenger')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setContainer(ContainerInterface $container): void {
+    $this->container = $container;
   }
 
   /**

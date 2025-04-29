@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\facets\FunctionalJavascript;
 
 use Drupal\facets\Entity\Facet;
@@ -10,26 +12,6 @@ use Drupal\facets\Entity\Facet;
  * @group facets
  */
 class WidgetJSTest extends JsBase {
-
-  /**
-   * Tests JS interactions in the admin UI.
-   */
-  public function testAddFacet() {
-    $this->drupalGet('admin/config/search/facets/add-facet');
-
-    $page = $this->getSession()->getPage();
-
-    // Select one of the options from the facet source dropdown and wait for the
-    // result to show.
-    $page->selectFieldOption('edit-facet-source-id', 'search_api:views_page__search_api_test_view__page_1');
-    $this->getSession()->wait(6000, "jQuery('.facet-source-field-wrapper').length > 0");
-
-    $page->selectFieldOption('facet_source_configs[search_api:views_page__search_api_test_view__page_1][field_identifier]', 'type');
-
-    // Check that after choosing the field, the name is already filled in.
-    $field_value = $this->getSession()->getPage()->findField('edit-name')->getValue();
-    $this->assertEquals('Type', $field_value);
-  }
 
   /**
    * Tests show more / less links.
@@ -78,10 +60,8 @@ class WidgetJSTest extends JsBase {
     $block = $page->findById('block-owl-block');
     $block->isVisible();
 
-    /** @var \Drupal\FunctionalJavascriptTests\JSWebAssert $assert_session */
-    $assert_session = $this->assertSession();
     // Make sure the show more / show less links are shown.
-    $assert_session->linkExists('Show more');
+    $this->assertSession()->linkExists('Show more');
 
     // Change the link label of show more into "Moar Llamas".
     $facet = Facet::load('owl');
@@ -97,8 +77,8 @@ class WidgetJSTest extends JsBase {
 
     // Check that the new configuration is used now.
     $this->drupalGet('search-api-test-fulltext');
-    $assert_session->linkNotExists('Show more');
-    $assert_session->linkExists('Moar Llamas');
+    $this->assertSession()->linkNotExists('Show more');
+    $this->assertSession()->linkExists('Moar Llamas');
   }
 
   /**
@@ -355,21 +335,18 @@ class WidgetJSTest extends JsBase {
         '',
         TRUE,
       ],
-      // The second option should have the expected option text, have the URI
-      // that points to the updated search result as the value, and is not
-      // selected.
       [
         'item (3)',
-        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem',
+        'llama:item',
         FALSE,
       ],
-      // The third option is similar.
       [
         'article (2)',
-        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        'llama:article',
         FALSE,
       ],
     ];
+
     $this->assertSelectOptions($expected, $options);
 
     // Selecting one of the options should cause a redirect to a page with
@@ -393,18 +370,14 @@ class WidgetJSTest extends JsBase {
         base_path() . 'search-api-test-fulltext',
         FALSE,
       ],
-      // The second option should now be selected, and since clicking it again
-      // would negate it, it should also link to the search page without any
-      // chosen facets.
       [
         'item (3)',
-        base_path() . 'search-api-test-fulltext',
+        'llama:item',
         TRUE,
       ],
-      // The third option remains unchanged.
       [
         'article (2)',
-        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        'llama:article',
         FALSE,
       ],
     ];

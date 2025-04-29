@@ -6,12 +6,11 @@ use Drupal\bootstrap_layouts\BootstrapLayout;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Interface BootstrapLayoutsHandlerInterface
  */
-interface BootstrapLayoutsHandlerInterface extends ContainerAwareInterface, ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
+interface BootstrapLayoutsHandlerInterface extends ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
 
   /**
    * Retrieves the human readable label for the plugin.

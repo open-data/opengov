@@ -42,7 +42,7 @@ class ListItemProcessorTest extends UnitTestCase {
    */
   protected $results;
 
-  protected $processor_plugin_manager;
+  protected $processorPluginManager;
 
   /**
    * Creates a new processor object for use in the tests.
@@ -103,8 +103,8 @@ class ListItemProcessorTest extends UnitTestCase {
       ->with('facets_facet')
       ->willReturn($facet_entity_type);
 
-    $this->processor_plugin_manager = $this->createMock(ProcessorPluginManager::class);
-    $this->processor_plugin_manager->method('getDefinitions')
+    $this->processorPluginManager = $this->createMock(ProcessorPluginManager::class);
+    $this->processorPluginManager->method('getDefinitions')
       ->willReturn(['list_item' => ['class' => ListItemProcessor::class]]);
 
     $event_dispatcher = $this->createMock(EventDispatcher::class);
@@ -112,7 +112,7 @@ class ListItemProcessorTest extends UnitTestCase {
     $container = new ContainerBuilder();
     $container->set('plugin.manager.facets.facet_source', $pluginManager);
     $container->set('entity_type.manager', $entity_type_manager);
-    $container->set('plugin.manager.facets.processor', $this->processor_plugin_manager);
+    $container->set('plugin.manager.facets.processor', $this->processorPluginManager);
     $container->set('event_dispatcher', $event_dispatcher);
     \Drupal::setContainer($container);
   }
@@ -145,7 +145,7 @@ class ListItemProcessorTest extends UnitTestCase {
     $entity_type_bundle_info = $this->createMock(EntityTypeBundleInfo::class);
 
     $processor = new ListItemProcessor([], 'list_item', [], $config_manager, $entity_field_manager, $entity_type_bundle_info);
-    $this->processor_plugin_manager->method('createInstance')
+    $this->processorPluginManager->method('createInstance')
       ->willReturn($processor);
 
     // Config entity field facet.
@@ -196,7 +196,7 @@ class ListItemProcessorTest extends UnitTestCase {
     $entity_type_bundle_info = $this->createMock(EntityTypeBundleInfo::class);
 
     $processor = new ListItemProcessor([], 'list_item', [], $config_manager, $entity_field_manager, $entity_type_bundle_info);
-    $this->processor_plugin_manager->method('createInstance')
+    $this->processorPluginManager->method('createInstance')
       ->willReturn($processor);
 
     // Config entity field facet.
@@ -251,7 +251,7 @@ class ListItemProcessorTest extends UnitTestCase {
     $entity_type_bundle_info = $this->createMock(EntityTypeBundleInfo::class);
 
     $processor = new ListItemProcessor([], 'list_item', [], $config_manager, $entity_field_manager, $entity_type_bundle_info);
-    $this->processor_plugin_manager->method('createInstance')
+    $this->processorPluginManager->method('createInstance')
       ->willReturn($processor);
 
     // Base prop facet.

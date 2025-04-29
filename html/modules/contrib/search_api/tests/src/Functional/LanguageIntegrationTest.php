@@ -78,7 +78,7 @@ class LanguageIntegrationTest extends SearchApiBrowserTestBase {
 
     // Change the datasource to disallow indexing of dutch.
     $form_values = [
-      'datasource_configs[entity:node][languages][default]' => 1,
+      'datasource_configs[entity:node][languages][default]' => '1',
       'datasource_configs[entity:node][languages][selected][nl]' => 1,
     ];
     $this->drupalGet($this->getIndexPath('edit'));
@@ -96,9 +96,9 @@ class LanguageIntegrationTest extends SearchApiBrowserTestBase {
 
     // Change the datasource to only allow indexing of dutch.
     $form_values = [
-      'datasource_configs[entity:node][languages][default]' => 0,
+      'datasource_configs[entity:node][languages][default]' => '0',
       'datasource_configs[entity:node][languages][selected][nl]' => 1,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => 1,
     ];
     $this->drupalGet($this->getIndexPath('edit'));

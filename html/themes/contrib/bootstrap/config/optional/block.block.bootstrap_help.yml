@@ -7,13 +7,13 @@ dependencies:
     - bootstrap
 id: bootstrap_help
 theme: bootstrap
-region: help
-weight: -30
+region: highlighted
+weight: -2
 provider: null
 plugin: help_block
 settings:
   id: help_block
   label: Help
-  provider: help
   label_display: '0'
+  provider: help
 visibility: {  }

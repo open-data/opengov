@@ -14,8 +14,11 @@ services:
     arguments: ['@database', '@transliteration']
 
   pgsql.search_api_db.database_compatibility:
-    class: Drupal\search_api_db\DatabaseCompatibility\CaseSensitiveDatabase
-    arguments: ['@database', '@transliteration']
+    class: Drupal\search_api_db\DatabaseCompatibility\Pgsql
+    arguments:
+      - '@database'
+      - '@transliteration'
+      - '@logger.factory'
 
   sqlite.search_api_db.database_compatibility:
     class: Drupal\search_api_db\DatabaseCompatibility\CaseSensitiveDatabase

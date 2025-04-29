@@ -66,7 +66,7 @@ class MetatagFieldItem extends FieldItemBase {
 
     // Get the value about to be saved.
     // @todo Does this need to be rewritten to use $this->getValue()?
-    $current_value = $this->value;
+    $current_value = $this->getValue()['value'] ?? '';
 
     // Only unserialize if still serialized string.
     if (is_string($current_value)) {
@@ -89,7 +89,7 @@ class MetatagFieldItem extends FieldItemBase {
     ksort($tags_to_save);
 
     // Update the value to only save overridden tags.
-    $this->value = Json::encode($tags_to_save);
+    $this->setValue(['value' => Json::encode($tags_to_save)]);
   }
 
 }

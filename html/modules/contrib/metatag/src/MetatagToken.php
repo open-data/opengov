@@ -2,10 +2,10 @@
 
 namespace Drupal\metatag;
 
-use Drupal\Core\Utility\Token;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\token\TokenEntityMapperInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Utility\Token;
+use Drupal\token\TokenEntityMapperInterface;
 
 /**
  * Token handling service. Uses core token service or contributed Token.

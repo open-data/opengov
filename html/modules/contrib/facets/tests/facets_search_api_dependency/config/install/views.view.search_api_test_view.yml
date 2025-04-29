@@ -307,11 +307,9 @@ display:
         type: search_api
         options:
           view_modes:
-            bundle:
+            'entity:entity_test':
               article: default
               page: default
-            datasource:
-              'entity:entity_test': default
       query:
         type: search_api_query
         options:

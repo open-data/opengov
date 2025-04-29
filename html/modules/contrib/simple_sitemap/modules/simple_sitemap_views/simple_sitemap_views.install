@@ -8,16 +8,20 @@
 use Drupal\Core\Url;
 
 /**
- * Implements hook_install().
+ * Implements hook_modules_installed().
+ *
+ * Using hook_modules_installed instead of hook_install, as this module's routes do not seem to be available yet.
  */
-function simple_sitemap_views_install() {
-  // Enable views display extender plugin.
-  /** @var \Drupal\simple_sitemap_views\SimpleSitemapViews $simple_sitemap_views */
-  $simple_sitemap_views = \Drupal::service('simple_sitemap.views');
-  $simple_sitemap_views->enable();
-  \Drupal::messenger()->addWarning(t('In order to use the Simple XML Sitemap Views module, the Views URL generator must be <a href="@url">added</a> to a sitemap type.',
-      ['@url' => Url::fromRoute('entity.simple_sitemap_type.collection')->toString()])
-  );
+function simple_sitemap_views_modules_installed($modules) {
+  if (in_array('simple_sitemap_views', $modules, TRUE)) {
+    // Enable views display extender plugin.
+    /** @var \Drupal\simple_sitemap_views\SimpleSitemapViews $simple_sitemap_views */
+    $simple_sitemap_views = \Drupal::service('simple_sitemap.views');
+    $simple_sitemap_views->enable();
+    \Drupal::messenger()->addWarning(t('In order to use the Simple XML Sitemap Views module, the Views URL generator must be <a href="@url">added</a> to a sitemap type.',
+        ['@url' => Url::fromRoute('entity.simple_sitemap_type.collection')->toString()])
+    );
+  }
 }
 
 /**

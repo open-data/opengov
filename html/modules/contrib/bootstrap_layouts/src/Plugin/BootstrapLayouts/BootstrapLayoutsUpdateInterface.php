@@ -7,9 +7,8 @@ use Drupal\bootstrap_layouts\BootstrapLayoutsManager;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
-interface BootstrapLayoutsUpdateInterface extends ContainerAwareInterface, ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
+interface BootstrapLayoutsUpdateInterface extends ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
 
   /**
    * Retrieves the path to plugin provider.

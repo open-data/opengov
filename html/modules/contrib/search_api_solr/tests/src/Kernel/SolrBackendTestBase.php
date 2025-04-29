@@ -4,9 +4,9 @@ namespace Drupal\Tests\search_api_solr\Kernel;
 
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr_test\Logger\InMemoryLogger;
 use Drupal\Tests\search_api\Kernel\BackendTestBase;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 
 defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
 
@@ -139,6 +139,20 @@ abstract class SolrBackendTestBase extends BackendTestBase {
 
     $query->preExecute();
     return $index->getServerInstance()->search($query);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkDefaultIndex() {
+    $index = $this->getIndex();
+    $this->assertInstanceOf(Index::class, $index, 'The index was successfully created.');
+
+    $this->assertEquals(["entity:entity_test_mulrev_changed"], $index->getDatasourceIds(), 'Datasources are set correctly.');
+    $this->assertEquals('index_parallel', $index->getTrackerId(), 'Tracker is set correctly.');
+
+    $this->assertEquals(5, $index->getTrackerInstance()->getTotalItemsCount(), 'Correct item count.');
+    $this->assertEquals(0, $index->getTrackerInstance()->getIndexedItemsCount(), 'All items still need to be indexed.');
   }
 
   /**

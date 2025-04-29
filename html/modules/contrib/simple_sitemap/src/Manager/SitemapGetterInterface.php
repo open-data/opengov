@@ -10,7 +10,7 @@ interface SitemapGetterInterface {
   /**
    * Gets the currently set sitemaps.
    *
-   * @return \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   * @return \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[]
    *   The currently set sitemaps, or all compatible sitemaps if none are set.
    */
   public function getSitemaps(): array;
@@ -18,10 +18,10 @@ interface SitemapGetterInterface {
   /**
    * Sets the sitemaps.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap[]|\Drupal\simple_sitemap\Entity\SimpleSitemap|string[]|string|null $sitemaps
-   *   SimpleSitemap[]: Array of sitemap objects to be set.
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[]|\Drupal\simple_sitemap\Entity\SimpleSitemapInterface|string[]|string|null $sitemaps
+   *   SimpleSitemapInterface[]: Array of sitemap objects to be set.
    *   string[]: Array of sitemap IDs to be set.
-   *   SimpleSitemap: A particular sitemap object to be set.
+   *   SimpleSitemapInterface: A particular sitemap object to be set.
    *   string: A particular sitemap ID to be set.
    *   null: All compatible sitemaps will be set.
    *

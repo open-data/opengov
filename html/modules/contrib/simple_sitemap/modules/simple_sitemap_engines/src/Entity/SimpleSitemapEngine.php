@@ -53,7 +53,7 @@ class SimpleSitemapEngine extends ConfigEntityBase {
    * When submitting to search engines, '[sitemap]' will be replaced with the
    * full URL to the sitemap.xml.
    *
-   * @var string
+   * @var string|null
    */
   public $url;
 
@@ -70,7 +70,7 @@ class SimpleSitemapEngine extends ConfigEntityBase {
    * When submitting to search engines, '[key]' and '[url]' will be replaced
    * with the respective values.
    *
-   * @var string
+   * @var string|null
    */
   public $index_now_url;
 

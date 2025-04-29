@@ -1,5 +1,372 @@
-# Schema for the theme setting configuration file of the Bootstrap base theme.
+# Schema for the configuration files of the Bootstrap Subtheme.
 
 bootstrap.settings:
   type: theme_settings
   label: 'Bootstrap settings'
+  mapping:
+
+    # Library.
+    # ----------------------------
+    bootstrap_source:
+      type: string
+      label: 'Load library'
+
+    # Container.
+    # ----------------------------
+    bootstrap_fluid_container:
+      type: integer
+      label: 'Fluid container'
+    bootstrap_container:
+      type: string
+      label: 'Container'
+
+    # Region.
+    # ----------------------------
+    bootstrap_region_clean_top_header:
+      type: integer
+      label: 'Clean wrapper for Top header region'
+    bootstrap_region_class_top_header:
+      type: string
+      label: 'Classes for Top header region'
+    bootstrap_region_clean_top_header_form:
+      type: integer
+      label: 'Clean wrapper for Top header form region'
+    bootstrap_region_class_top_header_form:
+      type: string
+      label: 'Classes for Top header form region'
+    bootstrap_region_clean_header:
+      type: integer
+      label: 'Clean wrapper for Header region'
+    bootstrap_region_class_header:
+      type: string
+      label: 'Classes for Header region'
+    bootstrap_region_clean_header_form:
+      type: integer
+      label: 'Clean wrapper for Header form region'
+    bootstrap_region_class_header_form:
+      type: string
+      label: 'Classes for Header form region'
+    bootstrap_region_clean_primary_menu:
+      type: integer
+      label: 'Clean wrapper for Primary menu region'
+    bootstrap_region_class_primary_menu:
+      type: string
+      label: 'Classes for Primary menu region'
+    bootstrap_region_clean_secondary_menu:
+      type: integer
+      label: 'Clean wrapper for Secondary menu region'
+    bootstrap_region_class_secondary_menu:
+      type: string
+      label: 'Classes for Secondary menu region'
+    bootstrap_region_clean_page_top:
+      type: integer
+      label: 'Clean wrapper for Page top region'
+    bootstrap_region_class_page_top:
+      type: string
+      label: 'Classes for Page top region'
+    bootstrap_region_clean_page_bottom:
+      type: integer
+      label: 'Clean wrapper for Page bottom region'
+    bootstrap_region_class_page_bottom:
+      type: string
+      label: 'Classes for Page bottom region'
+    bootstrap_region_clean_highlighted:
+      type: integer
+      label: 'Clean wrapper for Highlighted region'
+    bootstrap_region_class_highlighted:
+      type: string
+      label: 'Classes for Highlighted region'
+    bootstrap_region_clean_featured_top:
+      type: integer
+      label: 'Clean wrapper for Featured top region'
+    bootstrap_region_class_featured_top:
+      type: string
+      label: 'Classes for Featured top region'
+    bootstrap_region_clean_breadcrumb:
+      type: integer
+      label: 'Clean wrapper for Breadcrumb region'
+    bootstrap_region_class_breadcrumb:
+      type: string
+      label: 'Classes for Breadcrumb region'
+    bootstrap_region_clean_content:
+      type: integer
+      label: 'Clean wrapper for Content region'
+    bootstrap_region_class_content:
+      type: string
+      label: 'Classes for Content region'
+    bootstrap_region_clean_sidebar_first:
+      type: integer
+      label: 'Clean wrapper for Sidebar first region'
+    bootstrap_region_class_sidebar_first:
+      type: string
+      label: 'Classes for Sidebar first region'
+    bootstrap_region_clean_sidebar_second:
+      type: integer
+      label: 'Clean wrapper for Sidebar second region'
+    bootstrap_region_class_sidebar_second:
+      type: string
+      label: 'Classes for Sidebar second region'
+    bootstrap_region_clean_featured_bottom_first:
+      type: integer
+      label: 'Clean wrapper for Featured bottom first region'
+    bootstrap_region_class_featured_bottom_first:
+      type: string
+      label: 'Classes for Featured bottom first region'
+    bootstrap_region_clean_featured_bottom_second:
+      type: integer
+      label: 'Clean wrapper for Featured bottom second region'
+    bootstrap_region_class_featured_bottom_second:
+      type: string
+      label: 'Classes for Featured bottom second region'
+    bootstrap_region_clean_featured_bottom_third:
+      type: integer
+      label: 'Clean wrapper for Featured bottom third region'
+    bootstrap_region_class_featured_bottom_third:
+      type: string
+      label: 'Classes for Featured bottom third region'
+    bootstrap_region_clean_footer_first:
+      type: integer
+      label: 'Clean wrapper for Footer first region'
+    bootstrap_region_class_footer_first:
+      type: string
+      label: 'Classes for Footer first region'
+    bootstrap_region_clean_footer_second:
+      type: integer
+      label: 'Clean wrapper for Footer second region'
+    bootstrap_region_class_footer_second:
+      type: string
+      label: 'Classes for Footer second region'
+    bootstrap_region_clean_footer_third:
+      type: integer
+      label: 'Clean wrapper for Footer third region'
+    bootstrap_region_class_footer_third:
+      type: string
+      label: 'Classes for Footer third region'
+    bootstrap_region_clean_footer_fourth:
+      type: integer
+      label: 'Clean wrapper for Footer fourth region'
+    bootstrap_region_class_footer_fourth:
+      type: string
+      label: 'Classes for Footer fourth region'
+    bootstrap_region_clean_footer_fifth:
+      type: integer
+      label: 'Clean wrapper for Footer fifth region'
+    bootstrap_region_class_footer_fifth:
+      type: string
+      label: 'Classes for Footer fifth region'
+
+    # Sidebar position.
+    # ----------------------------
+    bootstrap_sidebar_position:
+      type: string
+      label: 'Sidebar position'
+    bootstrap_content_offset:
+      type: integer
+      label: 'Content offset'
+
+    # Sidebar first layout.
+    # ----------------------------
+    bootstrap_sidebar_collapse:
+      type: integer
+      label: 'Sidebar collapse'
+    bootstrap_sidebar_first_width:
+      type: integer
+      label: 'Sidebar first width'
+    bootstrap_sidebar_first_offset:
+      type: integer
+      label: 'Sidebar first offset'
+
+    # Sidebar second layout.
+    # ----------------------------
+    bootstrap_sidebar_second_width:
+      type: integer
+      label: 'Sidebar second width'
+    bootstrap_sidebar_second_offset:
+      type: integer
+      label: 'Sidebar second layout'
+
+    # Node.
+    # ----------------------------
+    bootstrap_hide_node_label:
+      type: integer
+      label: 'Hide node label'
+
+    # Breadcrumb
+    # ----------------------------
+    bootstrap_breadcrumb_divider:
+      type: string
+      label: 'Breadcrumb Divider'
+
+    # Buttons.
+    # ----------------------------
+    bootstrap_button:
+      type: integer
+      label: 'Convert input submit to button element'
+    bootstrap_button_size:
+      type: string
+      label: 'Default button size'
+    bootstrap_button_type:
+      type: string
+      label: 'Default button type'
+    bootstrap_button_outline:
+      type: integer
+      label: 'Button with outline format'
+
+    # Navbar.
+    # ----------------------------
+    bootstrap_navbar_container:
+      type: string
+      label: 'Navbar width container'
+    bootstrap_navbar_toggle:
+      type: string
+      label: 'Navbar toggle size'
+    bootstrap_navbar_top_navbar:
+      type: integer
+      label: 'Navbar top is navbar'
+    bootstrap_navbar_top_class:
+      type: string
+      label: 'Class for navbar top'
+    bootstrap_navbar_class:
+      type: string
+      label: 'Class for navbar'
+    bootstrap_navbar_top_position:
+      type: string
+      label: 'Navbar top position'
+    bootstrap_navbar_top_color:
+      type: string
+      label: 'Navbar top link color'
+    bootstrap_navbar_top_background:
+      type: string
+      label: 'Navbar top background color'
+    bootstrap_navbar_position:
+      type: string
+      label: 'Navbar position'
+    bootstrap_navbar_color:
+      type: string
+      label: 'Navbar link color'
+    bootstrap_navbar_background:
+      type: string
+      label: 'Navbar background color'
+    bootstrap_navbar_flyout:
+      type: boolean
+      label: 'Flyout style main menu'
+    bootstrap_navbar_slide:
+      type: boolean
+      label: 'Sliding navbar'
+    bootstrap_navbar_offcanvas:
+      type: string
+      label: 'Navbar offcanvas'
+
+    # Messages.
+    # ----------------------------
+    bootstrap_messages_widget:
+      type: string
+      label: 'Messages widget'
+    bootstrap_messages_widget_toast_delay:
+      type: integer
+      label: Toast delay
+
+    # Form.
+    # ----------------------------
+    bootstrap_float_label:
+      type: string
+      label: 'Float Labels'
+    bootstrap_checkbox:
+      type: string
+      label: 'Checkbox & Radio Style'
+
+    # Affix.
+    # ----------------------------
+    bootstrap_navbar_top_affix:
+      type: integer
+      label: 'Affix navbar top'
+    bootstrap_navbar_affix:
+      type: integer
+      label: 'Affix navbar'
+    bootstrap_sidebar_first_affix:
+      type: integer
+      label: 'Affix sidebar first'
+    bootstrap_sidebar_second_affix:
+      type: integer
+      label: 'Affix sidebar first'
+
+    # Scrollspy.
+    # ----------------------------
+    bootstrap_scroll_spy:
+      type: string
+      label: 'Scrollspy element ID'
+
+    # Fonts.
+    # ----------------------------
+    bootstrap_google_fonts:
+      type: string
+      label: 'Google Fonts combination'
+
+    # Icons.
+    # ----------------------------
+    bootstrap_bootstrap_icons:
+      type: integer
+      label: 'Use Bootstrap icons'
+    bootstrap_icons:
+      type: string
+      label: 'Icon set'
+
+    # System messages.
+    # ----------------------------
+    bootstrap_system_messages:
+      type: string
+      label: 'System messages color scheme'
+
+    # Tables.
+    # ----------------------------
+    bootstrap_table_style:
+      type: string
+      label: 'Table cell style'
+    bootstrap_table_hover:
+      type: integer
+      label: 'Hover effect over table cells'
+    bootstrap_table_head:
+      type: string
+      label: 'Table header color scheme'
+
+    # Image fluid.
+    # ----------------------------
+    bootstrap_image_fluid:
+      type: boolean
+      label: 'Apply img-fluid style to all content images'
+
+    # Tabs.
+    # ----------------------------
+    bootstrap_tabs_style:
+      type: string
+      label: 'Tabs style'
+
+    # Colors.
+    # ----------------------------
+    bootstrap_enable_color:
+      type: boolean
+      label: 'Enable color Sheme'
+    bootstrap_color_scheme:
+      type: string
+      label: 'Bootstrap Color Scheme'
+    bootstrap_base_primary_color:
+      type: string
+      label: 'Primary base color'
+    bootstrap_base_secondary_color:
+      type: string
+      label: 'Secondary base color'
+    bootstrap_body_color:
+      type: string
+      label: 'Body color'
+    bootstrap_body_bg_color:
+      type: string
+      label: 'Body Background Color'
+    bootstrap_h1_color:
+      type: string
+      label: 'H1 color'
+    bootstrap_h2_color:
+      type: string
+      label: 'H2 color'
+    bootstrap_h3_color:
+      type: string
+      label: 'H3 color'

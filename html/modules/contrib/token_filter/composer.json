@@ -2,5 +2,10 @@
     "name": "drupal/token_filter",
     "description": "This is a very simple module to make global token values available as an input filter.",
     "type": "drupal-module",
-    "license": "GPL-2.0-or-later"
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.1",
+        "drupal/core": "^10 || ^11",
+        "drupal/token": "^1"
+    } 
 }

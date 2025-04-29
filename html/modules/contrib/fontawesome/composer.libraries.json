@@ -17,22 +17,22 @@
       "type": "package",
       "package": {
         "name": "fontawesome/fontawesome",
-        "version": "6.4.0",
+        "version": "6.4.2",
         "type": "drupal-library",
         "extra": {
           "installer-name": "fontawesome"
         },
         "dist": {
-          "url": "https://use.fontawesome.com/releases/v6.4.0/fontawesome-free-6.4.0-web.zip",
+          "url": "https://use.fontawesome.com/releases/v6.4.2/fontawesome-free-6.4.2-web.zip",
           "type": "zip"
         },
         "require": {
-          "composer/installers": "^1.2.0"
+          "composer/installers": "^1.2.0||^2.0"
         }
       }
     }
   },
   "require": {
-    "fontawesome/fontawesome": "6.4.0"
+    "fontawesome/fontawesome": "6.4.2"
   }
 }

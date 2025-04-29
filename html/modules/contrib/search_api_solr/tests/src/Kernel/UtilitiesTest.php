@@ -66,7 +66,7 @@ class UtilitiesTest extends KernelTestBase {
   }
 
   /**
-   *
+   * Tests merge default index third-party settings.
    */
   public function testMergeDefaultIndexThirdPartySettings() {
     $third_party_settings = [
@@ -149,6 +149,7 @@ class UtilitiesTest extends KernelTestBase {
         'term_modifiers' => [
           'slop' => 3,
           'fuzzy' => 1,
+          'fuzzy_analyzer' => TRUE,
         ],
         'debug_finalize' => FALSE,
       ],

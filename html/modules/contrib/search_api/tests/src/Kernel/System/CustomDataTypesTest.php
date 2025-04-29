@@ -79,6 +79,7 @@ class CustomDataTypesTest extends KernelTestBase {
       'name' => 'foo bar baz föö smile' . json_decode('"\u1F601"'),
       'body' => 'test test case Case casE',
       'type' => 'entity_test_mulrev_changed',
+      // cspell:disable-next-line
       'keywords' => ['Orange', 'orange', 'örange', 'Orange'],
       'category' => 'item_category',
     ]);

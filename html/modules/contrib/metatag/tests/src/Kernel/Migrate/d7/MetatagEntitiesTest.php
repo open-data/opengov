@@ -9,9 +9,9 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\TermInterface;
+use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
-use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
 
 /**
  * Tests migration of per-entity data from Metatag-D7.
@@ -89,23 +89,22 @@ class MetatagEntitiesTest extends MigrateDrupal7TestBase {
     $this->installEntitySchema('menu_link_content');
     $this->installConfig(static::$modules);
     $this->installSchema('node', ['node_access']);
-    $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('metatag_defaults');
 
-    $this->executeMigrations([
-      'language',
-      'd7_metatag_field',
-      'd7_node_type',
-      'd7_taxonomy_vocabulary',
-      'd7_metatag_field_instance',
-      'd7_metatag_field_instance_widget_settings',
-      'd7_user_role',
-      'd7_user',
-      'd7_comment_type',
-      'd7_field',
-      'd7_field_instance',
-      'd7_language_content_settings',
-    ]);
+    // Run each migration to avoid problems. No, it's not clear why.
+    $this->executeMigrations(['language']);
+    $this->executeMigrations(['d7_metatag_field']);
+    $this->executeMigrations(['d7_node_type']);
+    $this->executeMigrations(['d7_taxonomy_vocabulary']);
+    $this->executeMigrations(['d7_metatag_field_instance']);
+    $this->executeMigrations(['d7_metatag_field_instance_widget_settings']);
+    $this->executeMigrations(['d7_user_role']);
+    $this->executeMigrations(['d7_user']);
+    $this->executeMigrations(['d7_comment_type']);
+    $this->executeMigrations(['d7_field']);
+    $this->executeMigrations(['d7_field_instance']);
+    $this->executeMigrations(['d7_language_content_settings']);
+
     $this->fileMigrationSetup();
     $this->executeMigrations([
       'd7_node_complete',
@@ -114,9 +113,9 @@ class MetatagEntitiesTest extends MigrateDrupal7TestBase {
   }
 
   /**
-   * Test Metatag migration from Drupal 7 to 8.
+   * Test Metatag entity data migration from Drupal 7 to 8.
    */
-  public function testMetatag() {
+  public function testMetatagEntities() {
     /** @var \Drupal\node\Entity\Node $node */
     $node = Node::load(998);
     $this->assertInstanceOf(NodeInterface::class, $node);
@@ -130,7 +129,9 @@ class MetatagEntitiesTest extends MigrateDrupal7TestBase {
     ];
     $this->assertSame(Json::encode($expected), $node->field_metatag->value);
 
-    $node = node_revision_load(998);
+    $node_storage_manager = \Drupal::entityTypeManager()
+      ->getStorage('node');
+    $node = $node_storage_manager->loadRevision(998);
     $this->assertInstanceOf(NodeInterface::class, $node);
     $this->assertTrue($node->hasField('field_metatag'));
     // This should have the "old revision" keywords value, indicating it is

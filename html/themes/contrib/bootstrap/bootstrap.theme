@@ -2,148 +2,939 @@
 
 /**
  * @file
- * The primary PHP file for the Drupal Bootstrap base theme.
- *
- * This file should only contain light helper functions and point to stubs in
- * other files containing more complex functions.
- *
- * The stubs should point to files within the `./includes` directory named after
- * the function itself minus the theme prefix. If the stub contains a group of
- * functions, then please organize them so they are related in some way and name
- * the file appropriately to at least hint at what it contains.
- *
- * All [pre]process functions, theme functions and template files lives inside
- * the `./templates` directory. This is a highly automated and complex system
- * designed to only load the necessary files when a given theme hook is invoked.
- *
- * Visit this project's official documentation site https://drupal-bootstrap.org
- * or the markdown files inside the `./docs` directory.
- *
- * @see bootstrap_theme()
- * @see \Drupal\bootstrap\Registry
+ * Functions to support theming in the Bootstrap theme.
  */
 
-use Drupal\bootstrap\Bootstrap;
+use Drupal\Core\Template\Attribute;
+use Drupal\Core\Link;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Xss;
+use Drupal\node\Entity\Node;
+use Drupal\Component\Render\MarkupInterface;
 
 /**
- * Initialize the active theme.
- */
-Bootstrap::initialize();
-
-/**
- * {@inheritdoc}
+ * Implements hook_preprocess_HOOK() for HTML document templates.
  *
- * @see hook_bootstrap_colorize_text_alter()
+ * Adds body classes if certain regions have content.
  */
-function bootstrap_bootstrap_colorize_text_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_html(&$variables) {
+  if (!isset($variables['attributes']['class'])) {
+    $variables['attributes']['class'] = [];
+  }
+
+  // Color settings
+  if (theme_get_setting('bootstrap_enable_color')) {
+    $variables['#attached']['library'][] = 'bootstrap/colors';
+    // CSS variables
+    $gray200 = '#e9ecef';
+    $gray800 = '#343a40';
+    $white = '#fff';
+    $pc = theme_get_setting('bootstrap_base_primary_color') ?? '#2F3C7E';
+    $pcrgb = _hex2rgb( $pc );
+    $pcd = _color_luminance($pc, -0.15);
+    $bc = '#000';
+    $pct = _getContrastColor($pc, $white, $bc);
+    $sc = theme_get_setting('bootstrap_base_secondary_color') ?? '#FBEAEB';
+    $scrgb = _hex2rgb( $sc );
+    $scd = _color_luminance($sc, -0.15);
+    $sct = _getContrastColor($sc, $white, $gray800);
+    $colors = [
+      'white' => $white,
+      'black' => '#000',
+      'gray-200' => $gray200,
+      'gray-800' => $gray800,
+      'primary' => $pc,
+      'secondary' => $sc,
+    ];
+    $color = _get_color(theme_get_setting('bootstrap_body_color') ?? 'gray-800', $colors);
+    $colors['base'] = $color;
+    $bg = _get_color(theme_get_setting('bootstrap_body_bg_color') ?? 'white', $colors);
+    $h1 = _get_color(theme_get_setting('bootstrap_h1_color') ?? 'base', $colors);
+    $h2 = _get_color(theme_get_setting('bootstrap_h2_color') ?? 'base', $colors);
+    $h3 = _get_color(theme_get_setting('bootstrap_h3_color') ?? 'base', $colors);
+    $styles = [
+      "--bs-primary:$pc;",
+      "--bb-primary-dark:$pcd;",
+      "--bb-primary-light:$pct;",
+      "--bs-primary-rgb:$pcrgb;",
+      "--bs-secondary:$sc;",
+      "--bb-secondary-dark:$scd;",
+      "--bs-secondary-rgb:$scrgb;",
+      "--bs-link-color:$pc;",
+      "--bs-link-hover-color:$pcd;",
+      "--bs-body-color:$color;",
+      "--bs-body-bg:$bg;",
+      "--bb-h1-color:$h1;",
+      "--bb-h2-color:$h2;",
+      "--bb-h3-color:$h3;",
+    ];
+    $variables['html_attributes']->setAttribute('style', implode('', $styles));
+  }
+
+  // Add information about the number of sidebars.
+  if (!empty($variables['page']['sidebar_first']) && !empty($variables['page']['sidebar_second'])) {
+    $variables['attributes']['class'][] = 'layout-two-sidebars';
+  }
+  elseif (!empty($variables['page']['sidebar_first'])) {
+    $variables['attributes']['class'][] = 'layout-one-sidebar';
+    $variables['attributes']['class'][] = 'layout-sidebar-first';
+  }
+  elseif (!empty($variables['page']['sidebar_second'])) {
+    $variables['attributes']['class'][] = 'layout-one-sidebar';
+    $variables['attributes']['class'][] = 'layout-sidebar-second';
+  }
+  else {
+    $variables['attributes']['class'][] = 'layout-no-sidebars';
+  }
+
+  if (!empty($variables['page']['featured_top'])) {
+    $variables['attributes']['class'][] = 'has-featured-top';
+  }
+
+  // Scroll Spy info added to body.
+  if ($scroll_spy = theme_get_setting('bootstrap_scroll_spy')) {
+    $variables['attributes']['data-bs-target'] = $scroll_spy;
+    $variables['attributes']['data-bs-spy'] = "scroll";
+  }
+
+  // Page specific info.
+  $variables['path_info']['args'] = FALSE;
+  $path = \Drupal::service('path.current')->getPath();
+  $path = ltrim($path, '/');
+  $path_args = explode('/', $path);
+  if (isset($path_args[0]) && isset($path_args[1]) && ($path_args[0] == 'node') && (is_numeric($path_args[1]))) {
+    $variables['attributes']['class'][] = 'page-node-' . $path_args[1];
+  }
+  if (isset($path_args[0]) && isset($path_args[1]) && ($path_args[0] == 'user')) {
+    $variables['attributes']['class'][] = 'page-user-' . $path_args[1];
+  }
+  if (isset($path_args[0]) && isset($path_args[1]) && isset($path_args[2]) &&
+    $path_args[0] == 'taxonomy' && $path_args[1] == 'term') {
+    $variables['attributes']['class'][] = 'page-taxonomy-term-' . $path_args[2];
+    $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($path_args[2]);
+    if (!empty($term)) {
+      $vocabulary_id = $term->bundle();
+      $variables['attributes']['class'][] = 'page-vocabulary-' . Html::cleanCssIdentifier($vocabulary_id);
+    }
+  }
+  $view_id = \Drupal::routeMatch()->getParameter('view_id');
+  if ($view_id) {
+    $variables['attributes']['class'][] = 'page-view-' . Html::cleanCssIdentifier($view_id);
+  }
+
+  // SEO Information.
+  $http_equiv = [
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => [
+      'http-equiv' => 'x-ua-compatible',
+      'content' => 'ie=edge',
+    ],
+  ];
+  $variables['page']['#attached']['html_head'][] = [$http_equiv, 'http-equiv'];
+
 }
 
 /**
- * {@inheritdoc}
- *
- * @see hook_bootstrap_iconize_text_alter()
+ * Implements hook_page_attachments_alter() for page templates.
  */
-function bootstrap_bootstrap_iconize_text_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_page_attachments_alter(&$page) {
+  $viewport = [
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'viewport',
+      'content' => 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    ],
+  ];
+  $page['#attached']['html_head'][] = [$viewport, 'viewport'];
 }
 
 /**
- * {@inheritdoc}
- *
- * @see hook_bootstrap_layouts_class_options_alter()
+ * Implements hook_preprocess_HOOK() for page templates.
  */
-function bootstrap_bootstrap_layouts_class_options_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_page(&$variables) {
+  $source = theme_get_setting('bootstrap_source');
+  if ($source) {
+    $variables['#attached']['library'][] = $source;
+  }
+
+  $img_fluid = theme_get_setting('bootstrap_image_fluid');
+  if ($img_fluid) {
+    $variables['#attached']['library'][] = 'bootstrap/image_fluid';
+  }
+
+  $flyout = theme_get_setting('bootstrap_navbar_flyout');
+  if ($flyout) {
+    $variables['#attached']['library'][] = 'bootstrap/navigation';
+  }
+
+  $slide = theme_get_setting('bootstrap_navbar_slide');
+  if ($slide) {
+    $variables['#attached']['library'][] = 'bootstrap/slide_nav';
+  }
+
+  switch (theme_get_setting('bootstrap_tabs_style')) {
+    case 'full':
+      $variables['#attached']['library'][] = 'bootstrap/tabs_full';
+      break;
+  }
+
+  $fonts = theme_get_setting('bootstrap_google_fonts');
+  if ($fonts) {
+    $variables['#attached']['library'][] = 'bootstrap/' . $fonts;
+  }
+
+  $icons = theme_get_setting('bootstrap_bootstrap_icons');
+  if ($icons) {
+    $variables['#attached']['library'][] = 'bootstrap/bootstrap-icons';
+  }
+
+  $icons = theme_get_setting('bootstrap_icons');
+  if ($icons) {
+    $variables['#attached']['library'][] = 'bootstrap/' . $icons;
+  }
+
+  $system_messages = theme_get_setting('bootstrap_system_messages');
+  if ($system_messages) {
+    $variables['#attached']['library'][] = 'bootstrap/' . $system_messages;
+  }
+
+  $content_width = 'col';
+  $sidebar_first_width = 'col-md-' . theme_get_setting('bootstrap_sidebar_first_width');
+  $sidebar_second_width = 'col-md-' . theme_get_setting('bootstrap_sidebar_second_width');
+
+  // Define default classes for containers.
+  $variables['navbar_top_attributes'] = [
+    'class' => ['navbar'],
+    'id' => ['navbar-top'],
+  ];
+  $variables['navbar_attributes'] = [
+    'class' => ['navbar'],
+    'id' => ['navbar-main'],
+  ];
+  $variables['content_attributes'] = [
+    'class' => ['main-content', $content_width],
+    'id' => ['content'],
+    'role' => ['main'],
+  ];
+  $variables['sidebar_first_attributes'] = [
+    'class' => ['sidebar_first', 'sidebar', $sidebar_first_width],
+    'id' => ['sidebar_first'],
+  ];
+  $variables['sidebar_second_attributes'] = [
+    'class' => ['sidebar_second', 'sidebar', $sidebar_second_width],
+    'id' => ['sidebar_second'],
+  ];
+
+  // Get custom Navbar classes from config and add them to Navbars.
+  if (theme_get_setting('bootstrap_navbar_top_class') !== NULL) {
+    $variables['navbar_top_attributes']['class'][] = theme_get_setting('bootstrap_navbar_top_class');
+  }
+  if (theme_get_setting('bootstrap_navbar_class') !== NULL) {
+    $variables['navbar_attributes']['class'][] = theme_get_setting('bootstrap_navbar_class');
+  }
+
+  switch (theme_get_setting('bootstrap_navbar_offcanvas')) {
+    case 'offcanvas-collapse':
+      $variables['navbar_offcanvas'] = TRUE;
+      $variables['navbar_collapse_class'] = "offcanvas offcanvas-end";
+      $variables['navbar_collapse_btn_data'] = "offcanvas";
+      break;
+    default:
+      $variables['navbar_offcanvas'] = FALSE;
+      $variables['navbar_collapse_class'] = 'collapse navbar-collapse justify-content-end';
+      $variables['navbar_collapse_btn_data'] = "collapse";
+  }
+
+  // Affix.
+  $affix_navbar_top = theme_get_setting('bootstrap_navbar_top_affix');
+  $affix_navbar = theme_get_setting('bootstrap_navbar_affix');
+  $affix_sidebar_first = theme_get_setting('bootstrap_sidebar_first_affix');
+  $affix_sidebar_second = theme_get_setting('bootstrap_sidebar_second_affix');
+  if ($affix_navbar_top || $affix_navbar || $affix_sidebar_first || $affix_sidebar_second) {
+    $variables['#attached']['library'][] = 'bootstrap/affix';
+    if ($affix_navbar_top) {
+      $variables['navbar_top_attributes']['data-toggle'] = 'affix';
+    }
+    if ($affix_navbar) {
+      $variables['navbar_attributes']['data-toggle'] = 'affix';
+    }
+    if ($affix_sidebar_first) {
+      $variables['sidebar_first_attributes']['data-toggle'] = 'affix';
+    }
+    if ($affix_sidebar_second) {
+      $variables['sidebar_second_attributes']['data-toggle'] = 'affix';
+    }
+  }
+
+  // Calculate widths.
+  if (theme_get_setting('bootstrap_content_offset')) {
+    $variables['content_attributes']['class'][] = 'offset-md-' . theme_get_setting('bootstrap_content_offset');
+  }
+  if (theme_get_setting('bootstrap_sidebar_first_offset')) {
+    $variables['sidebar_first_attributes']['class'][] = 'offset-md-' . theme_get_setting('bootstrap_sidebar_first_offset');
+  }
+  if (theme_get_setting('bootstrap_sidebar_second_offset')) {
+    $variables['sidebar_second_attributes']['class'][] = 'offset-md-' . theme_get_setting('bootstrap_sidebar_second_offset');
+  }
+
+  // Define column layout classes.
+  switch (theme_get_setting('bootstrap_sidebar_position')) {
+    case 'left':
+      $variables['sidebar_first_attributes']['class'][] = 'order-first';
+      $variables['content_attributes']['class'][] = 'order-last';
+      break;
+
+    case 'both':
+      $variables['sidebar_first_attributes']['class'][] = 'order-first';
+      $variables['sidebar_second_attributes']['class'][] = 'order-last';
+      break;
+
+    case 'right':
+      $variables['content_attributes']['class'][] = 'order-first';
+      $variables['sidebar_second_attributes']['class'][] = 'order-last';
+      break;
+  }
+
+  // Define navigation position.
+  $variables['navbar_top_attributes']['class'][] = theme_get_setting('bootstrap_navbar_top_position');
+  $variables['navbar_attributes']['class'][] = theme_get_setting('bootstrap_navbar_position');
+
+  // Define navigation color scheme.
+  $variables['navbar_top_attributes']['class'][] = theme_get_setting('bootstrap_navbar_top_color');
+  $variables['navbar_attributes']['class'][] = theme_get_setting('bootstrap_navbar_color');
+
+  // Define navigation background classes.
+  $variables['navbar_top_attributes']['class'][] = theme_get_setting('bootstrap_navbar_top_background');
+  $variables['navbar_attributes']['class'][] = theme_get_setting('bootstrap_navbar_background');
+
+  // Define navigation toggle size.
+  switch (theme_get_setting('bootstrap_navbar_toggle')) {
+    case 'navbar-toggleable-xl':
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-xl';
+      break;
+
+    case 'navbar-toggleable-lg':
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-lg';
+      break;
+
+    case 'navbar-toggleable-md':
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-md';
+      break;
+
+    case 'navbar-toggleable-sm':
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-sm';
+      break;
+
+    case 'navbar-toggleable-xs':
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-xs';
+      break;
+
+    case 'navbar-toggleable-all':
+      $variables['navbar_attributes']['class'][] = '';
+      break;
+
+    default:
+      $variables['navbar_attributes']['class'][] = 'navbar-expand-md';
+      break;
+  }
+
+  if (theme_get_setting('bootstrap_sidebar_collapse')) {
+    $variables['content_attributes']['class'][] = 'sidebar-offcanvas';
+    $variables['sidebar_collapse'] = TRUE;
+    $variables['#attached']['library'][] = 'bootstrap/sidebar_collapse';
+  }
+
+  // Declare region attributes.
+  $variables['navbar_top_attributes'] = new Attribute($variables['navbar_top_attributes']);
+  $variables['navbar_attributes'] = new Attribute($variables['navbar_attributes']);
+  $variables['content_attributes'] = new Attribute($variables['content_attributes']);
+  $variables['sidebar_first_attributes'] = new Attribute($variables['sidebar_first_attributes']);
+  $variables['sidebar_second_attributes'] = new Attribute($variables['sidebar_second_attributes']);
+
+  // Declare container layout.
+  $variables['container_navbar'] = theme_get_setting('bootstrap_navbar_container');
+  $variables['container'] = theme_get_setting('bootstrap_container') ??
+    (theme_get_setting('bootstrap_fluid_container') ? 'container-fluid' : 'container');
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Alter\ElementInfo::alter()
+ * Implements hook_preprocess_HOOK() for page templates.
  */
-function bootstrap_element_info_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_page_title(&$variables) {
+  // Since the title and the shortcut link are both block level elements,
+  // positioning them next to each other is much simpler with a wrapper div.
+  if (!empty($variables['title_suffix']['add_or_remove_shortcut']) && $variables['title']) {
+    // Add a wrapper div using the title_prefix and title_suffix render
+    // elements.
+    $variables['title_prefix']['shortcut_wrapper'] = [
+      '#markup' => '<div class="shortcut-wrapper clearfix">',
+      '#weight' => 100,
+    ];
+    $variables['title_suffix']['shortcut_wrapper'] = [
+      '#markup' => '</div>',
+      '#weight' => -99,
+    ];
+    // Make sure the shortcut link is the first item in title_suffix.
+    $variables['title_suffix']['add_or_remove_shortcut']['#weight'] = -100;
+  }
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Theme::alter()
+ * Implements hook_preprocess_HOOK() for maintenance-page.html.twig.
  */
-function bootstrap_form_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_maintenance_page(&$variables) {
+  // By default, site_name is set to Drupal if no db connection is available
+  // or during site installation. Setting site_name to an empty string makes
+  // the site and update pages look cleaner.
+  // @see template_preprocess_maintenance_page
+  if (!$variables['db_is_active']) {
+    $variables['site_name'] = '';
+  }
+
+  // Bootstrap has custom styling for the maintenance page.
+  $variables['#attached']['library'][] = 'bootstrap/maintenance_page';
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Form\SystemThemeSettings::alterForm()
+ * Implements hook_preprocess_HOOK() for node.html.twig.
  */
-function bootstrap_form_system_theme_settings_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_node(&$variables) {
+  // Remove the "Add new comment" link on teasers or when the comment form is
+  // displayed on the page.
+  if ($variables['teaser'] || !empty($variables['content']['comments']['comment_form'])) {
+    unset($variables['content']['links']['comment']['#links']['comment-add']);
+  }
+  // Hide label on all nodes
+  if (theme_get_setting('bootstrap_hide_node_label') != NULL) {
+    unset($variables['label']);
+  }
 }
 
 /**
- * {@inheritdoc}
+ * Implements hook_preprocess_HOOK() for region.html.twig.
  */
-function bootstrap_js_settings_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_region(&$variables) {
+  $nowrap = [
+    'breadcrumb',
+    'highlighted',
+    'content',
+    'primary_menu',
+    'header',
+    'sidebar_first',
+    'sidebar_second',
+  ];
+  if (theme_get_setting('bootstrap_region_class_' . $variables['elements']['#region']) !== NULL) {
+    $variables['attributes']['class'][] = theme_get_setting('bootstrap_region_class_' . $variables['elements']['#region']);
+  }
+  elseif (!in_array($variables['elements']['#region'], $nowrap)) {
+    $variables['attributes']['class'][] = 'row';
+  }
+  if (theme_get_setting('bootstrap_region_clean_' . $variables['elements']['#region']) !== NULL) {
+    $variables['clean'] = theme_get_setting('bootstrap_region_clean_' . $variables['elements']['#region']);
+  }
+  else {
+    $variables['clean'] = FALSE;
+  }
+  $variables['container'] = theme_get_setting('bootstrap_container') ??
+    (theme_get_setting('bootstrap_fluid_container') ? 'container-fluid' : 'container');
+
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Alter\LibraryInfo::alter()
+ * Implements hook_preprocess_HOOK() for block.html.twig.
  */
-function bootstrap_library_info_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_block(&$variables) {
+  if ($variables['base_plugin_id'] == 'system_menu_block' && isset($variables['attributes']['id'])) {
+    $variables['content']['#attributes']['id'] = $variables['attributes']['id'];
+  }
+  // Add a clearfix class to system branding blocks.
+  if ($variables['plugin_id'] == 'system_branding_block') {
+    $variables['attributes']['class'][] = 'clearfix';
+  }
+  $block = $variables['elements'];
+  if (!empty($block['#configuration']['provider']) && $block['#configuration']['provider'] == "block_content") {
+    if (isset($block['content']['#block_content']) && ($block['content']['#block_content'] !== null)) {
+      $bundle = $block['content']['#block_content']->bundle();
+      $variables['attributes']['class'][] = 'block-content-' . $bundle;
+    }
+  }
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Alter\PageAttachments::alter()
+ * Implements hook_preprocess_HOOK() for form elements.
  */
-function bootstrap_page_attachments_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_form_element(&$variables) {
+  if (isset($variables['label']['#title'])) {
+    if (is_object($variables['label']['#title']) && !$variables['label']['#title'] instanceof MarkupInterface) {
+      $variables['input_title'] = NULL;
+    }
+    elseif (is_object($variables['label']['#title'])) {
+      $variables['input_title'] = $variables['label']['#title'];
+    }
+    else {
+      $variables['input_title'] = $variables['label']['#title'];
+    }
+  }
+
+  if (theme_get_setting('bootstrap_float_label') &&
+        $variables['element']['#type'] != 'radio' &&
+        $variables['element']['#type'] != 'checkbox' &&
+        $variables['element']['#type'] != 'date' &&
+        $variables['element']['#type'] != 'time' &&
+        $variables['element']['#type'] != 'search' &&
+        $variables['element']['#type'] != 'select' &&
+        $variables['element']['#type'] != 'textarea' &&
+        $variables['element']['#type'] != 'managed_file') {
+    $variables['float_label'] = theme_get_setting('bootstrap_float_label');
+    $variables['label_display'] = 'after';
+  }
+
+  if (isset($variables['element']['#attributes'])) {
+    $variables['input_attributes'] = new Attribute($variables['element']['#attributes']);
+  }
+
+  if (isset($variables['element']['#type']) && ($variables['element']['#type'] == 'radio' || $variables['element']['#type'] == 'checkbox')) {
+    switch (theme_get_setting('bootstrap_checkbox')) {
+      case 'switch':
+        $variables['checkbox_style'] = 'form-switch';
+        break;
+      case 'button':
+        $variables['checkbox_style'] = 'form-button';
+        break;
+    }
+  }
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Bootstrap::preprocess()
+ * Implements hook_preprocess_HOOK() for form-element-label.html.twig.
  */
-function bootstrap_preprocess(&$variables, $hook, $info) {
-  Bootstrap::preprocess($variables, $hook, $info);
+function bootstrap_preprocess_form_element_label(&$variables) {
+  $element = $variables['element'];
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Bootstrap::getInfo()
+ * Implements hook_preprocess_HOOK() for menu.html.twig.
  */
-function bootstrap_theme() {
-  return Bootstrap::getThemeHooks();
+function bootstrap_preprocess_menu(&$variables) {
+  $variables['attributes']['class'][] = 'clearfix';
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Alter\ThemeRegistry::alter()
- *
- * @todo Remove once a proper replacement for the theme.registry service can be
- * created in a bootstrap_core sub-module.
+ * Implements hook_preprocess_HOOK() for menu-local-task.html.twig.
  */
-function bootstrap_theme_registry_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_menu_local_task(&$variables) {
+  $link = $variables['element']['#link'];
+  $url = $link['url'];
+  $options = $url->getOptions();
+  $url->setOptions($options + $link['localized_options']);
+  $variables['item'] = Link::fromTextAndUrl($link['title'], $url);
 }
 
 /**
- * {@inheritdoc}
- *
- * @see \Drupal\bootstrap\Plugin\Alter\ThemeSuggestions::alter()
+ * Implements hook_preprocess_HOOK() for menu-local-tasks.html.twig.
  */
-function bootstrap_theme_suggestions_alter(&$data, &$context1 = NULL, &$context2 = NULL) {
-  Bootstrap::alter(__FUNCTION__, $data, $context1, $context2);
+function bootstrap_preprocess_menu_local_tasks(&$variables) {
+  switch (theme_get_setting('bootstrap_tabs_style')) {
+    case 'pills':
+      $variables['nav_style'] = 'nav-pills';
+      break;
+    default:
+      $variables['nav_style'] = 'nav-tabs';
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function bootstrap_theme_suggestions_menu_alter(array &$suggestions, array $variables) {
+  // Taken from http://kristiankaa.dk/article/drupal8-region-specific-menu-theme-hook-suggestion
+  // bootstrap_preprocess_block(&$variables)
+  if (isset($variables['attributes']['block'])) {
+    $hook = str_replace(['block-', '-'], ['', '_'], $variables['attributes']['block']);
+    $suggestions[] = $variables['theme_hook_original'] . '__' . $hook;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for menu-local-action.html.twig.
+ */
+function bootstrap_preprocess_menu_local_action(&$variables) {
+  $link = $variables['element']['#link'];
+  $link += [
+    'localized_options' => [],
+  ];
+  $link['localized_options']['attributes']['class'][] = 'btn';
+  $link['localized_options']['attributes']['class'][] = 'btn-secondary';
+  $link['localized_options']['set_active_class'] = TRUE;
+  $variables['link'] = [
+    '#type' => 'link',
+    '#title' => $link['title'],
+    '#options' => $link['localized_options'],
+    '#url' => $link['url'],
+  ];
+}
+
+/**
+ * Implements template_preprocess_table()
+ */
+function bootstrap_preprocess_table(&$variables) {
+  $variables['table_class'] = theme_get_setting('bootstrap_table_style');
+  $variables['hover'] = theme_get_setting('bootstrap_table_hover');
+  $variables['thead_class'] = theme_get_setting('bootstrap_table_head');
+}
+
+/**
+ * Implements template_preprocess_views_view_table()
+ */
+function bootstrap_preprocess_views_view_table(&$variables) {
+  $variables['table_class'] = theme_get_setting('bootstrap_table_style');
+  $variables['hover'] = theme_get_setting('bootstrap_table_hover');
+  $variables['thead_class'] = theme_get_setting('bootstrap_table_head');
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for region templates.
+ */
+function bootstrap_theme_suggestions_region_alter(array &$suggestions, array $variables) {
+  $nowrap = [
+    'breadcrumb',
+    'highlighted',
+    'content',
+    'primary_menu',
+    'header',
+    'sidebar_first',
+    'sidebar_second',
+  ];
+  if (theme_get_setting('bootstrap_region_clean_' . $variables['elements']['#region']) !== NULL) {
+    $region_clean = theme_get_setting('bootstrap_region_clean_' . $variables['elements']['#region']);
+  }
+  else {
+    $region_clean = in_array($variables['elements']['#region'], $nowrap);
+  }
+  $region_width = theme_get_setting('bootstrap_region_width_' . $variables['elements']['#region']);
+
+  if ($region_width) {
+    $suggestions[] = 'region__full_width';
+  }
+  elseif ($region_clean) {
+    $suggestions[] = 'region__nowrap';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function bootstrap_theme_suggestions_block_alter(array &$suggestions, array $variables) {
+  $block = $variables['elements'];
+  if (!empty($block['#configuration']['provider']) && $block['#configuration']['provider'] == "block_content") {
+    if (isset($block['content']['#block_content']) && ($block['content']['#block_content'] !== null)) {
+      $bundle = $block['content']['#block_content']->bundle();
+      array_splice($suggestions, 2, 0, 'block__block_' . $bundle);
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function bootstrap_theme_suggestions_user_alter(array &$suggestions, array $variables, $hook) {
+  // Define the view mode.
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  $user_id = \Drupal::service('current_user')->id();
+  $suggestions[] = 'user__' . $sanitized_view_mode;
+  $suggestions[] = 'user__' . $user_id;
+  $suggestions[] = 'user__' . $user_id . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for page template.
+ */
+function bootstrap_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  // Add a template suggestions for node type.
+  /** @var \Drupal\node\NodeInterface $node */
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    if (is_numeric($node)) {
+      $node = Node::load($node);
+    }
+
+    $suggestions[] = 'page__node__' . $node->bundle();
+  }
+}
+
+/**
+ * Implements hook_theme_HOOK_form_alter() for node add/edit.
+ */
+function bootstrap_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  $form['#theme'] = ['node_edit_form'];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for links templates.
+ */
+function bootstrap_theme_suggestions_links_alter(array &$suggestions, array $variables) {
+  // ToDo get from core a variable to flag inline links.
+  if (isset($variables['attributes']['class'])) {
+    if (in_array('inline', $variables['attributes']['class'])) {
+      $suggestions[] = 'links__inline';
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for status messages templates.
+ */
+function bootstrap_theme_suggestions_status_messages_alter(array &$suggestions, array $variables) {
+  switch (theme_get_setting('bootstrap_messages_widget')) {
+    case 'toasts':
+      $suggestions[] = 'status_messages__toasts';
+      break;
+    case 'alerts':
+      $suggestions[] = 'status_messages__alerts';
+      break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for breadcrumb.
+ */
+function bootstrap_preprocess_breadcrumb(&$variables) {
+  if (theme_get_setting('bootstrap_breadcrumb_divider') && theme_get_setting('bootstrap_breadcrumb_divider') != '') {
+    $variables['breadcrumb_divider'] = sprintf("--bs-breadcrumb-divider: '%s';", theme_get_setting('bootstrap_breadcrumb_divider'));
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for status_messages.
+ */
+function bootstrap_preprocess_status_messages(&$variables) {
+  $variables['title_ids'] = [];
+  if (is_array($variables['message_list'])) {
+    foreach ($variables['message_list'] as $message_type => $messages) {
+      $variables['title_ids'][$message_type] = Html::getUniqueId("message-$message_type-title");
+    }
+  }
+
+  if (theme_get_setting('bootstrap_messages_widget') === 'toasts') {
+    $variables['attributes']['data-bs-delay'] = theme_get_setting('bootstrap_messages_widget_toast_delay') ?? 10000;
+  }
+
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for form templates.
+ */
+function bootstrap_theme_suggestions_form_alter(array &$suggestions, array $variables) {
+  if ($variables['element']['#form_id'] == 'search_block_form') {
+    $suggestions[] = 'form__search_block_form';
+  }
+  if ($variables['element']['#form_id'] == 'node_form') {
+    $suggestions[] = 'node_edit_form';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for form templates.
+ */
+function bootstrap_theme_suggestions_input_alter(array &$suggestions, array $variables) {
+  if ($variables['element']['#type'] == 'submit' && theme_get_setting('bootstrap_button')) {
+    $suggestions[] = 'input__submit_button';
+  }
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function bootstrap_preprocess(&$variables, $hook) {
+  if (is_array($variables['attributes'] ?? NULL) && isset($variables['attributes']['class'])) {
+    $class = 'is-invalid';
+
+    if (is_object($variables['attributes']['class'])) {
+      if (in_array('error', $variables['attributes']['class']->value())) {
+        $variables['attributes']->addClass($class);
+        // If there is a wrapper, add class too.
+        if (isset($variables["wrapper_attributes"])) {
+          $variables['wrapper_attributes']->addClass($class);
+        }
+      }
+    }
+    elseif (is_array($variables['attributes']['class'])) {
+      if (in_array('error', $variables['attributes']['class'])) {
+        $variables['attributes']['class'][] = $class;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_input() for adding classes to inputs.
+ */
+function bootstrap_preprocess_input(&$variables) {
+  if ($variables['element']['#type'] == 'submit') {
+    $button_size = theme_get_setting('bootstrap_button_size');
+    $button_types = [
+      'btn-primary',
+      'btn-secondary',
+      'btn-success',
+      'btn-warning',
+      'btn-danger',
+      'btn-link',
+    ];
+    $button_sizes = ['btn-sm', 'btn-lg'];
+    $button_is_outline = theme_get_setting('bootstrap_button_outline');
+    $button_type = theme_get_setting('bootstrap_button_type') ?? 'primary';
+    if (is_object($variables['attributes']['class'])) {
+      \Drupal::logger('bootstrap')->notice(implode($variables['attributes']['class']->value()));
+      if (!in_array('btn', $variables['attributes']['class']->value())) {
+        $variables['attributes']['class']->addClass('btn');
+      }
+      if (empty(array_intersect($button_types, $variables['attributes']['class']->value()))) {
+        if ($button_is_outline) {
+          $variables['attributes']['class']->addClass('btn-outline-' . $button_type);
+        }
+        else {
+          $variables['attributes']['class']->addClass('btn-' . $button_type);
+        }
+      }
+      if ($button_size && empty(array_intersect($button_sizes, $variables['attributes']['class']->value()))) {
+        $variables['attributes']['class']->addClass($button_size);
+      }
+    }
+    else {
+      if (!in_array('btn', $variables['attributes']['class'])) {
+        $variables['attributes']['class'][] = 'btn';
+      }
+      if (empty(array_intersect($button_types, $variables['attributes']['class']))) {
+        if ($button_is_outline) {
+          $variables['attributes']['class'][] = 'btn-outline-' . $button_type;
+        }
+        else {
+          $variables['attributes']['class'][] = 'btn-' . $button_type;
+        }
+      }
+      if ($button_size && empty(array_intersect($button_sizes, $variables['attributes']['class']))) {
+        $variables['attributes']['class'][] = $button_size;
+      }
+      $variables['attributes'] = new Attribute($variables['attributes']);
+    }
+    $variables['safe_value_label'] = Xss::filter($variables['attributes']['value'] ?? '');
+  }
+  if ($variables['element']['#type'] != 'radio' &&
+    $variables['element']['#type'] != 'checkbox' &&
+    $variables['element']['#type'] != 'date' &&
+    $variables['element']['#type'] != 'time' &&
+    $variables['element']['#type'] != 'managed_file' &&
+    $variables['element']['#type'] != 'select' &&
+    $variables['element']['#type'] != 'search' &&
+    $variables['element']['#type'] != 'textarea' &&
+    theme_get_setting('bootstrap_float_label') &&
+    !isset($variables['attributes']['placeholder'])) {
+      $variables['attributes']['placeholder'] = isset($variables['element']['#title']) ? $variables['element']['#title'] : '';
+  }
+}
+
+/**
+ * Implements hook_preprocess_select() for adding classes to select boxes.
+ */
+function bootstrap_preprocess_select(&$variables) {
+  if (isset($variables['attributes']['class'])) {
+    if (is_object($variables['attributes']['class'])) {
+      if (in_array('error', $variables['attributes']['class']->value())) {
+        $variables['attributes']['class']->addClass('is-invalid');
+      }
+    }
+    elseif (is_array($variables['attributes']['class'])) {
+      if (in_array('error', $variables['attributes']['class'])) {
+        $variables['attributes']['class'][] = 'is-invalid';
+      }
+    }
+  }
+}
+
+/**
+ * Covert hex to rgb color.
+ */
+function _hex2rgb( $color ) {
+  list($r, $g, $b) = sscanf($color, "#%02x%02x%02x");
+  $output = "$r, $g, $b";
+  return $output;
+}
+
+/**
+ * Covert hex to rgba color.
+ */
+function _hex2rgba( $color, $opacity ) {
+  list($r, $g, $b) = sscanf($color, "#%02x%02x%02x");
+  $output = "rgba($r, $g, $b, $opacity)";
+  return $output;
+}
+
+/**
+ * Lightens/darkens a given colour (hex format), returning the altered colour in hex format.7
+ * @param str $hex Colour as hexadecimal (with or without hash);
+ * @percent float $percent Decimal ( 0.2 = lighten by 20%(), -0.4 = darken by 40%() )
+ * @return str Lightened/Darkend colour as hexadecimal (with hash);
+ * https://gist.github.com/stephenharris/5532899
+ */
+function _color_luminance( $hex, $percent ) {
+  $hex = preg_replace( '/[^0-9a-f]/i', '', $hex );
+  $new_hex = '#';
+  if ($hex !== null && strlen($hex) < 6) {
+    $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+  }
+  for ($i = 0; $i < 3; $i++) {
+    $dec = hexdec( substr( $hex, $i*2, 2 ) );
+    $dec = min( max( 0, $dec + intval($dec * $percent) ), 255 );
+    $new_hex .= str_pad( dechex( intval($dec) ) , 2, 0, STR_PAD_LEFT );
+  }
+  return $new_hex;
+}
+
+function _getContrastColor($hexColor, $white = '#fff', $dark = '#000') {
+  // hexColor RGB
+  $R1 = hexdec(substr($hexColor, 1, 2));
+  $G1 = hexdec(substr($hexColor, 3, 2));
+  $B1 = hexdec(substr($hexColor, 5, 2));
+
+  // Black RGB
+  $blackColor = "#000000";
+  $R2BlackColor = hexdec(substr($blackColor, 1, 2));
+  $G2BlackColor = hexdec(substr($blackColor, 3, 2));
+  $B2BlackColor = hexdec(substr($blackColor, 5, 2));
+
+  // Calc contrast ratio
+  $L1 = 0.2126 * pow($R1 / 255, 2.2) +
+        0.7152 * pow($G1 / 255, 2.2) +
+        0.0722 * pow($B1 / 255, 2.2);
+
+  $L2 = 0.2126 * pow($R2BlackColor / 255, 2.2) +
+        0.7152 * pow($G2BlackColor / 255, 2.2) +
+        0.0722 * pow($B2BlackColor / 255, 2.2);
+
+  $contrastRatio = 0;
+  if ($L1 > $L2) {
+    $contrastRatio = (int)(($L1 + 0.05) / ($L2 + 0.05));
+  } else {
+    $contrastRatio = (int)(($L2 + 0.05) / ($L1 + 0.05));
+  }
+
+  // If contrast is more than 5, return black color
+  if ($contrastRatio > 5) {
+     return $dark;
+  } else {
+    // if not, return white color.
+    return $white;
+  }
+}
+
+function _get_color($color, $colors) {
+  if (in_array($color, $colors)) {
+    return $colors[$color];
+  }
+  return $color;
 }

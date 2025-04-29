@@ -1,0 +1,39 @@
+
+{%
+  set pills_classes = [
+    'nav',
+    'nav-pills',
+    alignment,
+  ]
+%}
+
+<div {{ attributes.addClass(classes) }}>
+  <ul class="{{ pills_classes | join(' ') }}" id="{{'pill-' ~ id}}" role="tablist">
+    {% for key, item in items %}
+      {%
+        set pills_classes = [
+          'nav-link',
+          item.show ? 'active',
+        ]
+      %}
+      <li class="nav-item" role="presentation">
+        <button class="{{ pills_classes | join(' ') }}" id="{{'pill-' ~ id ~ '-' ~ key}}" data-bs-toggle="pill" data-bs-target="{{'#body-pill-' ~ id ~ '-' ~ key}}" type="button" role="tab" aria-controls="home" aria-selected="{{ item.show ? 'true' : 'false' }}">{{item.header}}</button>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="pill-content" id="{{id ~ '-pill-content'}}">
+    {% for key, item in items %}
+      {%
+        set item_classes = [
+          'tab-pane',
+          item.fade ? 'fade',
+          item.show ? 'show',
+          item.show ? 'active',
+        ]
+      %}
+      <div class="{{ item_classes | join(' ') }}" id="{{'body-pill-' ~ id ~ '-' ~ key}}" role="tabpanel" aria-labelledby="{{'pill-' ~ id ~ '-' ~ key}}">
+        {{ item.body | raw }}
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -11,9 +11,9 @@ sitemapEntities:
   js:
     js/simple_sitemap.sitemapEntities.js: {}
   dependencies:
-    - core/jquery
     - core/drupal
     - core/once
+    - core/drupal.message
 
 sitemaps:
   version: VERSION

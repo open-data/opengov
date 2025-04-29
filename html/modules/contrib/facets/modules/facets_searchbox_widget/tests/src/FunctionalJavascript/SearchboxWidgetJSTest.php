@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\facets_searchbox_widget\tests\FunctionalJavascript;
+declare(strict_types=1);
+
+namespace Drupal\Tests\facets_searchbox_widget\FunctionalJavascript;
 
 use Drupal\Tests\facets\FunctionalJavascript\WidgetJSTest;
 

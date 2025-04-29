@@ -17,15 +17,18 @@ class HoneypotRejectEvent extends Event {
    * Form ID of the form the user was disallowed from submitting.
    *
    * @var string
+   *
+   * @phpcs:disable Drupal.NamingConventions.ValidVariableName.LowerCamelName
    */
-  public $form_id;
+  protected $form_id;
+  // phpcs:enable
 
   /**
    * The user account ID.
    *
    * @var int
    */
-  public $uid;
+  protected $uid;
 
   /**
    * String indicating the reason the submission was blocked.
@@ -36,7 +39,7 @@ class HoneypotRejectEvent extends Event {
    *
    * @var string
    */
-  public $type;
+  protected $type;
 
   /**
    * Constructs the object.
@@ -50,7 +53,7 @@ class HoneypotRejectEvent extends Event {
    *   - honeypot: If honeypot field was filled in.
    *   - honeypot_time: If form was completed before the configured time limit.
    */
-  public function __construct($form_id, int $uid, $type) {
+  public function __construct(string $form_id, int $uid, string $type) {
     $this->form_id = $form_id;
     $this->uid = $uid;
     $this->type = $type;

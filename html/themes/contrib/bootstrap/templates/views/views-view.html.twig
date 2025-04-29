@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Default theme implementation for main view template.
+ * Theme override for a main view template.
  *
  * Available variables:
  * - attributes: Remaining HTML attributes for the element.
@@ -25,9 +25,7 @@
  * - attachment_after: An optional attachment view to be displayed after the
  *   view content.
  * - dom_id: Unique id for every view being printed to give unique class for
- *   JavaScript.
- *
- * @ingroup templates
+ *   Javascript.
  *
  * @see template_preprocess_views_view()
  */
@@ -53,7 +51,7 @@
     </div>
   {% endif %}
   {% if exposed %}
-    <div class="view-filters form-group">
+    <div class="view-filters">
       {{ exposed }}
     </div>
   {% endif %}
@@ -64,7 +62,7 @@
   {% endif %}
 
   {% if rows %}
-    <div class="view-content">
+    <div class="view-content row">
       {{ rows }}
     </div>
   {% elseif empty %}

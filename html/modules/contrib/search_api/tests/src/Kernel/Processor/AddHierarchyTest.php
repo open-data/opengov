@@ -3,7 +3,7 @@
 namespace Drupal\Tests\search_api\Kernel\Processor;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\node\Entity\NodeType;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Query\Query;
@@ -23,7 +23,7 @@ use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
 class AddHierarchyTest extends ProcessorTestBase {
 
   use NodeCreationTrait;
-  use EntityReferenceTestTrait;
+  use EntityReferenceFieldCreationTrait;
   use ResultsTrait;
   use TaxonomyTestTrait;
 

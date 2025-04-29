@@ -256,14 +256,12 @@ class LinksWidgetTest extends WidgetTestBase {
     $url_processor = $this->createMock(UrlProcessorInterface::class);
 
     $manager = $this->createMock(FacetSourcePluginManager::class);
-    $manager->expects($this->exactly(1))
-      ->method('createInstance')
+    $manager->method('createInstance')
       ->willReturn($url_processor);
 
     $storage = $this->createMock(EntityStorageInterface::class);
     $em = $this->createMock(EntityTypeManagerInterface::class);
-    $em->expects($this->exactly(1))
-      ->method('getStorage')
+    $em->method('getStorage')
       ->willReturn($storage);
 
     $facets_url_generator = $this->createMock(FacetsUrlGenerator::class);

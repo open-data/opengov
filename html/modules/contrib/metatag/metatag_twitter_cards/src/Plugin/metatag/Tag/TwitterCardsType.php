@@ -2,8 +2,8 @@
 
 namespace Drupal\metatag_twitter_cards\Plugin\metatag\Tag;
 
-use Drupal\metatag\Plugin\metatag\Tag\MetaNameBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\metatag\Plugin\metatag\Tag\MetaNameBase;
 
 /**
  * The Twitter Cards Type-tag.

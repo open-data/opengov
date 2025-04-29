@@ -15,6 +15,7 @@ use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Utility\Utility;
 use Drupal\user\Entity\User;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
+use Drupal\views\Render\ViewsRenderPipelineMarkup;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -196,7 +197,11 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
     $field->preRender($values);
 
     $this->assertArrayHasKey($property_path, (array) $row);
-    $this->assertEquals((array) $expected, $row->$property_path);
+    $expected_markup = [];
+    foreach ((array) $expected as $value) {
+      $expected_markup[] = ViewsRenderPipelineMarkup::create($value);
+    }
+    $this->assertEquals($expected_markup, $row->$property_path);
 
     // Check that $field->propertyReplacements was set correctly (if
     // applicable).
@@ -219,7 +224,7 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api\Kernel\Views\ViewsPropertyExtractionTest::testPropertyExtraction()
    */
-  public function propertyExtractionDataProvider(): array {
+  public static function propertyExtractionDataProvider(): array {
     return [
       'extract normal property' => [
         'entity:user/name',

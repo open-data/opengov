@@ -2,19 +2,19 @@
 
 namespace Drupal\simple_sitemap\Form;
 
-use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\simple_sitemap\Entity\EntityHelper;
-use Drupal\simple_sitemap\Form\Handler\EntityFormHandlerInterface;
 use Drupal\simple_sitemap\Form\Handler\BundleEntityFormHandler;
 use Drupal\simple_sitemap\Form\Handler\EntityFormHandler;
+use Drupal\simple_sitemap\Form\Handler\EntityFormHandlerInterface;
 use Drupal\simple_sitemap\Manager\Generator;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\simple_sitemap\Settings;
 
 /**
@@ -92,7 +92,7 @@ class FormHelper {
     Settings $settings,
     EntityHelper $entity_helper,
     AccountProxyInterface $current_user,
-    ClassResolverInterface $class_resolver
+    ClassResolverInterface $class_resolver,
   ) {
     $this->generator = $generator;
     $this->settings = $settings;
@@ -140,7 +140,8 @@ class FormHelper {
    *   TRUE if a form can be altered, FALSE otherwise.
    */
   protected function formAlterAccess(): bool {
-    return $this->currentUser->hasPermission('administer sitemap settings');
+    return $this->currentUser->hasPermission('administer sitemap settings')
+      || $this->currentUser->hasPermission('edit entity sitemap settings');
   }
 
   /**
@@ -230,6 +231,7 @@ class FormHelper {
       '#type' => 'checkbox',
       '#title' => $this->t('Regenerate all sitemaps after hitting <em>Save</em>'),
       '#description' => $this->t('This setting will regenerate all sitemaps including the above changes.'),
+      '#access' => $this->currentUser->hasPermission('administer sitemap settings'),
       '#default_value' => FALSE,
       '#tree' => FALSE,
       '#weight' => 90,
@@ -373,7 +375,7 @@ class FormHelper {
   /**
    * Validates the priority.
    *
-   * @param string|int $priority
+   * @param string $priority
    *   The priority value.
    *
    * @return bool
@@ -403,7 +405,7 @@ class FormHelper {
    *   Cron intervals.
    */
   public static function getCronIntervalOptions(): array {
-    /** @var \Drupal\Core\Datetime\DateFormatter $formatter */
+    /** @var \Drupal\Core\Datetime\DateFormatterInterface $formatter */
     $formatter = \Drupal::service('date.formatter');
     $intervals = array_flip(static::$cronIntervals);
     foreach ($intervals as $interval => &$label) {

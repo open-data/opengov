@@ -1,42 +1,42 @@
-bootstrap.screen-xs-max:
-  label: screen-xs-max
-  mediaQuery: 'all and (max-width: 767px)'
+bootstrap.xs:
+  label: extrasmall
+  mediaQuery: ''
+  weight: 0
+  multipliers:
+    - 1x
+    - 2x
+bootstrap.small:
+  label: small
+  mediaQuery: 'all and (max-width: 576px)'
+  weight: 0
+  multipliers:
+    - 1x
+    - 2x
+bootstrap.medium:
+  label: medium
+  mediaQuery: 'all and (min-width: 768px)'
   weight: 1
   multipliers:
     - 1x
     - 2x
-bootstrap.screen-sm-min:
-  label: screen-sm-min
-  mediaQuery: 'all and (min-width: 768px)'
+bootstrap.large:
+  label: large
+  mediaQuery: 'all and (min-width: 992px)'
   weight: 2
   multipliers:
     - 1x
     - 2x
-bootstrap.screen-sm-max:
-  label: screen-sm-max
-  mediaQuery: 'all and (max-width: 991px)'
+bootstrap.extra:
+  label: extra
+  mediaQuery: 'all and (min-width: 1200px)'
   weight: 3
   multipliers:
     - 1x
     - 2x
-bootstrap.screen-md-min:
-  label: screen-md-min
-  mediaQuery: 'all and (min-width: 992px)'
-  weight: 4
-  multipliers:
-    - 1x
-    - 2x
-bootstrap.screen-md-max:
-  label: screen-md-max
-  mediaQuery: 'all and (max-width: 1199px)'
-  weight: 5
-  multipliers:
-    - 1x
-    - 2x
-bootstrap.screen-lg-min:
-  label: screen-lg-min
-  mediaQuery: 'all and (min-width: 1200px)'
-  weight: 6
+bootstrap.extraextra:
+  label: extra
+  mediaQuery: 'all and (min-width: 1400px)'
+  weight: 3
   multipliers:
     - 1x
     - 2x

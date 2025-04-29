@@ -1,4 +1,10 @@
 services:
   fontawesome.font_awesome_manager:
     class: Drupal\fontawesome\FontAwesomeManager
-    arguments: ['@cache.data', '@module_handler', '@theme_handler', '@file_system', '@extension.list.module']
+    arguments: ['@cache.font_awesome', '@module_handler', '@theme_handler', '@file_system', '@extension.list.module']
+  cache.font_awesome:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [font_awesome]

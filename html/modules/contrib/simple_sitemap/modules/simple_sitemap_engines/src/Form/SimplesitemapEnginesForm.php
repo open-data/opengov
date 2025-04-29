@@ -3,7 +3,9 @@
 namespace Drupal\simple_sitemap_engines\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\DependencyInjection\AutowireTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
@@ -15,12 +17,13 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\SimpleSitemap;
 use Drupal\simple_sitemap_engines\Entity\SimpleSitemapEngine;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form for managing search engine submission settings.
  */
 class SimplesitemapEnginesForm extends ConfigFormBase {
+
+  use AutowireTrait;
 
   /**
    * The entity type manager service.
@@ -39,7 +42,7 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
   /**
    * The date formatter service.
    *
-   * @var \Drupal\Core\Datetime\DateFormatter
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
 
@@ -55,38 +58,30 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   The typed config manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
-   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
    * @param \Drupal\Core\State\StateInterface $state
    *   The state service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory,
-                              EntityTypeManagerInterface $entity_type_manager,
-                              EntityFieldManagerInterface $entity_field_manager,
-                              DateFormatter $date_formatter,
-                              StateInterface $state) {
-    parent::__construct($config_factory);
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    TypedConfigManagerInterface $typedConfigManager,
+    EntityTypeManagerInterface $entity_type_manager,
+    EntityFieldManagerInterface $entity_field_manager,
+    DateFormatterInterface $date_formatter,
+    StateInterface $state,
+  ) {
+    parent::__construct($config_factory, $typedConfigManager);
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->dateFormatter = $date_formatter;
     $this->state = $state;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('entity_field.manager'),
-      $container->get('date.formatter'),
-      $container->get('state')
-    );
   }
 
   /**
@@ -111,58 +106,6 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
 
     $form['#tree'] = TRUE;
 
-    $form['settings'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Sitemap submission settings'),
-    ];
-
-    $form['settings']['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Submit sitemaps to search engines'),
-      '#description' => $this->t("This enables/disables sitemap submission; don't forget to choose sitemaps below."),
-      '#default_value' => $config->get('enabled'),
-    ];
-
-    $form['settings']['submission_interval'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Submission interval'),
-      '#options' => FormHelper::getCronIntervalOptions(),
-      '#default_value' => $config->get('submission_interval'),
-      '#states' => [
-        'visible' => [':input[name="settings[enabled]"]' => ['checked' => TRUE]],
-      ],
-    ];
-
-    $form['settings']['engines'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Engines'),
-      '#markup' => '<div class="description">'
-      . $this->t('Choose which sitemaps are to be submitted to which search engines.<br>Sitemaps can be configured <a href="@url">here</a>.',
-          ['@url' => Url::fromRoute('entity.simple_sitemap.collection')->toString()]
-      )
-      . '</div>',
-      '#open' => TRUE,
-      '#states' => [
-        'visible' => [':input[name="settings[enabled]"]' => ['checked' => TRUE]],
-      ],
-    ];
-
-    $sitemaps = SimpleSitemap::loadMultiple();
-    foreach (SimpleSitemapEngine::loadSitemapSubmissionEngines() as $engine_id => $engine) {
-      $form['settings']['engines'][$engine_id] = [
-        '#type' => 'select',
-        '#title' => $engine->label(),
-        '#options' => array_map(
-          function ($sitemap) {
-            return $sitemap->label();
-          },
-          $sitemaps
-        ),
-        '#default_value' => $engine->sitemap_variants,
-        '#multiple' => TRUE,
-      ];
-    }
-
     $form['index_now'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('IndexNow settings'),
@@ -171,7 +114,7 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
     $form['index_now']['enabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Submit changes to IndexNow capable engines'),
-      '#description' => $this->t('Send change notice to IndexNow compatible search engines right after submitting entity forms. Changes include creating, deleting and updating of an entity.<br/>This behaviour can be overridden on entity forms. Don\'t forget to <a href="@inclusion_url">include entities</a>.',
+      '#description' => $this->t('Send change notice to IndexNow compatible search engines right after submitting entity forms. Changes include creating, deleting and updating of an entity.<br/>This behavior can be overridden on entity forms. Don\'t forget to <a href="@inclusion_url">include entities</a>.',
         ['@inclusion_url' => Url::fromRoute('simple_sitemap.entities')->toString()]
       ),
       '#default_value' => $config->get('index_now_enabled'),
@@ -235,6 +178,58 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
       '#validate' => [],
       '#prefix' => '<p>' . $text . '</p>',
     ];
+
+    $form['settings'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Sitemap submission settings'),
+    ];
+
+    $form['settings']['enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Submit sitemaps to search engines'),
+      '#description' => $this->t("This enables/disables sitemap submission; don't forget to choose sitemaps below.<br/>The ping protocol is <strong>being deprecated</strong>, use IndexNow if applicable."),
+      '#default_value' => $config->get('enabled'),
+    ];
+
+    $form['settings']['submission_interval'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Submission interval'),
+      '#options' => FormHelper::getCronIntervalOptions(),
+      '#default_value' => $config->get('submission_interval'),
+      '#states' => [
+        'visible' => [':input[name="settings[enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $form['settings']['engines'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Engines'),
+      '#markup' => '<div class="description">'
+      . $this->t('Choose which sitemaps are to be submitted to which search engines.<br>Sitemaps can be configured <a href="@url">here</a>.',
+          ['@url' => Url::fromRoute('entity.simple_sitemap.collection')->toString()]
+      )
+      . '</div>',
+      '#open' => TRUE,
+      '#states' => [
+        'visible' => [':input[name="settings[enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $sitemaps = SimpleSitemap::loadMultiple();
+    foreach (SimpleSitemapEngine::loadSitemapSubmissionEngines() as $engine_id => $engine) {
+      $form['settings']['engines'][$engine_id] = [
+        '#type' => 'select',
+        '#title' => $engine->label(),
+        '#options' => array_map(
+          function ($sitemap) {
+            return $sitemap->label();
+          },
+          $sitemaps
+        ),
+        '#default_value' => $engine->sitemap_variants,
+        '#multiple' => TRUE,
+      ];
+    }
 
     return parent::buildForm($form, $form_state);
   }

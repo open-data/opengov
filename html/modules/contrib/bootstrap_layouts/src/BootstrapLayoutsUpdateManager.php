@@ -6,8 +6,16 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BootstrapLayoutsUpdateManager extends BootstrapLayoutsPluginManager {
+
+  /**
+   * The service container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
+   */
+  protected ContainerInterface $container;
 
   /**
    * Constructs a new \Drupal\bootstrap_layouts\BootstrapLayoutsManager object.
@@ -28,6 +36,13 @@ class BootstrapLayoutsUpdateManager extends BootstrapLayoutsPluginManager {
     parent::__construct($namespaces, $cache_backend, $module_handler, $theme_handler, $theme_manager, 'Drupal\bootstrap_layouts\Plugin\BootstrapLayouts\BootstrapLayoutsUpdateInterface', 'Drupal\bootstrap_layouts\Annotation\BootstrapLayoutsUpdate');
     $this->alterInfo('bootstrap_layouts_update_info');
     $this->setCacheBackend($cache_backend, 'bootstrap_layouts_update_info');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setContainer(ContainerInterface $container): void {
+    $this->container = $container;
   }
 
   /**

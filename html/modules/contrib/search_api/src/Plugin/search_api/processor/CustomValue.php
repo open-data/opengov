@@ -68,7 +68,7 @@ class CustomValue extends ProcessorPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getPropertyDefinitions(DatasourceInterface $datasource = NULL) {
+  public function getPropertyDefinitions(?DatasourceInterface $datasource = NULL) {
     $properties = [];
 
     if (!$datasource) {
@@ -108,8 +108,9 @@ class CustomValue extends ProcessorPluginBase {
         continue;
       }
       // Check if there are any tokens to replace.
-      if (preg_match_all('/\[[-\w]++(?::[-\w]++)++]/', $config['value'], $matches)) {
-        $field_value = $token->replacePlain($config['value'], $data);
+      $field_value = $config['value'];
+      if (preg_match_all('/\[[-\w]++(?::[-\w]++)++]/', $field_value, $matches)) {
+        $field_value = $token->replacePlain($field_value, $data);
         // Make sure there are no left-over tokens.
         $field_value = str_replace($matches[0], '', $field_value);
         $field_value = trim($field_value);

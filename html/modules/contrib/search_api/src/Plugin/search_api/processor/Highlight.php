@@ -66,11 +66,13 @@ class Highlight extends ProcessorPluginBase implements PluginFormInterface {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (!isset(static::$boundary)) {
+      // cspell:disable
       $cjk = '\x{1100}-\x{11FF}\x{3040}-\x{309F}\x{30A1}-\x{318E}' .
         '\x{31A0}-\x{31B7}\x{31F0}-\x{31FF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FCF}' .
         '\x{A000}-\x{A48F}\x{A4D0}-\x{A4FD}\x{A960}-\x{A97F}\x{AC00}-\x{D7FF}' .
         '\x{F900}-\x{FAFF}\x{FF21}-\x{FF3A}\x{FF41}-\x{FF5A}\x{FF66}-\x{FFDC}' .
         '\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}';
+      // cspell:enable
       static::$boundary = '(?:(?<=[' . Unicode::PREG_CLASS_WORD_BOUNDARY . $cjk . '])|(?=[' . Unicode::PREG_CLASS_WORD_BOUNDARY . $cjk . ']))';
       static::$split = '/[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']+/iu';
     }
@@ -371,7 +373,7 @@ class Highlight extends ProcessorPluginBase implements PluginFormInterface {
    *   Field values extracted from the result items' fulltext fields, keyed by
    *   item ID, field ID and then numeric indices.
    */
-  protected function getFulltextFields(array $result_items, array $fulltext_fields = NULL, $load = TRUE) {
+  protected function getFulltextFields(array $result_items, ?array $fulltext_fields = NULL, $load = TRUE) {
     // All the index's fulltext fields, grouped by datasource.
     $fields_by_datasource = [];
     foreach ($this->index->getFields() as $field_id => $field) {

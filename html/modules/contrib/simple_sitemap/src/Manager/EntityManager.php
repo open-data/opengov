@@ -95,7 +95,7 @@ class EntityManager implements SitemapGetterInterface {
     ConfigFactoryInterface $config_factory,
     Connection $database,
     EntityTypeManagerInterface $entity_type_manager,
-    EntityFieldManagerInterface $entity_field_manager
+    EntityFieldManagerInterface $entity_field_manager,
   ) {
     $this->entityHelper = $entity_helper;
     $this->settings = $settings;
@@ -248,10 +248,8 @@ class EntityManager implements SitemapGetterInterface {
       $query = $this->database->select('simple_sitemap_entity_overrides', 'o')
         ->fields('o', ['id', 'inclusion_settings'])
         ->condition('o.entity_type', $entity_type_id)
-        ->condition('o.type', $variants[0]);
-      if (!empty($entity_ids)) {
-        $query->condition('o.entity_id', $entity_ids, 'IN');
-      }
+        ->condition('o.type', $variants[0])
+        ->condition('o.entity_id', $entity_ids, 'IN');
 
       $delete_instances = [];
       foreach ($query->execute()->fetchAll() as $result) {
@@ -600,7 +598,7 @@ class EntityManager implements SitemapGetterInterface {
   /**
    * Gets all compatible sitemaps.
    *
-   * @return \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   * @return \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[]
    *   Array of sitemaps of a type that uses a URL generator which
    *   extends EntityUrlGeneratorBase. Keyed by variant.
    *

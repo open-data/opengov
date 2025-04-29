@@ -3,11 +3,11 @@
 namespace Drupal\simple_sitemap\Entity;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
-use Drupal\Core\Config\Entity\ConfigEntityStorage;
-use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -244,10 +244,10 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Publishes the specified sitemap.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity to publish.
    */
-  public function publish(SimpleSitemap $entity): void {
+  public function publish(SimpleSitemapInterface $entity): void {
     $unpublished_chunk = $this->database->query('SELECT MAX(id) FROM {simple_sitemap} WHERE type = :type AND status = :status', [
       ':type' => $entity->id(),
       ':status' => self::SITEMAP_UNPUBLISHED,
@@ -272,10 +272,10 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    * A sitemap entity can exist without the sitemap (XML) content which lives
    * in the DB. This purges the sitemap content.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity to process.
    */
-  public function deleteContent(SimpleSitemap $entity): void {
+  public function deleteContent(SimpleSitemapInterface $entity): void {
     $this->purgeContent([$entity->id()]);
   }
 
@@ -344,7 +344,7 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Returns the number of all content chunks of the specified sitemap.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    * @param int|null $status
    *   Fetch by sitemap status.
@@ -352,7 +352,7 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    * @return int
    *   Number of chunks.
    */
-  public function getChunkCount(SimpleSitemap $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): int {
+  public function getChunkCount(SimpleSitemapInterface $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): int {
     $query = $this->database->select('simple_sitemap', 's')
       ->condition('s.type', $entity->id())
       ->condition('s.delta', self::SITEMAP_INDEX_DELTA, '<>');
@@ -367,9 +367,9 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Retrieves the content of a specified sitemap's chunk.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
-   * @param bool|null $status
+   * @param int|null $status
    *   Fetch by sitemap status.
    * @param int $delta
    *   Delta of the chunk.
@@ -379,7 +379,7 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    *
    * @todo Fix the duplicate query.
    */
-  public function getChunk(SimpleSitemap $entity, ?bool $status, int $delta = SimpleSitemapStorage::SITEMAP_CHUNK_FIRST_DELTA): string {
+  public function getChunk(SimpleSitemapInterface $entity, ?int $status, int $delta = SimpleSitemapStorage::SITEMAP_CHUNK_FIRST_DELTA): string {
     if ($delta === self::SITEMAP_INDEX_DELTA) {
       throw new SitemapNotExistsException('The sitemap chunk delta cannot be ' . self::SITEMAP_INDEX_DELTA . '.');
     }
@@ -390,15 +390,15 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Determines whether the specified sitemap has a chunk index.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity to check.
-   * @param bool $status
+   * @param int|null $status
    *   Fetch by sitemap status.
    *
    * @return bool
    *   TRUE if the sitemap has an index, FALSE otherwise.
    */
-  public function hasIndex(SimpleSitemap $entity, bool $status): bool {
+  public function hasIndex(SimpleSitemapInterface $entity, ?int $status): bool {
     try {
       $this->getIdByDelta($entity, self::SITEMAP_INDEX_DELTA, $status);
       return TRUE;
@@ -411,9 +411,9 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Gets the sitemap chunk index content.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
-   * @param bool|null $status
+   * @param int|null $status
    *   Fetch by sitemap status.
    *
    * @return string
@@ -421,24 +421,24 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    *
    * @todo Fix the duplicate query.
    */
-  public function getIndex(SimpleSitemap $entity, ?bool $status): string {
+  public function getIndex(SimpleSitemapInterface $entity, ?int $status): string {
     return $this->getSitemapString($entity, $this->getIdByDelta($entity, self::SITEMAP_INDEX_DELTA, $status), $status);
   }
 
   /**
    * Returns the sitemap chunk ID by delta.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    * @param int $delta
    *   Delta of the chunk.
-   * @param bool $status
+   * @param int|null $status
    *   Fetch by sitemap status.
    *
    * @return int
    *   The sitemap chunk ID.
    */
-  protected function getIdByDelta(SimpleSitemap $entity, int $delta, bool $status): int {
+  protected function getIdByDelta(SimpleSitemapInterface $entity, int $delta, ?int $status): int {
     foreach ($this->getChunkData($entity) as $chunk) {
       if ($chunk->delta == $delta && $chunk->status == $status) {
         return $chunk->id;
@@ -451,17 +451,17 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Retrieves the sitemap chunk content.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    * @param int $id
    *   The sitemap chunk ID.
-   * @param bool|null $status
+   * @param int|null $status
    *   Fetch by sitemap status.
    *
    * @return string
    *   The sitemap chunk content.
    */
-  protected function getSitemapString(SimpleSitemap $entity, int $id, ?bool $status): string {
+  protected function getSitemapString(SimpleSitemapInterface $entity, int $id, ?int $status): string {
     $chunk_data = $this->getChunkData($entity);
     if (!isset($chunk_data[$id])) {
       throw new SitemapNotExistsException();
@@ -485,13 +485,13 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    * The sitemap can be unpublished (0), published (1), or published and in
    * regeneration (2).
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    *
    * @return int
    *   The sitemap status.
    */
-  public function status(SimpleSitemap $entity): int {
+  public function status(SimpleSitemapInterface $entity): int {
     foreach ($this->getChunkData($entity) as $chunk) {
       $status[$chunk->status] = $chunk->status;
     }
@@ -512,15 +512,15 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Returns the timestamp of the specified sitemap's chunk generation.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    * @param int|null $status
    *   Fetch by sitemap status.
    *
-   * @return string|null
+   * @return int|null
    *   Timestamp of sitemap chunk generation.
    */
-  public function getCreated(SimpleSitemap $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): ?string {
+  public function getCreated(SimpleSitemapInterface $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): ?int {
     foreach ($this->getChunkData($entity) as $chunk) {
       if ($status === SimpleSitemap::FETCH_BY_STATUS_ALL || $chunk->status == $status) {
         return $chunk->sitemap_created;
@@ -533,7 +533,7 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
   /**
    * Returns the number of links indexed in the specified sitemap's content.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap $entity
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
    *   The sitemap entity.
    * @param int|null $status
    *   Fetch by sitemap status.
@@ -541,7 +541,7 @@ class SimpleSitemapStorage extends ConfigEntityStorage {
    * @return int
    *   Number of links.
    */
-  public function getLinkCount(SimpleSitemap $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): int {
+  public function getLinkCount(SimpleSitemapInterface $entity, ?int $status = SimpleSitemap::FETCH_BY_STATUS_ALL): int {
     $count = 0;
     foreach ($this->getChunkData($entity) as $chunk) {
       if ($chunk->delta != self::SITEMAP_INDEX_DELTA

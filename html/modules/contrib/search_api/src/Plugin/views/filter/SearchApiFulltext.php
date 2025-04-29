@@ -76,7 +76,7 @@ class SearchApiFulltext extends FilterPluginBase {
     parent::showOperatorForm($form, $form_state);
 
     if (!empty($form['operator'])) {
-      $form['operator']['#description'] = $this->t('Depending on the parse mode set, some of these options might not work as expected. Please either use "@multiple_words" as the parse mode or make sure that the filter behaves as expected for multiple words.', ['@multiple_words' => $this->t('Multiple words')]);
+      $form['operator']['#description'] = $this->t('Depending on the parse mode set, some of these options might not work as expected. Either use "@multiple_words" as the parse mode or make sure that the filter behaves as expected for multiple words.', ['@multiple_words' => $this->t('Multiple words')]);
     }
   }
 

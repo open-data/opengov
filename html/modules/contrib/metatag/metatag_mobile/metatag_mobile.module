@@ -53,11 +53,7 @@ function metatag_mobile_page_attachments_alter(array &$attachments) {
           // found so it can be picked up as the dupe; this is important for the
           // "viewport" meta tag where both core and Metatag use the same name.
           if (in_array($item[1], $meta_tags) && !isset($found[$core_tag])) {
-            foreach ($meta_tags as $meta_tag) {
-              if (!isset($found[$core_tag])) {
-                $found[$core_tag] = $key;
-              }
-            }
+            $found[$core_tag] = $key;
           }
           elseif ($item[1] == $core_tag && isset($found[$core_tag])) {
             // @todo This ought to work, but doesn't?

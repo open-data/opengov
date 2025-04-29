@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\honeypot\Functional;
 
+use Drupal\Tests\BrowserTestBase;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\contact\Entity\ContactForm;
-use Drupal\Tests\BrowserTestBase;
 use Drupal\user\UserInterface;
 
 /**
@@ -175,7 +177,7 @@ class HoneypotFormTest extends BrowserTestBase {
    * Test that any (not-strict-empty) value triggers protection.
    */
   public function testStrictEmptinessOnHoneypotField(): void {
-    // Initialise the form values.
+    // Initialize the form values.
     $edit['name'] = $this->randomMachineName();
     $edit['mail'] = $edit['name'] . '@example.com';
 
@@ -251,6 +253,42 @@ class HoneypotFormTest extends BrowserTestBase {
     // Set up the form and submit it.
     $edit["title[0][value]"] = 'Test Page';
     $this->drupalGet('node/add/article');
+    $this->submitForm($edit, 'Save');
+    $this->assertSession()->pageTextContains('There was a problem with your form submission.');
+  }
+
+  /**
+   * Test tampered honeypot_time identifiers.
+   */
+  public function testTamperedHoneypotTimeIdentifier(): void {
+    // Log in the web user.
+    $this->drupalLogin($this->webUser);
+
+    // Reset the time limit to 1 second.
+    \Drupal::configFactory()->getEditable('honeypot.settings')->set('time_limit', 1)->save();
+
+    $edit["title[0][value]"] = 'Test Page';
+
+    // These submissions should pass if the identifier was left intact, hence
+    // the sleep before each submission.
+    $this->drupalGet('node/add/article');
+    sleep(2);
+    $honeypot_time = $this->assertSession()->hiddenFieldExists('honeypot_time');
+    $honeypot_time->setValue('not-the-original-identifier-but-not-invalid');
+    $this->submitForm($edit, 'Save');
+    $this->assertSession()->pageTextContains('There was a problem with your form submission.');
+
+    $this->drupalGet('node/add/article');
+    sleep(2);
+    $honeypot_time = $this->assertSession()->hiddenFieldExists('honeypot_time');
+    $honeypot_time->setValue(str_repeat('too-long', 25));
+    $this->submitForm($edit, 'Save');
+    $this->assertSession()->pageTextContains('There was a problem with your form submission.');
+
+    $this->drupalGet('node/add/article');
+    sleep(2);
+    $honeypot_time = $this->assertSession()->hiddenFieldExists('honeypot_time');
+    $honeypot_time->setValue('not-just-ascii-ʼ');
     $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('There was a problem with your form submission.');
   }

@@ -114,7 +114,7 @@ class ViewsBootstrap {
    *   Number of columns in a 12 column grid or false.
    */
   public static function getColSize($size) {
-    if (preg_match('~col-[a-z]{2}-([0-9]*)~', $size, $matches)) {
+    if (preg_match('~col-(?:[a-z]{2}-)?([0-9]+)~', $size, $matches)) {
       return 12 / $matches[1];
     }
 

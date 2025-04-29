@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\password_policy\Functional;
 
-use Drupal\Tests\BrowserTestBase;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\password_policy\Entity\PasswordPolicy;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\User;
 
 /**

@@ -39,10 +39,12 @@ class SitemapSubmittingWorker extends QueueWorkerBase implements ContainerFactor
    * @param \Drupal\simple_sitemap_engines\Submitter\SitemapSubmitter $sitemap_submitter
    *   Sitemap submitter service.
    */
-  public function __construct(array $configuration,
-                                    $plugin_id,
-                              array $plugin_definition,
-                              SitemapSubmitter $sitemap_submitter) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    SitemapSubmitter $sitemap_submitter,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->sitemapSubmitter = $sitemap_submitter;
   }

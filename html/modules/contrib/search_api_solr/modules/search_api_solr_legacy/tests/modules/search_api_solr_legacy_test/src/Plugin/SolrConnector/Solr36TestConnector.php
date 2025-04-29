@@ -45,7 +45,7 @@ class Solr36TestConnector extends Solr36Connector {
   /**
    * {@inheritdoc}
    */
-  public function execute(QueryInterface $query, Endpoint $endpoint = NULL) {
+  public function execute(QueryInterface $query, ?Endpoint $endpoint = NULL) {
     self::$query = $query;
 
     if ($this->intercept) {
@@ -59,7 +59,7 @@ class Solr36TestConnector extends Solr36Connector {
   /**
    * {@inheritdoc}
    */
-  public function executeRequest(Request $request, Endpoint $endpoint = NULL) {
+  public function executeRequest(Request $request, ?Endpoint $endpoint = NULL) {
     self::$request = $request;
 
     if ($this->intercept) {
@@ -100,7 +100,7 @@ class Solr36TestConnector extends Solr36Connector {
   /**
    * Adjust a config for test cases.
    *
-   * @param $config_name
+   * @param string $config_name
    *   The name of the config.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException

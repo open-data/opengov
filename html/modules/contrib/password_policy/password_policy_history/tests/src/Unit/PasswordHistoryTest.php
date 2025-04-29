@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\password_policy_history\FunctionalJavascript;
 
-use Drupal\password_policy_history\Plugin\PasswordConstraint\PasswordHistory;
-use Drupal\Tests\UnitTestCase;
-use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\password_policy_history\Plugin\PasswordConstraint\PasswordHistory;
+use Drupal\Tests\UnitTestCase;
 
 /**
  * Tests password history.
@@ -31,9 +31,17 @@ class PasswordHistoryTest extends UnitTestCase {
   public $user;
 
   /**
+   * Translation interface.
+   *
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
+   */
+  public $translationInterfaceMock;
+
+  /**
    * Set up the test mock.
    */
   public function setup(): void {
+    parent::setup();
     $constructorArgs = [
       "configuration" => [],
       "plugin_id" => "test_plugin_id",
@@ -124,14 +132,17 @@ class PasswordHistoryTest extends UnitTestCase {
    * @return array
    *   The user context array.
    */
-  public function userContextProvider() {
+  public static function userContextProvider(): array {
     return [['password']];
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function setProtectedProperty($object, $property, $value) {
     $reflection = new \ReflectionClass($object);
     $reflection_property = $reflection->getProperty($property);
-    $reflection_property->setAccessible(true);
+    $reflection_property->setAccessible(TRUE);
     $reflection_property->setValue($object, $value);
   }
 

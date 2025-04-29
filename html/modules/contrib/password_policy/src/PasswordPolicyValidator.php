@@ -3,10 +3,10 @@
 namespace Drupal\password_policy;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\UserInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Manipulates Password Policy Validator.

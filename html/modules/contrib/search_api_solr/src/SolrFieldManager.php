@@ -36,6 +36,8 @@ class SolrFieldManager implements SolrFieldManagerInterface {
    */
   protected $serverStorage;
 
+  protected bool $writeCache = TRUE;
+
   /**
    * Constructs a new SorFieldManager.
    *
@@ -79,7 +81,9 @@ class SolrFieldManager implements SolrFieldManagerInterface {
       }
       else {
         $field_definitions = $this->buildFieldDefinitions($index);
-        $this->cacheSet($cid, $field_definitions, Cache::PERMANENT, $index->getCacheTagsToInvalidate());
+        if ($this->writeCache) {
+          $this->cacheSet($cid, $field_definitions, Cache::PERMANENT, $index->getCacheTagsToInvalidate());
+        }
       }
 
       $this->fieldDefinitions[$index_id] = $field_definitions;
@@ -90,7 +94,7 @@ class SolrFieldManager implements SolrFieldManagerInterface {
   /**
    * Builds the field definitions for a Solr server.
    *
-   * Initially the defintions will be built from a the response of a luke query
+   * Initially the definitions will be built from the response of a luke query
    * handler directly from Solr. But once added to the Drupal config, the
    * definitions will be a mix of the Drupal config and not yet used fields from
    * Solr. This strategy also covers scenarios when the Solr server is
@@ -109,13 +113,8 @@ class SolrFieldManager implements SolrFieldManagerInterface {
   protected function buildFieldDefinitions(IndexInterface $index) {
     $solr_fields = $this->buildFieldDefinitionsFromSolr($index);
     $config_fields = $this->buildFieldDefinitionsFromConfig($index);
-    $fields = $solr_fields + $config_fields;
-    /*** @var \Drupal\Core\TypedData\DataDefinitionInterface $field */
-    foreach ($config_fields as $key => $field) {
-      // Always use the type as already configured in Drupal previously.
-      $fields[$key]->setDataType($field->getDataType());
-    }
-    return $fields;
+    // Always prefer the type as already (re-)configured in Drupal.
+    return $config_fields + $solr_fields;
   }
 
   /**
@@ -130,10 +129,17 @@ class SolrFieldManager implements SolrFieldManagerInterface {
   protected function buildFieldDefinitionsFromConfig(IndexInterface $index) {
     $fields = [];
     foreach ($index->getFields() as $index_field) {
+      $type = $index_field->getType();
+      if ($type === 'text' || str_starts_with($type, 'solr_text_')) {
+        $type = 'search_api_text';
+      }
+      elseif ($type === 'date') {
+        $type = 'solr_date';
+      }
       $solr_field = $index_field->getPropertyPath();
       $field = new SolrFieldDefinition(['schema' => '']);
       $field->setLabel($index_field->getLabel());
-      $field->setDataType($index_field->getType());
+      $field->setDataType($type);
       $fields[$solr_field] = $field;
     }
     return $fields;
@@ -187,20 +193,17 @@ class SolrFieldManager implements SolrFieldManagerInterface {
           // The Search API can't deal with arbitrary item types. To make things
           // easier, just use one of those known to the Search API. Using strpos
           // matches point and trie variants as well, for example int, pint and
-          // tint. Finally this function only feeds the presets for the config
+          // tint. Finally, this function only feeds the presets for the config
           // form, so mismatches aren't critical.
           $type = $field->getDataType();
           if (strpos($type, 'text') !== FALSE) {
             $field->setDataType('search_api_text');
           }
           elseif (strpos($type, 'date_range') !== FALSE) {
-            $field->setDataType('solr_date_range');
+            $field->setDataType('string');
           }
           elseif (strpos($type, 'date') !== FALSE) {
-            // The field config UI uses "date" but converts that to "timestamp"
-            // internally. We handle this in the mapping.
-            /** @see \Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber::onMappingViewsFieldHandlers() */
-            $field->setDataType('date');
+            $field->setDataType('solr_date');
           }
           elseif (strpos($type, 'int') !== FALSE) {
             $field->setDataType('integer');
@@ -224,11 +227,14 @@ class SolrFieldManager implements SolrFieldManagerInterface {
         }
       }
       catch (SearchApiSolrException $e) {
-        $this->getLogger()
-          ->error('Could not connect to server %server, %message', [
-            '%server' => $server->id(),
-            '%message' => $e->getMessage(),
-          ]);
+        if (PHP_SAPI !== 'cli') {
+          $this->getLogger()
+            ->error('Could not connect to server %server, %message', [
+              '%server' => $server->id(),
+              '%message' => $e->getMessage(),
+            ]);
+        }
+        $this->writeCache = FALSE;
       }
     }
     return $fields;

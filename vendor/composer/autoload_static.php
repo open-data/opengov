@@ -213,7 +213,6 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         array (
             'Drush\\' => 6,
             'Drupal\\redis\\' => 13,
-            'Drupal\\bootstrap\\' => 17,
             'Drupal\\Core\\' => 12,
             'Drupal\\Composer\\Plugin\\Scaffold\\' => 32,
             'Drupal\\Component\\' => 17,
@@ -268,8 +267,8 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
         'phootwork\\lang\\' => 
         array (
@@ -692,10 +691,6 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         'Drupal\\redis\\' => 
         array (
             0 => __DIR__ . '/../..' . '/html/modules/contrib/redis/src',
-        ),
-        'Drupal\\bootstrap\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/html/themes/contrib/bootstrap/src',
         ),
         'Drupal\\Core\\' => 
         array (

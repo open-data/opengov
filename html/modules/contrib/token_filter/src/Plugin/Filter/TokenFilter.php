@@ -37,7 +37,7 @@ class TokenFilter extends FilterBase implements ContainerFactoryPluginInterface 
   protected $token;
 
   /**
-   * The token entity mapper service.
+   * The token entity mapper.
    *
    * @var \Drupal\token\TokenEntityMapperInterface
    */
@@ -69,7 +69,7 @@ class TokenFilter extends FilterBase implements ContainerFactoryPluginInterface 
    * @param \Drupal\Core\Utility\Token $token
    *   The token service.
    * @param \Drupal\token\TokenEntityMapperInterface $token_entity_mapper
-   *   The token entity mapper service.
+   *   The token entity mapper.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.
    * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match

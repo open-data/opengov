@@ -3,7 +3,6 @@
 namespace Drupal\Tests\metatag\Functional;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Cache\Cache;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -92,9 +91,9 @@ class EntityTestMetatagTest extends EntityTestResourceTestBase {
       'name' => 'Llama',
       'type' => 'entity_test',
       'field_metatag' => [
-        'value' => [
-          'description' => 'This is a description for use in Search Engines'
-        ],
+        'value' => Json::encode([
+          'description' => 'This is a description for use in Search Engines',
+        ]),
       ],
     ]);
     $entity_test->setOwnerId(0);

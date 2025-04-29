@@ -139,7 +139,8 @@ class FacetsUrlGenerator {
       // request path not having a matching route, Url generator will fail with.
       try {
         $requestUrl = Url::createFromRequest($request);
-      } catch (ResourceNotFoundException $e) {
+      }
+      catch (ResourceNotFoundException $e) {
         // Bypass exception if no path available. Should be unreachable in
         // default FacetSource implementations, but you never know.
         if ($facet_source_path) {

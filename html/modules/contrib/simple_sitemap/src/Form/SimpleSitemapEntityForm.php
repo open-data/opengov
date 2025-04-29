@@ -2,18 +2,27 @@
 
 namespace Drupal\simple_sitemap\Form;
 
+use Drupal\Core\DependencyInjection\AutowireTrait;
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\SimpleSitemapType;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form handler for sitemap edit forms.
  */
 class SimpleSitemapEntityForm extends EntityForm {
+
+  use AutowireTrait;
+
+  /**
+   * The entity being used by this form.
+   *
+   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface
+   */
+  protected $entity;
 
   /**
    * Entity type manager service.
@@ -21,15 +30,6 @@ class SimpleSitemapEntityForm extends EntityForm {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager')
-    );
-  }
 
   /**
    * SimpleSitemapEntityForm constructor.
@@ -108,7 +108,9 @@ class SimpleSitemapEntityForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    if ($this->entity->save() === SAVED_UPDATED) {
+    $return = $this->entity->save();
+
+    if ($return === SAVED_UPDATED) {
       $this->messenger()->addStatus($this->t('Sitemap %label has been updated.', ['%label' => $this->entity->label()]));
     }
     else {
@@ -116,6 +118,7 @@ class SimpleSitemapEntityForm extends EntityForm {
     }
 
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    return $return;
   }
 
 }

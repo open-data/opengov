@@ -96,6 +96,7 @@ class SearchApiDate extends Date {
    */
   protected function opBetween($field) {
     if (!empty($this->value['max'])
+        && ($this->value['type'] ?? '') != 'offset'
         && !str_contains($this->value['max'], ':')) {
       // No time was specified, so make the date range inclusive.
       $this->value['max'] .= ' +1 day';

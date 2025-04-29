@@ -43,7 +43,8 @@
 
     // Hide facets over the limit.
     facetsList.each(function () {
-      $(once('applysoftlimit', $(this).children('li:gt(' + zero_based_limit + ')'))).hide();
+      var allLiElements = $(this).find('li');
+      $(once('applysoftlimit', allLiElements.slice(zero_based_limit + 1))).hide();
     });
 
     // Add "Show more" / "Show less" links.

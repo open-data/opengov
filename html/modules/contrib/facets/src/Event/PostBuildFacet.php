@@ -2,7 +2,6 @@
 
 namespace Drupal\facets\Event;
 
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\facets\FacetInterface;
 use Drupal\Component\EventDispatcher\Event;
 

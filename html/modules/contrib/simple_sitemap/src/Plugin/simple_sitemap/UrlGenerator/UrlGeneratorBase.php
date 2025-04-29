@@ -2,12 +2,14 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
-use Drupal\simple_sitemap\Exception\SkipElementException;
-use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\SimpleSitemapInterface;
+use Drupal\simple_sitemap\Exception\SkipElementException;
+use Drupal\simple_sitemap\Logger;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\simple_sitemap\Logger;
 
 /**
  * Provides a base class for UrlGenerator plugins.
@@ -54,7 +56,7 @@ abstract class UrlGeneratorBase extends SimpleSitemapPluginBase implements UrlGe
     $plugin_id,
     $plugin_definition,
     Logger $logger,
-    Settings $settings
+    Settings $settings,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->logger = $logger;
@@ -124,6 +126,55 @@ abstract class UrlGeneratorBase extends SimpleSitemapPluginBase implements UrlGe
     catch (SkipElementException $e) {
       return [];
     }
+  }
+
+  /**
+   * Constructs the path data.
+   *
+   * @param \Drupal\Core\Url $url
+   *   The URL to process.
+   * @param array $settings
+   *   The sitemap settings.
+   *
+   * @return array
+   *   The path data.
+   */
+  protected function constructPathData(Url $url, array $settings = []): array {
+    $url = $url->setAbsolute();
+
+    if ($url->isRouted()) {
+      // Do not include paths that have no URL.
+      if (in_array($url->getRouteName(), ['<nolink>', '<none>'])) {
+        throw new SkipElementException();
+      }
+
+      $path = $url->getInternalPath();
+    }
+    // There can be internal paths that are not rooted, like 'base:/path'.
+    elseif (str_starts_with($uri = $url->toUriString(), 'base:/')) {
+      // Handle base scheme.
+      $path = $uri[6] === '/' ? substr($uri, 7) : substr($uri, 6);
+    }
+    else {
+      // Handle unforeseen schemes.
+      $path = $uri;
+    }
+
+    $path_data = [
+      'url' => $url->toString(),
+      'lastmod' => $settings['lastmod'] ?? NULL,
+      'priority' => $settings['priority'] ?? NULL,
+      'changefreq' => !empty($settings['changefreq']) ? $settings['changefreq'] : NULL,
+      'images' => $settings['images'] ?? NULL,
+    ];
+
+    // Additional info useful in hooks.
+    $path_data['meta']['path'] = $path;
+    if (($query = $url->getOption('query')) && is_array($query)) {
+      $path_data['meta']['query'] = UrlHelper::buildQuery($query);
+    }
+
+    return $path_data;
   }
 
 }

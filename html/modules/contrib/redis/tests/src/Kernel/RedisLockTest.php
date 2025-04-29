@@ -49,7 +49,7 @@ class RedisLockTest extends LockTest {
   /**
    * {@inheritdoc}
    */
-  public function testBackendLockRelease() {
+  public function testBackendLockRelease(): void {
     $redis_interface = self::getRedisInterfaceEnv();
     // Verify that the correct lock backend is being instantiated by the
     // factory.

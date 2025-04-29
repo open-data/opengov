@@ -410,6 +410,7 @@ class FacetForm extends EntityForm {
       '#default_value' => $empty_behavior_config['behavior'] ?: 'none',
       '#options' => [
         'none' => $this->t('Do not display facet'),
+        'empty' => $this->t('Render empty facet'),
         'text' => $this->t('Display text'),
       ],
       '#description' => $this->t('Take this action if a facet has no items.'),
@@ -808,7 +809,7 @@ class FacetForm extends EntityForm {
 
     $facet->setHardLimit($form_state->getValue(['facet_settings', 'hard_limit']));
     $facet->setExclude($form_state->getValue(['facet_settings', 'exclude']));
-    
+
     $facet_uses_hierarchy = $form_state->getValue(
       [
         'facet_settings',

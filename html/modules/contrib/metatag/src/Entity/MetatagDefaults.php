@@ -88,7 +88,7 @@ class MetatagDefaults extends ConfigEntityBase implements MetatagDefaultsInterfa
    * @return array|null
    *   Array containing the tag values or NULL if not found.
    */
-  public function getTag($tag_id): array|NULL {
+  public function getTag($tag_id): array|string|NULL {
     if (!$this->hasTag($tag_id)) {
       return NULL;
     }

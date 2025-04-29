@@ -28,6 +28,9 @@ trait SearchApiHandlerTrait {
    * @return string
    *   The machine name of the entity type.
    *
+   * @throws \Exception
+   *   Thrown if no entity type could be determined.
+   *
    * @see \Drupal\views\Plugin\views\HandlerBase::getEntityType()
    */
   public function getEntityType() {

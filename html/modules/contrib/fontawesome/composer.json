@@ -10,12 +10,12 @@
         "source": "https://git.drupalcode.org/project/fontawesome"
     },
     "require": {
-        "drupal/core": "^9.4 || ^10"
+        "drupal/core": "^10.2 || ^11.0"
     },
     "extra": {
         "drush": {
             "services": {
-                "drush.services.yml": "^9 || ^10 || ^11"
+                "drush.services.yml": "^12 || ^13"
             }
         }
     }

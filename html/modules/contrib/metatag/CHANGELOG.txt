@@ -1,3 +1,63 @@
+Metatag 2.1.0, 2024-11-07
+-------------------------
+#2563651 by damienmckenna, alison, bob.hinrichs, benjifisher: Migration for
+  Metatag-D7 default configurations.
+#3454473 by damienmckenna: Migrations: Metatag-D7 misc settings.
+#3479994 by damienmckenna: Split D7 settings migration into a separate test.
+#3485053 by damienmckenna: Fix cspell errors.
+#3433376 by damienmckenna, ankitv18, murilohp, project update bot, jrglasgow,
+  chandu7929: Automated Drupal 11 compatibility fixes.
+#3311415 by grevil, damienmckenna, anybody: Allow to trim special characters
+  from the end.
+#3470415 by murilohp, waspper, damienmckenna: Support the commerce_store entity
+  type.
+#3466343 by damienmckenna, eyesyte: Support the comment entity type.
+#3377205 by damienmckenna, grevil, gillesbailleux, anybody: Allow OG "See also"
+  to have multiple values.
+#3469049 by damienmckenna, ankitv18, anybody: Minor typo in metatag.install.
+#3380911 by naveenvalecha, abhisekmazumdar, eleonel, anybody, damienmckenna,
+  2dareis2do, joachim: Add Custom Meta as a submodule.
+#2952675 by biancaradu27, loze, alvar0hurtad0, id.conky, damienmckenna,
+  marysmech, musa.thomas, justskew, smavri, anybody, jason.bell, waldomero,
+  zaporylie: Add support for contextual path arguments.
+#3426426 by damienmckenna, erwangel: Explain that the Administer Metatag
+  permission does not control access to the per-entity field.
+#3422406 by eduardo morales alberti, sascha_meissner, damienmckenna: Generate
+  tokens values method does not take into account the entity language.
+
+
+Metatag 2.0.2, 2024-08-05
+-------------------------
+#3465991 by podarok, DamienMcKenna: Allow installation on Drupal 11 via
+  composer.json.
+
+
+Metatag 2.0.1, 2024-08-05
+-------------------------
+#3370486 by DamienMcKenna, arti_parmar: Use second argument on all unserialize()
+  calls.
+#3386862 by DamienMcKenna: Additional entity types to ignore.
+#3390226 by DamienMcKenna: Normalize the composer.json file using
+  ergebnis/composer-normalize.
+#3408825 by DamienMcKenna: Remove Devel, WebProfiler tests.
+#3413633 by Nikolay Shapovalov, DamienMcKenna, Mingsong: Fix tests for,
+  compatibility with Drupal 10.2.
+#3404463 by pilot3, DamienMcKenna, Nikolay Shapovalov, naveenvalecha: Add Gitlab
+  CI test file.
+#3421648 by morgannc, DamienMcKenna: Fixed some coding standards issues.
+#3423881 by DamienMcKenna: Merge NodeTranslation into
+  MetatagNodeTranslationTest.
+#3433055 by DamienMcKenna: Fixed test filenames.
+#3447058 by DamienMcKenna: Update info files for Drupal 11.
+#3462134 by ankitv18, DamienMcKenna: Fix phpcs and cspell issues.
+#3454762 by johnjw59@gmail.com, DamienMcKenna: Page Manager meta tags added
+  twice.
+#3460593 by DamienMcKenna, porchlight, acbramley: Update MetatagFieldBuilder
+  ::build for compatibility with Diff v2.
+#3423428 by DamienMcKenna, naveenvalecha: cspell, stylelint coding standards
+  fixes.
+
+
 Metatag 2.0.0, 2023-06-27
 -------------------------
 #3364475 by DamienMcKenna: Update scripts to convert JSON data on revision

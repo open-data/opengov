@@ -8,7 +8,7 @@
 /**
  * Add the hierarchy processor to facets that have the hierarchy enabled.
  */
-function facets_post_update_8001_8001_8001_8001_8001_8001_8001_8001_add_hierarchy_processor() {
+function facets_post_update_8001_add_hierarchy_processor() {
   $config_factory = \Drupal::configFactory();
 
   // Find all facets that have the hierarchy enabled, but do not use the

@@ -31,7 +31,7 @@ class CharacterTypesTest extends UnitTestCase {
   /**
    * Provides data for the testCharacterTypes method.
    */
-  public function characterTypesDataProvider() {
+  public static function characterTypesDataProvider(): array {
     return [
       // Passing conditions.
       [

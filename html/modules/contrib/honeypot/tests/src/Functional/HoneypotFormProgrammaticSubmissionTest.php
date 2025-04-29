@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\honeypot\Functional;
 
 use Drupal\Component\Serialization\Json;
@@ -36,6 +38,7 @@ class HoneypotFormProgrammaticSubmissionTest extends BrowserTestBase {
     $honeypot_config->set('log', FALSE);
     $honeypot_config->save();
 
+    // cspell:ignore robo
     $this->drupalCreateUser([], 'robo-user');
   }
 

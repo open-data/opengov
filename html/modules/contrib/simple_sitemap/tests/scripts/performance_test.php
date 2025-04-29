@@ -5,10 +5,11 @@
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\Batch\BatchBuilder;
 use Drupal\Core\Database\Database;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\Tests\RandomGeneratorTrait;
 use Drupal\simple_sitemap\Queue\BatchTrait;
+use Drupal\Tests\RandomGeneratorTrait;
 use Drush\Drush;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -96,7 +97,7 @@ class Tester {
     $batch = new BatchBuilder();
     $relative_path_to_script = (new Filesystem())->makePathRelative(__DIR__, \Drupal::root()) . basename(__FILE__);
     $batch->setFile($relative_path_to_script);
-    $batch->addOperation(__CLASS__ . '::' . 'doBatchGenerate', [$count_queries]);
+    $batch->addOperation([static::class, 'doBatchGenerate'], [$count_queries]);
     $batch->setFinishCallback([BatchTrait::class, 'finishGeneration']);
 
     // Start drush batch process.
@@ -122,7 +123,7 @@ class Tester {
    * @param $context
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public static function doBatchGenerate($count_queries = FALSE, &$context) {
+  public static function doBatchGenerate($count_queries, &$context) {
     if ($count_queries) {
       $query_logger = Database::startLog('simple_sitemap');
     }
@@ -133,8 +134,8 @@ class Tester {
       $context['message'] = "Query count: " . count($query_logger->get('simple_sitemap'));
     }
     else {
-      $peak_mem = format_size(memory_get_peak_usage(TRUE));
-      $mem = format_size(memory_get_usage(TRUE));
+      $peak_mem = ByteSizeMarkup::create(memory_get_peak_usage(TRUE));
+      $mem = ByteSizeMarkup::create(memory_get_usage(TRUE));
       $context['message'] = "Memory: $peak_mem, non-peak mem: $mem";
     }
   }

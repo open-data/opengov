@@ -118,7 +118,7 @@ function messyDeclaration(
     ?\MyNS /* comment */
         \ SubCat // phpcs:ignore Standard.Cat.Sniff -- for reasons.
             \  MyClass $a,
-    $b /* test */ = /* test */ 'default' /* test*/,
+    $b /* comment */ = /* comment */ 'default' /* comment*/,
     // phpcs:ignore Stnd.Cat.Sniff -- For reasons.
     ? /*comment*/
         bool // phpcs:disable Stnd.Cat.Sniff -- For reasons.
@@ -311,6 +311,9 @@ function() use() {};
 
 /* testClosureUse */
 function() use( $foo, $bar ) {};
+
+/* testClosureUseWithReference */
+$cl = function() use (&$foo, &$bar) {};
 
 /* testFunctionParamListWithTrailingComma */
 function trailingComma(

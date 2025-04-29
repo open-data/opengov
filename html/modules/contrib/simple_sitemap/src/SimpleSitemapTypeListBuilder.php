@@ -25,6 +25,9 @@ class SimpleSitemapTypeListBuilder extends ConfigEntityListBuilder {
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapTypeInterface $entity
+   *   The entity for this row of the list.
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();

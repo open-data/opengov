@@ -1,0 +1,22 @@
+{%
+  set classes = ['dropdown-toggle']
+%}
+<div class="dropdown">
+  {% block dropdown_button %}
+  <button {{ attributes.addClass(classes).setAttribute('type', 'button').setAttribute('data-bs-toggle', 'dropdown').setAttribute('aria-expanded', 'false') }}>
+    {{ dropdown_text }}
+  </button>
+  {% endblock %}
+  {% if items %}
+  <ul class="dropdown-menu">
+    {% for item in items %}
+      <li {{item.listAttributes}}><a {{item.attributes.addClass("dropdown-item")}} href="{{item.url}}">{{item.text}}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if block(dropdown_menu)%}
+  <div class="dropdown-menu">
+    {% block dropdown_menu %}{% endblock %}
+  </div>
+  {% endif %}
+</div>

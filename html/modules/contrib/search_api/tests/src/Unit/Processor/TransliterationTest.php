@@ -39,11 +39,12 @@ class TransliterationTest extends UnitTestCase {
 
     $transliterator = $this->createMock(TransliterationInterface::class);
     $transliterate = function ($string, $langcode = 'en', $unknown_character = '?', $max_length = NULL) {
+      // cspell:disable-next-line
       return "translit-$string-$langcode$unknown_character$max_length";
     };
     $transliterator->expects($this->any())
       ->method('transliterate')
-      ->will($this->returnCallback($transliterate));
+      ->willReturnCallback($transliterate);
     /** @var \Drupal\Component\Transliteration\TransliterationInterface $transliterator */
     $this->processor->setTransliterator($transliterator);
   }
@@ -78,6 +79,7 @@ class TransliterationTest extends UnitTestCase {
     /** @var \Drupal\search_api\Item\FieldInterface $field */
     $items = $this->createSingleFieldItem($this->index, 'string', $field_value, $field);
     $this->processor->preprocessIndexItems($items);
+    // cspell:disable-next-line
     $expected_value = "translit-$field_value-en?";
     $this->assertEquals([$expected_value], $field->getValues(), 'Strings are correctly transliterated.');
   }

@@ -1268,8 +1268,8 @@ final class GetMethodParametersTest extends AbstractMethodUnitTest
         $expected[1] = [
             'token'               => 29,
             'name'                => '$b',
-            'content'             => "\$b /* test */ = /* test */ 'default' /* test*/",
-            'default'             => "'default' /* test*/",
+            'content'             => "\$b /* comment */ = /* comment */ 'default' /* comment*/",
+            'default'             => "'default' /* comment*/",
             'default_token'       => 37,
             'default_equal_token' => 33,
             'has_attributes'      => false,
@@ -2933,6 +2933,51 @@ final class GetMethodParametersTest extends AbstractMethodUnitTest
         $this->getMethodParametersTestHelper('/* '.__FUNCTION__.' */', $expected, [T_USE]);
 
     }//end testClosureUse()
+
+
+    /**
+     * Verify handling of a closure T_USE token with variables imported by reference.
+     *
+     * @return void
+     */
+    public function testClosureUseWithReference()
+    {
+        // Offsets are relative to the T_USE token.
+        $expected    = [];
+        $expected[0] = [
+            'token'               => 4,
+            'name'                => '$foo',
+            'content'             => '&$foo',
+            'has_attributes'      => false,
+            'pass_by_reference'   => true,
+            'reference_token'     => 3,
+            'variable_length'     => false,
+            'variadic_token'      => false,
+            'type_hint'           => '',
+            'type_hint_token'     => false,
+            'type_hint_end_token' => false,
+            'nullable_type'       => false,
+            'comma_token'         => 5,
+        ];
+        $expected[1] = [
+            'token'               => 8,
+            'name'                => '$bar',
+            'content'             => '&$bar',
+            'has_attributes'      => false,
+            'pass_by_reference'   => true,
+            'reference_token'     => 7,
+            'variable_length'     => false,
+            'variadic_token'      => false,
+            'type_hint'           => '',
+            'type_hint_token'     => false,
+            'type_hint_end_token' => false,
+            'nullable_type'       => false,
+            'comma_token'         => false,
+        ];
+
+        $this->getMethodParametersTestHelper('/* '.__FUNCTION__.' */', $expected, [T_USE]);
+
+    }//end testClosureUseWithReference()
 
 
     /**

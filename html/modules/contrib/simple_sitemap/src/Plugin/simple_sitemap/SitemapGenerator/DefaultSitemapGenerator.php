@@ -154,6 +154,7 @@ class DefaultSitemapGenerator extends SitemapGeneratorBase {
     $module_path = $this->moduleList->getPath('simple_sitemap');
     $xsl_content = file_get_contents($module_path . '/xsl/simple_sitemap.xsl');
     $replacements = [
+      '[langcode]' => $this->languageManager->getCurrentLanguage()->getId(),
       '[title]' => $this->t('Sitemap file'),
       '[generated-by]' => $this->settings->get('hide_branding')
         ? ''

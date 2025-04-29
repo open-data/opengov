@@ -2,8 +2,8 @@
 
 namespace Drupal\metatag_favicons\Plugin\metatag\Tag;
 
-use Drupal\metatag\Plugin\metatag\Tag\LinkRelBase;
 use Drupal\Component\Utility\Random;
+use Drupal\metatag\Plugin\metatag\Tag\LinkRelBase;
 
 /**
  * The Favicons "mask-icon" meta tag.

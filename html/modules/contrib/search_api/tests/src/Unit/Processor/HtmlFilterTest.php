@@ -17,7 +17,7 @@ use Drupal\Tests\UnitTestCase;
  *
  * @group search_api
  *
- * @see \Drupal\search_api\Plugin\search_api\processor\HtmlFilter
+ * @coversDefaultClass \Drupal\search_api\Plugin\search_api\processor\HtmlFilter
  */
 class HtmlFilterTest extends UnitTestCase {
 
@@ -64,7 +64,7 @@ class HtmlFilterTest extends UnitTestCase {
    * @return array
    *   An array of argument arrays for testTitleConfiguration().
    */
-  public function titleConfigurationDataProvider() {
+  public static function titleConfigurationDataProvider() {
     return [
       ['word', 'word', FALSE],
       ['word', 'word', TRUE],
@@ -105,7 +105,7 @@ class HtmlFilterTest extends UnitTestCase {
    * @return array
    *   An array of argument arrays for testAltConfiguration().
    */
-  public function altConfigurationDataProvider() {
+  public static function altConfigurationDataProvider() {
     return [
       ['word', [Utility::createTextToken('word')], FALSE],
       ['word', [Utility::createTextToken('word')], TRUE],
@@ -181,7 +181,7 @@ class HtmlFilterTest extends UnitTestCase {
    * @return array
    *   An array of argument arrays for testTagConfiguration().
    */
-  public function tagConfigurationDataProvider() {
+  public static function tagConfigurationDataProvider() {
     $tags_config = ['h2' => '2'];
     return [
       ['h2word', 'h2word', []],
@@ -274,7 +274,7 @@ class HtmlFilterTest extends UnitTestCase {
    *   An array of argument arrays for testStringProcessing(), where each array
    *   contains a HTML filter configuration as the only value.
    */
-  public function stringProcessingDataProvider() {
+  public static function stringProcessingDataProvider() {
     $configs = [];
     $configs[] = [[]];
     $config['tags'] = [
@@ -382,6 +382,44 @@ class HtmlFilterTest extends UnitTestCase {
     $this->invokeMethod('processFieldValue', [&$text, 'text']);
     $took = microtime(TRUE) - $start;
     $this->assertLessThan(1.0, $took, 'Processing large field value took too long.');
+  }
+
+  /**
+   * Tests that invisible HTML elements are correctly removed.
+   *
+   * @covers ::removeInvisibleHtmlElements
+   */
+  public function testRemoveInvisibleHtmlElements(): void {
+    $filler_html = str_repeat("<p><strong>Something.</strong></p>\n", 100000);
+    /** @noinspection HtmlUnknownTarget */
+    $passed_value = <<<HTML
+      <p>Foo <em>bar</em> baz</p>
+      <script type="text/javascript">
+        document.title = "Something";
+        alert("Bar");
+      </script><style>a { font-style: italic; }</style>
+      <p>Bla.</p>
+      <embed type="video/webm" src="/videos/flower.mp4" width="250" height="200" />
+      <p>Further text.</p>
+      <script>alert('Foo');</script>
+      <video controls width="250">
+        <source src="/videos/flower.webm" type="video/webm" />
+        <source src="/videos/flower.mp4" type="video/mp4" />
+        Download the <a href="/videos/flower.mp4">video</a>.
+        $filler_html
+      </video>
+      <p>The end.</p>
+</script>
+HTML;
+    $expected_value = 'Foo bar baz Bla. Further text. The end.';
+    $configuration = [
+      'tags' => [],
+      'title' => TRUE,
+      'alt' => TRUE,
+    ];
+    $this->processor->setConfiguration($configuration);
+    $this->invokeMethod('processFieldValue', [&$passed_value, 'text']);
+    $this->assertEquals($expected_value, $passed_value);
   }
 
 }

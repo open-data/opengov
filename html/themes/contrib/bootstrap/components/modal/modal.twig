@@ -1,0 +1,26 @@
+<div class="modal" tabindex="-1">
+  <div {{attributes.addClass("modal-dialog")}}>
+    <div class="modal-content">
+      {% if modal_title or close %}
+      <div class="modal-header">
+        {% if modal-title %}
+        <h5 class="modal_title">{{modal_title}}</h5>
+        {% endif %}
+        {% if close %}
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endif %}
+      </div>
+      {% endif %}
+      {% if block(modal_body)%}
+      <div class="modal-body">
+        {% block modal_body %}{% endblock %}
+      </div>
+      {% endif %}
+      {% if block(modal_footer)%}
+      <div class="modal-footer">
+        {% block modal_footer %}{% endblock %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

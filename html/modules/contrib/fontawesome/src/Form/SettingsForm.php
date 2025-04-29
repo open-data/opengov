@@ -2,44 +2,34 @@
 
 namespace Drupal\fontawesome\Form;
 
-use Drupal\Core\Form\ConfigFormBase;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\UrlHelper;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\Core\DependencyInjection\AutowireTrait;
+use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a form that configures fontawesome settings.
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * Drupal LibraryDiscovery service container.
-   *
-   * @var \Drupal\Core\Asset\LibraryDiscoveryInterface
-   */
-  protected $libraryDiscovery;
+  use AutowireTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LibraryDiscoveryInterface $library_discovery) {
-    parent::__construct($config_factory);
-
-    $this->libraryDiscovery = $library_discovery;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('library.discovery')
-    );
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    TypedConfigManagerInterface $typed_config_manager,
+    protected LibraryDiscoveryInterface $libraryDiscovery,
+  ) {
+    parent::__construct($config_factory, $typed_config_manager);
   }
 
   /**
@@ -300,7 +290,13 @@ class SettingsForm extends ConfigFormBase {
     $fontawesome_library = $this->libraryDiscovery->getLibraryByName('fontawesome', 'fontawesome.svg');
 
     // Clear the library cache so we use the updated information.
-    $this->libraryDiscovery->clearCachedDefinitions();
+    // @todo Remove helper when minimum supported version is 11.1 or greater.
+    DeprecationHelper::backwardsCompatibleCall(
+      currentVersion: \Drupal::VERSION,
+      deprecatedVersion: '11.1',
+      currentCallable: fn() => $this->libraryDiscovery->clear(),
+      deprecatedCallable: fn() => $this->libraryDiscovery->clearCachedDefinitions(),
+    );
 
     // Set external file defaults.
     $default_location = 'https://use.fontawesome.com/releases/v' . $fontawesome_library['version'] . '/';

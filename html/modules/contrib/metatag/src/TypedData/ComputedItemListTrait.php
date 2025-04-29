@@ -40,6 +40,7 @@ trait ComputedItemListTrait {
    * This is run after the value has been computed at least once.
    *
    * @return bool
+   *   State need for recomputing value.
    */
   abstract protected function valueNeedsRecomputing();
 

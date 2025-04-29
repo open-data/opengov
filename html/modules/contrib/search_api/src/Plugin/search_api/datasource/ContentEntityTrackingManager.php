@@ -6,6 +6,7 @@ namespace Drupal\search_api\Plugin\search_api\datasource;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -22,6 +23,13 @@ use Drupal\search_api\Utility\Utility;
  * @see \Drupal\search_api\Plugin\search_api\datasource\ContentEntity
  */
 class ContentEntityTrackingManager {
+
+  /**
+   * The base ID of the datasources handled by this class.
+   *
+   * Can be overridden by subclasses to provide support for related datasources.
+   */
+  protected const DATASOURCE_BASE_ID = 'entity';
 
   /**
    * The entity type manager.
@@ -58,6 +66,23 @@ class ContentEntityTrackingManager {
     $this->entityTypeManager = $entityTypeManager;
     $this->languageManager = $languageManager;
     $this->taskManager = $taskManager;
+  }
+
+  /**
+   * Computes the item ID for the given entity and language.
+   *
+   * @param string $entity_type
+   *   The entity type ID.
+   * @param string|int $entity_id
+   *   The entity ID.
+   * @param string $langcode
+   *   The language ID of the entity.
+   *
+   * @return string
+   *   The datasource-specific item ID.
+   */
+  public static function formatItemId(string $entity_type, string|int $entity_id, string $langcode): string {
+    return ContentEntity::formatItemId($entity_type, $entity_id, $langcode);
   }
 
   /**
@@ -140,16 +165,21 @@ class ContentEntityTrackingManager {
     if (!$new) {
       // In case we don't have the original, fall back to the current entity,
       // and assume no new translations were added.
-      $original = $entity->original ?? $entity;
+      $original = DeprecationHelper::backwardsCompatibleCall(
+        \Drupal::VERSION,
+        '11.2',
+        fn () => $entity->getOriginal() ?: $entity,
+        fn () => $entity->original ?? $entity,
+      );
       $old_translations = array_keys($original->getTranslationLanguages());
     }
     $deleted_translations = array_diff($old_translations, $new_translations);
     $inserted_translations = array_diff($new_translations, $old_translations);
     $updated_translations = array_diff($new_translations, $inserted_translations);
 
-    $datasource_id = 'entity:' . $entity->getEntityTypeId();
-    $get_ids = function (string $langcode) use ($entity_id): string {
-      return $entity_id . ':' . $langcode;
+    $datasource_id = static::DATASOURCE_BASE_ID . ':' . $entity->getEntityTypeId();
+    $get_ids = function (string $langcode) use ($entity): string {
+      return static::formatItemId($entity->getEntityTypeId(), $entity->id(), $langcode);
     };
     $inserted_ids = array_map($get_ids, $inserted_translations);
     $updated_ids = array_map($get_ids, $updated_translations);
@@ -210,9 +240,9 @@ class ContentEntityTrackingManager {
     $item_ids = [];
     $entity_id = $entity->id();
     foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
-      $item_ids[] = $entity_id . ':' . $langcode;
+      $item_ids[] = static::formatItemId($entity->getEntityTypeId(), $entity_id, $langcode);
     }
-    $datasource_id = 'entity:' . $entity->getEntityTypeId();
+    $datasource_id = static::DATASOURCE_BASE_ID . ':' . $entity->getEntityTypeId();
     foreach ($indexes as $index) {
       $index->trackItemsDeleted($datasource_id, $item_ids);
     }
@@ -231,7 +261,7 @@ class ContentEntityTrackingManager {
   public function getIndexesForEntity(ContentEntityInterface $entity): array {
     // @todo This is called for every single entity insert, update or deletion
     //   on the whole site. Should maybe be cached?
-    $datasource_id = 'entity:' . $entity->getEntityTypeId();
+    $datasource_id = static::DATASOURCE_BASE_ID . ':' . $entity->getEntityTypeId();
     $entity_bundle = $entity->bundle();
     $has_bundles = $entity->getEntityType()->hasKey('bundle');
 
@@ -292,13 +322,18 @@ class ContentEntityTrackingManager {
       return;
     }
     /** @var \Drupal\search_api\IndexInterface $original */
-    $original = $index->original ?? NULL;
+    $original = DeprecationHelper::backwardsCompatibleCall(
+      \Drupal::VERSION,
+      '11.2',
+      fn () => $index->getOriginal(),
+      fn () => $index->original ?? NULL,
+    );
     if (!$original || !$original->status()) {
       return;
     }
 
     foreach ($index->getDatasources() as $datasource_id => $datasource) {
-      if ($datasource->getBaseId() != 'entity'
+      if ($datasource->getBaseId() != static::DATASOURCE_BASE_ID
           || !$original->isValidDatasource($datasource_id)) {
         continue;
       }

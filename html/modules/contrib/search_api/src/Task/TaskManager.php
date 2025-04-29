@@ -133,7 +133,7 @@ class TaskManager implements TaskManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function addTask($type, ServerInterface $server = NULL, IndexInterface $index = NULL, $data = NULL) {
+  public function addTask($type, ?ServerInterface $server = NULL, ?IndexInterface $index = NULL, $data = NULL) {
     $server_id = $server?->id();
     $index_id = $index?->id();
     if (isset($data)) {
@@ -281,6 +281,12 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function setTasksBatch(array $conditions = []) {
+    // We don't want to set a batch during an installation or update hook.
+    if (defined('MAINTENANCE_MODE')
+        && in_array(MAINTENANCE_MODE, ['install', 'update'])) {
+      return;
+    }
+
     $task_ids = $this->getTasksQuery($conditions)->range(0, 100)->execute();
 
     if (!$task_ids) {
@@ -311,7 +317,7 @@ class TaskManager implements TaskManagerInterface {
       // Drush performs batch processing in a separate PHP request. When the
       // last batch is processed the batch list is cleared, but this only takes
       // effect in the other request. Take the same action here to ensure that
-      // we are not requeueing stale batches when there are multiple tasks being
+      // we are not requeuing stale batches when there are multiple tasks being
       // handled in a single request.
       // (Drush 9.6 changed the structure of $result, so check for both variants
       // as long as we support earlier Drush versions, too.)
@@ -367,7 +373,14 @@ class TaskManager implements TaskManagerInterface {
     }
 
     $pending = $this->getTasksCount($conditions);
-    $context['finished'] = 1 - $pending / $context['results']['total'];
+    // Guard against a total count of 0, which sometimes happens.
+    $context['results']['total'] = max($context['results']['total'], $pending);
+    if ($context['results']['total'] > 0) {
+      $context['finished'] = 1 - $pending / $context['results']['total'];
+    }
+    else {
+      $context['finished'] = 1;
+    }
     $executed = $context['results']['total'] - $pending;
     if ($executed > 0) {
       $context['message'] = $this->formatPlural(

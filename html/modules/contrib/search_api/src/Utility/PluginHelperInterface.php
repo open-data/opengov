@@ -82,7 +82,7 @@ interface PluginHelperInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if an unknown plugin ID is given.
    */
-  public function createDatasourcePlugins(IndexInterface $index, array $plugin_ids = NULL, array $configurations = []);
+  public function createDatasourcePlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configurations = []);
 
   /**
    * Creates multiple processor plugin objects for this index.
@@ -103,7 +103,7 @@ interface PluginHelperInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if an unknown plugin ID is given.
    */
-  public function createProcessorPlugins(IndexInterface $index, array $plugin_ids = NULL, array $configurations = []);
+  public function createProcessorPlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configurations = []);
 
   /**
    * Creates multiple tracker plugin objects for this index.
@@ -124,6 +124,6 @@ interface PluginHelperInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if an unknown plugin ID is given.
    */
-  public function createTrackerPlugins(IndexInterface $index, array $plugin_ids = NULL, array $configurations = []);
+  public function createTrackerPlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configurations = []);
 
 }

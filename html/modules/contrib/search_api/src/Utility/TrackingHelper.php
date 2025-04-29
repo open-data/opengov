@@ -6,6 +6,7 @@ namespace Drupal\search_api\Utility;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
@@ -103,7 +104,15 @@ class TrackingHelper implements TrackingHelperInterface {
     }
 
     // Original entity, if available.
-    $original = $deleted ? NULL : ($entity->original ?? NULL);
+    $original = NULL;
+    if (!$deleted) {
+      $original = DeprecationHelper::backwardsCompatibleCall(
+        \Drupal::VERSION,
+        '11.2',
+        fn () => $entity->getOriginal(),
+        fn () => $entity->original ?? NULL,
+      );
+    }
     foreach ($indexes as $index) {
       // Do not track changes to referenced entities if the option has been
       // disabled.

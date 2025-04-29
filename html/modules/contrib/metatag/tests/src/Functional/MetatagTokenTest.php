@@ -12,7 +12,7 @@ use Drupal\Tests\token\Functional\TokenTestTrait;
  *
  * @group metatag
  */
-class TokenTest extends BrowserTestBase {
+class MetatagTokenTest extends BrowserTestBase {
 
   use TokenTestTrait;
   use FieldUiTestTrait;

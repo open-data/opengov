@@ -1,43 +1,63 @@
 /**
  * @file
- * Views UI helpers for Simple XML Sitemap display extender.
+ * Attaches behaviors for the Simple XML Sitemap display extender.
  */
 
-(function ($, Drupal, once) {
-  Drupal.simpleSitemapViewsUi = {};
-
+((Drupal, once) => {
+  /**
+   * The behavior of the indexed arguments.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches the behavior to the indexed arguments.
+   */
   Drupal.behaviors.simpleSitemapViewsUiArguments = {
-    attach: function attach() {
-      let $arguments = $(once('simple-sitemap-views-ui-arguments', '.indexed-arguments'));
+    attach(context) {
+      once(
+        'simple-sitemap-views-ui-arguments',
+        'fieldset.indexed-arguments',
+        context,
+      ).forEach((element) => {
+        let checkboxes = element.querySelectorAll('input[type="checkbox"]');
+        checkboxes = Array.from(checkboxes);
 
-      if ($arguments.length) {
-        $arguments.each(function () {
-          let $checkboxes = $(this).find('input[type="checkbox"]');
+        /**
+         * Mark all checkboxes above the current one as checked.
+         *
+         * @param {number} index
+         *   The index of the current checkbox.
+         */
+        const check = (index) => {
+          checkboxes.slice(0, index).forEach((checkbox) => {
+            checkbox.checked = true;
+          });
+        };
 
-          if ($checkboxes.length) {
-            new Drupal.simpleSitemapViewsUi.Arguments($checkboxes);
-          }
+        /**
+         * Mark all checkboxes below the current one as unchecked.
+         *
+         * @param {number} index
+         *   The index of the current checkbox.
+         */
+        const uncheck = (index) => {
+          checkboxes.slice(index).forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+        };
+
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener('change', () => {
+            const index = checkboxes.indexOf(checkbox);
+
+            if (checkbox.checked) {
+              check(index);
+            } else {
+              uncheck(index);
+            }
+          });
         });
-      }
-    }
+      });
+    },
   };
-
-  Drupal.simpleSitemapViewsUi.Arguments = function ($checkboxes) {
-    this.$checkboxes = $checkboxes;
-    this.$checkboxes.on('change', $.proxy(this, 'changeHandler'));
-  };
-
-  Drupal.simpleSitemapViewsUi.Arguments.prototype.changeHandler = function (e) {
-    let $checkbox = $(e.target), index = this.$checkboxes.index($checkbox);
-    $checkbox.prop('checked') ? this.check(index) : this.uncheck(index);
-  };
-
-  Drupal.simpleSitemapViewsUi.Arguments.prototype.check = function (index) {
-    this.$checkboxes.slice(0, index).prop('checked', true);
-  };
-
-  Drupal.simpleSitemapViewsUi.Arguments.prototype.uncheck = function (index) {
-    this.$checkboxes.slice(index).prop('checked', false);
-  };
-
-})(jQuery, Drupal, once);
+})(Drupal, once);

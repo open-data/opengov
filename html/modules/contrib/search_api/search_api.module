@@ -12,6 +12,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\Error;
 use Drupal\node\NodeInterface;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\IndexInterface;
@@ -24,10 +25,10 @@ use Drupal\search_api\Task\IndexTaskManager;
 use Drupal\views\ViewEntityInterface;
 use Drupal\views\ViewExecutable;
 
-/*
- * Load all theme functions.
- */
+// Load all theme functions.
 require_once __DIR__ . '/search_api.theme.inc';
+// Load Views hook implementations.
+require_once __DIR__ . '/search_api.views_hooks.inc';
 
 /**
  * Implements hook_help().
@@ -117,7 +118,7 @@ function search_api_cron() {
           if ($num) {
             $variables = [
               '@num' => $num,
-              '%name' => $index->label(),
+              '%name' => $index->label() ?? $index->id(),
             ];
             \Drupal::service('logger.channel.search_api')->info('Indexed @num items for index %name.', $variables);
           }
@@ -127,7 +128,7 @@ function search_api_cron() {
           // Therefore, don't index for any index on this server.
           $ignored_servers[$index->getServerId()] = TRUE;
           $vars['%index'] = $index->label();
-          watchdog_exception('search_api', $e, '%type while trying to index items on %index: @message in %function (line %line of %file).', $vars);
+          Error::logException(\Drupal::logger('search_api'), $e, '%type while trying to index items on %index: @message in %function (line %line of %file).', $vars);
         }
       }
       if (!$num) {
@@ -144,6 +145,7 @@ function search_api_cron() {
  * Implements hook_hook_info().
  */
 function search_api_hook_info() {
+  // @todo Remove once we depend on Drupal 12.0+.
   $hooks = [
     'search_api_backend_info_alter',
     'search_api_server_features_alter',
@@ -440,15 +442,15 @@ function search_api_view_presave(ViewEntityInterface $view) {
       if (($display['display_options']['query']['type'] ?? '') === 'views_query') {
         $displays[$id]['display_options']['query']['type'] = 'search_api_query';
       }
-      if (in_array($display['display_options']['cache']['type'] ?? '', ['tag', 'time'])) {
-        $displays[$id]['display_options']['cache']['type'] = 'none';
+      if (in_array($display['display_options']['cache']['type'] ?? '', ['none', 'tag', 'time'])) {
+        $displays[$id]['display_options']['cache']['type'] = 'search_api_none';
         $changed_cache = TRUE;
       }
     }
     $view->set('display', $displays);
 
     if ($changed_cache) {
-      $warning = t('The selected caching mechanism does not work with views on Search API indexes. Please either use one of the Search API-specific caching options or "None". Caching was turned off for this view.');
+      $warning = t('The selected caching mechanism does not work with views on Search API indexes. Use one of the Search API-specific caching options. The selected caching mechanism was changed accordingly for the view %view.', ['%view' => $view->label()]);
       \Drupal::messenger()->addWarning($warning);
     }
   }
@@ -540,6 +542,7 @@ function search_api_form_views_ui_edit_display_form_alter(&$form, FormStateInter
   // Disable Views' default caching mechanisms on Search API views.
   $displays = $form_state->getStorage()['view']->get('display');
   if ($displays['default']['display_options']['query']['type'] === 'search_api_query') {
+    unset($form['options']['cache']['type']['#options']['none']);
     unset($form['options']['cache']['type']['#options']['tag']);
     unset($form['options']['cache']['type']['#options']['time']);
   }

@@ -103,7 +103,7 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @var array
    */
-  public $orderby = [];
+  public $orderby = NULL;
 
   /**
    * The conjunction with which multiple filter groups are combined.
@@ -161,13 +161,13 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @param string $table
    *   The Views base table ID.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entity_type_manager
    *   (optional) The entity type manager to use.
    *
    * @return \Drupal\search_api\IndexInterface|null
    *   The requested search index, or NULL if it could not be found and loaded.
    */
-  public static function getIndexFromTable($table, EntityTypeManagerInterface $entity_type_manager = NULL) {
+  public static function getIndexFromTable($table, ?EntityTypeManagerInterface $entity_type_manager = NULL) {
     // @todo Instead use Views::viewsData() – injected, too – to load the base
     //   table definition and use the "index" (or maybe rename to
     //   "search_api_index") field from there.
@@ -267,7 +267,7 @@ class SearchApiQuery extends QueryPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     try {
       parent::init($view, $display, $options);
       $this->index = static::getIndexFromTable($view->storage->get('base_table'));
@@ -640,7 +640,7 @@ class SearchApiQuery extends QueryPluginBase {
     }
     catch (\Exception $e) {
       $this->abort($e->getMessage());
-      // Recursion to get the same error behaviour as above.
+      // Recursion to get the same error behavior as above.
       $this->execute($view);
     }
   }
@@ -951,7 +951,7 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @see \Drupal\search_api\Query\QueryInterface::setLanguages()
    */
-  public function setLanguages(array $languages = NULL) {
+  public function setLanguages(?array $languages = NULL) {
     if (!$this->shouldAbort()) {
       $this->query->setLanguages($languages);
     }
@@ -1030,7 +1030,7 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @see \Drupal\search_api\Query\QueryInterface::setFulltextFields()
    */
-  public function setFulltextFields(array $fields = NULL) {
+  public function setFulltextFields(?array $fields = NULL) {
     if (!$this->shouldAbort()) {
       $this->query->setFulltextFields($fields);
     }
@@ -1359,7 +1359,7 @@ class SearchApiQuery extends QueryPluginBase {
         }
       }
       else {
-        $variables['%server'] = $server->label();
+        $variables['%server'] = $server->label() ?? $server->id();
         $this->getLogger()->warning('Tried to sort results randomly on server %server which does not support random sorting.', $variables);
       }
     }

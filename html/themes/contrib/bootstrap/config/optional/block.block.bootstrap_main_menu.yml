@@ -9,16 +9,16 @@ dependencies:
     - bootstrap
 id: bootstrap_main_menu
 theme: bootstrap
-region: navigation_collapsible
-weight: 10
+region: primary_menu
+weight: -6
 provider: null
 plugin: 'system_menu_block:main'
 settings:
   id: 'system_menu_block:main'
   label: 'Main navigation'
-  provider: system
   label_display: '0'
+  provider: system
   level: 1
   depth: 2
-  expand_all_items: false
+  expand_all_items: true
 visibility: {  }

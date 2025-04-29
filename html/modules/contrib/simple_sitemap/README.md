@@ -15,9 +15,12 @@ Author and maintainer: Pawel Ginalski (gbyte)
  * Drupal: https://www.drupal.org/u/gbyte
  * Homepage: https://gbyte.dev/
 
-The module generates multilingual XML sitemaps which adhere to Google's new
-hreflang standard. Out of the box the sitemaps index most of Drupal's
-content entity types including:
+The module generates standard-compliant hreflang XML sitemaps to enhance your
+site's SEO, notifies search engines of website changes via IndexNow and sitemap
+ping protocols, and provides a framework for developing other sitemap types.
+
+The multilingual XML sitemaps adhere to Google's new hreflang standard. Out of
+the box the sitemaps index most of Drupal's content entity types including:
 
  * nodes
  * taxonomy terms
@@ -25,8 +28,8 @@ content entity types including:
  * users
  * ...
 
-Contributed entity types like commerce products can be indexed
-as well. On top of that custom links and view pages can be added to sitemaps.
+Contributed entity types like commerce products can be indexed as well. On top
+of that custom links and view pages can be added to sitemaps.
 
 To learn about XML sitemaps, see https://en.wikipedia.org/wiki/Sitemaps.
 
@@ -42,21 +45,25 @@ for instructions on how to install or update Drupal modules.
 
 ### PERMISSIONS ###
 
-The module permission 'administer sitemap settings' can be configured under
-admin/people/permissions.
+The module permissions can be configured under
+admin/people/permissions/module/simple_sitemap.
 
-### SITEMAP VARIANTS ###
+### SITEMAPS ###
 
 It is possible to have several sitemap instances of different sitemap types with
-specific links accessible under certain URLs. These sitemap variants can be
+specific links accessible under certain URLs. These sitemaps can be
 configured under admin/config/search/simplesitemap. The module comes with the
 default sitemap 'default' which is accessible under /sitemap.xml by default.
 
-There is also the 'sitemap index' variant which is disabled by default and which
-can be used to index all other variants. If there are multiple sitemap variants
-it may make sense to enable the sitemap index variant and make it available
-under /sitemap.xml by setting it as the default variant in the module's
-settings.
+#### SITEMAP INDEX ####
+
+There is also the 'sitemap index' sitemap which is disabled by default and which
+can be used to index all other sitemaps.
+
+If one wanted to create an index of all sitemaps, one would enable the sitemap
+index, move it to the end in the sitemap list (admin/config/search/simplesitemap)
+and set it as the default sitemap (admin/config/search/simplesitemap/settings).
+Now links to all sitemaps will be available under /sitemap.xml.
 
 ### SITEMAP TYPES ###
 
@@ -72,7 +79,7 @@ Initially only the home page is indexed in the default sitemap. To
 include content into a sitemap, visit
 admin/config/search/simplesitemap/entities to enable support for entity types
 of your choosing. After enabling support for an entity type, indexation settings
-for each sitemap variant can be set by pressing 'Configure'. For entity type
+for each sitemap can be set by pressing 'Configure'. For entity type
 bundles, one can optionally set the indexation settings right on the bundle's
 configuration pages, e.g. admin/structure/types/manage/[content type] for nodes.
 
@@ -103,7 +110,7 @@ checks for links added through the module's hooks (see below).
 To index views, enable the included, optional module Simple XML Sitemap (Views)
 (simple_sitemap_views).
 
-Simple views as well as views with arguments can be indexed on a per-variant
+Simple views as well as views with arguments can be indexed on a per-sitemap
 basis on the view edit page. For views with arguments, links to all view
 variants will be included in the sitemap.
 
@@ -122,10 +129,13 @@ admin/config/search/simplesitemap/engines/settings to set it up.
 
 #### SITEMAP SUBMISSION ####
 
-It is possible to have the module automatically submit specific sitemap
-variants to search engines. Google is preconfigured and new engines can be added
-programmatically via simple_sitemap_engine entities. Specific sitemap variants
-can be submitted to specific search engines, the time interval is configurable.
+It is possible to have the module automatically submit specific sitemaps to search
+engines. New engines can be added programmatically via simple_sitemap_engine
+entities. Specific sitemaps can be submitted to specific search engines,
+the time interval is configurable.
+
+The industry is deprecating the sitemap ping protocol; use the IndexNow protocol
+if applicable.
 
 #### INDEXNOW SUBMISSION ####
 
@@ -153,7 +163,7 @@ Further things that can be tweaked are unchecking 'Exclude duplicate links' and
 increasing 'Maximum links in a sitemap'.
 
 These settings will increase the demand for PHP  execution time and memory, so
-please make sure to test the sitemap generation behaviour. See
+please make sure to test the sitemap generation behavior. See
 'PERFORMANCE TEST'.
 
 ### OTHER SETTINGS ###
@@ -162,7 +172,7 @@ Other settings can be found under admin/config/search/simplesitemap/settings.
 
 ## USAGE ##
 
-The sitemaps are accessible to the whole world under [variant name]/sitemap.xml.
+The sitemaps are accessible to the whole world under [sitemap]/sitemap.xml.
 Additionally, the default sitemap is accessible under /sitemap.xml. To view the
 XML source, press ctrl+u.
 
@@ -173,16 +183,16 @@ A manual generation is possible on admin/config/search/simplesitemap. This is
 also the place that shows the overall and sitemap specific generation status.
 
 The sitemap can also be generated via drush:
- * `simple-sitemap:generate` or `ssg`: Generates the sitemap (continues
-   generating from queue, or rebuilds queue for all variants beforehand if
+ * `simple-sitemap:generate` or `ssg`: Generates the sitemaps (continues
+   generating from queue, or rebuilds queue for all sitemaps beforehand if
    nothing is queued).
 
  * `simple-sitemap:rebuild-queue` or `ssr`: Deletes the queue and queues elements
-   for all or specific sitemap variants. Add `--variants` flag and specify a
-   comma separated list of variants if you intend to queue only specific
-   sitemap variants for the upcoming generation.
+   for all or specific sitemaps. Add `--variants` flag and specify a
+   comma separated list of sitemaps if you intend to queue only specific
+   sitemaps for the upcoming generation.
 
-Generation of hundreds of thousands of links can take time. Each variant gets
+Generation of hundreds of thousands of links can take time. Each sitemap gets
 published as soon as all of its links have been generated. The previous version
 of the sitemap is accessible during the generation process.
 
@@ -247,7 +257,7 @@ These service methods can be used/chained like so:
 /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
 $generator = \Drupal::service('simple_sitemap.generator');
 
-// Set some random settings (global, not sitemap variant specific).
+// Set some random settings (global, not sitemap specific).
 if ($generator->getSetting('cron_generate')) {
   $generator
     ->saveSetting('generate_duration', 20000)
@@ -258,15 +268,15 @@ if ($generator->getSetting('cron_generate')) {
 $generator
   ->entityManager()
   ->enableEntityType('node')
-  ->setVariants(['default', 'test']) // All following operations will concern these sitemap variants.
+  ->setSitemaps(['default', 'test']) // All following operations will concern these sitemaps.
   ->setBundleSettings('node', 'page', ['index' => TRUE, 'priority' => 0.5]);
 
 // Remove all custom links from the 'default' and 'test' sitemaps and Set a
 // custom link to be indexed in the 'test' sitemap.
 $generator
   ->customLinkManager()
-  ->remove() // Remove all custom links from all variants.
-  ->setVariants(['test']) // All following operations will concern these variants.
+  ->remove() // Remove all custom links from all sitemaps.
+  ->setSitemaps(['test']) // All following operations will concern these sitemaps.
   ->add('/some/view/page', ['priority' => 0.5]);
 
 // Queues the 'test' sitemap for generation and generates it.
@@ -303,7 +313,7 @@ and parameters like priority/lastmod/changefreq have to be added manually.
 
 Altering sitemap attributes and sitemap index attributes is possible through the
 use of `hook_simple_sitemap_attributes_alter(&$attributes, $sitemap){}` and
-`hook_simple_sitemap_index_attributes_alter(&$index_attributes, $sitemap_variant){}`.
+`hook_simple_sitemap_index_attributes_alter(&$index_attributes, $sitemap){}`.
 
 Altering URL generators is possible through
 the use of `hook_simple_sitemap_url_generators_alter(&$url_generators){}`.
@@ -331,7 +341,7 @@ This plugin defines a way of generating URLs for a sitemap type.
 
 Note:
 Overwriting the default EntityUrlGenerator for a single entity type is possible
-through the flag "overrides_entity_type" = "[entity_type_to_be_overwritten]" in
+through the flag `"overrides_entity_type" = "[entity_type_to_be_overwritten]"` in
 the settings array of the new generator plugin's annotation. See how the
 EntityUrlGenerator is overwritten by the EntityMenuLinkContentUrlGenerator to
 facilitate a different logic for menu links.

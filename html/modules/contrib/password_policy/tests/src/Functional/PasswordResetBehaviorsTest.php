@@ -69,7 +69,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
   /**
    * Test password reset behaviors.
    */
-  public function testPasswordResetBehaviors() {
+  public function testPasswordResetBehaviors(): void {
 
     // Create user with permission to create policy.
     // Below causes a custom role to be created that has no entity storage.
@@ -142,7 +142,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     // User should be redirected to the user entity edit page after login.
     $this->drupalGet('user/login');
     $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
-    $this->assertSession()->addressEquals($user2->toUrl('edit-form'));
+    $this->assertSession()->addressEquals($user2->toUrl('edit-form')->setAbsolute()->toString());
     $this->drupalLogout();
 
     // Create a new node type.
@@ -161,7 +161,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     // Verify if user tries to go to node, they are forced back.
     $this->drupalGet('user/login');
     $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
-    $this->drupalGet($node->toUrl()->toString());
+    $this->drupalGet('node/' . $node->id());
     $this->assertSession()->addressEquals($user2->toUrl('edit-form')->setAbsolute()->toString());
 
     // Change password.
@@ -177,7 +177,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     self::assertEquals($user_instance->get('field_password_expiration')[0]->value, '0', 'Password expiration field should be empty after changing password');
 
     // Verify if user tries to go to node, they are allowed.
-    $this->drupalGet($node->toUrl()->toString());
+    $this->drupalGet('node/' . $node->id());
     $this->assertSession()->addressEquals($node->toUrl()->setAbsolute(TRUE)->toString());
 
     // Test submitting a node form while expired.

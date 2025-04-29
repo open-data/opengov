@@ -2,8 +2,6 @@
 
 namespace Drupal\metatag_hreflang\Plugin\metatag\Tag;
 
-use Drupal\Component\Utility\Random;
-
 /**
  * A new hreflang tag will be made available for each language.
  *
@@ -42,14 +40,25 @@ class HreflangPerLanguage extends HreflangBase {
    * {@inheritdoc}
    */
   public function getTestFormData(): array {
-    $random = new Random();
+    return [];
 
-    return [
-      // @todo Submitting this value results in the following error:
-      // Drupal\Core\Config\Schema\SchemaIncompleteException: Schema errors for metatag.metatag_defaults.global with the following errors: metatag.metatag_defaults.global:tags.hreflang_per_language:hreflang_en missing schema in Drupal\Core\Config\Development\ConfigSchemaChecker->onConfigSave() (line 94 of core/lib/Drupal/Core/Config/Development/ConfigSchemaChecker.php).
-      
-      // 'hreflang_per_language:hreflang_en' => 'https://www.example.com/' . $random->word(6) . '.html',
-    ];
+    // @todo Submitting this value results in the following error:
+    // Drupal\Core\Config\Schema\SchemaIncompleteException:
+    // Schema errors for metatag.metatag_defaults.global
+    // with the following errors:
+    // metatag.metatag_defaults.global:tags.hreflang_per_language:hreflang_en
+    // missing schema in
+    // Drupal\Core\Config\Development\ConfigSchemaChecker->onConfigSave()
+    // Line 94 of
+    // core/lib/Drupal/Core/Config/Development/ConfigSchemaChecker.php
+    // @code
+    // $random = new Random();
+    // $hreflang = 'https://www.example.com/' . $random->word(6) . '.html';
+    //
+    // return [
+    //   'hreflang_per_language:hreflang_en' => $hreflang,
+    // ];
+    // @endcode
   }
 
   /**

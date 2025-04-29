@@ -74,11 +74,8 @@ function simple_sitemap_requirements($phase) {
  * Implements hook_uninstall().
  */
 function simple_sitemap_uninstall() {
-  \Drupal::state()->deleteMultiple([
-    'simple_sitemap.last_cron_generate',
-    'simple_sitemap.queue_items_initial_amount',
-    'simple_sitemap.queue_stashed_results',
-  ]);
+  \Drupal::keyValue('simple_sitemap')->deleteAll();
+  \Drupal::state()->delete('simple_sitemap.last_cron_generate');
 
   \Drupal::service('queue')
     ->get('simple_sitemap_elements')
@@ -932,6 +929,19 @@ function simple_sitemap_update_8406() {
  */
 function simple_sitemap_update_8407() {
   \Drupal::service('simple_sitemap.queue_worker')->deleteQueue();
+
+  return t('The sitemaps need to be regenerated.');
+}
+
+/**
+ * Delete data from state now that it gets stored to the key/value store.
+ */
+function simple_sitemap_update_8408() {
+  \Drupal::service('simple_sitemap.queue_worker')->deleteQueue();
+  \Drupal::state()->deleteMultiple([
+    'simple_sitemap.queue_items_initial_amount',
+    'simple_sitemap.queue_stashed_results',
+  ]);
 
   return t('The sitemaps need to be regenerated.');
 }

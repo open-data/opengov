@@ -1,0 +1,52 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Dropdown
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: experimental
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+      title: Attributes
+      description: Button attributes.
+    dropdown_text:
+      type: string
+      title: Dropdown text
+    items:
+      type: array
+      title: Dropdown items
+      item:
+        type: object
+        title: Breadcrumb
+        properties:
+          listAttributes:
+            type: Drupal\Core\Template\Attribute
+            title: List attributes
+          attributes:
+            type: Drupal\Core\Template\Attribute
+            title: Link attributes
+          url:
+            type: string
+            title: URL
+          text:
+            type: string
+            title: Text
+
+# Slots always hold arbitrary markup. We know that beforehand, so no need for
+# a schema for slots.
+slots:
+  # The key is the name of the slot. In your template you will use
+  # {% block content %}.
+  dropdown_button:
+    title: Dropdown button
+    required: false
+  dropdown_menu:
+    title: Dropdown menu
+    required: false

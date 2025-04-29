@@ -193,8 +193,11 @@ class HtmlFilter extends FieldsProcessorPluginBase {
    * {@inheritdoc}
    */
   protected function processFieldValue(&$value, $type) {
+    if (!is_string($value)) {
+      return;
+    }
     // Remove invisible content.
-    $text = preg_replace('@<(applet|audio|canvas|command|embed|iframe|map|menu|noembed|noframes|noscript|script|style|svg|video)[^>]*>.*</\1>@siU', ' ', $value);
+    $text = $this->removeInvisibleHtmlElements($value);
     $is_text_type = $this->getDataTypeHelper()->isTextType($type);
     if ($is_text_type) {
       // Let removed tags still delimit words.
@@ -209,6 +212,41 @@ class HtmlFilter extends FieldsProcessorPluginBase {
       $text = strip_tags($text);
       $value = $this->normalizeText(trim($text));
     }
+  }
+
+  /**
+   * Removes all invisible HTML elements (like "script") from the given HTML.
+   *
+   * @param string $html
+   *   The HTML to sanitize.
+   *
+   * @return string
+   *   The same HTML string with all invisible elements completely removed.
+   */
+  protected function removeInvisibleHtmlElements(string $html): string {
+    $regex = '/<(applet|audio|canvas|command|embed|iframe|map|menu|noembed|noframes|noscript|script|style|svg|video)/iU';
+    $result = '';
+    while (preg_match($regex, $html, $matches, PREG_OFFSET_CAPTURE)) {
+      /** @var int $match_pos */
+      $match_pos = $matches[0][1];
+      $result .= substr($html, 0, $match_pos);
+      $closing_angle_bracket_pos = strpos($html, '>', $match_pos + strlen($matches[0][0]));
+      if ($closing_angle_bracket_pos === FALSE) {
+        return $result;
+      }
+      if ($html[$closing_angle_bracket_pos - 1] === '/') {
+        $html = substr($html, $closing_angle_bracket_pos + 1);
+      }
+      else {
+        $end_tag = "</{$matches[1][0]}>";
+        $end_tag_pos = strpos($html, $end_tag, $closing_angle_bracket_pos + 1);
+        if ($end_tag_pos === FALSE) {
+          return $result;
+        }
+        $html = substr($html, $end_tag_pos + strlen($end_tag));
+      }
+    }
+    return $result . $html;
   }
 
   /**
@@ -246,7 +284,44 @@ class HtmlFilter extends FieldsProcessorPluginBase {
       }
     }
 
-    return Html::serialize($dom);
+    return static::serializeHtml($dom);
+  }
+
+  /**
+   * Converts the body of a \DOMDocument back to an HTML snippet.
+   *
+   * The function serializes the body part of a \DOMDocument back to an (X)HTML
+   * snippet. The resulting (X)HTML snippet will be properly formatted to be
+   * compatible with HTML user agents.
+   *
+   * Copied from the Drupal 10.1 version of
+   * \Drupal\Component\Utility\Html::serialize().
+   *
+   * @param \DOMDocument $document
+   *   A \DOMDocument object to serialize, only the tags below the first <body>
+   *   node will be converted.
+   *
+   * @return string
+   *   A valid (X)HTML snippet, as a string.
+   *
+   * @see \Drupal\Component\Utility\Html::serialize()
+   */
+  protected static function serializeHtml(\DOMDocument $document): string {
+    $body_node = $document->getElementsByTagName('body')->item(0);
+    $html = '';
+
+    if ($body_node !== NULL) {
+      foreach ($body_node->getElementsByTagName('script') as $node) {
+        Html::escapeCdataElement($node);
+      }
+      foreach ($body_node->getElementsByTagName('style') as $node) {
+        Html::escapeCdataElement($node, '/*', '*/');
+      }
+      foreach ($body_node->childNodes as $node) {
+        $html .= $document->saveXML($node);
+      }
+    }
+    return $html;
   }
 
   /**

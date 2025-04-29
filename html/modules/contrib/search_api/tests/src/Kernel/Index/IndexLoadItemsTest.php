@@ -92,6 +92,14 @@ class IndexLoadItemsTest extends KernelTestBase {
     $this->assertEquals([$expected_deletions], $args, 'Correct items deleted from tracker.');
     $methods = $this->getCalledMethods('backend');
     $this->assertContains('deleteItems', $methods, 'Unknown items deleted from server.');
+
+    // If the option "delete_on_fail" is set to FALSE, trackItemsDeleted should
+    // not be called.
+    $this->index->setOption('delete_on_fail', FALSE);
+    $items = $this->index->loadItemsMultiple($item_ids);
+    $this->assertEquals($expected_items, $items, 'Expected items loaded from test datasource.');
+    $methods = $this->getCalledMethods('tracker');
+    $this->assertNotContains('trackItemsDeleted', $methods, 'trackItemsDeleted was called despite delete_on_fail.');
   }
 
 }

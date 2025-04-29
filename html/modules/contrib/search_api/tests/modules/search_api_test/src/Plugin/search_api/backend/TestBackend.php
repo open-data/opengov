@@ -219,7 +219,7 @@ class TestBackend extends BackendPluginBase implements PluginFormInterface {
     $indexed = \Drupal::state()->get($key, []);
     /** @var \Drupal\search_api\Item\ItemInterface $item */
     foreach (array_keys($indexed) as $item_id) {
-      list($item_datasource_id) = Utility::splitCombinedId($item_id);
+      [$item_datasource_id] = Utility::splitCombinedId($item_id);
       if ($item_datasource_id == $datasource_id) {
         unset($indexed[$item_id]);
       }

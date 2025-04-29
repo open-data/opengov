@@ -61,6 +61,9 @@ class GoogleAnalyticsBasicTest extends BrowserTestBase {
       'administer modules',
       'administer site configuration',
     ];
+    if (version_compare(\Drupal::VERSION, '10.2.0', '>=')) {
+      $permissions[] = 'access help pages';
+    }
 
     // User to set up google_analytics.
     $this->noSnippetUser = $this->drupalCreateUser($permissions);
@@ -267,7 +270,7 @@ class GoogleAnalyticsBasicTest extends BrowserTestBase {
     // TODO: Workaround to run tests successfully. This feature cannot tested
     // reliable.
     global $cookie_domain;
-    if (count(explode('.', $cookie_domain)) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
+    if (count(explode('.', $cookie_domain ?? '')) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
       $this->assertSession()->responseContains('"cookie_domain":"' . $cookie_domain . '"');
     }
     else {

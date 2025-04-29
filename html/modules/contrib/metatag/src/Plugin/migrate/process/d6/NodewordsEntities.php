@@ -39,7 +39,10 @@ class NodewordsEntities extends ProcessPluginBase {
 
     // Re-shape D6 entries into for D8 entries.
     $old_tags = array_map(static function ($value) {
-      return unserialize($value, ['allowed_classes' => FALSE]);
+      // Shouldn't need to hide the errors, but this started to fail despite
+      // no relevant code changes.
+      // @todo Is there a better way of handling this?
+      return @unserialize($value, ['allowed_classes' => FALSE]);
     }, $value);
 
     foreach ($old_tags as $d6_metatag_name => $metatag_value) {
@@ -347,7 +350,6 @@ class NodewordsEntities extends ProcessPluginBase {
       // @todo 'video:series' => '',
       // @todo 'video:tag' => '',
       // @todo 'video:writer' => '',
-
       // From metatag_opengraph_products.metatag.inc:
       // https://www.drupal.org/project/metatag/issues/2835925
       'product:price:amount' => 'product_price_amount',
@@ -376,7 +378,6 @@ class NodewordsEntities extends ProcessPluginBase {
       // @todo 'product:shipping_weight:units' => '',
       // @todo 'product:expiration_time' => '',
       // @todo 'product:condition' => '',
-
       // Pinterest.
       // @todo '' => 'pinterest_id',
       // @todo '' => 'pinterest_description',
@@ -385,7 +386,6 @@ class NodewordsEntities extends ProcessPluginBase {
       // @todo '' => 'pinterest_media',
       // @todo '' => 'pinterest_nopin',
       // @todo '' => 'pinterest_nosearch',
-
       // From metatag_twitter_cards.metatag.inc:
       'twitter:app:country' => 'twitter_cards_app_store_country',
       'twitter:app:id:googleplay' => 'twitter_cards_app_id_googleplay',

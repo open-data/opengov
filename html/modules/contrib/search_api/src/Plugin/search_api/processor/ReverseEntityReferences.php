@@ -225,7 +225,7 @@ class ReverseEntityReferences extends ProcessorPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getPropertyDefinitions(DatasourceInterface $datasource = NULL) {
+  public function getPropertyDefinitions(?DatasourceInterface $datasource = NULL) {
     $properties = [];
 
     if (!$datasource || !$datasource->getEntityTypeId()) {
@@ -291,7 +291,7 @@ class ReverseEntityReferences extends ProcessorPluginBase {
     $prefix_length = strlen($prefix);
     foreach ($item->getFields() as $field) {
       $property_path = $field->getPropertyPath();
-      list($direct, $nested) = Utility::splitPropertyPath($property_path, FALSE);
+      [$direct, $nested] = Utility::splitPropertyPath($property_path, FALSE);
       if ($field->getDatasourceId() === $datasource_id
           && substr($direct, 0, $prefix_length) === $prefix) {
         $property_name = substr($direct, $prefix_length);

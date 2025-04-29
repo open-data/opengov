@@ -1,0 +1,30 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Tabs
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: experimental
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    items:
+      type: array
+      title: Items
+      item:
+        type: object
+        title: Item
+        properties:
+          uli:
+            type: string
+            title: URL
+          title:
+            type: string
+            title: Title
+          active:
+            type: boolean
+            title: active

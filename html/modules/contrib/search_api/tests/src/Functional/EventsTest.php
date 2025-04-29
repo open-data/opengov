@@ -119,6 +119,7 @@ class EventsTest extends SearchApiBrowserTestBase {
     $this->assertSession()->pageTextContains('Stormy');
 
     // The ItemsIndexed event was invoked.
+    // cspell:disable-next-line
     $this->assertSession()->pageTextContains('Please set me at ease');
 
     // The Reindex event was invoked.

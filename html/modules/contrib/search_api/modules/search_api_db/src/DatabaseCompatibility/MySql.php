@@ -54,7 +54,11 @@ class MySql extends GenericDatabase implements LocationAwareDatabaseInterface {
    * {@inheritdoc}
    */
   public function orderByRandom(SelectInterface $query) {
-    $alias = $query->addExpression('rand()', 'random_order_field');
+    $seed = $query->getMetaData('search_api_random_sort_seed');
+    if (!isset($seed) || !is_numeric($seed)) {
+      $seed = '';
+    }
+    $alias = $query->addExpression("rand($seed)", 'random_order_field');
     $query->orderBy($alias);
   }
 

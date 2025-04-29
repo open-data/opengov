@@ -47,6 +47,7 @@ class HoneypotTestController implements ContainerInjectionInterface {
   public function submitFormPage() {
     $form_state = new FormState();
     $values = [
+      // cspell:ignore robo
       'name' => 'robo-user',
       'mail' => 'robouser@example.com',
       'op' => 'Submit',

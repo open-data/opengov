@@ -1,0 +1,10 @@
+{
+	"name": "drupal/bootstrap_sass",
+	"type": "drupal-theme",
+	"description": "SASS subtheme for Bootstrap Theme.",
+	"homepage": "http://drupal.org/project/bootstrap_sass",
+	"license": "GPL-2.0+",
+	"require": {
+		"drupal/bootstrap": ">=5.1.3"
+	}
+}

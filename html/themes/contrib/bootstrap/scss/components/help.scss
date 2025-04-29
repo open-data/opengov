@@ -1,0 +1,33 @@
+/**
+ * @file
+ * Styles for help messages.
+ */
+
+.block-help {
+	margin-bottom: 1em;
+	padding: 1.26em;
+	word-wrap: break-word;
+	color: inherit;
+	border: 1px solid var(--bs-secondary);
+	background-color: var(--bs-secondary-bg);
+	overflow-wrap: break-word;
+}
+
+.block-help__container {
+	padding-left: 24px;
+	/* LTR */
+	background-image: url(/themes/contrib/bootstrap/images/help.png);
+	background-repeat: no-repeat;
+	background-position: left 4px;
+  /* LTR */
+}
+
+[dir="rtl"] .block-help__container {
+	padding-right: 24px;
+	padding-left: 0;
+	background-position: right 4px;
+}
+
+.block-help__container>*:last-child {
+	margin-bottom: 0;
+}

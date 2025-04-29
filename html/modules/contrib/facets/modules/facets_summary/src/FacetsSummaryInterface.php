@@ -121,6 +121,23 @@ interface FacetsSummaryInterface extends ConfigEntityInterface {
   public function getProcessorConfigs();
 
   /**
+   * Sets the "only visible when facet source is visible" boolean flag.
+   *
+   * @param bool $only_visible_when_facet_source_is_visible
+   *   A boolean flag indicating if the facet should be hidden on a page that
+   *   does not show the facet source.
+   */
+  public function setOnlyVisibleWhenFacetSourceIsVisible($only_visible_when_facet_source_is_visible);
+
+  /**
+   * Returns the "only visible when facet source is visible" boolean flag.
+   *
+   * @return bool
+   *   True when the facet is only shown on a page with the facet source.
+   */
+  public function getOnlyVisibleWhenFacetSourceIsVisible();
+
+  /**
    * Adds a processor for this facet.
    *
    * @param array $processor

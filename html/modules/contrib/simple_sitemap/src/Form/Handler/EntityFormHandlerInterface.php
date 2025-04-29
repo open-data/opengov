@@ -3,8 +3,8 @@
 namespace Drupal\simple_sitemap\Form\Handler;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines an interface for altering an entity form.

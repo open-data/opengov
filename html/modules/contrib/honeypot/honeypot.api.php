@@ -20,8 +20,8 @@
  *   The Form API form to which protections will be added.
  */
 function hook_honeypot_form_protections_alter(array &$options, array $form) {
-  // Add 'time_restriction' protection to 'mymodule-form' if it's not set.
-  if ($form['form_id']['#value'] == 'mymodule_form' && !in_array('time_restriction', $options)) {
+  // Add 'time_restriction' protection to 'my-module-form' if it's not set.
+  if ($form['form_id']['#value'] == 'my-module_form' && !in_array('time_restriction', $options)) {
     $options[] = 'time_restriction';
   }
 }
@@ -40,7 +40,7 @@ function hook_honeypot_form_protections_alter(array &$options, array $form) {
  *   The Form API form to which protections were added.
  */
 function hook_honeypot_add_form_protection(array $options, array $form) {
-  if ($form['form_id']['#value'] == 'mymodule_form') {
+  if ($form['form_id']['#value'] == 'my-module_form') {
     // Do something...
   }
 }
@@ -62,7 +62,7 @@ function hook_honeypot_add_form_protection(array $options, array $form) {
  *   - honeypot_time: If form was completed before the configured time limit.
  */
 function hook_honeypot_reject($form_id, $uid, $type) {
-  if ($form_id == 'mymodule_form') {
+  if ($form_id == 'my-module_form') {
     // Do something...
   }
 }

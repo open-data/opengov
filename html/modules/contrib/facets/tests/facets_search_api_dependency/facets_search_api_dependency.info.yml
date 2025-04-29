@@ -7,8 +7,9 @@ dependencies:
   - search_api:search_api
   - search_api:search_api_test_db
   - drupal:views
+core_version_requirement: ^10.1 || ^11
 
-# Information added by Drupal.org packaging script on 2024-10-09
-version: '2.0.9'
+# Information added by Drupal.org packaging script on 2025-01-03
+version: '3.0.0'
 project: 'facets'
-datestamp: 1728458766
+datestamp: 1735915200

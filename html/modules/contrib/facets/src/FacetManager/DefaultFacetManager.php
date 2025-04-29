@@ -2,8 +2,10 @@
 
 namespace Drupal\facets\FacetManager;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\facets\Event\PostBuildFacet;
 use Drupal\facets\Exception\InvalidProcessorException;
@@ -82,6 +84,13 @@ class DefaultFacetManager {
   protected $builtFacets = [];
 
   /**
+   * The current route match.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  private $routeMatch;
+
+  /**
    * Constructs a new instance of the DefaultFacetManager.
    *
    * @param \Drupal\facets\QueryType\QueryTypePluginManager $query_type_plugin_manager
@@ -92,12 +101,18 @@ class DefaultFacetManager {
    *   The processor plugin manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type plugin manager.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
+   *   The current route match.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(QueryTypePluginManager $query_type_plugin_manager, FacetSourcePluginManager $facet_source_manager, ProcessorPluginManager $processor_plugin_manager, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(QueryTypePluginManager $query_type_plugin_manager, FacetSourcePluginManager $facet_source_manager, ProcessorPluginManager $processor_plugin_manager, EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match) {
     $this->queryTypePluginManager = $query_type_plugin_manager;
     $this->facetSourcePluginManager = $facet_source_manager;
     $this->processorPluginManager = $processor_plugin_manager;
     $this->facetStorage = $entity_type_manager->getStorage('facets_facet');
+    $this->routeMatch = $route_match;
   }
 
   /**
@@ -110,6 +125,8 @@ class DefaultFacetManager {
    *   The backend's native query object.
    * @param string $facetsource_id
    *   The facet source ID to process.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function alterQuery(&$query, $facetsource_id) {
     $query_is_cacheable = $query instanceof RefinableCacheableDependencyInterface;
@@ -202,6 +219,8 @@ class DefaultFacetManager {
    *
    * @return \Drupal\facets\FacetInterface[]
    *   An array of enabled facets.
+   *
+   * @throws \Drupal\facets\Exception\InvalidProcessorException
    */
   public function getFacetsByFacetSourceId($facetsource_id) {
     // Immediately initialize the facets.
@@ -384,21 +403,25 @@ class DefaultFacetManager {
    *   Throws an exception when an invalid processor is linked to the facet.
    */
   public function build(FacetInterface $facet) {
+    if ($facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
+      // Block rendering and processing should be stopped when the facet source
+      // is not available on the page. Returning an empty array here is enough
+      // to halt all further processing.
+      $facet_source = $facet->getFacetSource();
+      if (is_null($facet_source) || !$facet_source->isRenderedInCurrentRequest()) {
+        $build = [];
+        $cacheableMetadata = new CacheableMetadata();
+        $cacheableMetadata->addCacheableDependency($facet_source);
+        $cacheableMetadata->applyTo($build);
+        return $build;
+      }
+    }
+
     $built_facet = $this->processBuild($facet);
     // The build process might have returned a previously built and statically
     // cached instance of the facet object. So we need to ensure that the cache
     // metadata is updated on the outer object, too.
     $facet->addCacheableDependency($built_facet);
-
-    if ($built_facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
-      // Block rendering and processing should be stopped when the facet source
-      // is not available on the page. Returning an empty array here is enough
-      // to halt all further processing.
-      $facet_source = $built_facet->getFacetSource();
-      if (is_null($facet_source) || !$facet_source->isRenderedInCurrentRequest()) {
-        return [];
-      }
-    }
 
     // We include this build even if empty, it may contain attached libraries.
     /** @var \Drupal\facets\Widget\WidgetPluginInterface $widget */
@@ -408,38 +431,30 @@ class DefaultFacetManager {
     // settings.
     if (empty($built_facet->getResults())) {
       $empty_behavior = $built_facet->getEmptyBehavior();
-      if ($empty_behavior && $empty_behavior['behavior'] === 'text') {
-        return [
-          [
-            0 => $build,
-            '#type' => 'container',
-            '#attributes' => [
-              'data-drupal-facet-id' => $built_facet->id(),
-              'class' => ['facet-empty'],
+      switch ($empty_behavior['behavior'] ?? '') {
+        case 'text':
+          return [
+            [
+              0 => $build,
+              '#type' => 'container',
+              '#attributes' => [
+                'data-drupal-facet-id' => $built_facet->id(),
+                'class' => ['facet-empty'],
+              ],
+              'empty_text' => [
+                // @codingStandardsIgnoreStart
+                '#markup' => $this->t($empty_behavior['text']),
+                // @codingStandardsIgnoreEnd
+              ],
             ],
-            'empty_text' => [
-              // @codingStandardsIgnoreStart
-              '#markup' => $this->t($empty_behavior['text']),
-              // @codingStandardsIgnoreEnd
-            ],
-          ],
-        ];
-      }
-      else {
-        // If the facet has no results, but it is being rendered trough ajax we
-        // should render a container (that is empty). This is because the
-        // javascript needs to be able to find a div to replace with the new
-        // content.
-        return [
-          [
-            0 => $build,
-            '#type' => 'container',
-            '#attributes' => [
-              'data-drupal-facet-id' => $built_facet->id(),
-              'class' => ['facet-empty', 'facet-hidden'],
-            ],
-          ],
-        ];
+          ];
+
+        case 'none':
+          return [];
+
+        case 'empty':
+        default:
+          return [$build];
       }
     }
 
@@ -451,6 +466,9 @@ class DefaultFacetManager {
    *
    * @param string $facetsource_id
    *   The facet source ID of the currently processed facet.
+   *
+   * @throws \Drupal\facets\Exception\InvalidProcessorException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function updateResults($facetsource_id) {
     $facets = $this->getFacetsByFacetSourceId($facetsource_id);
@@ -477,6 +495,8 @@ class DefaultFacetManager {
    *
    * @return \Drupal\facets\FacetInterface|null
    *   The updated facet if it exists, NULL otherwise.
+   *
+   * @throws \Drupal\facets\Exception\InvalidProcessorException
    */
   public function returnProcessedFacet(FacetInterface $facet) {
     $this->processFacets($facet->getFacetSourceId());

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\honeypot\Functional;
 
+use Drupal\Tests\BrowserTestBase;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\contact\Entity\ContactForm;
-use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
@@ -94,7 +96,7 @@ class HoneypotFormCacheTest extends BrowserTestBase {
 
     // Test on cache header with time limit enabled, cache should miss.
     $this->drupalGet('contact/feedback');
-    $assert->responseHeaderEquals('X-Drupal-Cache', NULL);
+    $assert->responseHeaderNotEquals('X-Drupal-Cache', 'HIT');
 
     // Disable time limit.
     \Drupal::configFactory()->getEditable('honeypot.settings')->set('time_limit', 0)->save();
@@ -108,7 +110,7 @@ class HoneypotFormCacheTest extends BrowserTestBase {
     // Re-enable the time limit, we should not be seeing the cached version.
     \Drupal::configFactory()->getEditable('honeypot.settings')->set('time_limit', 5)->save();
     $this->drupalGet('contact/feedback');
-    $assert->responseHeaderEquals('X-Drupal-Cache', NULL);
+    $assert->responseHeaderNotEquals('X-Drupal-Cache', 'HIT');
   }
 
   /**
@@ -135,7 +137,7 @@ class HoneypotFormCacheTest extends BrowserTestBase {
 
     // Test on cache header with time limit enabled, cache should miss.
     $this->drupalGet('node/' . $this->node->id());
-    $assert->responseHeaderEquals('X-Drupal-Cache', NULL);
+    $assert->responseHeaderNotEquals('X-Drupal-Cache', 'HIT');
 
     // Disable time limit.
     \Drupal::configFactory()->getEditable('honeypot.settings')->set('time_limit', 0)->save();

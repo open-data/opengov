@@ -361,6 +361,16 @@ the page check, to see if the html.html.twig instead contains this:
 To fix this, simply change that line back to `{{ page }}` and it should work.
 
 
+## Contributing
+
+The `composer.json` file should be kept normalized using
+`ergebnis/composer-normalize`:
+
+* `composer require --dev ergebnis/composer-normalize`
+* `composer normalize modules/contrib/metatag/composer.json`
+
+
+
 ## Maintainers / credits / contact
 
 Currently maintained by [Damien
