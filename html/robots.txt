@@ -49,15 +49,35 @@ Disallow: /themes/README.txt
 Disallow: /web.config
 # Paths (clean URLs)
 Disallow: /admin/
+Disallow: /en/admin/
+Disallow: /fr/admin/
 Disallow: /comment/reply/
+Disallow: /en/comment/reply/
+Disallow: /fr/comment/reply/
 Disallow: /filter/tips
+Disallow: /en/filter/tips
+Disallow: /fr/filter/tips
 Disallow: /node/add/
+Disallow: /en/node/add/
+Disallow: /fr/node/add/
 Disallow: /search/
+Disallow: /en/search/
+Disallow: /fr/search/
 Disallow: /user/register
+Disallow: /en/user/register
+Disallow: /fr/user/register
 Disallow: /user/password
+Disallow: /en/user/password
+Disallow: /fr/user/password
 Disallow: /user/login
+Disallow: /en/user/login
+Disallow: /fr/user/login
 Disallow: /user/logout
+Disallow: /en/user/logout
+Disallow: /fr/user/logout
 Disallow: /media/oembed
+Disallow: /en/media/oembed
+Disallow: /fr/media/oembed
 Disallow: /*/media/oembed
 # Paths (no clean URLs)
 Disallow: /index.php/admin/
