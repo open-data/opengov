@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Drupal\Tests\honeypot\FunctionalJavascript;
 
 use Drupal\Tests\file\FunctionalJavascript\FileFieldWidgetTest;

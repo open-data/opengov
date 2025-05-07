@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Drupal\Tests\honeypot\Unit\Integration\Event;
 
 /**
@@ -10,6 +8,8 @@ namespace Drupal\Tests\honeypot\Unit\Integration\Event;
  * @coversDefaultClass \Drupal\honeypot\Event\HoneypotRejectEvent
  *
  * @group honeypot
+ *
+ * @requires module rules
  */
 class HoneypotRejectEventTest extends EventTestBase {
 

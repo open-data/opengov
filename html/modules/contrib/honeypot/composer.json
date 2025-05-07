@@ -17,10 +17,9 @@
         "source": "https://git.drupalcode.org/project/honeypot"
     },
     "require": {
-        "drupal/core": "^10.3 || ^11"
+        "drupal/core": "^9.2 || ^10"
     },
     "require-dev": {
-        "drupal/rules": "^4.0",
-        "drupal/webform": "^6.2"
+        "drupal/rules": "^3.x-dev"
     }
 }

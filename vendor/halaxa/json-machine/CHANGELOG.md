@@ -12,6 +12,12 @@ Nothing yet
 
 <br>
 
+## 1.2.2 - 2025-04-30
+### Changed
+- Leaner release package (#124). Thanks [@bahco](https://github.com/robotomarvin)
+
+<br>
+
 ## 1.2.1 - 2025-04-25
 ### Fixed
 - File autoloading without composer (#122). Thanks [@bahco](https://github.com/bahco)
