@@ -45,7 +45,7 @@ class SearchApiEntityField extends EntityField {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     // Prepare our fallback handler.
     $fallback_handler_id = $this->definition['fallback_handler'] ?? 'search_api';
     $this->fallbackHandler = Views::handlerManager('field')
@@ -85,8 +85,8 @@ class SearchApiEntityField extends EntityField {
   public function getParentPath() {
     if (!isset($this->parentPath)) {
       $combined_property_path = $this->getCombinedPropertyPath();
-      list(, $property_path) = Utility::splitCombinedId($combined_property_path);
-      list($this->parentPath) = Utility::splitPropertyPath($property_path);
+      [, $property_path] = Utility::splitCombinedId($combined_property_path);
+      [$this->parentPath] = Utility::splitPropertyPath($property_path);
     }
 
     return $this->parentPath;

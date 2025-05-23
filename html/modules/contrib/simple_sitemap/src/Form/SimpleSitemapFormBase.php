@@ -3,16 +3,19 @@
 namespace Drupal\simple_sitemap\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\simple_sitemap\Settings;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\Core\DependencyInjection\AutowireTrait;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\simple_sitemap\Manager\Generator;
+use Drupal\simple_sitemap\Settings;
 
 /**
  * Base class for Simple XML Sitemap forms.
  */
 abstract class SimpleSitemapFormBase extends ConfigFormBase {
+
+  use AutowireTrait;
 
   /**
    * The sitemap generator service.
@@ -40,6 +43,8 @@ abstract class SimpleSitemapFormBase extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   The typed config manager.
    * @param \Drupal\simple_sitemap\Manager\Generator $generator
    *   The sitemap generator service.
    * @param \Drupal\simple_sitemap\Settings $settings
@@ -49,27 +54,16 @@ abstract class SimpleSitemapFormBase extends ConfigFormBase {
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
+    TypedConfigManagerInterface $typedConfigManager,
     Generator $generator,
     Settings $settings,
-    FormHelper $form_helper
+    FormHelper $form_helper,
   ) {
     $this->generator = $generator;
     $this->settings = $settings;
     $this->formHelper = $form_helper;
 
-    parent::__construct($config_factory);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('simple_sitemap.generator'),
-      $container->get('simple_sitemap.settings'),
-      $container->get('simple_sitemap.form_helper')
-    );
+    parent::__construct($config_factory, $typedConfigManager);
   }
 
   /**

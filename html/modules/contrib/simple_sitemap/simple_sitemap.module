@@ -5,12 +5,12 @@
  * Main module file containing hooks.
  */
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\language\ConfigurableLanguageInterface;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\system\MenuInterface;
-use Drupal\language\ConfigurableLanguageInterface;
 
 /**
  * Implements hook_help().

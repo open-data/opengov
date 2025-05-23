@@ -4,6 +4,7 @@ namespace Drupal\search_api;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
@@ -169,6 +170,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
     $row = parent::buildRow($entity);
 
     $status = $entity->status();
+    $url = $entity->toUrl('canonical');
     $row = [
       'data' => [
         'type' => [
@@ -179,7 +181,9 @@ class IndexListBuilder extends ConfigEntityListBuilder {
           'data' => [
             '#type' => 'link',
             '#title' => $entity->label(),
-          ] + $entity->toUrl('canonical')->toRenderArray(),
+            '#url' => $url,
+            '#options' => $url->getOptions(),
+          ],
           'class' => ['search-api-title'],
         ],
         'status' => [
@@ -198,7 +202,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
 
     $description = $entity->get('description');
     if ($description) {
-      $row['data']['title']['data']['#suffix'] = '<div class="description">' . $description . '</div>';
+      $row['data']['title']['data']['#suffix'] = '<div class="description">' . Xss::filterAdmin($description) . '</div>';
     }
 
     if ($status

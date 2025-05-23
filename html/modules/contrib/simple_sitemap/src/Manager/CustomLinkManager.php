@@ -2,8 +2,8 @@
 
 namespace Drupal\simple_sitemap\Manager;
 
-use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\simple_sitemap\Entity\SimpleSitemap;
 
 /**
@@ -48,7 +48,7 @@ class CustomLinkManager implements SitemapGetterInterface {
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
-    PathValidatorInterface $path_validator
+    PathValidatorInterface $path_validator,
   ) {
     $this->configFactory = $config_factory;
     $this->pathValidator = $path_validator;
@@ -190,7 +190,7 @@ class CustomLinkManager implements SitemapGetterInterface {
   /**
    * Gets all compatible sitemaps.
    *
-   * @return \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   * @return \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[]
    *   Array of sitemaps of a type that implements a custom URL
    *   generator.
    */

@@ -63,6 +63,27 @@ fontawesome.settings:
       type: boolean
       label: 'Use the Font Awesome custom icons file'
 
+# Field instance.
+field.field_settings.fontawesome_icon:
+  type: mapping
+  label: 'Font Awesome Icon field settings'
+
+# Default value.
+field.value.fontawesome_icon:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    icon_name:
+      type: string
+      label: 'Icon name'
+    settings:
+      type: string
+      label: 'Serialized settings'
+    style:
+      type: string
+      label: 'Style'
+
+# Field formatter.
 field.formatter.settings.fontawesome_icon_formatter:
   type: mapping
   label: 'Font Awesome Icon formatter settings'
@@ -70,3 +91,8 @@ field.formatter.settings.fontawesome_icon_formatter:
     layers:
       type: boolean
       label: 'Display multi-value fields as layers?'
+
+# Field widget.
+field.widget.settings.fontawesome_icon_widget:
+  type: mapping
+  label: 'Font Awesome Icon widget settings'

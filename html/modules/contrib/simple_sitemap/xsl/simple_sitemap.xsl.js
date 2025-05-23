@@ -1,19 +1,16 @@
 /**
  * @file
- * Alters jquery.tablesorter behaviour.
+ * Alters jquery.tablesorter behavior.
  */
 
-(function ($) {
-
-  'use strict';
-
+(($) => {
   $.tablesorter.addParser({
     // Set a unique id.
     id: 'changefreq',
-    is: function (s) {
+    is() {
       return false;
     },
-    format: function (s) {
+    format(s) {
       switch (s) {
         case 'always':
           return 0;
@@ -37,33 +34,31 @@
           return 6;
       }
     },
-    type: 'numeric'
+    type: 'numeric',
   });
 
-  $(document).ready(function () {
+  document.addEventListener('DOMContentLoaded', () => {
     // Set some location variables.
-    var $h1 = $('h1');
-    $h1.text($h1.text() + ': ' + location);
-    document.title = $h1.text();
+    const h1 = document.querySelector('h1');
+    h1.textContent = `${h1.textContent}: ${window.location}`;
+    document.title = h1.textContent;
 
-    var $table = $('table');
-    var options = {widgets: ['zebra']};
+    const $table = $('table');
+    const options = { widgets: ['zebra'] };
 
     if ($table.hasClass('index')) {
       // Options for sitemap index table.
       options.sortList = [[0, 0]];
-    }
-    else {
+    } else {
       // Options for sitemap table.
       options.sortList = [[3, 1]];
       options.headers = {
-        2: {sorter: 'changefreq'},
-        4: {sorter: false },
-        5: {sorter: false }
+        2: { sorter: 'changefreq' },
+        4: { sorter: false },
+        5: { sorter: false },
       };
     }
 
     $table.tablesorter(options);
   });
-
 })(jQuery);

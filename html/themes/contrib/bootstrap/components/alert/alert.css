@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Visual styles for comments in Bootstrap.
+ */
+
+.alert-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 75vh;
+  z-index: 9999;
+}
+
+.alert-wrapper .alert {
+  overflow-y: auto;
+  margin-bottom: 0;
+}
+
+.toast-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+.alert svg {
+  max-width: 2rem;
+}

@@ -45,6 +45,7 @@ abstract class FacetSummaryResourceTestBase extends EntityResourceTestBase {
     $entity->set('id', 'tapir')
       ->set('name', 'Tapir')
       ->set('uuid', 'tapir-uuid')
+      ->set('only_visible_when_facet_source_is_visible', FALSE)
       ->save();
 
     return $entity;
@@ -64,6 +65,7 @@ abstract class FacetSummaryResourceTestBase extends EntityResourceTestBase {
       'processor_configs' => [],
       'status' => TRUE,
       'uuid' => 'tapir-uuid',
+      'only_visible_when_facet_source_is_visible' => FALSE,
     ];
   }
 

@@ -1,0 +1,31 @@
+
+<div {{ attributes.addClass(classes) }}>
+  <ul class="nav nav-tabs" id="{{'tab-' ~ id}}" role="tablist">
+    {% for key, item in items %}
+      {%
+        set tabs_classes = [
+          'nav-link',
+          item.show ? 'active',
+        ]
+      %}
+      <li class="nav-item" role="presentation">
+        <button class="{{ tabs_classes | join(' ') }}" id="{{'tab-' ~ id ~ '-' ~ key}}" data-bs-toggle="tab" data-bs-target="{{'#body-tab-' ~ id ~ '-' ~ key}}" type="button" role="tab" aria-controls="home" aria-selected="{{ item.show ? 'true' : 'false' }}">{{item.header}}</button>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="tab-content" id="{{id ~ '-tab-content'}}">
+    {% for key, item in items %}
+      {%
+        set item_classes = [
+          'tab-pane',
+          'fade',
+          item.show ? 'show',
+          item.show ? 'active',
+        ]
+      %}
+      <div class="{{ item_classes | join(' ') }}" id="{{'body-tab-' ~ id ~ '-' ~ key}}" role="tabpanel" aria-labelledby="{{'tab-' ~ id ~ '-' ~ key}}">
+        {{ item.body | raw }}
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\facets_searchbox_widget\tests\Unit\Plugin\widget;
+namespace Drupal\Tests\facets_searchbox_widget\Unit\Plugin\widget;
 
 use Drupal\facets\Plugin\facets\widget\CheckboxWidget;
 use Drupal\Tests\facets\Unit\Plugin\widget\CheckboxWidgetTest;
@@ -17,6 +17,8 @@ class SearchboxCheckboxWidgetTest extends CheckboxWidgetTest {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    $this->widget = new CheckboxWidget(['show_numbers' => TRUE], 'checkbox_widget', []);
   }
 
   /**

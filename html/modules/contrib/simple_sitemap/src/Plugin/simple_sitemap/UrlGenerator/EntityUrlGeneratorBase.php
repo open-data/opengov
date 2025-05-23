@@ -12,6 +12,7 @@ use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\media\MediaInterface;
 use Drupal\paragraphs\ParagraphInterface;
+use Drupal\paragraphs_library\LibraryItemInterface;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Exception\SkipElementException;
 use Drupal\simple_sitemap\Logger;
@@ -87,7 +88,7 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
     Settings $settings,
     LanguageManagerInterface $language_manager,
     EntityTypeManagerInterface $entity_type_manager,
-    EntityHelper $entity_helper
+    EntityHelper $entity_helper,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $logger, $settings);
     $this->languages = $language_manager->getLanguages();
@@ -118,7 +119,7 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
    *
    * @param array $path_data
    *   The path data.
-   * @param \Drupal\Core\Url $url_object
+   * @param \Drupal\Core\Url $url
    *   The URL object.
    *
    * @return array
@@ -127,17 +128,17 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getUrlVariants(array $path_data, Url $url_object): array {
+  protected function getUrlVariants(array $path_data, Url $url): array {
     $url_variants = [];
 
-    if (!$this->sitemap->isMultilingual() || !$url_object->isRouted()) {
+    if (!$this->sitemap->isMultilingual() || !$url->isRouted()) {
 
       // Not a routed URL or URL language negotiation disabled: Including only
       // default variant.
-      $alternate_urls = $this->getAlternateUrlsForDefaultLanguage($url_object);
+      $alternate_urls = $this->getAlternateUrlsForDefaultLanguage($url);
     }
     elseif ($this->settings->get('skip_untranslated')
-      && ($entity = $this->entityHelper->getEntityFromUrlObject($url_object)) instanceof ContentEntityInterface) {
+      && ($entity = $this->entityHelper->getEntityFromUrlObject($url)) instanceof ContentEntityInterface) {
 
       /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
       $translation_languages = $entity->getTranslationLanguages();
@@ -145,22 +146,22 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
         || isset($translation_languages[LanguageInterface::LANGCODE_NOT_APPLICABLE])) {
 
         // Content entity's language is unknown: Including only default variant.
-        $alternate_urls = $this->getAlternateUrlsForDefaultLanguage($url_object);
+        $alternate_urls = $this->getAlternateUrlsForDefaultLanguage($url);
       }
       else {
         // Including only translated variants of content entity.
-        $alternate_urls = $this->getAlternateUrlsForTranslatedLanguages($entity, $url_object);
+        $alternate_urls = $this->getAlternateUrlsForTranslatedLanguages($entity, $url);
       }
     }
     else {
       // Not a content entity or including all untranslated variants.
-      $alternate_urls = $this->getAlternateUrlsForAllLanguages($url_object);
+      $alternate_urls = $this->getAlternateUrlsForAllLanguages($url);
     }
 
-    foreach ($alternate_urls as $langcode => $url) {
+    foreach ($alternate_urls as $langcode => $base_url) {
       $url_variants[] = $path_data + [
         'langcode' => $langcode,
-        'url' => $url,
+        'url' => $base_url,
         'alternate_urls' => $alternate_urls,
       ];
     }
@@ -171,16 +172,16 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
   /**
    * Gets the alternate URLs for default language.
    *
-   * @param \Drupal\Core\Url $url_object
+   * @param \Drupal\Core\Url $url
    *   The URL object.
    *
    * @return array
    *   An array of alternate URLs.
    */
-  protected function getAlternateUrlsForDefaultLanguage(Url $url_object): array {
+  protected function getAlternateUrlsForDefaultLanguage(Url $url): array {
     $alternate_urls = [];
-    if ($url_object->access($this->anonUser)) {
-      $alternate_urls[$this->defaultLanguageId] = $this->replaceBaseUrlWithCustom($url_object
+    if ($url->access($this->anonUser)) {
+      $alternate_urls[$this->defaultLanguageId] = $this->replaceBaseUrlWithCustom($url
         ->setAbsolute()->setOption('language', $this->languages[$this->defaultLanguageId])->toString()
       );
     }
@@ -193,19 +194,19 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to process.
-   * @param \Drupal\Core\Url $url_object
+   * @param \Drupal\Core\Url $url
    *   The URL object.
    *
    * @return array
    *   An array of alternate URLs.
    */
-  protected function getAlternateUrlsForTranslatedLanguages(ContentEntityInterface $entity, Url $url_object): array {
+  protected function getAlternateUrlsForTranslatedLanguages(ContentEntityInterface $entity, Url $url): array {
     $alternate_urls = [];
 
     foreach ($entity->getTranslationLanguages() as $language) {
       if (!isset($this->settings->get('excluded_languages')[$language->getId()]) || $language->isDefault()) {
         if ($entity->getTranslation($language->getId())->access('view', $this->anonUser)) {
-          $alternate_urls[$language->getId()] = $this->replaceBaseUrlWithCustom($url_object
+          $alternate_urls[$language->getId()] = $this->replaceBaseUrlWithCustom($url
             ->setAbsolute()->setOption('language', $language)->toString()
           );
         }
@@ -218,18 +219,18 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
   /**
    * Gets the alternate URLs for all languages.
    *
-   * @param \Drupal\Core\Url $url_object
+   * @param \Drupal\Core\Url $url
    *   The URL object.
    *
    * @return array
    *   An array of alternate URLs.
    */
-  protected function getAlternateUrlsForAllLanguages(Url $url_object): array {
+  protected function getAlternateUrlsForAllLanguages(Url $url): array {
     $alternate_urls = [];
-    if ($url_object->access($this->anonUser)) {
+    if ($url->access($this->anonUser)) {
       foreach ($this->languages as $language) {
         if (!isset($this->settings->get('excluded_languages')[$language->getId()]) || $language->isDefault()) {
-          $alternate_urls[$language->getId()] = $this->replaceBaseUrlWithCustom($url_object
+          $alternate_urls[$language->getId()] = $this->replaceBaseUrlWithCustom($url
             ->setAbsolute()->setOption('language', $language)->toString()
           );
         }
@@ -249,9 +250,9 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
     try {
       $path_data = $this->processDataSet($data_set);
       if (isset($path_data['url']) && $path_data['url'] instanceof Url) {
-        $url_object = $path_data['url'];
+        $url = $path_data['url'];
         unset($path_data['url']);
-        return $this->getUrlVariants($path_data, $url_object);
+        return $this->getUrlVariants($path_data, $url);
       }
       return [$path_data];
     }
@@ -277,7 +278,7 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
     foreach ($entity->getFields(FALSE) as $field) {
       if ($field instanceof EntityReferenceFieldItemListInterface && !$field->getFieldDefinition()->isReadOnly()) {
         foreach ($field as $item) {
-          if ($item->entity instanceof FileInterface && strpos($item->entity->getMimeType(), 'image/') === 0) {
+          if ($item->entity instanceof FileInterface && str_starts_with($item->entity->getMimeType(), 'image/')) {
             $path = $item->entity->createFileUrl(FALSE);
             if ($path) {
               $image_data[] = [
@@ -287,7 +288,7 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
               ];
             }
           }
-          elseif ($item->entity instanceof MediaInterface || $item->entity instanceof ParagraphInterface) {
+          elseif ($item->entity instanceof MediaInterface || $item->entity instanceof ParagraphInterface || $item->entity instanceof LibraryItemInterface) {
             $image_data = array_merge($image_data, $this->getEntityImageData($item->entity));
           }
         }
@@ -295,6 +296,35 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
     }
 
     return $image_data;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function constructPathData(Url $url, array $settings = []): array {
+    $path_data = parent::constructPathData($url, $settings);
+
+    // For paths based on entities we require the URL object instead of a URL
+    // string so alternate URLs can be calculated later on.
+    $path_data['url'] = $url;
+
+    if (($entity = $this->entityHelper->getEntityFromUrlObject($url)) && $entity instanceof ContentEntityInterface) {
+      if (empty($path_data['lastmod'])) {
+        $path_data['lastmod'] = method_exists($entity, 'getChangedTime') ? date('c', $entity->getChangedTime()) : NULL;
+      }
+      if (empty($path_data['images'])) {
+        $path_data['images'] = !empty($settings['include_images']) ? $this->getEntityImageData($entity) : [];
+      }
+
+      // Additional info useful in hooks.
+      $path_data['meta']['entity_info'] = [
+        'entity_type' => $entity->getEntityTypeId(),
+        'bundle' => $entity->bundle(),
+        'id' => $entity->id(),
+      ];
+    }
+
+    return $path_data;
   }
 
 }

@@ -42,6 +42,7 @@ function honeypot_schema() {
     'indexes' => [
       'uid' => ['uid'],
       'timestamp' => ['timestamp'],
+      'hostname' => ['hostname'],
     ],
   ];
   return $schema;
@@ -73,6 +74,8 @@ function honeypot_uninstall() {
  * Adds the 'hostname' column to the {honeypot_user} table.
  */
 function honeypot_update_8100() {
+  // phpcs:disable
+  //
   // The body of this update function has been removed.
   //
   // hook_update_8100() does not technically comply with the update hook
@@ -82,7 +85,7 @@ function honeypot_update_8100() {
   // is added to conditionally perform the updates that used to be here.
   // - For new sites, update hooks aren't run. The schema will already be
   //   correct upon install.
-  // - For existings sites that have already run hook_update_8100(), the new
+  // - For existing sites that have already run hook_update_8100(), the new
   //   update hook won't make any changes.
   // - For existing sites that try to re-execute hook_update_8100() as
   //   described in https://www.drupal.org/project/honeypot/issues/3121331,
@@ -95,6 +98,8 @@ function honeypot_update_8100() {
   // $spec = $schema['honeypot_user']['fields']['hostname'];
   // $spec['initial'] = '';
   // \Drupal::database()->schema()->addField('honeypot_user', 'hostname', $spec);
+  //
+  // phpcs:enable
 }
 
 /**
@@ -113,13 +118,25 @@ function honeypot_update_8101() {
  * Creates an 'id' column for the {honeypot_user} table to act as a primary key.
  */
 function honeypot_update_8102() {
-  $schema = \Drupal::database()->schema();
-  $schema->addField('honeypot_user', 'id', [
-    'type' => 'serial',
-    'not null' => TRUE,
-    'description' => 'Unique record ID.',
-  ],
-  [
-    'primary key' => ['id'],
-  ]);
+  $schema = honeypot_schema();
+  $spec = $schema['honeypot_user']['fields']['id'];
+  \Drupal::database()->schema()->addField('honeypot_user', 'id', $spec, ['primary key' => ['id']]);
+}
+
+/**
+ * Adds an index on the 'hostname' column for the {honeypot_user} table.
+ */
+function honeypot_update_8103() {
+  $schema = honeypot_schema();
+  $spec = $schema['honeypot_user'];
+  \Drupal::database()->schema()->addIndex('honeypot_user', 'hostname', ['hostname'], $spec);
+}
+
+/**
+ * Flushes the Tour module cache in order to reload Honeypot tour tips.
+ */
+function honeypot_update_8104() {
+  if (\Drupal::moduleHandler()->moduleExists('tour')) {
+    \Drupal::service('plugin.manager.tour.tip')->clearCachedDefinitions();
+  }
 }

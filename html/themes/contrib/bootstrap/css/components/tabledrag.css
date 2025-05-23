@@ -1,0 +1,23 @@
+/**
+ * @file
+ * Visual styles for table drag.
+ */
+
+tr.drag {
+  background-color: #fffff0;
+}
+tr.drag-previous {
+  background-color: #ffd;
+}
+.tabledrag-changed.warning {
+  margin-bottom: 0.5rem;
+  color: var(--bs-warning);
+}
+a.tabledrag-handle .handle {
+  width: 25px;
+  height: 25px;
+}
+.tabledrag-cell-content>* {
+  display: table-cell;
+  vertical-align: middle;
+}

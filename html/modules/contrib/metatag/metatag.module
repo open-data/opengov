@@ -5,6 +5,7 @@
  * Contains metatag.module.
  */
 
+use Drupal\commerce_migrate_commerce\Plugin\migrate\source\commerce1\ProductDisplay;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Component\Serialization\Json;
@@ -16,6 +17,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\migrate\Plugin\migrate\destination\EntityContentBase;
 use Drupal\migrate\Plugin\MigrateSourceInterface;
@@ -28,8 +30,6 @@ use Drupal\taxonomy\Plugin\migrate\source\d7\Term as Term7;
 use Drupal\taxonomy\TermInterface;
 use Drupal\user\Plugin\migrate\source\d6\User as User6;
 use Drupal\user\Plugin\migrate\source\d7\User as User7;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\commerce_migrate_commerce\Plugin\migrate\source\commerce1\ProductDisplay;
 
 /**
  * Implements hook_help().
@@ -94,6 +94,10 @@ function metatag_form_field_config_edit_form_alter(&$form, FormStateInterface $f
     $form['required']['#disabled'] = TRUE;
     $form['default_value']['#access'] = FALSE;
     $form['default_value']['#disabled'] = TRUE;
+
+    // Hide the cardinality field.
+    $form['cardinality_container']['#access'] = FALSE;
+    $form['cardinality_container']['#disabled'] = TRUE;
 
     // Step through the default value structure and erase any '#default_value'
     // items that are found.
@@ -930,7 +934,6 @@ function _metatag_is_migration_plugin_supported(array $definition) {
       'entity:block',
       'entity:block_content',
       'entity:block_content_type',
-      'entity:comment',
       'entity:comment_type',
       'entity:contact_form',
       'entity:date_format',
@@ -950,6 +953,20 @@ function _metatag_is_migration_plugin_supported(array $definition) {
       'shortcut_set_users',
       'url_alias',
       'user_data',
+      // Various contrib modules.
+      'entity:commerce_order',
+      'entity:commerce_payment',
+      'entity:commerce_payment_method',
+      'entity:commerce_promotion',
+      'entity:commerce_promotion_coupon',
+      'entity:commerce_shipment',
+      'entity:commerce_shipping_method',
+      'entity:commerce_stock_location',
+      'entity:linkcheckerlink',
+      'entity:path_alias',
+      'entity:redirect',
+      'entity:salesforce_mapped_object',
+      'entity:webform_submission',
     ];
     if (in_array($definition['destination']['plugin'], $destinations_to_ignore)) {
       return FALSE;

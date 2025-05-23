@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\sug
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\SearchApiException;
@@ -12,12 +13,12 @@ use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
+use Drupal\search_api_solr\Solarium\Autocomplete\Result;
 use Drupal\search_api_solr\SolrAutocompleteBackendTrait;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
 use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
 use Solarium\Component\ComponentAwareQueryInterface;
-use Solarium\Core\Query\Result\ResultInterface;
 
 /**
  * Provides a suggester plugin that retrieves suggestions from the server.
@@ -36,6 +37,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
   use PluginFormTrait;
   use BackendTrait;
   use SolrAutocompleteBackendTrait;
+  use LoggerTrait;
 
   /**
    * {@inheritdoc}
@@ -184,7 +186,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
         $this->filterDuplicateAutocompleteSuggestions($suggestions);
       }
       catch (SearchApiException $e) {
-        watchdog_exception('search_api_solr', $e);
+        $this->logException($e);
       }
     }
 
@@ -258,7 +260,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
   /**
    * Get the term suggestions from the autocomplete query result.
    *
-   * @param \Solarium\Core\Query\Result\ResultInterface $result
+   * @param \Drupal\search_api_solr\Solarium\Autocomplete\Result $result
    *   An autocomplete query result.
    * @param \Drupal\search_api_autocomplete\Suggestion\SuggestionFactory $suggestion_factory
    *   The suggestion factory.
@@ -266,13 +268,12 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
    * @return \Drupal\search_api_autocomplete\Suggestion\SuggestionInterface[]
    *   An array of suggestions.
    */
-  protected function getAutocompleteSuggesterSuggestions(ResultInterface $result, SuggestionFactory $suggestion_factory) {
+  protected function getAutocompleteSuggesterSuggestions(Result $result, SuggestionFactory $suggestion_factory) {
     $suggestions = [];
     if ($phrases_result = $result->getComponent(ComponentAwareQueryInterface::COMPONENT_SUGGESTER)) {
       /** @var \Solarium\Component\Result\Suggester\Result $phrases_result */
       $dictionaries = array_keys($phrases_result->getResults());
       foreach ($phrases_result->getAll() as $dictionary_index => $phrases) {
-        /** @var \Solarium\QueryType\Suggester\Result\Term $phrases */
         foreach ($phrases->getSuggestions() as $phrase) {
           $suggestion = $suggestion_factory->createFromSuggestedKeys($phrase['term']);
           if (method_exists($suggestion, 'setDictionary')) {

@@ -1,0 +1,48 @@
+################
+# GitLabCI template for Drupal projects.
+#
+# This template is designed to give any Contrib maintainer everything they need to test, without requiring modification.
+# The full documentation is on https://project.pages.drupalcode.org/gitlab_templates/
+################
+
+# For information on alternative values for 'ref' see https://project.pages.drupalcode.org/gitlab_templates/info/templates-version/
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+# Require all tests to pass.
+composer-lint:
+  allow_failure: false
+cspell:
+  allow_failure: false
+eslint:
+  allow_failure: false
+phpcs:
+  allow_failure: false
+stylelint:
+  allow_failure: false
+
+################
+# Pipeline configuration variables are defined with default values and descriptions in the file
+# https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.variables.yml
+################
+variables:
+  _CSPELL_WORDS: 'tokenbrowser,edittokenbrowser'
+  # Uncomment these temporarily to test downstream/upstream compatibility if required.
+  #OPT_IN_TEST_PREVIOUS_MINOR: '1'
+  #OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+  #OPT_IN_TEST_NEXT_MINOR: '1'
+  #OPT_IN_TEST_NEXT_MAJOR: '1'
+
+composer (next major):
+  variables:
+    _LENIENT_ALLOW_LIST: token
+
+# For eslint, we need to install the module's package.json dependencies so that JS references can resolve.
+composer:
+  after_script:
+    - npm ci

@@ -36,6 +36,7 @@ class HoneypotFormProgrammaticSubmissionTest extends BrowserTestBase {
     $honeypot_config->set('log', FALSE);
     $honeypot_config->save();
 
+    // cspell:ignore robo
     $this->drupalCreateUser([], 'robo-user');
   }
 

@@ -19,3 +19,11 @@ ckeditor5.plugin.token_filter_token_browser:
       sequence:
         type: string
         label: 'Token'
+
+filter_settings.token_filter:
+  type: mapping
+  label: 'Allows token values to be used as filters'
+  mapping:
+    replace_empty:
+      type: boolean
+      label: 'Replace empty values'

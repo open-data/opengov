@@ -224,8 +224,7 @@ class ResultSet implements \IteratorAggregate, ResultSetInterface {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function getIterator() {
+  public function getIterator(): \Traversable {
     return new \ArrayIterator($this->resultItems);
   }
 

@@ -51,6 +51,10 @@ include:
 # variables:
 #   SKIP_ESLINT: '1'
 
+phpcs:
+  allow_failure: false
+phpstan:
+  allow_failure: false
 
 ###################################################################################
 #

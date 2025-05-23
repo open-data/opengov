@@ -2,8 +2,8 @@
 
 namespace Drupal\simple_sitemap_engines\PathProcessor;
 
-use Drupal\simple_sitemap_engines\Submitter\IndexNowSubmitter;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
+use Drupal\simple_sitemap_engines\Submitter\IndexNowSubmitter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

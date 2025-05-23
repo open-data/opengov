@@ -3,3 +3,7 @@ Upgrade the following:
 - drupal/google_tag to 2.0.8
 - drupal/menu_breadcrumb to 2.0.0
 - drupal/bootstrap to 3.35.0
+
+Add modules for improved security on forms:
+- drupal/recaptcha_v3
+- advanced_email_validation

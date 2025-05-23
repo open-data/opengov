@@ -199,7 +199,7 @@ class Robots extends MetaNameBase {
         $new_values[] = substr($form_field_name, 7, -1);
       }
       // Newer strings are stored with the form name "robots-keyed[something]",
-      // so those need the substring to be extracted and then
+      // so those need the substring to be extracted and then.
       elseif (strpos($form_field_name, 'robots-keyed[') !== FALSE) {
         $new_values[] = substr($form_field_name, 13, -1) . ':' . $value;
       }

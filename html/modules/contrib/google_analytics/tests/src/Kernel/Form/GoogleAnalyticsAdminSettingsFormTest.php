@@ -25,7 +25,7 @@ class GoogleAnalyticsAdminSettingsFormTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'path_alias',
     'user',
@@ -43,6 +43,7 @@ class GoogleAnalyticsAdminSettingsFormTest extends KernelTestBase {
     $this->installConfig(static::$modules);
     $this->googleAnalyticsSettingsForm = new GoogleAnalyticsAdminSettingsForm(
       $this->container->get('config.factory'),
+      $this->container->get('config.typed'),
       $this->container->get('current_user'),
       $this->container->get('module_handler'),
       $this->container->get('google_analytics.accounts'),

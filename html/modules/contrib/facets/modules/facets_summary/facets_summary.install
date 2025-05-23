@@ -50,3 +50,24 @@ function facets_summary_update_8002(&$sandbox = NULL) {
     return $update;
   });
 }
+
+/**
+ * Replace facet source rendered processor by facet summary property.
+ */
+function facets_summary_update_8003(&$sandbox = NULL) {
+  \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'facets_summary', function ($facets_summary) {
+    $update = FALSE;
+
+    if ($facets_summary instanceof FacetsSummaryInterface) {
+      $processor_settings = $facets_summary->getProcessorConfigs();
+
+      if (isset($processor_settings['hide_when_not_rendered'])) {
+        $facets_summary->setOnlyVisibleWhenFacetSourceIsVisible(TRUE);
+        $facets_summary->removeProcessor('hide_when_not_rendered');
+        $update = TRUE;
+      }
+    }
+
+    return $update;
+  });
+}

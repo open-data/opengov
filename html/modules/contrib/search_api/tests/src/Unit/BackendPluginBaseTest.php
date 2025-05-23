@@ -48,7 +48,7 @@ class BackendPluginBaseTest extends UnitTestCase {
    * @return array[]
    *   An array of argument arrays for testGetQueryFulltextFields().
    */
-  public function getQueryFulltextFieldsDataProvider() {
+  public static function getQueryFulltextFieldsDataProvider() {
     return [
       'null fields' => [NULL, ['field1', 'field2']],
       'field1' => [['field1'], ['field1']],

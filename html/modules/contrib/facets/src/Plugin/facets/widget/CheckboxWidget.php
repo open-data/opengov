@@ -2,6 +2,9 @@
 
 namespace Drupal\facets\Plugin\facets\widget;
 
+use Drupal\facets\FacetInterface;
+use Drupal\facets\Result\ResultInterface;
+
 /**
  * The checkbox / radios widget.
  *
@@ -12,6 +15,17 @@ namespace Drupal\facets\Plugin\facets\widget;
  * )
  */
 class CheckboxWidget extends LinksWidget {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildListItems(FacetInterface $facet, ResultInterface $result) {
+    $items = parent::buildListItems($facet, $result);
+
+    $items['#attributes']['data-drupal-facet-widget-element-class'] = 'facets-checkbox';
+
+    return $items;
+  }
 
   /**
    * {@inheritdoc}

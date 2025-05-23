@@ -1,0 +1,20 @@
+/**
+ * @file
+ * Styles for Bootstrap page.
+ */
+
+/* Hack for .placeholder issue https://www.drupal.org/project/drupal/issues/3233533 */
+em.placeholder {
+  vertical-align: unset!important;
+  cursor: unset!important;
+  background-color: unset!important;
+  opacity: unset!important;
+}
+section.full-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}

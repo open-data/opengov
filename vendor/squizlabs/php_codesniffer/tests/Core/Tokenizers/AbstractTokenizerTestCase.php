@@ -87,14 +87,35 @@ abstract class AbstractTokenizerTestCase extends TestCase
 
 
     /**
+     * Test QA: verify that a test case file does not contain any duplicate test markers.
+     *
+     * When a test case file contains a lot of test cases, it is easy to overlook that a test marker name
+     * is already in use.
+     * A test wouldn't necessarily fail on this, but would not be testing what is intended to be tested as
+     * it would be verifying token properties for the wrong token.
+     *
+     * This test safeguards against this.
+     *
+     * @coversNothing
+     *
+     * @return void
+     */
+    public function testTestMarkersAreUnique()
+    {
+        AbstractMethodUnitTest::assertTestMarkersAreUnique($this->phpcsFile);
+
+    }//end testTestMarkersAreUnique()
+
+
+    /**
      * Get the token pointer for a target token based on a specific comment found on the line before.
      *
      * Note: the test delimiter comment MUST start with "/* test" to allow this function to
      * distinguish between comments used *in* a test and test delimiters.
      *
-     * @param string           $commentString The delimiter comment to look for.
-     * @param int|string|array $tokenType     The type of token(s) to look for.
-     * @param string           $tokenContent  Optional. The token content for the target token.
+     * @param string                       $commentString The delimiter comment to look for.
+     * @param int|string|array<int|string> $tokenType     The type of token(s) to look for.
+     * @param string                       $tokenContent  Optional. The token content for the target token.
      *
      * @return int
      */

@@ -7,3 +7,4 @@ status: true
 dependencies:
   config:
     - simple_sitemap.type.default_hreflang
+langcode: en

@@ -21,6 +21,10 @@ $settings['redis.connection']['interface'] = 'Predis';
 $settings['redis.connection']['host']      = '1.2.3.4';  // Your Redis instance hostname.
 $settings['cache']['default'] = 'cache.backend.redis';
 
+Or connect via socket:
+$settings['redis.connection']['host']      = '/tmp/redis.sock'; // Your Redis socket
+$settings['redis.connection']['port']      = 0;  // For socket connections the port must be 0
+
 To add more magic with a primary/replica setup you can use a config like this:
 
 $settings['redis.connection']['interface'] = 'Predis'; // Use predis library.

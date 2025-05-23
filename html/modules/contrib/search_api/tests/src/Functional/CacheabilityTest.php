@@ -52,7 +52,9 @@ class CacheabilityTest extends SearchApiBrowserTestBase {
     // Verify that the search results are marked as uncacheable.
     $this->drupalGet('search-api-test');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->responseHeaderEquals('x-drupal-dynamic-cache', 'UNCACHEABLE');
+    // @todo Change to responseHeaderEquals() once we depend on Drupal 11.1.
+    //   Expected value: "UNCACHEABLE (poor cacheability)".
+    $this->assertSession()->responseHeaderContains('x-drupal-dynamic-cache', 'UNCACHEABLE');
     $this->assertSession()->responseHeaderContains('cache-control', 'no-cache');
 
     // Verify that the search results are displayed.

@@ -11,6 +11,20 @@ use Drupal\search_api\IndexInterface;
 class MethodOverrides {
 
   /**
+   * Saved arguments of saveMethodArguments().
+   *
+   * @see static::genericMethod()
+   */
+  public static array $methodArgs = [];
+
+  /**
+   * The return value of saveMethodArguments().
+   *
+   * @see static::genericMethod()
+   */
+  public static mixed $returnValue = NULL;
+
+  /**
    * Provides a generic method override for the test backend.
    *
    * @param \Drupal\search_api\Backend\BackendInterface $backend
@@ -45,6 +59,30 @@ class MethodOverrides {
       trigger_error('Server method indexItems() called with incorrect backend configuration.', E_USER_ERROR);
     }
     return array_keys($items);
+  }
+
+  /**
+   * Saves the arguments passed to this method.
+   *
+   * @return mixed
+   *   Returns static::$returnValue.
+   *
+   * @see static::$methodArgs
+   * @see static::$returnValue
+   */
+  public static function genericMethod(): mixed {
+    static::$methodArgs = func_get_args();
+    return static::$returnValue;
+  }
+
+  /**
+   * Throws a type error when called.
+   *
+   * @throws \TypeError
+   *   Always.
+   */
+  public static function throwTypeError(): never {
+    throw new \TypeError('Foobar');
   }
 
 }

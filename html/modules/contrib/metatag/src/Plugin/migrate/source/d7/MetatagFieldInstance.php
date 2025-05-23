@@ -140,7 +140,7 @@ class MetatagFieldInstance extends DrupalSqlBase {
   /**
    * {@inheritdoc}
    */
-  public function count($refresh = FALSE) {
+  public function count($refresh = FALSE): int {
     /** @var \ArrayIterator $iterator */
     $iterator = $this->initializeIterator();
     return $iterator->count();

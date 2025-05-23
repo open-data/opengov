@@ -67,7 +67,7 @@ class MetatagFieldUserTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $entityFieldAdminPath = 'admin/config/people/accounts/fields';
+  protected $entityFieldAdminPath = 'admin/config/people/accounts';
 
   /**
    * {@inheritdoc}

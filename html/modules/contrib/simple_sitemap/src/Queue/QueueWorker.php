@@ -5,11 +5,11 @@ namespace Drupal\simple_sitemap\Queue;
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\simple_sitemap\Entity\SimpleSitemap;
-use Drupal\simple_sitemap\Settings;
-use Drupal\Core\State\StateInterface;
 use Drupal\simple_sitemap\Logger;
+use Drupal\simple_sitemap\Settings;
 
 /**
  * The simple_sitemap.queue_worker service.
@@ -35,11 +35,11 @@ class QueueWorker {
   protected $settings;
 
   /**
-   * The state key/value store.
+   * The key/value store.
    *
-   * @var \Drupal\Core\State\StateInterface
+   * @var \Drupal\Core\KeyValueStore\KeyValueStoreInterface
    */
-  protected $state;
+  protected $store;
 
   /**
    * Simple XML Sitemap queue handler.
@@ -79,7 +79,7 @@ class QueueWorker {
   /**
    * The sitemap entity.
    *
-   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface
+   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface|null
    */
   protected $sitemapProcessedNow;
 
@@ -137,8 +137,8 @@ class QueueWorker {
    *
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state key/value store.
+   * @param \Drupal\Core\KeyValueStore\KeyValueFactoryInterface $key_value
+   *   The Key/Value factory service.
    * @param \Drupal\simple_sitemap\Queue\SimpleSitemapQueue $element_queue
    *   Simple XML Sitemap queue handler.
    * @param \Drupal\simple_sitemap\Logger $logger
@@ -150,15 +150,17 @@ class QueueWorker {
    * @param \Drupal\Core\Lock\LockBackendInterface $lock
    *   The lock backend that should be used.
    */
-  public function __construct(Settings $settings,
-                              StateInterface $state,
-                              SimpleSitemapQueue $element_queue,
-                              Logger $logger,
-                              ModuleHandlerInterface $module_handler,
-                              EntityTypeManagerInterface $entity_type_manager,
-                              LockBackendInterface $lock) {
+  public function __construct(
+    Settings $settings,
+    KeyValueFactoryInterface $key_value,
+    SimpleSitemapQueue $element_queue,
+    Logger $logger,
+    ModuleHandlerInterface $module_handler,
+    EntityTypeManagerInterface $entity_type_manager,
+    LockBackendInterface $lock,
+  ) {
     $this->settings = $settings;
-    $this->state = $state;
+    $this->store = $key_value->get('simple_sitemap');
     $this->queue = $element_queue;
     $this->logger = $logger;
     $this->moduleHandler = $module_handler;
@@ -169,7 +171,7 @@ class QueueWorker {
   /**
    * Queues links from sitemaps.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[] $sitemaps
    *   The sitemaps.
    *
    * @return $this
@@ -218,7 +220,7 @@ class QueueWorker {
   /**
    * Deletes the queue and queues links from sitemaps.
    *
-   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[] $sitemaps
    *   The sitemaps.
    *
    * @return $this
@@ -246,7 +248,7 @@ class QueueWorker {
    */
   protected function queueElements($elements): void {
     $this->queue->createItems($elements);
-    $this->state->set('simple_sitemap.queue_items_initial_amount', ($this->state->get('simple_sitemap.queue_items_initial_amount') + count($elements)));
+    $this->store->set('queue_items_initial_amount', ($this->store->get('queue_items_initial_amount') + count($elements)));
   }
 
   /**
@@ -323,7 +325,7 @@ class QueueWorker {
         }
       }
       catch (\Exception $e) {
-        watchdog_exception('simple_sitemap', $e);
+        $this->logger->logException($e);
       }
 
       // @todo May want to use deleteItems() instead.
@@ -425,7 +427,7 @@ class QueueWorker {
   /**
    * Resets the local cache.
    */
-  protected function resetWorker() {
+  protected function resetWorker(): void {
     $this->results = [];
     $this->processedPaths = [];
     $this->processedResults = [];
@@ -442,8 +444,8 @@ class QueueWorker {
   public function deleteQueue(): QueueWorker {
     $this->queue->deleteQueue();
     SimpleSitemap::purgeContent(NULL, SimpleSitemap::FETCH_BY_STATUS_UNPUBLISHED);
-    $this->state->set('simple_sitemap.queue_items_initial_amount', 0);
-    $this->state->delete('simple_sitemap.queue_stashed_results');
+    $this->store->set('queue_items_initial_amount', 0);
+    $this->store->delete('queue_stashed_results');
     $this->resetWorker();
 
     return $this;
@@ -453,7 +455,7 @@ class QueueWorker {
    * Stashes the current results.
    */
   protected function stashResults(): void {
-    $this->state->set('simple_sitemap.queue_stashed_results', [
+    $this->store->set('queue_stashed_results', [
       'variant' => $this->sitemapProcessedNow ? $this->sitemapProcessedNow->id() : NULL,
       'results' => $this->results,
       'processed_results' => $this->processedResults,
@@ -469,8 +471,8 @@ class QueueWorker {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function unstashResults(): void {
-    if (NULL !== $results = $this->state->get('simple_sitemap.queue_stashed_results')) {
-      $this->state->delete('simple_sitemap.queue_stashed_results');
+    if (NULL !== $results = $this->store->get('queue_stashed_results')) {
+      $this->store->delete('queue_stashed_results');
       $this->results = !empty($results['results']) ? $results['results'] : [];
       $this->processedResults = !empty($results['processed_results']) ? $results['processed_results'] : [];
       $this->processedPaths = !empty($results['processed_paths']) ? $results['processed_paths'] : [];
@@ -488,7 +490,7 @@ class QueueWorker {
    */
   public function getInitialElementCount(): ?int {
     if (NULL === $this->elementsTotal) {
-      $this->elementsTotal = (int) $this->state->get('simple_sitemap.queue_items_initial_amount', 0);
+      $this->elementsTotal = (int) $this->store->get('queue_items_initial_amount', 0);
     }
 
     return $this->elementsTotal;
@@ -518,7 +520,7 @@ class QueueWorker {
    *   The number of stashed results.
    */
   public function getStashedResultCount(): int {
-    $results = $this->state->get('simple_sitemap.queue_stashed_results', []);
+    $results = $this->store->get('queue_stashed_results', []);
     return (!empty($results['results']) ? count($results['results']) : 0)
       + (!empty($results['processed_results']) ? count($results['processed_results']) : 0);
   }

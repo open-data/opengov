@@ -1,0 +1,33 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Navs
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: experimental
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+      title: Attributes
+      description: Wrapper attributes.
+    alignment:
+      type: string
+      title: Alignment
+      enum:
+        - justify-content-center
+        - justify-content-end
+        - flex-column
+        - nav-tabs
+        - nav-pills
+    items:
+      type: array
+      title: Links
+      item:
+        type: Drupal\Core\Menu\MenuLinkInterface
+        title: Link

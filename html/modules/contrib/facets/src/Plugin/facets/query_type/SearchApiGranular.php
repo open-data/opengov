@@ -22,9 +22,22 @@ class SearchApiGranular extends QueryTypeRangeBase {
    * {@inheritdoc}
    */
   public function calculateRange($value) {
+    $include_lower = (bool) $this->facet->getProcessors()['granularity_item']->getConfiguration()['include_lower'];
+    $include_upper = (bool) $this->facet->getProcessors()['granularity_item']->getConfiguration()['include_upper'];
+    $include_edges = (bool) $this->facet->getProcessors()['granularity_item']->getConfiguration()['include_edges'];
+
+    if (!$include_lower && $include_edges && ($this->getMinValue() == $value)) {
+      $include_lower = TRUE;
+    }
+    if (!$include_upper && $include_edges && ($this->getMaxValue() == $value)) {
+      $include_upper = TRUE;
+    }
+
     return [
       'start' => $value,
       'stop' => (int) $value + $this->getGranularity(),
+      'include_lower' => $include_lower,
+      'include_upper' => $include_upper,
     ];
   }
 

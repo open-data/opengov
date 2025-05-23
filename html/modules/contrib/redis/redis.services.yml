@@ -13,6 +13,10 @@ services:
   queue.redis_reliable:
     class: Drupal\redis\Queue\ReliableQueueRedisFactory
     arguments: ['@redis.factory', '@settings']
+    tags:
+      - queue_factory
   queue.redis:
     class: Drupal\redis\Queue\QueueRedisFactory
     arguments: ['@redis.factory', '@settings']
+    tags:
+      - queue_factory

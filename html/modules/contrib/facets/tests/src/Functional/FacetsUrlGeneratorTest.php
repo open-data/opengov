@@ -75,6 +75,7 @@ class FacetsUrlGeneratorTest extends FacetsTestBase {
     \Drupal::requestStack()->push($request);
     \Drupal::service('path.current')->setPath($path);
     $url = $this->urlGenerator->getUrl(['test_facet' => ['fuzzy']]);
+
     $this->assertEquals('route:view.search_api_test_view.page_1;arg_0=entity%3Aentity_test_mulrev_changed&arg_1=entity_test_mulrev_changed&arg_2&view_id=search_api_test_view&display_id=page_1?f%5B0%5D=owl%3Afuzzy', $url->toUriString());
     \Drupal::requestStack()->pop();
   }

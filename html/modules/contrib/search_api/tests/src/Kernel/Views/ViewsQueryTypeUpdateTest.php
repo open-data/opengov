@@ -9,7 +9,7 @@ use Drupal\views\ViewEntityInterface;
 /**
  * Tests that the Search API Views are updated correctly.
  *
- * @covers search_api_post_update_views_query_type()
+ * @covers search_api_post_update_views_query_type
  *
  * @group search_api
  */

@@ -14,7 +14,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "fontawesome_icon",
  *   label = @Translation("Font Awesome Icon"),
  *   module = "fontawesome",
- *   category = @Translation("Icons"),
+ *   category = "fontawesome_icon",
  *   description = @Translation("A Font Awesome icon"),
  *   default_formatter = "fontawesome_icon_formatter",
  *   default_widget = "fontawesome_icon_widget",

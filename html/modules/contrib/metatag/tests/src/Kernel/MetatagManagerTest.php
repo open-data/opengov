@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\metatag\Kernel;
 
+use Drupal\metatag\MetatagSeparator;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -10,6 +11,8 @@ use Drupal\KernelTests\KernelTestBase;
  * @group metatag
  */
 class MetatagManagerTest extends KernelTestBase {
+
+  use MetatagSeparator;
 
   /**
    * {@inheritdoc}
@@ -46,7 +49,7 @@ class MetatagManagerTest extends KernelTestBase {
   /**
    * Config factory.
    *
-   * @var Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
@@ -220,7 +223,7 @@ class MetatagManagerTest extends KernelTestBase {
     $this->assertEquals($expected, $value);
 
     // Confirm that if it's empty it falls back to ','.
-    $value = $this->metatagManager->getSeparator();
+    $value = $this->getSeparator();
     $expected = ',';
     $this->assertEquals($expected, $value);
 
@@ -228,7 +231,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
-      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->metatagManager->getSeparator() . 'https://www.example.com/example/foo2.png',
+      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->getSeparator() . 'https://www.example.com/example/foo2.png',
     ]);
 
     $expected = [
@@ -287,7 +290,7 @@ class MetatagManagerTest extends KernelTestBase {
     $this->assertEquals($expected, $value);
 
     // Make sure Metatag Manager correctly picks up the new value.
-    $value = $this->metatagManager->getSeparator();
+    $value = $this->getSeparator();
     $expected = '||';
     $this->assertEquals($expected, $value);
 
@@ -295,7 +298,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
-      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->metatagManager->getSeparator() . 'https://www.example.com/example/foo2.png',
+      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->getSeparator() . 'https://www.example.com/example/foo2.png',
     ]);
 
     $expected = [

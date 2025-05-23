@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester;
 
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
 
@@ -33,7 +34,8 @@ trait BackendTrait {
       }
     }
     catch (\Exception $e) {
-      watchdog_exception('search_api', $e);
+      $logger = \Drupal::logger('logger.channel.search_api');
+      Error::logException($logger, $e);
     }
     return NULL;
   }

@@ -7,3 +7,5 @@ url_generators:
   - entity
   - entity_menu_link_content
   - arbitrary
+langcode: en
+status: true

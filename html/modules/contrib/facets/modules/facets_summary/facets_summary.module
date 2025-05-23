@@ -119,3 +119,23 @@ function facets_summary_preprocess_facets_summary_item_list(array &$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function facets_summary_views_data_alter(array &$data) {
+
+  /** @var \Drupal\search_api\IndexInterface $index */
+  foreach (Index::loadMultiple() as $index) {
+    $data['search_api_index_' . $index->id()]['facets_summary'] = [
+      'title' => t('Facets summary'),
+      'help' => t('Displays facets summary in a filter or area'),
+      'filter' => [
+        'id' => 'facets_summary_filter',
+      ],
+      'area' => [
+        'id' => 'facets_summary_area',
+      ],
+    ];
+  }
+}

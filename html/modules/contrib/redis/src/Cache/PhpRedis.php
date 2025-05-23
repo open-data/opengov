@@ -5,6 +5,7 @@ namespace Drupal\redis\Cache;
 use Drupal\Component\Serialization\SerializationInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheTagsChecksumInterface;
+use Drupal\Core\Cache\ChainedFastBackend;
 
 /**
  * PhpRedis cache backend.
@@ -81,6 +82,11 @@ class PhpRedis extends CacheBase {
    * {@inheritdoc}
    */
   public function set($cid, $data, $expire = Cache::PERMANENT, array $tags = []) {
+
+    if ($this->isLastWriteTimestamp($cid)) {
+      $this->client->set($this->getPrefix() . ':' . $cid, $data);
+      return;
+    }
 
     $ttl = $this->getExpiration($expire);
 

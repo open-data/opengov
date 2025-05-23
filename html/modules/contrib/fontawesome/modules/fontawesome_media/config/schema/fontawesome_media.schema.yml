@@ -1,0 +1,3 @@
+media.source.font_awesome_icon:
+  type: media.source.field_aware
+  label: 'Font Awesome Icon media source configuration'

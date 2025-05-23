@@ -45,7 +45,7 @@ function search_api_schema() {
         'not null' => TRUE,
       ],
       'status' => [
-        'description' => 'Boolean indicating the reindexation status, "1" when we need to reindex, "0" otherwise',
+        'description' => 'Boolean indicating the indexing status: "1" if item needs to be indexed, "0" otherwise',
         'type' => 'int',
         'not null' => TRUE,
       ],

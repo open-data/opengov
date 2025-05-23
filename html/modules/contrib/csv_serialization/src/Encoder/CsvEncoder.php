@@ -2,13 +2,13 @@
 
 namespace Drupal\csv_serialization\Encoder;
 
+use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
+use Drupal\Component\Utility\Html;
+use League\Csv\Bom;
+use League\Csv\Reader;
+use League\Csv\Writer;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
-use League\Csv\Writer;
-use League\Csv\Reader;
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
-use League\Csv\ByteSequence;
 
 /**
  * Adds CSV encoder support for the Serialization API.
@@ -16,46 +16,11 @@ use League\Csv\ByteSequence;
 class CsvEncoder implements EncoderInterface, DecoderInterface {
 
   /**
-   * Indicates the character used to delimit fields. Defaults to ",".
-   *
-   * @var string
-   */
-  protected $delimiter;
-
-  /**
-   * Indicates the character used for field enclosure. Defaults to '"'.
-   *
-   * @var string
-   */
-  protected $enclosure;
-
-  /**
-   * Indicates the character used for escaping. Defaults to "\".
-   *
-   * @var string
-   */
-  protected $escapeChar;
-
-  /**
    * Indicates the character used for new line. Defaults to "\n".
    *
    * @var string
    */
   protected $newline;
-
-  /**
-   * Whether to strip tags from values or not. Defaults to TRUE.
-   *
-   * @var bool
-   */
-  protected $stripTags;
-
-  /**
-   * Whether to trim values or not. Defaults to TRUE.
-   *
-   * @var bool
-   */
-  protected $trimValues;
 
   /**
    * The format that this encoder supports.
@@ -85,19 +50,20 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
    *   Indicates the character used to delimit fields. Defaults to ",".
    * @param string $enclosure
    *   Indicates the character used for field enclosure. Defaults to '"'.
-   * @param string $escape_char
+   * @param string $escapeChar
    *   Indicates the character used for escaping. Defaults to "\".
-   * @param bool $strip_tags
+   * @param bool $stripTags
    *   Whether to strip tags from values or not. Defaults to TRUE.
-   * @param bool $trim_values
+   * @param bool $trimValues
    *   Whether to trim values or not. Defaults to TRUE.
    */
-  public function __construct($delimiter = ",", $enclosure = '"', $escape_char = "\\", $strip_tags = TRUE, $trim_values = TRUE) {
-    $this->delimiter = $delimiter;
-    $this->enclosure = $enclosure;
-    $this->escapeChar = $escape_char;
-    $this->stripTags = $strip_tags;
-    $this->trimValues = $trim_values;
+  public function __construct(
+    protected string $delimiter = ",",
+    protected string $enclosure = '"',
+    protected string $escapeChar = "\\",
+    protected bool $stripTags = TRUE,
+    protected bool $trimValues = TRUE,
+  ) {
   }
 
   /**
@@ -119,7 +85,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
    *
    * Uses HTML-safe strings, with several characters escaped.
    */
-  public function encode($data, string $format, array $context = []):string {
+  public function encode(mixed $data, string $format, array $context = []): string {
     switch (gettype($data)) {
       case "array":
         break;
@@ -134,7 +100,10 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
         break;
     }
 
-    if (!empty($context['views_style_plugin']->options['csv_settings'])) {
+    if (!empty($context['csv_settings'])) {
+      $this->setSettings($context['csv_settings']);
+    }
+    elseif (!empty($context['views_style_plugin']->options['csv_settings'])) {
       $this->setSettings($context['views_style_plugin']->options['csv_settings']);
     }
 
@@ -146,12 +115,12 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
       $csv->setEscape($this->escapeChar);
 
       if ($this->newline) {
-        $csv->setNewline(stripcslashes($this->newline));
+        $csv->setEndOfLine(stripcslashes($this->newline));
       }
 
       // Set data.
       if ($this->useUtf8Bom) {
-        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
+        $csv->setOutputBOM(Bom::Utf8);
       }
       // Set headers.
       if ($this->outputHeader) {
@@ -164,7 +133,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
           $csv->insertOne($row);
         }
       }
-      $output = $csv->getContent();
+      $output = $csv->toString();
 
       return trim($output);
     }
@@ -291,7 +260,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
    * @throws \League\Csv\Exception
    * @throws \League\Csv\Exception
    */
-  public function decode($data, string $format, array $context = []) {
+  public function decode(string $data, string $format, array $context = []): mixed {
     $csv = Reader::createFromString($data);
     $csv->setDelimiter($this->delimiter);
     $csv->setEnclosure($this->enclosure);
@@ -380,16 +349,14 @@ class CsvEncoder implements EncoderInterface, DecoderInterface {
    */
   public function setSettings(array $settings) {
     // Replace tab character with one that will be properly interpreted.
-    $this->delimiter = str_replace('\t', "\t", $settings['delimiter']);
-    $this->enclosure = $settings['enclosure'];
-    $this->escapeChar = $settings['escape_char'];
-    $this->useUtf8Bom = ($settings['encoding'] === 'utf8' && !empty($settings['utf8_bom']));
-    $this->newline = $settings['new_line'] ?? NULL;
-    $this->stripTags = $settings['strip_tags'];
-    $this->trimValues = $settings['trim'];
-    if (array_key_exists('output_header', $settings)) {
-      $this->outputHeader = $settings['output_header'];
-    }
+    $this->delimiter = isset($settings['delimiter']) ? str_replace('\t', "\t", $settings['delimiter']) : $this->delimiter;
+    $this->enclosure = $settings['enclosure'] ?? $this->enclosure;
+    $this->escapeChar = $settings['escape_char'] ?? $this->escapeChar;
+    $this->useUtf8Bom = isset($settings['encoding']) ? ($settings['encoding'] === 'utf8' && !empty($settings['utf8_bom'])) : $this->useUtf8Bom;
+    $this->newline = $settings['new_line'] ?? $this->newline;
+    $this->stripTags = $settings['strip_tags'] ?? $this->stripTags;
+    $this->trimValues = $settings['trim'] ?? $this->trimValues;
+    $this->outputHeader = $settings['output_header'] ?? $this->outputHeader;
   }
 
 }

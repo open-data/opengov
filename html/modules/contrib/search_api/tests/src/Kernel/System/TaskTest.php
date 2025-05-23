@@ -308,7 +308,7 @@ class TaskTest extends KernelTestBase {
    * @return \Drupal\search_api\Task\TaskInterface
    *   The task returned by the task manager.
    */
-  protected function addTask($type, ServerInterface $server = NULL, IndexInterface $index = NULL, $data = NULL, bool $duplicate = FALSE) {
+  protected function addTask($type, ?ServerInterface $server = NULL, ?IndexInterface $index = NULL, $data = NULL, bool $duplicate = FALSE) {
     $type = "search_api_test_tasks.$type";
     $count_before = $this->taskManager->getTasksCount();
     $conditions = [

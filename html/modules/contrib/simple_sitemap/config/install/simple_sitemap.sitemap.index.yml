@@ -7,3 +7,4 @@ status: false
 dependencies:
   config:
     - simple_sitemap.type.index
+langcode: en

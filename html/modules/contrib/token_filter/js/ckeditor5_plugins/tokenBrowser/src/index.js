@@ -1,3 +1,3 @@
-import { TokenBrowser } from "./token-browser";
+import TokenBrowser from './token-browser';
 
 export default { TokenBrowser };

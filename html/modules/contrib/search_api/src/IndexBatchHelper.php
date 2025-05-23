@@ -3,6 +3,7 @@
 namespace Drupal\search_api;
 
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\Utility\Error;
 
 /**
  * Provides helper methods for indexing items using Drupal's Batch API.
@@ -73,6 +74,11 @@ class IndexBatchHelper {
    *   Thrown if the batch could not be created.
    */
   public static function create(IndexInterface $index, $batch_size = NULL, $limit = -1) {
+    // Make sure that the indexing lock is available.
+    if (!\Drupal::lock()->lockMayBeAvailable($index->getLockId())) {
+      throw new SearchApiException("Items are being indexed in a different process.");
+    }
+
     // Check if the size should be determined by the index cron limit option.
     if ($batch_size === NULL) {
       // Use the size set by the index.
@@ -169,7 +175,7 @@ class IndexBatchHelper {
     }
     catch (\Exception $e) {
       // Log exception to watchdog and abort the batch job.
-      watchdog_exception('search_api', $e);
+      Error::logException(\Drupal::logger('search_api'), $e);
       $context['message'] = static::t('An error occurred during indexing on @index: @message', ['@index' => $index->label(), '@message' => $e->getMessage()]);
       $context['finished'] = 1;
       $context['results']['not indexed'] = $context['sandbox']['original_item_count'] - $context['results']['indexed'];
@@ -190,8 +196,13 @@ class IndexBatchHelper {
         \Drupal::messenger()->addStatus($indexed_message);
         // Display the number of items not indexed.
         if (!empty($results['not indexed'])) {
-          // Build the not indexed message.
-          $not_indexed_message = static::formatPlural($results['not indexed'], '1 item could not be indexed. Check the logs for details.', '@count items could not be indexed. Check the logs for details.');
+          // Build the not indexed message. Concurrent indexing (e.g., by a cron
+          // job) could lead to a false warning here, so we need to phrase this
+          // carefully.
+          $not_indexed_message = static::t(
+            'Number of indexed items is less than expected (by @count). Check the logs if there are still unindexed items.',
+            ['@count' => $results['not indexed']],
+          );
           // Notify user about not indexed items.
           \Drupal::messenger()->addWarning($not_indexed_message);
         }

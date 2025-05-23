@@ -12,6 +12,7 @@ use Drupal\Tests\BrowserTestBase;
 /**
  * Tests the Search API bulk form Views field plugin.
  *
+ * @coversDefaultClass \Drupal\search_api\Plugin\views\field\SearchApiBulkForm
  * @group search_api
  */
 class SearchApiBulkFormTest extends BrowserTestBase {
@@ -193,12 +194,15 @@ class SearchApiBulkFormTest extends BrowserTestBase {
    *   - 0: The action plugin ID.
    *   - 1: The entity type ID.
    *   - 2: The entity ID.
+   *
+   * @see \Drupal\search_api_test_bulk_form\Plugin\Action\TestActionTrait::execute()
    */
   protected function assertActionsApplied(array $expected_actions) {
-    $actual_actions = \Drupal::state()->get('search_api_test_bulk_form', []);
+    $key_value = \Drupal::keyValue('search_api_test');
+    $actual_actions = $key_value->get('search_api_test_bulk_form', []);
     $this->assertSame($expected_actions, $actual_actions);
     // Reset the state variable to be used by future assertions.
-    \Drupal::state()->delete('search_api_test_bulk_form');
+    $key_value->delete('search_api_test_bulk_form');
   }
 
   /**

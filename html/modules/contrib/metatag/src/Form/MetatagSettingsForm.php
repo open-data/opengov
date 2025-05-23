@@ -43,6 +43,13 @@ class MetatagSettingsForm extends ConfigFormBase {
   protected $tagPluginManager;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -54,6 +61,7 @@ class MetatagSettingsForm extends ConfigFormBase {
     $instance->metatagManager = $container->get('metatag.manager');
     $instance->state = $container->get('state');
     $instance->tagPluginManager = $container->get('plugin.manager.metatag.tag');
+    $instance->moduleHandler = $container->get('module_handler');
 
     return $instance;
   }
@@ -140,13 +148,13 @@ class MetatagSettingsForm extends ConfigFormBase {
     ];
 
     // Optional support for the Maxlenth module.
-    $form['tag_trim']['use_maxlength'] = array(
+    $form['tag_trim']['use_maxlength'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use Maxlength module to force these limits?'),
       '#default_value' => $this->config('metatag.settings')->get('use_maxlength') ?? TRUE,
-      '#description' => $this->t('Because of how tokens are processed in meta tags, use of the Maxlength module may not provide an accurate representation of the actual current length of each meta tag, so it may cause more problem than it is worth. '),
-    );
-    if (!\Drupal::moduleHandler()->moduleExists('maxlength')) {
+      '#description' => $this->t('Because of how tokens are processed in meta tags, use of the Maxlength module may not provide an accurate representation of the actual current length of each meta tag, so it may cause more problem than it is worth.'),
+    ];
+    if (!$this->moduleHandler->moduleExists('maxlength')) {
       $form['tag_trim']['use_maxlength']['#disabled'] = TRUE;
       $form['tag_trim']['use_maxlength']['#description'] = $this->t('Install the Maxlength module to enable this option.');
     }
@@ -173,7 +181,7 @@ class MetatagSettingsForm extends ConfigFormBase {
     }
 
     $form['tag_trim']['tag_trim_method'] = [
-      '#title' => $this->t('Meta Tags: Trimming Options'),
+      '#title' => $this->t('Trimming options'),
       '#type' => 'select',
       '#required' => TRUE,
       '#default_value' => $trimMethod ?? 'beforeValue',
@@ -182,6 +190,13 @@ class MetatagSettingsForm extends ConfigFormBase {
         'onValue' => $this->t('Trim the Meta Tag on the given value'),
         'beforeValue' => $this->t('Trim the Meta Tag before the word on the given value'),
       ],
+    ];
+
+    $form['tag_trim']['tag_trim_end'] = [
+      '#title' => $this->t('Characters to trim'),
+      '#type' => 'textfield',
+      '#default_value' => $this->config('metatag.settings')->get('tag_trim_end'),
+      '#description' => $this->t('A list of characters to trim at the end of all metatags. Provide a single string without any separators, e.g. "|,." (instead of "| , ."). Note that spaces, tabs, new lines, carriage returns and vertical tabs (" \n\r\t\v") will be trimmed automatically and do not need to be listed in this field. The trimming is applied at the very end after the tag is trimmed for length, and after the trimming option was executed.'),
     ];
 
     $scrollheight = $this->config('metatag.settings')->get('tag_scroll_max_height');
@@ -229,6 +244,8 @@ class MetatagSettingsForm extends ConfigFormBase {
     $settings->set('tag_trim_method', $trimmingMethod);
     $trimmingValues = $form_state->getValue(['tag_trim', 'maxlength']);
     $settings->set('tag_trim_maxlength', $trimmingValues);
+    $trimEndCharacters = $form_state->getValue(['tag_trim', 'tag_trim_end']);
+    $settings->set('tag_trim_end', $trimEndCharacters);
 
     // Widget settings.
     $scrollheightvalue = $form_state->getValue([

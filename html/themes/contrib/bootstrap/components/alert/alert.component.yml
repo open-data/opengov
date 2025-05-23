@@ -1,0 +1,34 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Alert
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: stable
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+      title: Attributes
+      description: Wrapper attributes.
+    message_list:
+      type: array
+      title: Messages
+      items:
+        type: string
+    status_headings:
+      type: object
+      title: Status Headings
+      properties:
+        type:
+          type: string
+          title: Type
+    display:
+      type: string
+      title: Display
+      default: 'status'

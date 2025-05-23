@@ -2,9 +2,9 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\simple_sitemap\Logger;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @UrlGenerator(
  *   id = "arbitrary",
  *   label = @Translation("Arbitrary URL generator"),
- *   description = @Translation("Generates URLs from data sets collected in the hook_arbitrary_links_alter hook."),
+ *   description = @Translation("Generates URLs from data sets collected in the hook_simple_sitemap_arbitrary_links_alter hook."),
  * )
  */
 class ArbitraryUrlGenerator extends UrlGeneratorBase {
@@ -48,7 +48,7 @@ class ArbitraryUrlGenerator extends UrlGeneratorBase {
     $plugin_definition,
     Logger $logger,
     Settings $settings,
-    ModuleHandlerInterface $module_handler
+    ModuleHandlerInterface $module_handler,
   ) {
     parent::__construct(
       $configuration,
@@ -67,7 +67,8 @@ class ArbitraryUrlGenerator extends UrlGeneratorBase {
     ContainerInterface $container,
     array $configuration,
     $plugin_id,
-    $plugin_definition): SimpleSitemapPluginBase {
+    $plugin_definition,
+  ): SimpleSitemapPluginBase {
 
     return new static(
       $configuration,

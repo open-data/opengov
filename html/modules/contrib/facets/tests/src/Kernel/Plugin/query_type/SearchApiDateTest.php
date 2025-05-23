@@ -98,7 +98,7 @@ class SearchApiDateTest extends Drupal10CompatibilityKernelTestBase {
   /**
    * Data provider for date results and different groupings.
    */
-  public static function resultsProvider(): array {
+  public static function resultsProvider() {
     return [
       'Year' => [
         SearchApiDate::FACETAPI_DATE_YEAR,

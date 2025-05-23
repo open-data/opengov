@@ -125,6 +125,7 @@ abstract class FacetResourceTestBase extends EntityResourceTestBase {
   protected function getExpectedCacheContexts() {
     return array_merge(parent::getExpectedCacheContexts(), [
       'url.query_args',
+      'facets_filter:f',
     ]);
   }
 

@@ -57,11 +57,9 @@ display:
         type: search_api
         options:
           view_modes:
-            bundle:
+            'entity:entity_test':
               'article': default
               'page': default
-            datasource:
-              'entity:entity_test': default
       fields:
         search_api_id:
           table: search_api_index_database_search_index

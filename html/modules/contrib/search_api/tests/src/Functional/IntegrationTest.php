@@ -3,6 +3,7 @@
 namespace Drupal\Tests\search_api\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -155,13 +156,13 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       'id' => $this->indexId,
       'status' => 1,
       'description' => 'test Index:: 123~',
-      'server' => 456,
+      'server' => '456',
       'datasources[entity:node]' => TRUE,
     ];
     $this->submitForm($edit, 'Save');
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()
-      ->pageTextContains('Please configure the used datasources.');
+      ->pageTextContains('Configure the used datasources.');
     $this->submitForm([], 'Save');
     $this->checkForMetaRefresh();
     $this->assertSession()->statusCodeEquals(200);
@@ -277,6 +278,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
   protected function createIndex() {
     $settings_path = 'admin/config/search/search-api/add-index';
     $this->indexId = 'test_index';
+    // cspell:disable-next-line
     $index_description = 'An >index< used for &! tęsting.';
     $index_name = 'Search >API< test &!^* index';
     $index_datasource = 'entity:node';
@@ -328,7 +330,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     ];
 
     $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains('Please configure the used datasources.');
+    $this->assertSession()->pageTextContains('Configure the used datasources.');
 
     $this->submitForm([], 'Save');
     $this->checkForMetaRefresh();
@@ -356,7 +358,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     unset($edit['server']);
     $this->drupalGet($settings_path);
     $this->submitForm($edit, 'Save and add fields');
-    $this->assertSession()->pageTextContains('Please configure the used datasources.');
+    $this->assertSession()->pageTextContains('Configure the used datasources.');
 
     $this->submitForm([], 'Save and add fields');
     $this->assertSession()->pageTextContains('The index was successfully saved.');
@@ -493,7 +495,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->drupalGet('admin/config/search/search-api/add-index');
     $this->submitForm($edit, 'Save');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Please configure the used datasources.');
+    $this->assertSession()->pageTextContains('Configure the used datasources.');
 
     $this->submitForm([], 'Save');
     $this->assertSession()->statusCodeEquals(200);
@@ -562,7 +564,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->drupalGet($settings_path);
     $edit = [
       'status' => FALSE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => FALSE,
       'datasource_configs[entity:node][bundles][selected][page]' => FALSE,
     ];
@@ -577,7 +579,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => TRUE,
       'datasource_configs[entity:node][bundles][selected][page]' => TRUE,
     ];
@@ -592,7 +594,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // items from the tracking table.
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => FALSE,
       'datasource_configs[entity:node][bundles][selected][page]' => FALSE,
     ];
@@ -608,7 +610,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // re-add the two articles to the tracking table.
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => TRUE,
       'datasource_configs[entity:node][bundles][selected][page]' => FALSE,
     ];
@@ -624,7 +626,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // result in only the page being present in the tracking table.
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => FALSE,
       'datasource_configs[entity:node][bundles][selected][page]' => TRUE,
     ];
@@ -640,7 +642,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // change the tracking table, which should still only contain the page.
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 1,
+      'datasource_configs[entity:node][bundles][default]' => '1',
       'datasource_configs[entity:node][bundles][selected][article]' => TRUE,
       'datasource_configs[entity:node][bundles][selected][page]' => FALSE,
     ];
@@ -656,7 +658,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // should result in only the articles being tracked.
     $edit = [
       'status' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 1,
+      'datasource_configs[entity:node][bundles][default]' => '1',
       'datasource_configs[entity:node][bundles][selected][article]' => FALSE,
       'datasource_configs[entity:node][bundles][selected][page]' => TRUE,
     ];
@@ -781,7 +783,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $url_options['query']['datasource'] = 'entity:node';
     $this->drupalGet($this->getIndexPath('fields/add/nojs'), $url_options);
     $this->assertHtmlEscaped($field_name);
-    $this->assertSession()->responseContains('(<code>field__field_</code>)');
+    $this->assertSession()->responseContains('field__field_');
 
     $this->addField('entity:node', 'field__field_', $field_name);
 
@@ -793,7 +795,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->submitForm([], 'Save changes');
 
     $edit = [
-      'datasource_configs[entity:node][bundles][default]' => 1,
+      'datasource_configs[entity:node][bundles][default]' => '1',
     ];
     $this->drupalGet($this->getIndexPath('edit'));
     $this->assertHtmlEscaped($content_type_name);
@@ -852,6 +854,33 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $url_options = ['query' => ['datasource' => 'entity:node']];
     $this->drupalGet($path, $url_options);
     $this->assertSession()->responseNotContains('property_path=type');
+
+    // Ensure that we have expand buttons for items with one or more nested
+    // properties, then visit that page to ensure that the nested property is
+    // shown.
+    $path = $this->getIndexPath('fields/add/nojs');
+    $url_options = [
+      'query' => [
+        'datasource' => 'entity:node',
+        'property_path' => 'uid',
+      ],
+    ];
+    $this->assertSession()->elementExists('xpath', '//a[contains(@href, "property_path=uid")]');
+    $this->drupalGet($path, $url_options);
+    $this->assertSession()->responseContains('uid:entity');
+
+    // Do the same for the nested path to get to the third level.
+    $path = $this->getIndexPath('fields/add/nojs');
+    $url_options = [
+      'query' => [
+        'datasource' => 'entity:node',
+        'property_path' => 'uid:entity',
+      ],
+    ];
+    $substring = 'property_path=' . urlencode('uid:entity');
+    $this->assertSession()->elementExists('xpath', "//a[contains(@href, \"{$substring}\")]");
+    $this->drupalGet($path, $url_options);
+    $this->assertSession()->responseContains('uid:entity:changed');
 
     // The "Content access" processor correctly marked fields as locked.
     $this->assertArrayHasKey('uid', $fields, 'uid field is indexed.');
@@ -958,7 +987,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
   protected function addField($datasource_id, $property_path, $label = NULL) {
     $path = $this->getIndexPath('fields/add/nojs');
     $url_options = ['query' => ['datasource' => $datasource_id]];
-    list($parent_path) = Utility::splitPropertyPath($property_path);
+    [$parent_path] = Utility::splitPropertyPath($property_path);
     if ($parent_path) {
       $url_options['query']['property_path'] = $parent_path;
     }
@@ -1091,8 +1120,14 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       '#theme' => 'username',
       '#account' => $this->adminUser,
     ];
+    $renderer = \Drupal::getContainer()->get('renderer');
     $args = [
-      '@user' => \Drupal::getContainer()->get('renderer')->renderPlain($username),
+      '@user' => DeprecationHelper::backwardsCompatibleCall(
+        \Drupal::VERSION,
+        '10.3',
+        fn () => $renderer->renderInIsolation($username),
+        fn () => $renderer->renderPlain($username),
+      ),
       ':url' => $this->getIndex()->toUrl('break-lock-form')->toString(),
     ];
     $message = (string) new FormattableMarkup('This index is being edited by user @user, and is therefore locked from editing by others. This lock is @age old. Click here to <a href=":url">break this lock</a>.', $args);
@@ -1275,9 +1310,9 @@ class IntegrationTest extends SearchApiBrowserTestBase {
   }
 
   /**
-   * Sets an index to "read only" and checks if it reacts correctly.
+   * Sets an index to "read-only" and checks if it reacts correctly.
    *
-   * The expected behavior is that, when an index is set to "read only", it
+   * The expected behavior is that, when an index is set to "read-only", it
    * keeps tracking but won't index any items.
    */
   protected function setReadOnly() {
@@ -1292,7 +1327,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $edit = [
       'status' => TRUE,
       'read_only' => TRUE,
-      'datasource_configs[entity:node][bundles][default]' => 0,
+      'datasource_configs[entity:node][bundles][default]' => '0',
       'datasource_configs[entity:node][bundles][selected][article]' => TRUE,
       'datasource_configs[entity:node][bundles][selected][page]' => TRUE,
     ];
@@ -1310,14 +1345,14 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     // Also try indexing via the API to make sure it is really not possible.
     $indexed = $this->indexItems();
-    $this->assertEquals(0, $indexed, 'No items were indexed after setting the index to "read only".');
+    $this->assertEquals(0, $indexed, 'No items were indexed after setting the index to "read-only".');
     $remaining_after = $this->countRemainingItems();
-    $this->assertEquals($remaining_before, $remaining_after, 'No items were indexed after setting the index to "read only".');
+    $this->assertEquals($remaining_before, $remaining_after, 'No items were indexed after setting the index to "read-only".');
 
-    // Disable "read only" and verify indexing now works again.
+    // Disable "read-only" and verify indexing now works again.
     $edit = [
       'read_only' => FALSE,
-      'datasource_configs[entity:node][bundles][default]' => 1,
+      'datasource_configs[entity:node][bundles][default]' => '1',
       'datasource_configs[entity:node][bundles][selected][article]' => FALSE,
       'datasource_configs[entity:node][bundles][selected][page]' => FALSE,
     ];
@@ -1331,7 +1366,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->checkForMetaRefresh();
 
     $remaining_after = $index->getTrackerInstance()->getRemainingItemsCount();
-    $this->assertEquals(0, $remaining_after, 'Items were indexed after removing the "read only" flag.');
+    $this->assertEquals(0, $remaining_after, 'Items were indexed after removing the "read-only" flag.');
   }
 
   /**
@@ -1400,7 +1435,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     ];
     $this->drupalGet($settings_path);
     $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains('Please configure the used datasources.');
+    $this->assertSession()->pageTextContains('Configure the used datasources.');
     $this->submitForm([], 'Save');
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains('The index was successfully saved.');
@@ -1485,7 +1520,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       ->count()
       ->execute() - 1;
     $this->assertSession()->pageTextContains("Successfully indexed $count items.");
-    $this->assertSession()->pageTextContains('1 item could not be indexed.');
+    $this->assertSession()->pageTextContains('Number of indexed items is less than expected (by 1).');
     $this->assertSession()->pageTextNotContains("Couldn't index items.");
     $this->assertSession()->pageTextNotContains('An error occurred');
 
@@ -1511,7 +1546,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains("Successfully indexed 1 item.");
-    $this->assertSession()->pageTextNotContains('could not be indexed.');
+    $this->assertSession()->pageTextNotContains('Number of indexed items is less than expected');
     $this->assertSession()->pageTextNotContains("Couldn't index items.");
     $this->assertSession()->pageTextNotContains('An error occurred');
   }

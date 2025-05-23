@@ -23,6 +23,7 @@ slider:
   dependencies:
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - facets_range_widget/jquery.ui.slider.pips
     - jquery_ui_touch_punch/touch-punch

@@ -2,12 +2,13 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
  * Provides an interface for Simple XML Sitemap plugins.
  */
-interface SimpleSitemapPluginInterface extends ContainerFactoryPluginInterface {
+interface SimpleSitemapPluginInterface extends ContainerFactoryPluginInterface, PluginInspectionInterface {
 
   /**
    * Gets the label of this plugin.

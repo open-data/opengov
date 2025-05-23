@@ -2,10 +2,13 @@
 
 namespace Drupal\Tests\facets_range_widget\Unit\Plugin\widget;
 
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Url;
 use Drupal\facets\Entity\Facet;
+use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\Result\Result;
+use Drupal\facets\UrlProcessor\UrlProcessorInterface;
 use Drupal\facets\Widget\WidgetPluginManager;
 use Drupal\facets_range_widget\Plugin\facets\widget\SliderWidget;
 use Drupal\Tests\facets\Unit\Plugin\widget\WidgetTestBase;
@@ -65,6 +68,8 @@ class SliderWidgetTest extends WidgetTestBase {
    * Tests building of the widget.
    */
   public function testBuild() {
+    $facet = new Facet(['id' => 'barn_owl'], 'facets_facet');
+
     $widget = $this->prophesize(SliderWidget::class);
     $widget->getConfiguration()->willReturn(['show_numbers' => FALSE]);
     $pluginManager = $this->prophesize(WidgetPluginManager::class);
@@ -73,8 +78,16 @@ class SliderWidgetTest extends WidgetTestBase {
 
     $url_generator = $this->prophesize(UrlGeneratorInterface::class);
 
+    $entity_type_manager = $this->prophesize(EntityTypeManager::class);
+
+    $url_processor = $this->prophesize(UrlProcessorInterface::class);
+    $manager = $this->createMock(FacetSourcePluginManager::class);
+    $manager->method('createInstance')->willReturn($url_processor->reveal());
+
     $container = new ContainerBuilder();
     $container->set('plugin.manager.facets.widget', $pluginManager->reveal());
+    $container->set('plugin.manager.facets.url_processor', $manager);
+    $container->set('entity_type.manager', $entity_type_manager->reveal());
     $container->set('url_generator', $url_generator->reveal());
     \Drupal::setContainer($container);
 

@@ -2,20 +2,20 @@
 
 namespace Drupal\simple_sitemap_views\Plugin\simple_sitemap\UrlGenerator;
 
-use Drupal\simple_sitemap\Exception\SkipElementException;
-use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGeneratorBase;
-use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
-use Drupal\simple_sitemap\Settings;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\simple_sitemap_views\SimpleSitemapViews;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Database\Database;
-use Drupal\simple_sitemap\Entity\EntityHelper;
-use Drupal\simple_sitemap\Logger;
-use Drupal\views\Views;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Url;
+use Drupal\simple_sitemap\Entity\EntityHelper;
+use Drupal\simple_sitemap\Exception\SkipElementException;
+use Drupal\simple_sitemap\Logger;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGeneratorBase;
+use Drupal\simple_sitemap\Settings;
+use Drupal\simple_sitemap_views\SimpleSitemapViews;
+use Drupal\views\Views;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Views URL generator plugin.
@@ -76,7 +76,7 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
     EntityTypeManagerInterface $entity_type_manager,
     EntityHelper $entity_helper,
     SimpleSitemapViews $sitemap_views,
-    RouteProviderInterface $route_provider
+    RouteProviderInterface $route_provider,
   ) {
     parent::__construct(
       $configuration,
@@ -213,7 +213,6 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
         $this->cleanRouteParameters($url, $args);
       }
 
-      $path = $url->getInternalPath();
       // Destroy a view instance.
       $view->destroy();
     }
@@ -227,22 +226,16 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
       throw new SkipElementException($e->getMessage());
     }
 
-    return [
-      'url' => $url,
-      'lastmod' => NULL,
-      'priority' => $settings['priority'] ?? NULL,
-      'changefreq' => !empty($settings['changefreq']) ? $settings['changefreq'] : NULL,
-      'images' => [],
-      // Additional info useful in hooks.
-      'meta' => [
-        'path' => $path,
-        'view_info' => [
-          'view_id' => $view_id,
-          'display_id' => $display_id,
-          'arguments' => $args,
-        ],
-      ],
+    $path_data = $this->constructPathData($url, $settings);
+
+    // Additional info useful in hooks.
+    $path_data['meta']['view_info'] = [
+      'view_id' => $view_id,
+      'display_id' => $display_id,
+      'arguments' => $args,
     ];
+
+    return $path_data;
   }
 
   /**

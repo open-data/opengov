@@ -25,8 +25,6 @@ class SearchApiSort extends SortPluginBase {
     // When there are exposed sorts, the "exposed form" plugin will set
     // $query->orderby to an empty array. Therefore, if that property is set,
     // we here remove all previous sorts.
-    // @todo Is this still true in D8?
-    // @todo Check whether #2145547 is still a problem here.
     if (isset($this->query->orderby)) {
       unset($this->query->orderby);
       $sort = &$this->query->getSort();

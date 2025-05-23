@@ -37,20 +37,20 @@ class ReliablePhpRedis extends ReliableQueueBase {
   public function createItem($data) {
     $record = new \stdClass();
     $record->data = $data;
-    $record->qid = $this->incrementId();
+    $record->item_id = $this->incrementId();
     // We cannot rely on REQUEST_TIME because many items might be created
     // by a single request which takes longer than 1 second.
     $record->timestamp = time();
 
     $result = $this->client->multi()
-      ->hsetnx($this->availableItems, $record->qid, serialize($record))
+      ->hsetnx($this->availableItems, $record->item_id, serialize($record))
       ->lLen($this->availableListKey)
-      ->lpush($this->availableListKey, $record->qid)
+      ->lpush($this->availableListKey, $record->item_id)
       ->exec();
 
     $success = $result[0] && $result[2] > $result[1];
 
-    return $success ? $record->qid : FALSE;
+    return $success ? $record->item_id : FALSE;
   }
 
   /**
@@ -91,7 +91,8 @@ class ReliablePhpRedis extends ReliableQueueBase {
       $job = $this->client->hget($this->availableItems, $qid);
       if ($job) {
         $item = unserialize($job);
-        $this->client->setex($this->leasedKeyPrefix . $item->qid, $lease_time, '1');
+        $item->item_id ??= $item->qid;
+        $this->client->setex($this->leasedKeyPrefix . $item->item_id, $lease_time, '1');
       }
     }
 
@@ -103,8 +104,8 @@ class ReliablePhpRedis extends ReliableQueueBase {
    */
   public function releaseItem($item) {
     $this->client->multi()
-      ->lrem($this->claimedListKey, $item->qid, -1)
-      ->lpush($this->availableListKey, $item->qid)
+      ->lrem($this->claimedListKey, $item->item_id, -1)
+      ->lpush($this->availableListKey, $item->item_id)
       ->exec();
   }
 
@@ -113,8 +114,8 @@ class ReliablePhpRedis extends ReliableQueueBase {
    */
   public function deleteItem($item) {
     $this->client->multi()
-      ->lrem($this->claimedListKey, $item->qid, -1)
-      ->hdel($this->availableItems, $item->qid)
+      ->lrem($this->claimedListKey, $item->item_id, -1)
+      ->hdel($this->availableItems, $item->item_id)
       ->exec();
   }
 

@@ -280,7 +280,7 @@ class ExcludeSpecifiedItemsProcessorTest extends UnitTestCase {
   /**
    * Provides multiple data sets for ::testRegexFilter.
    */
-  public static function provideRegexTests(): array {
+  public static function provideRegexTests() {
     return [
       [
         'test',

@@ -8,7 +8,7 @@
 
   <!-- Root template -->
   <xsl:template match="/">
-    <html>
+    <html lang="[langcode]">
       <head>
         <title>[title]</title>
         <script type="text/javascript" src="[jquery]"/>

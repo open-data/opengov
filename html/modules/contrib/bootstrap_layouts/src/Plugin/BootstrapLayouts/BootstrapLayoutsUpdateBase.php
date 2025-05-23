@@ -5,12 +5,9 @@ namespace Drupal\bootstrap_layouts\Plugin\BootstrapLayouts;
 use Drupal\bootstrap_layouts\BootstrapLayout;
 use Drupal\bootstrap_layouts\BootstrapLayoutsManager;
 use Drupal\Core\Plugin\PluginBase;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BootstrapLayoutsUpdateBase extends PluginBase implements BootstrapLayoutsUpdateInterface {
-
-  use ContainerAwareTrait;
 
   /**
    * The path to the provider.

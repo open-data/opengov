@@ -35,6 +35,9 @@ class SimpleSitemapListBuilder extends DraggableListBuilder {
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity
+   *   The entity for this row of the list.
    */
   public function buildRow(EntityInterface $entity) {
     $row['name']['#markup'] = '<span title="' . $entity->get('description') . '">' . $entity->label() . '</span>';

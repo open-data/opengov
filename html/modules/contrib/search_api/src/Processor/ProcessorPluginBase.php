@@ -145,7 +145,7 @@ abstract class ProcessorPluginBase extends IndexPluginBase implements ProcessorI
   /**
    * {@inheritdoc}
    */
-  public function getPropertyDefinitions(DatasourceInterface $datasource = NULL) {
+  public function getPropertyDefinitions(?DatasourceInterface $datasource = NULL) {
     return [];
   }
 
@@ -182,7 +182,7 @@ abstract class ProcessorPluginBase extends IndexPluginBase implements ProcessorI
   /**
    * {@inheritdoc}
    */
-  public function requiresReindexing(array $old_settings = NULL, array $new_settings = NULL) {
+  public function requiresReindexing(?array $old_settings = NULL, ?array $new_settings = NULL) {
     // Only require re-indexing for processors that actually run during the
     // indexing process.
     return $this->supportsStage(ProcessorInterface::STAGE_PREPROCESS_INDEX);

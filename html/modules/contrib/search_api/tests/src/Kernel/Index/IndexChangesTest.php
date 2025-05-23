@@ -2,7 +2,9 @@
 
 namespace Drupal\Tests\search_api\Kernel\Index;
 
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\entity_test\Entity\EntityTestMulRevChanged;
+use Drupal\entity_test\EntityTestHelper;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
@@ -197,9 +199,7 @@ class IndexChangesTest extends KernelTestBase {
       ->get('search_api.plugin_helper')
       ->createProcessorPlugin($this->index, 'search_api_test');
     $this->index->addProcessor($processor);
-    $this->setMethodOverride('processor', 'supportsIndex', function (IndexInterface $index) {
-      return in_array('entity:entity_test_mulrev_changed', $index->getDatasourceIds());
-    });
+    $this->setMethodOverride('processor', 'supportsIndex', [$this, 'supportsIndexOverride']);
 
     $this->index->save();
 
@@ -264,6 +264,23 @@ class IndexChangesTest extends KernelTestBase {
     sort($indexed_items);
     $this->assertEquals($expected, $indexed_items);
     $this->assertEquals(0, $tracker->getRemainingItemsCount());
+  }
+
+  /**
+   * Provides a custom implementation of ProcessorInterface::supportsIndex().
+   *
+   * Checks whether the processor is applicable for a certain index.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The index to check for.
+   *
+   * @return bool
+   *   TRUE if the processor can run on the given index; FALSE otherwise.
+   *
+   * @see \Drupal\search_api\Processor\ProcessorInterface::supportsIndex()
+   */
+  public function supportsIndexOverride(IndexInterface $index): bool {
+    return in_array('entity:entity_test_mulrev_changed', $index->getDatasourceIds());
   }
 
   /**
@@ -339,8 +356,18 @@ class IndexChangesTest extends KernelTestBase {
    * Tests correct reaction when a bundle containing a property is removed.
    */
   public function testPropertyBundleRemoved() {
-    entity_test_create_bundle('bundle1', NULL, 'entity_test_mulrev_changed');
-    entity_test_create_bundle('bundle2', NULL, 'entity_test_mulrev_changed');
+    DeprecationHelper::backwardsCompatibleCall(
+      \Drupal::VERSION,
+      '11.2.0',
+      fn () => EntityTestHelper::createBundle('bundle1', NULL, 'entity_test_mulrev_changed'),
+      fn () => entity_test_create_bundle('bundle1', NULL, 'entity_test_mulrev_changed'),
+    );
+    DeprecationHelper::backwardsCompatibleCall(
+      \Drupal::VERSION,
+      '11.2.0',
+      fn () => EntityTestHelper::createBundle('bundle2', NULL, 'entity_test_mulrev_changed'),
+      fn () => entity_test_create_bundle('bundle2', NULL, 'entity_test_mulrev_changed'),
+    );
 
     $this->enableModules(['field', 'text']);
     $this->installEntitySchema('field_storage_config');

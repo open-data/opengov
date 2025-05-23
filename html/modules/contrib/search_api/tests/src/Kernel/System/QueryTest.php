@@ -6,6 +6,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\Query\ConditionGroup;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_test\PluginTestTrait;
@@ -139,7 +140,7 @@ class QueryTest extends KernelTestBase {
    *   Arrays of method arguments for the
    *   \Drupal\Tests\search_api\Kernel\QueryTest::testProcessingLevel() method.
    */
-  public function testProcessingLevelDataProvider() {
+  public static function testProcessingLevelDataProvider() {
     return [
       'none' => [QueryInterface::PROCESSING_NONE, FALSE],
       'basic' => [QueryInterface::PROCESSING_BASIC],
@@ -244,11 +245,35 @@ class QueryTest extends KernelTestBase {
     $this->assertFalse($query_clone_1->hasExecuted());
 
     $original_query = $query->getOriginalQuery();
+    // Call __wakeup() since $original_query might have been serialized (but not
+    // unserialized).
+    $original_query->__wakeup();
     $this->assertEquals($query_clone_2, $original_query);
     $this->assertFalse($original_query->hasExecuted());
     $original_query->execute();
     $methods = $this->getCalledMethods('backend');
     $this->assertEquals(['search'], $methods);
+  }
+
+  /**
+   * Tests the ConditionGroup::isEmpty() method.
+   *
+   * @covers \Drupal\search_api\Query\ConditionGroup::isEmpty
+   */
+  public function testConditionGroupIsEmpty(): void {
+    $condition_group = new ConditionGroup();
+    $this->assertTrue($condition_group->isEmpty());
+    $condition_group_2 = new ConditionGroup();
+    $condition_group->addConditionGroup($condition_group_2);
+    $condition_group_3 = new ConditionGroup();
+    $condition_group->addConditionGroup($condition_group_3);
+    $this->assertTrue($condition_group->isEmpty());
+    $this->assertTrue($condition_group_2->isEmpty());
+    $this->assertTrue($condition_group_3->isEmpty());
+    $condition_group_2->addCondition('foo', 'bar');
+    $this->assertFalse($condition_group->isEmpty());
+    $this->assertFalse($condition_group_2->isEmpty());
+    $this->assertTrue($condition_group_3->isEmpty());
   }
 
 }

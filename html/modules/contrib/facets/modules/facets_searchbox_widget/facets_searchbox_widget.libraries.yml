@@ -8,4 +8,5 @@ searchbox:
   dependencies:
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
+    - core/jquery
+    - core/once

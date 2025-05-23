@@ -120,7 +120,7 @@ class NodewordsFieldInstance extends DrupalSqlBase {
   /**
    * {@inheritdoc}
    */
-  public function count($refresh = FALSE) {
+  public function count($refresh = FALSE): int {
     /** @var \ArrayIterator $items */
     $items = $this->initializeIterator();
     return $items->count();

@@ -72,7 +72,7 @@ class MetatagFieldNodeTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $entityFieldAdminPath = 'admin/structure/types/manage/page/fields';
+  protected $entityFieldAdminPath = 'admin/structure/types/manage/page';
 
   /**
    * {@inheritdoc}

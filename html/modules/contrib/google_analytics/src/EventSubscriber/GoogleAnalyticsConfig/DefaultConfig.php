@@ -83,7 +83,7 @@ class DefaultConfig implements EventSubscriberInterface {
     // Per RFC 2109, cookie domains must contain at least one dot other than the
     // first. For hosts such as 'localhost' or IP Addresses we don't set a
     // cookie domain.
-    if (!empty($cookie_domain) && $domain_mode == 1 && count(explode('.', $cookie_domain)) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
+    if (!empty($cookie_domain) && $domain_mode == 1 && count(explode('.', $cookie_domain ?? '')) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
       $arguments = array_merge($arguments, ['cookie_domain' => $cookie_domain]);
       $javascript->setAdsenseScript($cookie_domain);
     }

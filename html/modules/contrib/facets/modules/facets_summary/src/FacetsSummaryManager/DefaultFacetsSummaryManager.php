@@ -2,6 +2,7 @@
 
 namespace Drupal\facets_summary\FacetsSummaryManager;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\facets\Exception\InvalidProcessorException;
@@ -47,6 +48,8 @@ class DefaultFacetsSummaryManager {
   protected $facetManager;
 
   /**
+   * The facets.
+   *
    * @var \Drupal\facets\FacetInterface[]
    */
   protected $facets = [];
@@ -88,6 +91,20 @@ class DefaultFacetsSummaryManager {
    *   Throws an exception when an invalid processor is linked to the facet.
    */
   public function build(FacetsSummaryInterface $facets_summary) {
+    if ($facets_summary->getOnlyVisibleWhenFacetSourceIsVisible()) {
+      // Block rendering and processing should be stopped when the facet source
+      // is not available on the page. Returning an empty array here is enough
+      // to halt all further processing.
+      $facet_source = $facets_summary->getFacetSource();
+      if (is_null($facet_source) || !$facet_source->isRenderedInCurrentRequest()) {
+        $build = [];
+        $cacheableMetadata = new CacheableMetadata();
+        $cacheableMetadata->addCacheableDependency($facet_source);
+        $cacheableMetadata->applyTo($build);
+        return $build;
+      }
+    }
+
     // Let the facet_manager build the facets.
     $facets = $this->getFacets($facets_summary);
     $facets_config = $facets_summary->getFacets();

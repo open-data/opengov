@@ -51,6 +51,13 @@ class CustomValueTest extends ProcessorTestBase {
     $field->setConfiguration(['value' => '[node:type] [comment:author]']);
     $this->index->addField($field);
 
+    $field = new Field($this->index, 'custom_value_fixed');
+    $field->setType('string');
+    $field->setPropertyPath('custom_value');
+    $field->setLabel('Some value');
+    $field->setConfiguration(['value' => 'Value without tokens']);
+    $this->index->addField($field);
+
     $this->index->save();
 
     // Create a test node and test comment.
@@ -93,6 +100,7 @@ class CustomValueTest extends ProcessorTestBase {
     $this->assertEquals($expected, $fields['custom_value_nodes']->getValues());
     $this->assertEquals([], $fields['custom_value_comments']->getValues());
     $this->assertEquals($expected, $fields['custom_value_both']->getValues());
+    $this->assertEquals(['Value without tokens'], $fields['custom_value_fixed']->getValues());
 
     // Test field value on comment.
     $comment = $this->entities['comment'];
@@ -107,6 +115,7 @@ class CustomValueTest extends ProcessorTestBase {
     $this->assertEquals([], $fields['custom_value_nodes']->getValues());
     $this->assertEquals($expected, $fields['custom_value_comments']->getValues());
     $this->assertEquals($expected, $fields['custom_value_both']->getValues());
+    $this->assertEquals(['Value without tokens'], $fields['custom_value_fixed']->getValues());
   }
 
 }

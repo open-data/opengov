@@ -1,6 +1,20 @@
 Unreleased
 ==========
 
+1.22.0
+======
+
+**Removed:**
+
+* Support for PHP 7.2 and 7.3 (@jean85)
+
+1.21.0
+======
+
+**Added:**
+
+* Add support for PHPUnit 12 (@jean85)
+
 1.20.0
 ======
 

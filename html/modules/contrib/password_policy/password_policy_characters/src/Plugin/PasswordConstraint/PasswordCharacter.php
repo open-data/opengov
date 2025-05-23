@@ -39,15 +39,18 @@ class PasswordCharacter extends PasswordConstraintBase {
         // Increase counts by the number of incidences of chr($i).
         if (is_numeric($char)) {
           $count_numeric += $val;
-        } else {
+        }
+        else {
           if (ctype_upper($char)) {
             $count_upper += $val;
             $count_letter += $val;
-          } else {
+          }
+          else {
             if (ctype_lower($char)) {
               $count_lower += $val;
               $count_letter += $val;
-            } else {
+            }
+            else {
               $count_special += $val;
             }
           }
@@ -192,4 +195,5 @@ class PasswordCharacter extends PasswordConstraintBase {
     }
     return $summary;
   }
+
 }

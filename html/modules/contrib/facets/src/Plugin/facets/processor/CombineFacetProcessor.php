@@ -171,4 +171,9 @@ class CombineFacetProcessor extends ProcessorPluginBase implements BuildProcesso
     return $results;
   }
 
+  public function supportsFacet(FacetInterface $facet) {
+    // Only support facets as entities, not e.g. facets_exposed_filters.
+    return $facet->getFacetType() == 'facet_entity';
+  }
+
 }

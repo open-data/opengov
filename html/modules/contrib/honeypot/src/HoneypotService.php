@@ -54,7 +54,7 @@ class HoneypotService implements HoneypotServiceInterface {
   protected $keyValue;
 
   /**
-   * Killswitch policy object.
+   * KillSwitch policy object.
    *
    * @var \Drupal\Core\PageCache\ResponsePolicy\KillSwitch
    */
@@ -107,7 +107,7 @@ class HoneypotService implements HoneypotServiceInterface {
    * @param \Drupal\Core\KeyValueStore\KeyValueExpirableFactory $key_value
    *   Drupal key value factory store factory.
    * @param \Drupal\Core\PageCache\ResponsePolicy\KillSwitch $kill_switch
-   *   Killswitch policy object.
+   *   KillSwitch policy object.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory

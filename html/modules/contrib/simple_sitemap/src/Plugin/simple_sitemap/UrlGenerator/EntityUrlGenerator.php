@@ -2,16 +2,16 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Exception\SkipElementException;
 use Drupal\simple_sitemap\Logger;
 use Drupal\simple_sitemap\Manager\EntityManager;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -91,7 +91,7 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     EntityHelper $entity_helper,
     EntityManager $entities_manager,
     UrlGeneratorManager $url_generator_manager,
-    MemoryCacheInterface $memory_cache
+    MemoryCacheInterface $memory_cache,
   ) {
     parent::__construct(
       $configuration,
@@ -116,7 +116,8 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     ContainerInterface $container,
     array $configuration,
     $plugin_id,
-    $plugin_definition): SimpleSitemapPluginBase {
+    $plugin_definition,
+  ): SimpleSitemapPluginBase {
     return new static(
       $configuration,
       $plugin_id,
@@ -223,6 +224,7 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
    * {@inheritdoc}
    */
   protected function processDataSet($data_set): array {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     foreach ($this->entityTypeManager->getStorage($data_set['entity_type'])->loadMultiple((array) $data_set['id']) as $entity) {
       try {
         $paths[] = $this->processEntity($entity);
@@ -247,6 +249,7 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityMalformedException
+   * @throws \Drupal\simple_sitemap\Exception\SkipElementException
    */
   protected function processEntity(ContentEntityInterface $entity): array {
     $entity_settings = $this->entitiesManager
@@ -257,34 +260,14 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
       throw new SkipElementException();
     }
 
-    $entity_settings = $entity_settings[$this->sitemap->id()];
-    $url_object = $entity->toUrl()->setAbsolute();
+    $url = $entity->toUrl();
 
     // Do not include external paths.
-    if (!$url_object->isRouted()) {
+    if (!$url->isRouted()) {
       throw new SkipElementException();
     }
 
-    return [
-      'url' => $url_object,
-      'lastmod' => method_exists($entity, 'getChangedTime')
-        ? date('c', $entity->getChangedTime())
-        : NULL,
-      'priority' => $entity_settings['priority'] ?? NULL,
-      'changefreq' => !empty($entity_settings['changefreq']) ? $entity_settings['changefreq'] : NULL,
-      'images' => !empty($entity_settings['include_images'])
-        ? $this->getEntityImageData($entity)
-        : [],
-
-        // Additional info useful in hooks.
-      'meta' => [
-        'path' => $url_object->getInternalPath(),
-        'entity_info' => [
-          'entity_type' => $entity->getEntityTypeId(),
-          'id' => $entity->id(),
-        ],
-      ],
-    ];
+    return $this->constructPathData($url, $entity_settings[$this->sitemap->id()]);
   }
 
   /**
@@ -295,9 +278,9 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     $url_variant_sets = [];
     foreach ($path_data_sets as $path_data) {
       if (isset($path_data['url']) && $path_data['url'] instanceof Url) {
-        $url_object = $path_data['url'];
+        $url = $path_data['url'];
         unset($path_data['url']);
-        $url_variant_sets[] = $this->getUrlVariants($path_data, $url_object);
+        $url_variant_sets[] = $this->getUrlVariants($path_data, $url);
       }
     }
 

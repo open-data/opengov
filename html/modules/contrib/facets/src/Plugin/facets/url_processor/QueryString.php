@@ -89,7 +89,7 @@ class QueryString extends UrlProcessorPluginBase {
     // When adding/removing a filter the number of pages may have changed,
     // possibly resulting in an invalid page parameter.
     if ($get_params->has('page')) {
-      $current_page = $get_params->get('page');
+      $current_page = $get_params->all()['page'];
       $get_params->remove('page');
     }
 
@@ -236,6 +236,7 @@ class QueryString extends UrlProcessorPluginBase {
         unset($new_url_params['page']);
 
         // Remove core wrapper format (e.g. render-as-ajax-response) parameters.
+        // @todo ajax review
         unset($new_url_params[MainContentViewSubscriber::WRAPPER_FORMAT]);
 
         // Set the new url parameters.
@@ -262,7 +263,7 @@ class QueryString extends UrlProcessorPluginBase {
    * If the facet's source has a path, we construct a request object based on
    * that path, as it may be different than the current request's. This method
    * statically caches the request object based on the facet source path so that
-   * subsequent calls to this processer do not recreate the same request object.
+   * subsequent calls to this processor do not recreate the same request object.
    *
    * @param string $facet_source_path
    *   The facet source path.
@@ -312,8 +313,12 @@ class QueryString extends UrlProcessorPluginBase {
    * is an array of raw values.
    */
   protected function initializeActiveFilters() {
-    $url_parameters = $this->request->query;
-
+    if ($this->request->isXmlHttpRequest()) {
+      $url_parameters = $this->request->request;
+    }
+    else {
+      $url_parameters = $this->request->query;
+    }
     // Get the active facet parameters.
     $active_params = $url_parameters->all()[$this->filterKey] ?? "";
     $facet_source_id = $this->configuration['facet']->getFacetSourceId();

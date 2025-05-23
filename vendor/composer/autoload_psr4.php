@@ -113,7 +113,6 @@ return array(
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/src'),
     'Drush\\' => array($vendorDir . '/drush/drush/src'),
     'Drupal\\redis\\' => array($baseDir . '/html/modules/contrib/redis/src'),
-    'Drupal\\bootstrap\\' => array($baseDir . '/html/themes/contrib/bootstrap/src'),
     'Drupal\\Core\\' => array($baseDir . '/html/core/lib/Drupal/Core'),
     'Drupal\\Composer\\Plugin\\Scaffold\\' => array($vendorDir . '/drupal/core-composer-scaffold'),
     'Drupal\\Component\\' => array($baseDir . '/html/core/lib/Drupal/Component'),

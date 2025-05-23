@@ -36,4 +36,9 @@ class ShowOnlyDeepestLevelItemsProcessor extends ProcessorPluginBase implements 
     return $results;
   }
 
+  public function supportsFacet(FacetInterface $facet) {
+    // TODO: Support "facets_exposed_filter".
+    return $facet->getFacetType() == 'facet_entity';
+  }
+
 }

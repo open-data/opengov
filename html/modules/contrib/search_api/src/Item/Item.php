@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api\Item;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
@@ -115,6 +116,13 @@ class Item implements \IteratorAggregate, ItemInterface {
   protected $extraData = [];
 
   /**
+   * All warnings added to this item.
+   *
+   * @var string[]|\Drupal\Component\Render\MarkupInterface[]
+   */
+  protected array $warnings = [];
+
+  /**
    * Cached access results for the item, keyed by user ID.
    *
    * @var \Drupal\Core\Access\AccessResultInterface[]
@@ -134,7 +142,7 @@ class Item implements \IteratorAggregate, ItemInterface {
    *   (optional) The datasource of this item. If not set, it will be determined
    *   from the ID and loaded from the index.
    */
-  public function __construct(IndexInterface $index, $id, DatasourceInterface $datasource = NULL) {
+  public function __construct(IndexInterface $index, $id, ?DatasourceInterface $datasource = NULL) {
     $this->index = $index;
     $this->itemId = $id;
     if ($datasource) {
@@ -148,7 +156,7 @@ class Item implements \IteratorAggregate, ItemInterface {
    */
   public function getDatasourceId() {
     if (!isset($this->datasourceId)) {
-      list($this->datasourceId) = Utility::splitCombinedId($this->itemId);
+      [$this->datasourceId] = Utility::splitCombinedId($this->itemId);
     }
     return $this->datasourceId;
   }
@@ -297,7 +305,7 @@ class Item implements \IteratorAggregate, ItemInterface {
   /**
    * {@inheritdoc}
    */
-  public function setField($field_id, FieldInterface $field = NULL) {
+  public function setField($field_id, ?FieldInterface $field = NULL) {
     if ($field) {
       if ($field->getFieldIdentifier() !== $field_id) {
         throw new \InvalidArgumentException('The field identifier passed must be consistent with the identifier set on the field object.');
@@ -353,7 +361,10 @@ class Item implements \IteratorAggregate, ItemInterface {
    * {@inheritdoc}
    */
   public function setScore($score) {
-    $this->score = $score;
+    if (!is_numeric($score) || ((float) $score) < 0) {
+      @trigger_error('Passing negative numbers or non-numeric values to \Drupal\search_api\Item\Item::setScore() is deprecated in search_api:8.x-1.36 and will stop working in search_api:2.0.0. See https://www.drupal.org/node/3485262', E_USER_DEPRECATED);
+    }
+    $this->score = (float) $score;
     return $this;
   }
 
@@ -368,7 +379,10 @@ class Item implements \IteratorAggregate, ItemInterface {
    * {@inheritdoc}
    */
   public function setBoost($boost) {
-    $this->boost = $boost;
+    if (!is_numeric($boost) || ((float) $boost) < 0) {
+      @trigger_error('Passing negative numbers or non-numeric values to \Drupal\search_api\Item\Item::setBoost() is deprecated in search_api:8.x-1.36 and will stop working in search_api:2.0.0. See https://www.drupal.org/node/3485262', E_USER_DEPRECATED);
+    }
+    $this->boost = (float) $boost;
     return $this;
   }
 
@@ -424,7 +438,29 @@ class Item implements \IteratorAggregate, ItemInterface {
   /**
    * {@inheritdoc}
    */
-  public function checkAccess(AccountInterface $account = NULL) {
+  public function hasWarnings(): bool {
+    return (bool) $this->warnings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getWarnings(): array {
+    return $this->warnings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addWarning(MarkupInterface|string $warning): static {
+    $this->warnings[] = $warning;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkAccess(?AccountInterface $account = NULL) {
     @trigger_error('\Drupal\search_api\Item\ItemInterface::checkAccess() is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Use getAccessResult() instead. See https://www.drupal.org/node/3051902', E_USER_DEPRECATED);
     return $this->getAccessResult($account)->isAllowed();
   }
@@ -432,7 +468,7 @@ class Item implements \IteratorAggregate, ItemInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAccessResult(AccountInterface $account = NULL) {
+  public function getAccessResult(?AccountInterface $account = NULL) {
     if (!$account) {
       $account = \Drupal::currentUser();
     }
@@ -455,7 +491,7 @@ class Item implements \IteratorAggregate, ItemInterface {
    * {@inheritdoc}
    */
   #[\ReturnTypeWillChange]
-  public function getIterator() {
+  public function getIterator(): \Traversable {
     return new \ArrayIterator($this->getFields());
   }
 

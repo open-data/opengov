@@ -23,6 +23,7 @@ class PasswordPolicyInterfaceTest extends BrowserTestBase {
    */
   protected static $modules = [
     'password_policy',
+    'password_policy_history',
     'password_policy_length',
     'password_policy_character_types',
     'node',

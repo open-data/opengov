@@ -20,6 +20,10 @@
       // Catch the closest surrounding link of a clicked element.
       $(event.target).closest('a,area').each(function () {
 
+        if (typeof this.href !== "string") {
+          return;
+        }
+
         // Is the clicked URL internal?
         if (Drupal.google_analytics.isInternal(this.href)) {
           // Skip 'click' tracking, if custom tracking events are bound.

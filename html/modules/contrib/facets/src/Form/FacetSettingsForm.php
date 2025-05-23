@@ -87,6 +87,8 @@ class FacetSettingsForm extends EntityForm {
     // facet.
     if ($this->getEntity()->isNew()) {
       $form['#title'] = $this->t('Add facet');
+      $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
+      $form['facets_3_block_support'] = ['#markup' => '<p>' . t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
     }
     else {
       $form['#title'] = $this->t('Facet settings for %label facet', ['%label' => $this->getEntity()->label()]);
@@ -113,6 +115,11 @@ class FacetSettingsForm extends EntityForm {
 
     $facet_sources = [];
     foreach ($this->facetSourcePluginManager->getDefinitions() as $facet_source_id => $definition) {
+      // For now, we hide the facet sources for views display default.
+      // They should not be used to attach block facets.
+      if (substr($definition["display_id"], 0, 14) == 'views_default:') {
+        continue;
+      }
       $facet_sources[$definition['id']] = !empty($definition['label']) ? $definition['label'] : $facet_source_id;
     }
 
@@ -313,7 +320,7 @@ class FacetSettingsForm extends EntityForm {
           $facet->setOnlyVisibleWhenFacetSourceIsVisible(FALSE);
         }
         $views_cache_type = $view->display_handler->getOption('cache')['type'];
-        if ($views_cache_type !== 'none') {
+        if ($views_cache_type !== 'search_api_none') {
           $this->messenger()->addMessage($this->t('You may experience issues, because %view use cache. In case you will try to turn set cache plugin to none.', ['%view' => $view->storage->label()]));
         }
       }

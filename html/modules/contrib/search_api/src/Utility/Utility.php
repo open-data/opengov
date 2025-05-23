@@ -319,7 +319,7 @@ class Utility {
   /**
    * Formats a boost factor as a standard float value.
    *
-   * @param string|float $boost_factor
+   * @param string|float|null $boost_factor
    *   The boost factor to be formatted.
    *
    * @return string

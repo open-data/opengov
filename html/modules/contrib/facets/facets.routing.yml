@@ -48,10 +48,3 @@ entity.facets_facet_source.edit_form:
     _title: 'Edit facet source configuration'
   requirements:
     _entity_create_access: 'facets_facet'
-
-facets.block.ajax:
-  path: '/facets-block-ajax'
-  defaults:
-    _controller: '\Drupal\facets\Controller\FacetBlockAjaxController::ajaxFacetBlockView'
-  requirements:
-    _access: 'TRUE'

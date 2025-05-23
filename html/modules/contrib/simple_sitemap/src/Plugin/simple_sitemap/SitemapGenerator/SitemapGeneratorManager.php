@@ -2,9 +2,9 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator;
 
-use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\simple_sitemap\Annotation\SitemapGenerator;
 
 /**
@@ -26,7 +26,7 @@ class SitemapGeneratorManager extends DefaultPluginManager {
   public function __construct(
     \Traversable $namespaces,
     CacheBackendInterface $cache_backend,
-    ModuleHandlerInterface $module_handler
+    ModuleHandlerInterface $module_handler,
   ) {
     parent::__construct(
       'Plugin/simple_sitemap/SitemapGenerator',

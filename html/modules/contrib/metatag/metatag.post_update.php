@@ -63,6 +63,7 @@ function _metatag_list_entity_field_tables(): array {
         $entity_type = $entity_type_manager->getDefinition($entity_type_id);
 
         // Determine the table and "value" field names.
+        /** @var \Drupal\Core\Entity\Sql\DefaultTableMapping $table_mapping */
         $table_mapping = $entity_type_manager->getStorage($entity_type_id)
           ->getTableMapping();
         $field_table = $table_mapping->getFieldTableName($field_name);
@@ -130,7 +131,6 @@ function metatag_post_update_convert_author_config(&$sandbox) {
  * The author meta tag was moved into the main module: entity data.
  */
 function metatag_post_update_convert_author_data(&$sandbox) {
-  $entity_type_manager = \Drupal::entityTypeManager();
   $database = \Drupal::database();
 
   // This whole top section only needs to be done the first time.
@@ -195,7 +195,7 @@ function metatag_post_update_convert_author_data(&$sandbox) {
 
       // Strip any empty tags or ones matching the field's defaults and leave
       // only the overridden tags in $new_tags.
-      $tags = unserialize($record->$field_value_field);
+      $tags = unserialize($record->$field_value_field, ['allowed_classes' => FALSE]);
       if (isset($tags['google_plus_author'])) {
         $tags['author'] = $tags['google_plus_author'];
         $tags_string = serialize($tags);
@@ -247,7 +247,6 @@ function metatag_post_update_convert_author_data(&$sandbox) {
  * Remove 'noydir', 'noodp' ROBOTS options from meta tag entity fields.
  */
 function metatag_post_update_remove_robots_noydir_noodp(&$sandbox) {
-  $entity_type_manager = \Drupal::entityTypeManager();
   $database = \Drupal::database();
 
   // This whole top section only needs to be done the first time.
@@ -377,7 +376,6 @@ function metatag_post_update_remove_robots_noydir_noodp(&$sandbox) {
  * Convert all fields to use JSON storage.
  */
 function metatag_post_update_v2_01_change_fields_to_json(&$sandbox) {
-  $entity_type_manager = \Drupal::entityTypeManager();
   $database = \Drupal::database();
 
   // This whole top section only needs to be done the first time.
@@ -444,23 +442,23 @@ function metatag_post_update_v2_01_change_fields_to_json(&$sandbox) {
       // @todo Remove tags matching the defaults and leave overridden values.
       if (substr($record->$field_value_field, 0, 2) === 'a:') {
         $tags = @unserialize($record->$field_value_field, ['allowed_classes' => FALSE]);
+
+        if (is_array($tags)) {
+          $tags_string = Json::encode($tags);
+          $database->update($field_table)
+            ->fields([
+              $field_value_field => $tags_string,
+            ])
+            ->condition('entity_id', $record->entity_id)
+            ->condition('revision_id', $record->revision_id)
+            ->condition('langcode', $record->langcode)
+            ->execute();
+        }
+        $counter++;
       }
       else {
         throw new UpdateException("It seems like there was a problem with the data. The update script should probably be improved to better handle these scenarios.");
       }
-
-      if (is_array($tags)) {
-        $tags_string = Json::encode($tags);
-        $database->update($field_table)
-          ->fields([
-            $field_value_field => $tags_string,
-          ])
-          ->condition('entity_id', $record->entity_id)
-          ->condition('revision_id', $record->revision_id)
-          ->condition('langcode', $record->langcode)
-          ->execute();
-      }
-      $counter++;
     }
     if (empty($counter)) {
       $sandbox['current_field']++;
@@ -493,7 +491,6 @@ function metatag_post_update_v2_01_change_fields_to_json(&$sandbox) {
  * Remove meta tags entity values that were removed in v2.
  */
 function metatag_post_update_v2_02_remove_entity_values(array &$sandbox) {
-  $entity_type_manager = \Drupal::entityTypeManager();
   $database = \Drupal::database();
 
   $metatags_to_remove = [

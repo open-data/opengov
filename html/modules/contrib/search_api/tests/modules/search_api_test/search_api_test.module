@@ -76,3 +76,12 @@ function search_api_test_search_api_server_load($servers) {
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK() for node.html.twig.
+ */
+function search_api_test_preprocess_node(&$variables) {
+  if (\Drupal::keyValue('search_api_test')->get('preprocess_node_error')) {
+    throw new \RuntimeException('search_api_test_preprocess_node');
+  }
+}

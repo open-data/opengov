@@ -8,7 +8,7 @@ use Drupal\search_api\Datasource\DatasourcePluginBase;
 use Drupal\search_api_test\TestPluginTrait;
 
 /**
- * Provides a datasource for testing purposes.
+ * Provides a dummy datasource for testing purposes.
  *
  * @SearchApiDatasource(
  *   id = "search_api_test",

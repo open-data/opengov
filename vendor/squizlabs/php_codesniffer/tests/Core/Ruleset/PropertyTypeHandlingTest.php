@@ -45,6 +45,7 @@ final class PropertyTypeHandlingTest extends TestCase
      * @param mixed  $expected     Expected property value.
      *
      * @dataProvider dataTypeHandling
+     * @dataProvider dataArrayPropertyExtending
      *
      * @return void
      */
@@ -80,6 +81,7 @@ final class PropertyTypeHandlingTest extends TestCase
      * Data provider.
      *
      * @see self::testTypeHandlingWhenSetViaRuleset()
+     * @see self::testTypeHandlingWhenSetInline()
      *
      * @return array<string, array<string, mixed>>
      */
@@ -106,6 +108,10 @@ final class PropertyTypeHandlingTest extends TestCase
             'String value (default)'                         => [
                 'propertyName' => 'expectsString',
                 'expected'     => 'arbitraryvalue',
+            ],
+            'String value with whitespace gets trimmed'      => [
+                'propertyName' => 'expectsTrimmedString',
+                'expected'     => 'some value',
             ],
             'String with whitespace only value becomes null' => [
                 'propertyName' => 'emptyStringBecomesNull',
@@ -135,6 +141,10 @@ final class PropertyTypeHandlingTest extends TestCase
                 'propertyName' => 'expectsBooleanTrueCase',
                 'expected'     => 'True',
             ],
+            'True (with spaces) value gets set as boolean'   => [
+                'propertyName' => 'expectsBooleanTrueTrimmed',
+                'expected'     => true,
+            ],
             'False value gets set as boolean'                => [
                 'propertyName' => 'expectsBooleanFalse',
                 'expected'     => false,
@@ -142,6 +152,10 @@ final class PropertyTypeHandlingTest extends TestCase
             'False (mixed case) value gets set as string'    => [
                 'propertyName' => 'expectsBooleanFalseCase',
                 'expected'     => 'fALSe',
+            ],
+            'False (with spaces) value gets set as boolean'  => [
+                'propertyName' => 'expectsBooleanFalseTrimmed',
+                'expected'     => false,
             ],
             'Array with only values (new style)'             => [
                 'propertyName' => 'expectsArrayWithOnlyValues',
@@ -151,6 +165,10 @@ final class PropertyTypeHandlingTest extends TestCase
                 'propertyName' => 'expectsArrayWithKeysAndValues',
                 'expected'     => $expectedArrayKeysAndValues,
             ],
+            'Empty array (new style)'                        => [
+                'propertyName' => 'expectsEmptyArray',
+                'expected'     => [],
+            ],
             'Array with only values (old style)'             => [
                 'propertyName' => 'expectsOldSchoolArrayWithOnlyValues',
                 'expected'     => $expectedArrayOnlyValues,
@@ -159,9 +177,58 @@ final class PropertyTypeHandlingTest extends TestCase
                 'propertyName' => 'expectsOldSchoolArrayWithKeysAndValues',
                 'expected'     => $expectedArrayKeysAndValues,
             ],
+            'Empty array (old style)'                        => [
+                'propertyName' => 'expectsOldSchoolEmptyArray',
+                'expected'     => [],
+            ],
         ];
 
     }//end dataTypeHandling()
+
+
+    /**
+     * Data provider.
+     *
+     * Array property extending is a feature which is only supported from a ruleset, not for inline property setting.
+     *
+     * @see self::testTypeHandlingWhenSetViaRuleset()
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function dataArrayPropertyExtending()
+    {
+        $expectedArrayOnlyValuesExtended    = [
+            'string',
+            '15',
+            'another string',
+        ];
+        $expectedArrayKeysAndValuesExtended = [
+            10               => '10',
+            'string'         => 'string',
+            15               => '15',
+            'another string' => 'another string',
+        ];
+
+        return [
+            'Array with only values extended (new style)'     => [
+                'propertyName' => 'expectsArrayWithExtendedValues',
+                'expected'     => $expectedArrayOnlyValuesExtended,
+            ],
+            'Array with keys and values extended (new style)' => [
+                'propertyName' => 'expectsArrayWithExtendedKeysAndValues',
+                'expected'     => $expectedArrayKeysAndValuesExtended,
+            ],
+            'Array with only values extended (old style)'     => [
+                'propertyName' => 'expectsOldSchoolArrayWithExtendedValues',
+                'expected'     => $expectedArrayOnlyValuesExtended,
+            ],
+            'Array with keys and values extended (old style)' => [
+                'propertyName' => 'expectsOldSchoolArrayWithExtendedKeysAndValues',
+                'expected'     => $expectedArrayKeysAndValuesExtended,
+            ],
+        ];
+
+    }//end dataArrayPropertyExtending()
 
 
     /**
@@ -177,7 +244,7 @@ final class PropertyTypeHandlingTest extends TestCase
 
         if (isset($sniffObject) === false) {
             // Set up the ruleset.
-            $standard = __DIR__."/PropertyTypeHandlingTest.xml";
+            $standard = __DIR__.'/PropertyTypeHandlingTest.xml';
             $config   = new ConfigDouble(["--standard=$standard"]);
             $ruleset  = new Ruleset($config);
 
@@ -207,7 +274,7 @@ final class PropertyTypeHandlingTest extends TestCase
 
         if (isset($sniffObject) === false) {
             // Set up the ruleset.
-            $standard = __DIR__."/PropertyTypeHandlingInlineTest.xml";
+            $standard = __DIR__.'/PropertyTypeHandlingInlineTest.xml';
             $config   = new ConfigDouble(["--standard=$standard"]);
             $ruleset  = new Ruleset($config);
 

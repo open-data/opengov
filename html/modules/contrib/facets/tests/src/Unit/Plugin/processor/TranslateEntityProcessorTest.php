@@ -50,7 +50,7 @@ class TranslateEntityProcessorTest extends UnitTestCase {
     $language = new Language(['langcode' => 'en']);
     $this->languageManager->expects($this->any())
       ->method('getCurrentLanguage')
-      ->willReturn($language);
+      ->will($this->returnValue($language));
 
     // Mock entity type manager.
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);

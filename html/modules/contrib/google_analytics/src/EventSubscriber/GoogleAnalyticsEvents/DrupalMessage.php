@@ -4,6 +4,7 @@ namespace Drupal\google_analytics\EventSubscriber\GoogleAnalyticsEvents;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\google_analytics\Event\GoogleAnalyticsEventsEvent;
 use Drupal\google_analytics\Constants\GoogleAnalyticsEvents;
 use Drupal\google_analytics\Helpers\GoogleAnalyticsAccounts;
@@ -12,6 +13,8 @@ use Drupal\google_analytics\Helpers\GoogleAnalyticsAccounts;
  * Adds Drupal Messages to GA Javascript.
  */
 class DrupalMessage extends GoogleAnalyticsEventBase {
+
+  use StringTranslationTrait;
 
   /**
    * Drupal Messenger Service.
@@ -40,9 +43,9 @@ class DrupalMessage extends GoogleAnalyticsEventBase {
     if ($message_types = $this->ga_config->get('track.messages')) {
       $message_types = array_values(array_filter($message_types));
       $status_heading = [
-        'status' => t('Status message'),
-        'warning' => t('Warning message'),
-        'error' => t('Error message'),
+        'status' => $this->t('Status message'),
+        'warning' => $this->t('Warning message'),
+        'error' => $this->t('Error message'),
       ];
 
       foreach ($this->messenger->all() as $type => $messages) {
@@ -52,7 +55,7 @@ class DrupalMessage extends GoogleAnalyticsEventBase {
             // Compatibility with 3.x and UA format.
             if ($this->isLegacy) {
               $events[] = [(string)$status_heading[$type] =>
-                ['event_category' => (string)t('Messages'),
+                ['event_category' => (string) $this->t('Messages'),
                   'event_label'    => strip_tags((string) $message)
                 ]
               ];

@@ -1,0 +1,22 @@
+{%
+  set classes = [
+    'nav',
+    alignment,
+  ]
+%}
+
+<div {{ attributes }}>
+  <ul class="{{ classes | join(' ') }}">
+    {% for key, item in items %}
+      {%
+        set link_classes = [
+          'nav-link',
+          item.in_active_trail ? 'active',
+        ]
+      %}
+      <li{{ item.attributes.addClass("nav-item") }}>
+        {{ link(item.title, item.url, {'class': link_classes}) }}
+      </li>
+    {% endfor %}
+  </ul>
+</div>

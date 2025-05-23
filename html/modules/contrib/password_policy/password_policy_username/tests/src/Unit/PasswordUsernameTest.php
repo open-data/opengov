@@ -3,7 +3,6 @@
 namespace Drupal\Tests\password_policy_username\Unit;
 
 use Drupal\Tests\UnitTestCase;
-use Drupal\user\UserInterface;
 
 /**
  * Tests the password username constraint.
@@ -17,7 +16,7 @@ class PasswordUsernameTest extends UnitTestCase {
    *
    * @dataProvider passwordUsernameDataProvider
    */
-  public function testPasswordUsername($disallow_username, UserInterface $user, $password, $result) {
+  public function testPasswordUsername($disallow_username, $password, $result) {
     $username_test = $this->getMockBuilder('Drupal\password_policy_username\Plugin\PasswordConstraint\PasswordUsername')
       ->disableOriginalConstructor()
       ->onlyMethods(['getConfiguration', 't'])
@@ -27,40 +26,35 @@ class PasswordUsernameTest extends UnitTestCase {
       ->method('getConfiguration')
       ->willReturn(['disallow_username' => $disallow_username]);
 
+    $user = $this->createMock('Drupal\user\Entity\User');
+    $user->method('getAccountName')->willReturn('username');
     $this->assertEquals($username_test->validate($password, $user)->isValid(), $result);
   }
 
   /**
    * Provides data for the testPasswordUsername method.
    */
-  public function passwordUsernameDataProvider() {
-    $user = $this->getMockBuilder('Drupal\user\Entity\User')->disableOriginalConstructor()->getMock();
-    $user->method('getAccountName')->willReturn('username');
-
+  public static function passwordUsernameDataProvider(): array {
     return [
       // Passing conditions.
       [
         TRUE,
-        $user,
         'password',
         TRUE,
       ],
       [
         FALSE,
-        $user,
         'username',
         TRUE,
       ],
       // Failing conditions.
       [
         TRUE,
-        $user,
         'username',
         FALSE,
       ],
       [
         TRUE,
-        $user,
         'my_username',
         FALSE,
       ],

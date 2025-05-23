@@ -1,0 +1,48 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Card
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: stable
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+      title: Attributes
+      description: Wrapper attributes.
+    card_img_top:
+      type: string
+      title: Image
+    card_img_alt:
+      type: string
+      title: Image Alt
+    card_header:
+      type: string
+      title: Card Header
+    card_body:
+      type: string
+      title: Card Body
+    card_footer:
+      type: string
+      title: Card Footer
+# Slots always hold arbitrary markup. We know that beforehand, so no need for
+# a schema for slots.
+slots:
+  card_img_top_block:
+    title: Image
+    required: false
+  card_header_block:
+    title: Card Header
+    required: false
+  card_body_block:
+    title: Card Body
+    required: false
+  card_footer_block:
+    title: Card Footer
+    required: false

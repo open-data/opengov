@@ -5,6 +5,7 @@
  * Preprocessors and helper functions to make theming easier.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\views_bootstrap\ViewsBootstrap;
 use Drupal\Core\Template\Attribute;
 
@@ -132,8 +133,14 @@ function template_preprocess_views_bootstrap_carousel(array &$vars) {
 function template_preprocess_views_bootstrap_grid(array &$vars) {
   $view = $vars['view'];
   $vars['id'] = ViewsBootstrap::getUniqueId($view);
-  $vars['attributes']['class'][] = 'grid';
+  $vars['attributes'] = new Attribute(['class' => 'grid']);
   $options = $view->style_plugin->options;
+
+  if ($options['grid_class']) {
+    $grid_class = explode(' ', $options['grid_class']);
+    $grid_classes = array_map([Html::class, 'cleanCssIdentifier'], array_filter($grid_class));
+    $vars['attributes']->addClass($grid_classes);
+  }
 
   $vars['row_attributes'] = new Attribute();
   foreach (ViewsBootstrap::getBreakpoints() as $breakpoint) {

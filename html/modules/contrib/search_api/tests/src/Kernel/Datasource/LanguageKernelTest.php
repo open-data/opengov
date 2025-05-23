@@ -238,7 +238,7 @@ class LanguageKernelTest extends KernelTestBase {
 
     foreach ($datasource->loadMultiple($datasource_item_ids) as $id => $object) {
       // Test whether the item reports the correct language.
-      list($entity_id, $langcode) = explode(':', $id, 2);
+      [$entity_id, $langcode] = explode(':', $id, 2);
       $item = \Drupal::getContainer()
         ->get('search_api.fields_helper')
         ->createItemFromObject($this->index, $object, NULL, $datasource);

@@ -31,7 +31,7 @@ class ConsecutiveCharactersTest extends UnitTestCase {
   /**
    * Provides data for the testConsecutiveCharacters method.
    */
-  public function passwordsDataProvider() {
+  public static function passwordsDataProvider(): array {
     return [
       // Passing conditions.
       [

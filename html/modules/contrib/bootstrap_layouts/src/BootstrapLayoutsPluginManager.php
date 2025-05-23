@@ -9,24 +9,32 @@ use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Theme\ThemeManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class BootstrapLayoutsPluginManager extends DefaultPluginManager implements ContainerInjectionInterface, ContainerAwareInterface {
+class BootstrapLayoutsPluginManager extends DefaultPluginManager implements ContainerInjectionInterface {
 
-  use ContainerAwareTrait;
   use StringTranslationTrait;
 
   /**
+   * The theme handler.
+   *
    * @var \Drupal\Core\Extension\ThemeHandlerInterface
    */
-  protected $themeHandler;
+  protected ThemeHandlerInterface $themeHandler;
 
   /**
+   * The theme manager.
+   *
    * @var \Drupal\Core\Theme\ThemeManagerInterface
    */
-  protected $themeManager;
+  protected ThemeManagerInterface $themeManager;
+
+  /**
+   * The service container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
+   */
+  protected ContainerInterface $container;
 
   /**
    * Base plugin manager for Bootstrap Layouts plugin managers.
@@ -95,6 +103,13 @@ class BootstrapLayoutsPluginManager extends DefaultPluginManager implements Cont
       $container->get('theme_handler'),
       $container->get('theme.manager')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setContainer(ContainerInterface $container): void {
+    $this->container = $container;
   }
 
   /**
