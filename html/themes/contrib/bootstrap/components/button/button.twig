@@ -1,0 +1,11 @@
+{% if url %}
+  <a{{ attributes.addClass('btn') }} href="{{ url }}">
+{% else %}
+  <button{{ attributes.addClass('btn') }}>
+{% endif %}
+  {{ text }}
+{% if url %}
+  </a>
+{% else %}
+  </button>
+{% endif %}

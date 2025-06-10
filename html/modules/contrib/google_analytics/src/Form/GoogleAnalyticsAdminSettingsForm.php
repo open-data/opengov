@@ -3,15 +3,11 @@
 namespace Drupal\google_analytics\Form;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\google_analytics\Constants\GoogleAnalyticsPatterns;
-use Drupal\google_analytics\Helpers\GoogleAnalyticsAccounts;
-use Drupal\google_analytics\JavascriptLocalCache;
+Use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -48,39 +44,15 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
   protected $gaJavascript;
 
   /**
-   * The constructor method.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The manages modules.
-   * @param \Drupal\google_analytics\Helpers\GoogleAnalyticsAccounts $google_analytics_accounts
-   *   The google analytics accounts manager.
-   * @param \Drupal\google_analytics\JavascriptLocalCache $google_analytics_javascript
-   *   The JS Local Cache service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $current_user, ModuleHandlerInterface $module_handler, GoogleAnalyticsAccounts $google_analytics_accounts, JavascriptLocalCache $google_analytics_javascript) {
-    parent::__construct($config_factory);
-    $this->currentUser = $current_user;
-    $this->moduleHandler = $module_handler;
-    $this->gaAccounts = $google_analytics_accounts;
-    $this->gaJavascript = $google_analytics_javascript;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-    // Load the service required to construct this class.
-      $container->get('config.factory'),
-      $container->get('current_user'),
-      $container->get('module_handler'),
-      $container->get('google_analytics.accounts'),
-      $container->get('google_analytics.javascript_cache')
-    );
+    $instance = parent::create($container);
+    $instance->currentUser = $container->get('current_user');
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->gaAccounts = $container->get('google_analytics.accounts');
+    $instance->gaJavascript = $container->get('google_analytics.javascript_cache');
+    return $instance;
   }
 
   /**
@@ -144,7 +116,6 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
       $form['general']['accounts'][$i]['value'] = [
         '#default_value' => (string)($accounts[$i] ?? ''),
         '#maxlength' => 20,
-        '#required' => ($i === 0),
         '#size' => 20,
         '#type' => 'textfield',
         '#element_validate' => [[get_class($this), 'gtagElementValidate']],
@@ -208,7 +179,7 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
     global $cookie_domain;
     $multiple_sub_domains = [];
     foreach (['www', 'app', 'shop'] as $subdomain) {
-      if (!empty($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
+      if (!empty($cookie_domain) && count(explode('.', $cookie_domain ?? '')) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
         $multiple_sub_domains[] = $subdomain . $cookie_domain;
       }
       // IP addresses or localhost.
@@ -221,7 +192,7 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
     foreach (['.com', '.net', '.org'] as $tldomain) {
       $host = $_SERVER['HTTP_HOST'];
       $domain = substr($host, 0, strrpos($host, '.'));
-      if (count(explode('.', $host)) > 2 && !is_numeric(str_replace('.', '', $host))) {
+      if (count(explode('.', $host ?? '')) > 2 && !is_numeric(str_replace('.', '', $host))) {
         $multiple_toplevel_domains[] = $domain . $tldomain;
       }
       // IP addresses or localhost.
@@ -324,7 +295,7 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
       '#type' => 'checkboxes',
       '#title' => $this->t('Roles'),
       '#default_value' => !empty($visibility_user_role_roles) ? $visibility_user_role_roles : [],
-      '#options' => array_map('\Drupal\Component\Utility\Html::escape', user_role_names()),
+      '#options' => array_map('\Drupal\Component\Utility\Html::escape', $this->getRolesName()),
       '#description' => $this->t('If none of the roles are selected, all users will be tracked. If a user has any of the roles checked, that user will be tracked (or excluded, depending on the setting above).'),
     ];
 
@@ -693,6 +664,16 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
   }
 
   /**
+   * Helper function to get roles name.
+   * @return array|\Drupal\Core\StringTranslation\TranslatableMarkup[]|null[]|string[]
+   */
+  private function getRolesName(): array {
+    $roles = Role::loadMultiple();
+    return array_map(function ($item) {
+      return $item->label();
+    }, $roles);
+  }
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
@@ -705,7 +686,7 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
         if (!mb_strlen($parameter['value']) || !mb_strlen($parameter['name']) || empty($parameter['index'])) {
           continue;
         }
-        [$type] = explode('-', $parameter['type']);
+        [$type] = explode('-', $parameter['type'] ?? '');
         $custom_parameters[$row]['index'] = $parameter['index'];
         $custom_parameters[$row]['type'] = $type;
         $custom_parameters[$row]['name'] = trim($parameter['name']);
@@ -1003,7 +984,7 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
   protected static function extractParameterValues($string) {
     $values = [];
 
-    $list = explode("\n", $string);
+    $list = explode("\n", $string ?? '');
     $list = array_map('trim', $list);
     $list = array_filter($list, 'strlen');
 
@@ -1248,13 +1229,13 @@ class GoogleAnalyticsAdminSettingsForm extends ConfigFormBase {
     if ($selectedValue = $form_state->getTriggeringElement()) {
       // Get the index of the selected option.
       // If the value is numeric it means the 'null' option was selected.
-      [$value, $current_row] = explode('-', $selectedValue['#value']);
+      [$value, $current_row] = explode('-', $selectedValue['#value'] ?? '');
       if (!empty($value)) {
         // Metric/Dimensions share index numbers. Re-order them
         $parameter_count = ['dimension' => 0, 'metric' => 0];
         $parameters = $form_state->getValue('custom_parameters');
         foreach ($parameters as $row => $parameter) {
-          [$val, $ind] = explode('-', $parameter['type']);
+          [$val, $ind] = explode('-', $parameter['type'] ?? '');
           $parameter_count[$val]++;
           if($row == $current_row) {
             $form['tracking']['parameters']['indexes']['custom_parameters'][$row]['index']['#value'] = $value.$parameter_count[$value];

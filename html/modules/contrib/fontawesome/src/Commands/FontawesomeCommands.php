@@ -2,46 +2,31 @@
 
 namespace Drupal\fontawesome\Commands;
 
-use Drush\Commands\DrushCommands;
-use Drupal\Core\Asset\LibraryDiscoveryInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Archiver\ArchiverManager;
+use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\Core\File\Exception\FileException;
+use Drupal\Core\File\Exception\InvalidStreamWrapperException;
+use Drupal\Core\File\FileExists;
+use Drupal\Core\File\FileSystemInterface;
+use Drush\Commands\DrushCommands;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 
 /**
- * A Drush commandfile for Font Awesome module.
+ * A Drush command file for Font Awesome module.
  */
 class FontawesomeCommands extends DrushCommands {
 
   /**
-   * Library discovery service.
-   *
-   * @var \Drupal\Core\Asset\LibraryDiscoveryInterface
-   */
-  protected $libraryDiscovery;
-
-  /**
-   * File system interface.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  protected $fileSystem;
-
-  /**
-   * Archive manager service.
-   *
-   * @var \Drupal\Core\Archiver\ArchiverManager
-   */
-  protected $archiverManager;
-
-  /**
    * {@inheritdoc}
    */
-  public function __construct(LibraryDiscoveryInterface $library_discovery, FileSystemInterface $file_system, ArchiverManager $archiver_manager) {
+  public function __construct(
+    protected LibraryDiscoveryInterface $libraryDiscovery,
+    protected FileSystemInterface $fileSystem,
+    protected ArchiverManager $archiverManager,
+    protected Client $httpClient,
+  ) {
     parent::__construct();
-
-    $this->libraryDiscovery = $library_discovery;
-    $this->fileSystem = $file_system;
-    $this->archiverManager = $archiver_manager;
   }
 
   /**
@@ -76,8 +61,20 @@ class FontawesomeCommands extends DrushCommands {
     if ($fontawesome_library = $this->libraryDiscovery->getLibraryByName('fontawesome', 'fontawesome.svg')) {
 
       // Download the file.
+      $url = $fontawesome_library['remote'];
       $destination = tempnam(sys_get_temp_dir(), 'file.') . "tar.gz";
-      system_retrieve_file($fontawesome_library['remote'], $destination);
+
+      try {
+        $data = (string) $this->httpClient->get($url)->getBody();
+        $this->fileSystem->saveData($data, $destination, FileExists::Replace);
+      }
+      catch (TransferException $exception) {
+        $this->logger()->error(dt('Failed to fetch file due to error "%error"', ['%error' => $exception->getMessage()]));
+      }
+      catch (FileException | InvalidStreamWrapperException $e) {
+        $this->logger()->error(dt('Failed to save file due to error "%error"', ['%error' => $e->getMessage()]));
+      }
+
       if (!file_exists($destination)) {
         // Remove the directory.
         $this->fileSystem->rmdir($path);
@@ -105,9 +102,9 @@ class FontawesomeCommands extends DrushCommands {
       $this->fileSystem->unlink($path . '/fontawesome.zip');
 
       // Move the file.
-      $this->fileSystem->move($path . '/fontawesome-free-' . $fontawesome_library['version'] . '-web', $this->fileSystem->getTempDirectory() . '/temp_fontawesome', FileSystemInterface::EXISTS_REPLACE);
+      $this->fileSystem->move($path . '/fontawesome-free-' . $fontawesome_library['version'] . '-web', $this->fileSystem->getTempDirectory() . '/temp_fontawesome', FileExists::Replace);
       $this->fileSystem->rmdir($path);
-      $this->fileSystem->move($this->fileSystem->getTempDirectory() . '/temp_fontawesome', $path, FileSystemInterface::EXISTS_REPLACE);
+      $this->fileSystem->move($this->fileSystem->getTempDirectory() . '/temp_fontawesome', $path, FileExists::Replace);
 
       // Success.
       $this->logger()->notice(dt('Fontawesome library has been successfully downloaded to @path.', [

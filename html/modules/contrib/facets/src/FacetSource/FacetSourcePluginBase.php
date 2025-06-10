@@ -126,13 +126,6 @@ abstract class FacetSourcePluginBase extends PluginBase implements FacetSourcePl
   /**
    * {@inheritdoc}
    */
-  public function buildFacet() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getCount() {
     global $pager_total_items;
     // Exposing a global here. This is pretty ugly but the only way to get the

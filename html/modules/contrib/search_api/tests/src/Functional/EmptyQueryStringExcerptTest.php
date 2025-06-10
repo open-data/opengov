@@ -94,7 +94,7 @@ class EmptyQueryStringExcerptTest extends SearchApiBrowserTestBase {
    *   An associative array of argument arrays for testExcerptAlways(), keyed by
    *   data set label.
    */
-  public function excerptAlwaysDataProvider() {
+  public static function excerptAlwaysDataProvider() {
     return [
       'setting disabled' => [FALSE],
       'setting enabled' => [TRUE],

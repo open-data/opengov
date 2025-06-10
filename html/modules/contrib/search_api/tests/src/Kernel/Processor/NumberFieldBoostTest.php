@@ -89,6 +89,16 @@ class NumberFieldBoostTest extends ProcessorTestBase {
     ]);
     $node->save();
 
+    $node = Node::create([
+      'status' => NodeInterface::PUBLISHED,
+      'type' => 'page',
+      'title' => 'node 4 title',
+      'body' => 'node 4 body',
+      'created' => 1300000000,
+      'field_boost' => [-8, -5, 2],
+    ]);
+    $node->save();
+
     $datasources = $this->container->get('search_api.plugin_helper')
       ->createDatasourcePlugins($this->index, [
         'entity:node',
@@ -135,6 +145,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
 
     $result = $this->getSearchResults();
     $this->assertEquals([
+      'entity:node/4:en',
       'entity:node/3:en',
       'entity:node/2:en',
       'entity:node/1:en',
@@ -157,6 +168,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
     $this->assertEquals([
       'entity:node/2:en',
       'entity:node/1:en',
+      'entity:node/4:en',
       'entity:node/3:en',
     ], array_keys($result->getResultItems()));
 
@@ -178,6 +190,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/1:en',
       'entity:node/2:en',
       'entity:node/3:en',
+      'entity:node/4:en',
     ], array_keys($result->getResultItems()));
 
     $configuration = [
@@ -198,6 +211,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/1:en',
       'entity:node/2:en',
       'entity:node/3:en',
+      'entity:node/4:en',
     ], array_keys($result->getResultItems()));
 
     $configuration = [
@@ -218,6 +232,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/2:en',
       'entity:node/1:en',
       'entity:node/3:en',
+      'entity:node/4:en',
     ], array_keys($result->getResultItems()));
 
     $configuration = [
@@ -238,6 +253,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/1:en',
       'entity:node/2:en',
       'entity:node/3:en',
+      'entity:node/4:en',
     ], array_keys($result->getResultItems()));
 
     $configuration = [
@@ -258,6 +274,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/2:en',
       'entity:node/3:en',
       'entity:node/1:en',
+      'entity:node/4:en',
     ], array_keys($result->getResultItems()));
   }
 

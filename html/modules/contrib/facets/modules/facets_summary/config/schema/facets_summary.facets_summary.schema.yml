@@ -11,6 +11,9 @@ facets_summary.facets_summary.*:
     facet_source_id:
       type: string
       label: 'Facet source id'
+    only_visible_when_facet_source_is_visible:
+      type: boolean
+      label: 'Show this summary only when the facet source is visible.'
     processor_configs:
       type: sequence
       label: 'Processor settings'

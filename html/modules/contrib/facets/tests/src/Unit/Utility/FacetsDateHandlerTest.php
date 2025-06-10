@@ -247,7 +247,7 @@ class FacetsDateHandlerTest extends UnitTestCase {
    * @return array
    *   Arrays with data for the test data.
    */
-  public static function provideIsoDates(): array {
+  public static function provideIsoDates() {
     return [
       ['1987-11-26T20:43:04Z', FacetsDateHandler::FACETS_DATE_SECOND],
       ['1987-11-26T20:43:00Z', FacetsDateHandler::FACETS_DATE_MINUTE],
@@ -265,7 +265,7 @@ class FacetsDateHandlerTest extends UnitTestCase {
    * @return array
    *   Arrays with data for the test data.
    */
-  public static function provideNextDateIncrementData(): array {
+  public static function provideNextDateIncrementData() {
     return [
       ['1987-11-26T20:43:05Z', FacetsDateHandler::FACETS_DATE_SECOND],
       ['1987-11-26T20:44:04Z', FacetsDateHandler::FACETS_DATE_MINUTE],

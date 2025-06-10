@@ -9,6 +9,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\search_api\Plugin\IndexPluginBase;
+use Drupal\search_api\Utility\Utility;
 
 /**
  * Defines a base class from which other datasources may extend.
@@ -98,7 +99,7 @@ abstract class DatasourcePluginBase extends IndexPluginBase implements Datasourc
   /**
    * {@inheritdoc}
    */
-  public function checkItemAccess(ComplexDataInterface $item, AccountInterface $account = NULL) {
+  public function checkItemAccess(ComplexDataInterface $item, ?AccountInterface $account = NULL) {
     @trigger_error('\Drupal\search_api\Datasource\DatasourceInterface::checkItemAccess() is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Use getItemAccessResult() instead. See https://www.drupal.org/node/3051902', E_USER_DEPRECATED);
     return $this->getItemAccessResult($item, $account)->isAllowed();
   }
@@ -106,7 +107,7 @@ abstract class DatasourcePluginBase extends IndexPluginBase implements Datasourc
   /**
    * {@inheritdoc}
    */
-  public function getItemAccessResult(ComplexDataInterface $item, AccountInterface $account = NULL) {
+  public function getItemAccessResult(ComplexDataInterface $item, ?AccountInterface $account = NULL) {
     return AccessResult::allowed();
   }
 
@@ -168,7 +169,7 @@ abstract class DatasourcePluginBase extends IndexPluginBase implements Datasourc
   /**
    * {@inheritdoc}
    */
-  public function getAffectedItemsForEntityChange(EntityInterface $entity, array $foreign_entity_relationship_map, EntityInterface $original_entity = NULL): array {
+  public function getAffectedItemsForEntityChange(EntityInterface $entity, array $foreign_entity_relationship_map, ?EntityInterface $original_entity = NULL): array {
     return [];
   }
 
@@ -184,6 +185,20 @@ abstract class DatasourcePluginBase extends IndexPluginBase implements Datasourc
    */
   public function getListCacheContexts() {
     return [];
+  }
+
+  /**
+   * Creates a combined item ID from a raw item ID.
+   *
+   * @param string $raw_item_id
+   *   The raw (datasource-specific) item ID.
+   *
+   * @return string
+   *   A combined ID, containing the datasource ID and the raw item ID to
+   *   uniquely reference this item across the Search API.
+   */
+  protected function createCombinedId(string $raw_item_id): string {
+    return Utility::createCombinedId($this->getPluginId(), $raw_item_id);
   }
 
 }

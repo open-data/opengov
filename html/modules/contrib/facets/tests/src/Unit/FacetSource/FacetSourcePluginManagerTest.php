@@ -125,7 +125,7 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
    * @return array
    *   An invalid data provider.
    */
-  public static function invalidDefinitions(): array {
+  public static function invalidDefinitions() {
     return [
       'only id' => ['id' => 'owl'],
       'only display_id' => ['display_id' => 'search_api:owl'],

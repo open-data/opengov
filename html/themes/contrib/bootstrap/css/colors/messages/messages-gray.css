@@ -1,0 +1,23 @@
+/**
+ * @file
+ * Visual styles for Bootstrap's system messages.
+ */
+
+.alert-success {
+  color: white;
+  background-color: #333;
+  border-left: #28a745 15px solid;
+}
+.alert-warning {
+  color: white;
+  background-color: #333;
+  border-left: #ff8800 15px solid;
+}
+.alert-danger {
+  color: white;
+  background-color: #333;
+  border-left: #cc0000 15px solid;
+}
+.alert-dismissible .btn-close {
+  opacity: 0.6;
+}

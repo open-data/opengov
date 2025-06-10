@@ -1,0 +1,4 @@
+services:
+  advanced_email_validation.validator:
+    class: Drupal\advanced_email_validation\AdvancedEmailValidator
+    arguments: ['@config.factory']

@@ -21,7 +21,7 @@ class MetatagFieldBuilder extends FieldDiffBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function build(FieldItemListInterface $field_items) {
+  public function build(FieldItemListInterface $field_items): mixed {
     $result = [];
 
     // Every item from $field_items is of type FieldItemInterface.
@@ -32,7 +32,7 @@ class MetatagFieldBuilder extends FieldDiffBuilderBase {
           // Metatag data store as serialize string.
           $metatag_data = metatag_data_decode($values['value']);
 
-          foreach ($metatag_data as $key => $value) {
+          foreach ($metatag_data as $value) {
             $result[$field_key][] = (string) $value;
           }
         }

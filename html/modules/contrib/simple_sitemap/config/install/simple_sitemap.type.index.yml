@@ -4,3 +4,5 @@ description: 'The sitemap index sitemap type. A sitemap of this type lists sitem
 sitemap_generator: index
 url_generators:
   - index
+status: true
+langcode: en

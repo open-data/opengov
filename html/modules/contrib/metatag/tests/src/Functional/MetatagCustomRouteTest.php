@@ -13,7 +13,7 @@ use Drupal\Tests\BrowserTestBase;
  *
  * @see hook_metatag_route_entity()
  */
-class CustomRouteTest extends BrowserTestBase {
+class MetatagCustomRouteTest extends BrowserTestBase {
 
   /**
    * {@inheritdoc}

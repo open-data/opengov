@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a summary of an advanced email webform validator handler.
+ *
+ * Available variables:
+ * - settings: The current configuration for this validator handler:
+ * - handler: The handler information, including:
+ *   - id: The handler plugin id.
+ *   - handler_id: The handler id.
+ *   - label: The handler label.
+ *   - description: The handler description.
+
+ * @ingroup themeable
+ */
+#}
+<b>{{ 'Emails to be validated'|t }}</b><br/>
+{{ settings.emails|join('\r\n') }}<br/>
+{% if not settings.override_site_defaults %}
+    <br/><b>{{ 'Site defaults/global settings used.'|t }}</b><br/>
+{% else %}
+    <br/><b>{{ 'Rules'|t }}</b><br/>
+    <b>{{ 'MX lookup'|t }}</b>:
+    {{ settings.rules.mx_lookup }}<br/>
+    <b>{{ 'Disposable'|t }}</b>:
+    {{ settings.rules.disposable }}<br/>
+    <b>{{ 'Free'|t }}</b>:
+    {{ settings.rules.free }}<br/>
+    <b>{{ 'Banned'|t }}</b>:
+    {{ settings.rules.banned }}<br/>
+    <br/><b>{{ 'Error Messages'|t }}</b><br/>
+    <b>{{ 'Basic'|t }}</b>:
+    {{ settings.error_messages.basic }}<br/>
+    {% if settings.rules.mx_lookup %}
+        <b>{{ 'MX lookup'|t }}</b>:
+        {{ settings.error_messages.mx_lookup ?: '' }}<br/>
+    {% endif %}
+    {% if settings.rules.disposable %}
+        <b>{{ 'Disposable'|t }}</b>:
+        {{ settings.error_messages.disposable ?: '' }}<br/>
+    {% endif %}
+    {% if settings.rules.free %}
+        <b>{{ 'Free'|t }}</b>:
+        {{ settings.error_messages.free ?: '' }}<br/>
+    {% endif %}
+    {% if settings.rules.banned %}
+        <b>{{ 'Banned'|t }}</b>:
+        {{ settings.error_messages.banned ?: '' }}<br/>
+    {% endif %}
+    {% if settings.rules.disposable or settings.rules.free or settings.rules.banned %}
+        <br/><b>{{ 'Domain lists'|t }}</b><br/>
+        {% if settings.rules.disposable %}
+            <b>{{ 'Disposable'|t }}</b>:
+            {{ settings.domain_lists.disposable|join('\r\n') ?: '' }}<br/>
+        {% endif %}
+        {% if settings.rules.free %}
+            <b>{{ 'Free'|t }}</b>:
+            {{ settings.domain_lists.free|join('\r\n') ?: '' }}<br/>
+        {% endif %}
+        {% if settings.rules.banned %}
+            <b>{{ 'Banned'|t }}</b>:
+            {{ settings.domain_lists.banned|join('\r\n') ?: '' }}<br/>
+        {% endif %}
+    {% endif %}
+{% endif %}

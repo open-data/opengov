@@ -2,16 +2,12 @@
 
 namespace Drupal\Tests\metatag\Functional;
 
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-
 /**
  * Ensures that the Metatag field works correctly on taxonomy terms.
  *
  * @group metatag
  */
 class MetatagFieldTermTest extends MetatagFieldTestBase {
-
-  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -72,7 +68,7 @@ class MetatagFieldTermTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $entityFieldAdminPath = 'admin/structure/taxonomy/manage/tags/overview/fields';
+  protected $entityFieldAdminPath = 'admin/structure/taxonomy/manage/tags/overview';
 
   /**
    * {@inheritdoc}
@@ -96,7 +92,7 @@ class MetatagFieldTermTest extends MetatagFieldTestBase {
       'name' => 'Tags',
       'vid' => 'tags',
     ];
-    $this->submitForm($edit, $this->t('Save'));
+    $this->submitForm($edit, 'Save');
     $this->drupalLogout();
   }
 

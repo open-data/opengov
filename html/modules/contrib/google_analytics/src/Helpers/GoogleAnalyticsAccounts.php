@@ -14,7 +14,7 @@ class GoogleAnalyticsAccounts {
   /**
    * Private Key Service for generating user id hash.
    *
-   * @var string
+   * @var \Drupal\Core\PrivateKey
    */
   protected $privateKey;
 
@@ -30,7 +30,7 @@ class GoogleAnalyticsAccounts {
    *
    * @var array
    */
-  private $accounts;
+  private $accounts = [];
 
   /**
    * Constructor.
@@ -43,13 +43,16 @@ class GoogleAnalyticsAccounts {
   public function __construct(ConfigFactoryInterface $config_factory, PrivateKey $private_key) {
     $this->config = $config_factory->get('google_analytics.settings');
 
-    $accounts = $this->config->get('account');
+    $accounts = $this->config->get('account') ?? '';
     // Create the accounts array from either a single gtag id or multiple ones.
     if (strpos($accounts, ',') === FALSE) {
-      $this->accounts[] = new GaAccount($accounts);
+      // Only fill the accounts array if an account exists in config.
+      if ($accounts !== '') {
+        $this->accounts[] = new GaAccount($accounts);
+      }
     }
     else {
-      $accounts_array = explode(',', $accounts);
+      $accounts_array = explode(',', $accounts ?? '');
       foreach($accounts_array as $account) {
         $this->accounts[] = new GaAccount($account);
       }
@@ -87,6 +90,7 @@ class GoogleAnalyticsAccounts {
         return $account;
       }
     }
+
     return FALSE;
   }
 
@@ -104,7 +108,7 @@ class GoogleAnalyticsAccounts {
   /**
    * Return all the GA accounts stored.
    *
-   * @return array|false|string[]
+   * @return array|string[]
    */
   public function getAccounts() {
     return $this->accounts;

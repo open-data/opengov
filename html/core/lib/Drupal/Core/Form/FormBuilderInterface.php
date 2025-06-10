@@ -154,7 +154,7 @@ interface FormBuilderInterface {
    *   The value must be one of the following:
    *   - The name of a class that implements \Drupal\Core\Form\FormInterface.
    *   - An instance of a class that implements \Drupal\Core\Form\FormInterface.
-   * @param $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form. Most important is the
    *   $form_state->getValues() collection, a tree of data used to simulate the
    *   incoming \Drupal::request()->request information from a user's form
@@ -176,14 +176,14 @@ interface FormBuilderInterface {
    *   $form_state build info array so that the reference can be preserved. For
    *   example, a form builder function with the following signature:
    *   @code
-   *   function mymodule_form($form, FormStateInterface &$form_state, &$object) {
+   *   function my_module_form($form, FormStateInterface &$form_state, &$object) {
    *   }
    *   @endcode
    *   would be called via self::submitForm() as follows:
    *   @code
    *   $form_state->setValues($my_form_values);
    *   $form_state->addBuildInfo('args', [&$object]);
-   *   \Drupal::formBuilder()->submitForm('mymodule_form', $form_state);
+   *   \Drupal::formBuilder()->submitForm('my_module_form', $form_state);
    *   @endcode
    * phpcs:enable
    */

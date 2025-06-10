@@ -24,7 +24,7 @@ final class GetSniffCodeTest extends TestCase
     /**
      * Test receiving an expected exception when the $sniffClass parameter is not passed a string value or is passed an empty string.
      *
-     * @param string $input NOT a fully qualified sniff class name.
+     * @param mixed $input NOT a fully qualified sniff class name.
      *
      * @dataProvider dataGetSniffCodeThrowsExceptionOnInvalidInput
      *
@@ -54,7 +54,7 @@ final class GetSniffCodeTest extends TestCase
      *
      * @see testGetSniffCodeThrowsExceptionOnInvalidInput()
      *
-     * @return array<string, array<string>>
+     * @return array<string, array<mixed>>
      */
     public static function dataGetSniffCodeThrowsExceptionOnInvalidInput()
     {
@@ -108,7 +108,6 @@ final class GetSniffCodeTest extends TestCase
             'Unqualified class name'                                        => ['ClassName'],
             'Fully qualified class name, not enough parts'                  => ['Fully\\Qualified\\ClassName'],
             'Fully qualified class name, doesn\'t end on Sniff or UnitTest' => ['Fully\\Sniffs\\Qualified\\ClassName'],
-            'Fully qualified class name, ends on Sniff, but isn\'t'         => ['Fully\\Sniffs\\AbstractSomethingSniff'],
         ];
 
     }//end dataGetSniffCodeThrowsExceptionOnInputWhichIsNotASniffTestClass()
@@ -141,29 +140,69 @@ final class GetSniffCodeTest extends TestCase
     public static function dataGetSniffCode()
     {
         return [
-            'PHPCS native sniff'                                  => [
+            'PHPCS native sniff'                                                              => [
                 'fqnClass' => 'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\Arrays\\ArrayIndentSniff',
                 'expected' => 'Generic.Arrays.ArrayIndent',
             ],
-            'Class is a PHPCS native test class'                  => [
+            'Class is a PHPCS native test class'                                              => [
                 'fqnClass' => 'PHP_CodeSniffer\\Standards\\Generic\\Tests\\Arrays\\ArrayIndentUnitTest',
                 'expected' => 'Generic.Arrays.ArrayIndent',
             ],
-            'Sniff in external standard without namespace prefix' => [
+            'Sniff in external standard without namespace prefix'                             => [
                 'fqnClass' => 'MyStandard\\Sniffs\\PHP\\MyNameSniff',
                 'expected' => 'MyStandard.PHP.MyName',
             ],
-            'Test in external standard without namespace prefix'  => [
-                'fqnClass' => 'MyStandard\\Tests\\PHP\\MyNameSniff',
+            'Test in external standard without namespace prefix'                              => [
+                'fqnClass' => 'MyStandard\\Tests\\PHP\\MyNameUnitTest',
                 'expected' => 'MyStandard.PHP.MyName',
             ],
-            'Sniff in external standard with namespace prefix'    => [
+            'Sniff in external standard with namespace prefix'                                => [
                 'fqnClass' => 'Vendor\\Package\\MyStandard\\Sniffs\\Category\\AnalyzeMeSniff',
                 'expected' => 'MyStandard.Category.AnalyzeMe',
             ],
-            'Test in external standard with namespace prefix'     => [
+            'Test in external standard with namespace prefix'                                 => [
                 'fqnClass' => 'Vendor\\Package\\MyStandard\\Tests\\Category\\AnalyzeMeUnitTest',
                 'expected' => 'MyStandard.Category.AnalyzeMe',
+            ],
+
+            /*
+             * These are not valid sniff codes and is an undesirable result, but can't be helped
+             * as changing this would be a BC-break.
+             * Supporting these to allow for <rule> tags directly including sniff files.
+             * See: https://github.com/PHPCSStandards/PHP_CodeSniffer/issues/675
+             */
+
+            'Fully qualified class name, ends on Sniff, but isn\'t'                           => [
+                'fqnClass' => 'Fully\\Sniffs\\AbstractSomethingSniff',
+                'expected' => '.Sniffs.AbstractSomething',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [1]' => [
+                'fqnClass' => 'CheckMeSniff',
+                'expected' => '..CheckMe',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [2]' => [
+                'fqnClass' => 'CompanyName\\CheckMeSniff',
+                'expected' => '.CompanyName.CheckMe',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [3]' => [
+                'fqnClass' => 'CompanyName\\Sniffs\\CheckMeSniff',
+                'expected' => '.Sniffs.CheckMe',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [4]' => [
+                'fqnClass' => 'CompanyName\\CustomSniffs\\Whatever\\CheckMeSniff',
+                'expected' => 'CompanyName.Whatever.CheckMe',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [5]' => [
+                'fqnClass' => 'CompanyName\\Sniffs\\Category\\Sniff',
+                'expected' => 'CompanyName.Category.',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [6]' => [
+                'fqnClass' => 'CompanyName\\Tests\\Category\\UnitTest',
+                'expected' => 'CompanyName.Category.',
+            ],
+            'Sniff provided via file include and doesn\'t comply with naming conventions [7]' => [
+                'fqnClass' => 'Sniffs\\Category\\NamedSniff',
+                'expected' => '.Category.Named',
             ],
         ];
 

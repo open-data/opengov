@@ -1,0 +1,3 @@
+field.widget.settings.fontawesome_iconpicker_widget:
+  type: field.widget.settings.fontawesome_icon_widget
+  label: 'Font Awesome Iconpicker widget settings'

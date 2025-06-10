@@ -280,7 +280,8 @@ class Problem
                 if (null === $version) {
                     $providersStr = self::getProvidersList($repositorySet, $packageName, 5);
                     if ($providersStr !== null) {
-                        $providersStr = "\n\n      Alternatively you can require one of these packages that provide the extension (or parts of it):\n$providersStr";
+                        $providersStr = "\n\n      Alternatively you can require one of these packages that provide the extension (or parts of it):\n".
+                            "      <warning>Keep in mind that the suggestions are automated and may not be valid or safe to use</warning>\n$providersStr";
                     }
 
                     if (extension_loaded($ext)) {
@@ -306,7 +307,8 @@ class Problem
 
                 $providersStr = self::getProvidersList($repositorySet, $packageName, 5);
                 if ($providersStr !== null) {
-                    $providersStr = "\n\n      Alternatively you can require one of these packages that provide the library (or parts of it):\n$providersStr";
+                    $providersStr = "\n\n      Alternatively you can require one of these packages that provide the library (or parts of it):\n".
+                    "      <warning>Keep in mind that the suggestions are automated and may not be valid or safe to use</warning>\n$providersStr";
                 }
 
                 return ["- Root composer.json requires linked library ".$packageName.self::constraintToText($constraint).' but ', 'it has the wrong version installed or is missing from your system, make sure to load the extension providing it.'.$providersStr];
@@ -598,7 +600,7 @@ class Problem
             if ($topPackage instanceof RootPackageInterface) {
                 return [
                     "- Root composer.json requires $packageName".self::constraintToText($constraint).', it is ',
-                    'satisfiable by '.self::getPackageList($nextRepoPackages, $isVerbose, $pool, $constraint).' from '.$nextRepo->getRepoName().' but '.$topPackage->getPrettyName().' is the root package and cannot be modified. See https://getcomposer.org/dep-on-root for details and assistance.',
+                    'satisfiable by '.self::getPackageList($nextRepoPackages, $isVerbose, $pool, $constraint).' from '.$nextRepo->getRepoName().' but '.$topPackage->getPrettyName().' '.$topPackage->getPrettyVersion().' is the root package and cannot be modified. See https://getcomposer.org/dep-on-root for details and assistance.',
                 ];
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\views\Functional\Plugin;
 
 use Drupal\Core\Url;
@@ -37,9 +39,7 @@ class ArgumentDefaultTest extends ViewTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'views_ui', 'block'];
 
@@ -57,7 +57,7 @@ class ArgumentDefaultTest extends ViewTestBase {
    *
    * @see \Drupal\views_test_data\Plugin\views\argument_default\ArgumentDefaultTest
    */
-  public function testArgumentDefaultPlugin() {
+  public function testArgumentDefaultPlugin(): void {
     $view = Views::getView('test_view');
 
     // Add a new argument and set the test plugin for the argument_default.
@@ -71,6 +71,7 @@ class ArgumentDefaultTest extends ViewTestBase {
     $id = $view->addHandler('default', 'argument', 'views_test_data', 'name', $options);
     $view->initHandlers();
     $plugin = $view->argument[$id]->getPlugin('argument_default');
+    $this->assertEquals('Default: Argument default test', $view->argument[$id]->adminSummary());
     $this->assertInstanceOf(ArgumentDefaultTestPlugin::class, $plugin);
 
     // Check that the value of the default argument is as expected.
@@ -93,7 +94,7 @@ class ArgumentDefaultTest extends ViewTestBase {
   /**
    * Tests the use of a default argument plugin that provides no options.
    */
-  public function testArgumentDefaultNoOptions() {
+  public function testArgumentDefaultNoOptions(): void {
     $admin_user = $this->drupalCreateUser([
       'administer views',
       'administer site configuration',
@@ -115,7 +116,7 @@ class ArgumentDefaultTest extends ViewTestBase {
   /**
    * Tests fixed default argument.
    */
-  public function testArgumentDefaultFixed() {
+  public function testArgumentDefaultFixed(): void {
     $random = $this->randomMachineName();
     $view = Views::getView('test_argument_default_fixed');
     $view->setDisplay();
@@ -134,14 +135,9 @@ class ArgumentDefaultTest extends ViewTestBase {
   }
 
   /**
-   * @todo Test php default argument.
-   */
-  // function testArgumentDefaultPhp() {}
-
-  /**
    * Tests node default argument.
    */
-  public function testArgumentDefaultNode() {
+  public function testArgumentDefaultNode(): void {
     // Create a user that has permission to place a view block.
     $permissions = [
       'administer views',
@@ -169,12 +165,18 @@ class ArgumentDefaultTest extends ViewTestBase {
     $this->assertSession()->elementTextContains('xpath', '//*[@id="block-' . $id . '"]', $node1->getTitle());
     $this->drupalGet('node/' . $node2->id());
     $this->assertSession()->elementTextContains('xpath', '//*[@id="block-' . $id . '"]', $node2->getTitle());
+
+    // Check the view from node preview page.
+    $node3 = $this->drupalCreateNode(['title' => 'Title 1', 'type' => 'page']);
+    $this->drupalGet($node3->toUrl('edit-form'));
+    $this->submitForm(['title[0][value]' => 'Title 2'], 'Preview');
+    $this->assertSession()->elementTextContains('xpath', '//*[@id="block-' . $id . '"]', $node3->getTitle());
   }
 
   /**
    * Tests the query parameter default argument.
    */
-  public function testArgumentDefaultQueryParameter() {
+  public function testArgumentDefaultQueryParameter(): void {
     $view = Views::getView('test_argument_default_query_param');
 
     $request = Request::create(Url::fromUri('internal:/whatever', ['absolute' => TRUE])->toString());
@@ -194,7 +196,7 @@ class ArgumentDefaultTest extends ViewTestBase {
   /**
    * Tests the more line generation if a default argument is provided.
    */
-  public function testArgumentDefaultUrlGeneration() {
+  public function testArgumentDefaultUrlGeneration(): void {
     // Create a user that has permission to place a view block.
     $permissions = [
       'administer views',

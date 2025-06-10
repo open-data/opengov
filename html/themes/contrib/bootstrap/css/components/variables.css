@@ -1,0 +1,17 @@
+:root,
+[data-bs-theme=light] {
+  --bb-primary-dark: #0c63e3;
+  --bb-primary-text: #212529;
+  --bb-secondary-dark: #5a6168;
+  --bb-h1-color: #212529;
+  --bb-h2-color: #212529;
+  --bb-h3-color: #212529;
+}
+
+[data-bs-theme=dark] {
+  color-scheme: dark;
+  --bb-primary-text: #dee2e6;
+  --bb-h1-color: #dee2e6;
+  --bb-h2-color: #dee2e6;
+  --bb-h3-color: #dee2e6;
+}

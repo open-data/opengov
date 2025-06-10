@@ -108,8 +108,10 @@ class Stemmer extends FieldsProcessorPluginBase {
 
     $configuration += [
       'exceptions' => [
+        // cspell:disable
         'texan' => 'texa',
         'mexican' => 'mexic',
+        // cspell:enable
       ],
     ];
 

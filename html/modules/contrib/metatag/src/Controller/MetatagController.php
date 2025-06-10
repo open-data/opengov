@@ -4,8 +4,8 @@ namespace Drupal\metatag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\metatag\MetatagTagPluginManager;
 use Drupal\metatag\MetatagGroupPluginManager;
+use Drupal\metatag\MetatagTagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

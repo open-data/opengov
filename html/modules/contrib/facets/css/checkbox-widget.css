@@ -1,0 +1,5 @@
+.facets-widget-links ul li.facet-item label .facet-item__value {
+  cursor: pointer;
+  color:blue;
+  text-decoration:underline;
+}

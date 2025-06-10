@@ -10,6 +10,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
+use Drupal\Core\Field\Attribute\FieldType;
+use Drupal\Core\Field\EntityReferenceFieldItemList;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldException;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -29,17 +31,16 @@ use Drupal\Core\Validation\Plugin\Validation\Constraint\AllowedValuesConstraint;
  *
  * Supported settings (below the definition's 'settings' key) are:
  * - target_type: The entity type to reference. Required.
- *
- * @FieldType(
- *   id = "entity_reference",
- *   label = @Translation("Entity reference"),
- *   description = @Translation("An entity field containing an entity reference."),
- *   category = "reference",
- *   default_widget = "entity_reference_autocomplete",
- *   default_formatter = "entity_reference_label",
- *   list_class = "\Drupal\Core\Field\EntityReferenceFieldItemList",
- * )
  */
+#[FieldType(
+  id: "entity_reference",
+  label: new TranslatableMarkup("Entity reference"),
+  description: new TranslatableMarkup("An entity field containing an entity reference."),
+  category: "reference",
+  default_widget: "entity_reference_autocomplete",
+  default_formatter: "entity_reference_label",
+  list_class: EntityReferenceFieldItemList::class,
+)]
 class EntityReferenceItem extends EntityReferenceItemBase implements OptionsProviderInterface, PreconfiguredFieldUiOptionsInterface {
 
   /**
@@ -645,21 +646,21 @@ class EntityReferenceItem extends EntityReferenceItemBase implements OptionsProv
   /**
    * {@inheritdoc}
    */
-  public function getPossibleValues(AccountInterface $account = NULL) {
+  public function getPossibleValues(?AccountInterface $account = NULL) {
     return $this->getSettableValues($account);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     return $this->getSettableOptions($account);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSettableValues(AccountInterface $account = NULL) {
+  public function getSettableValues(?AccountInterface $account = NULL) {
     // Flatten options first, because "settable options" may contain group
     // arrays.
     $flatten_options = OptGroup::flattenOptions($this->getSettableOptions($account));
@@ -669,7 +670,7 @@ class EntityReferenceItem extends EntityReferenceItemBase implements OptionsProv
   /**
    * {@inheritdoc}
    */
-  public function getSettableOptions(AccountInterface $account = NULL) {
+  public function getSettableOptions(?AccountInterface $account = NULL) {
     $field_definition = $this->getFieldDefinition();
     if (!$options = \Drupal::service('plugin.manager.entity_reference_selection')->getSelectionHandler($field_definition, $this->getEntity())->getReferenceableEntities()) {
       return [];

@@ -3,7 +3,9 @@
 namespace Drupal\google_analytics;
 
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Asset\AssetQueryStringInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -19,7 +21,7 @@ class JavascriptLocalCache {
   const GOOGLE_ANALYTICS_JAVASCRIPT_URL =  'https://www.googletagmanager.com/gtag/js';
 
   /**
-   * @var \Drupal\Core\File\FileSystem
+   * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
@@ -48,6 +50,11 @@ class JavascriptLocalCache {
    */
   protected $fileUrlGenerator;
 
+  /**
+   * @var \Drupal\Core\Asset\AssetQueryStringInterface
+   */
+  protected $assetQueryString;
+
   public function __construct(ClientInterface $http_client, FileSystemInterface $file_system, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, StateInterface $state, FileUrlGeneratorInterface $file_url_generator) {
     $this->httpClient = $http_client;
     $this->fileSystem = $file_system;
@@ -55,7 +62,11 @@ class JavascriptLocalCache {
     $this->state = $state;
     $this->logger = $logger_factory->get('google_analytics');
     $this->fileUrlGenerator = $file_url_generator;
+    if (version_compare(\Drupal::VERSION, '10.2.0', '>=')) {
+      $this->assetQueryString = \Drupal::service('asset.query_string');
+    }
   }
+
   /**
    * Download/Synchronize/Cache tracking code file locally.
    *
@@ -84,6 +95,15 @@ class JavascriptLocalCache {
           ->get($remote_url)
           ->getBody();
 
+        // Changes w.r.t CR https://www.drupal.org/node/3426517
+        if (version_compare(\Drupal::VERSION, '10.3.0', '>=')) {
+          $fileExists = FileExists::Replace;
+        }
+        else {
+          // @phpstan-ignore-next-line
+          $fileExists = FileSystemInterface::EXISTS_REPLACE;
+        }
+
         if (file_exists($file_destination)) {
           // Synchronize tracking code and replace local file if outdated.
           $data_hash_local = Crypt::hashBase64(file_get_contents($file_destination));
@@ -91,16 +111,21 @@ class JavascriptLocalCache {
           // Check that the files directory is writable.
           if ($data_hash_local != $data_hash_remote && $this->fileSystem->prepareDirectory($path)) {
             // Save updated tracking code file to disk.
-            $this->fileSystem->saveData($data, $file_destination, FileSystemInterface::EXISTS_REPLACE);
+            $this->fileSystem->saveData($data, $file_destination, $fileExists);
             // Based on Drupal Core class AssetDumper.
             if (extension_loaded('zlib') && $this->configFactory->get('system.performance')->get('js.gzip')) {
-              $this->fileSystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FileSystemInterface::EXISTS_REPLACE);
+              $this->fileSystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', $fileExists);
             }
             $this->logger->info('Locally cached tracking code file has been updated.');
 
             // Change query-strings on css/js files to enforce reload for all
             // users.
-            _drupal_flush_css_js();
+            if ($this->assetQueryString !== NULL) {
+              $this->assetQueryString->reset();
+            }
+            else {
+              _drupal_flush_css_js();
+            }
           }
         }
         else {
@@ -108,22 +133,27 @@ class JavascriptLocalCache {
           if ($this->fileSystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY)) {
             // There is no need to flush JS here as core refreshes JS caches
             // automatically, if new files are added.
-            $this->fileSystem->saveData($data, $file_destination, FileSystemInterface::EXISTS_REPLACE);
+            $this->fileSystem->saveData($data, $file_destination, $fileExists);
             // Based on Drupal Core class AssetDumper.
             if (extension_loaded('zlib') && $this->configFactory->get('system.performance')->get('js.gzip')) {
-              $this->fileSystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FileSystemInterface::EXISTS_REPLACE);
+              $this->fileSystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', $fileExists);
             }
             $this->logger->info('Locally cached tracking code file has been saved.');
           }
         }
       }
       catch (RequestException $exception) {
-        watchdog_exception('google_analytics', $exception);
+        $this->logger->error($exception);
         return $remote_url;
       }
     }
     // Return the local JS file path.
-    $query_string = '?' . (\Drupal::state()->get('system.css_js_query_string') ?: '0');
+    if ($this->assetQueryString !== NULL) {
+      $query_string = '?' . ($this->assetQueryString->get() ?: '0');;
+    }
+    else {
+      $query_string = '?' . ($this->state->get('system.css_js_query_string') ?: '0');;
+    }
     return $this->fileUrlGenerator->generateString($file_destination) . $query_string;
   }
 
@@ -136,7 +166,12 @@ class JavascriptLocalCache {
       $this->fileSystem->deleteRecursive($path);
 
       // Change query-strings on css/js files to enforce reload for all users.
-      _drupal_flush_css_js();
+      if ($this->assetQueryString !== NULL) {
+        $this->assetQueryString->reset();
+      }
+      else {
+        _drupal_flush_css_js();
+      }
 
       $this->logger->info('Local Google Analytics file cache has been purged.');
     }

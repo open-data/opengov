@@ -37,11 +37,6 @@ final class CommerceCheckoutEventsTest extends OrderKernelTestBase {
    * {@inheritDoc}
    */
   protected function setUp(): void {
-    // PHPUnit has `checkRequirements` as a private method since 9.x.
-    // We run Drupal's `checkRequirements` again, here, to verify our module
-    // requirement.
-    // @todo remove after https://www.drupal.org/i/3261817
-    $this->checkRequirements();
     parent::setUp();
 
     $this->installConfig('commerce_checkout');
@@ -59,7 +54,7 @@ final class CommerceCheckoutEventsTest extends OrderKernelTestBase {
       ],
     ])->save();
 
-    $user = $this->createUser(['mail' => $this->randomString() . '@example.com']);
+    $user = $this->createUser();
     $cart = $this->container->get('commerce_cart.cart_provider')->createCart(
       'default',
       $this->store,
@@ -120,7 +115,7 @@ final class CommerceCheckoutEventsTest extends OrderKernelTestBase {
       ],
     ])->save();
 
-    $user = $this->createUser(['mail' => $this->randomString() . '@example.com']);
+    $user = $this->createUser();
     $cart = $this->container->get('commerce_cart.cart_provider')->createCart(
       'default',
       $this->store,

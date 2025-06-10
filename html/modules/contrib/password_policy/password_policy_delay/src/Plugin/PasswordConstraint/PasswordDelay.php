@@ -4,14 +4,14 @@ namespace Drupal\password_policy_delay\Plugin\PasswordConstraint;
 
 use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\password_policy\PasswordConstraintBase;
 use Drupal\password_policy\PasswordPolicyValidation;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Password\PasswordInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\user\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Enforces a specific character length for passwords.

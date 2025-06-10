@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\KernelTests\Core\Entity;
 
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -39,6 +41,9 @@ abstract class EntityLanguageTestBase extends EntityKernelTestBase {
    */
   protected $untranslatableFieldName;
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['language', 'entity_test'];
 
   /**

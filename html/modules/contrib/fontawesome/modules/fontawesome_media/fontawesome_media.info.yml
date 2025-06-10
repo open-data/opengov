@@ -2,12 +2,12 @@ name: 'Font Awesome Media Entity'
 type: module
 description: 'Adds a Font Awesome Media Entity Type.'
 
-core_version_requirement: ^9.4 || ^10
+core_version_requirement: ^10.2 || ^11.0
 dependencies:
   - fontawesome:fontawesome
   - drupal:svg_image
 
-# Information added by Drupal.org packaging script on 2023-06-29
-version: '8.x-2.26'
+# Information added by Drupal.org packaging script on 2025-01-21
+version: '3.0.0'
 project: 'fontawesome'
-datestamp: 1688063480
+datestamp: 1737497164

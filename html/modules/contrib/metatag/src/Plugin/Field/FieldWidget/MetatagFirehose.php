@@ -167,8 +167,10 @@ class MetatagFirehose extends WidgetBase implements ContainerFactoryPluginInterf
     $entity_type_groups = $settings->get('entity_type_groups');
 
     // Find the current entity type and bundle.
-    $entity_type = $item->getEntity()->getentityTypeId();
-    $entity_bundle = $item->getEntity()->bundle();
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $get_entity */
+    $get_entity = $item->getEntity();
+    $entity_type = $get_entity->getentityTypeId();
+    $entity_bundle = $get_entity->bundle();
 
     // See if there are requested groups for this entity type and bundle.
     $groups = [];

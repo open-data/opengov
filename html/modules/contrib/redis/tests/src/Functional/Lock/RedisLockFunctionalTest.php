@@ -61,7 +61,7 @@ class RedisLockFunctionalTest extends LockFunctionalTest {
   /**
    * {@inheritdoc}
    */
-  public function testLockAcquire() {
+  public function testLockAcquire(): void {
     $redis_interface = self::getRedisInterfaceEnv();
     $lock = $this->container->get('lock');
     $this->assertInstanceOf('\Drupal\redis\Lock\\' . $redis_interface, $lock);
@@ -77,7 +77,7 @@ class RedisLockFunctionalTest extends LockFunctionalTest {
   /**
    * {@inheritdoc}
    */
-  public function testPersistentLock() {
+  public function testPersistentLock(): void {
     $redis_interface = self::getRedisInterfaceEnv();
     $persistent_lock = $this->container->get('lock.persistent');
     $this->assertInstanceOf('\Drupal\redis\PersistentLock\\' . $redis_interface, $persistent_lock);

@@ -2,15 +2,15 @@
 
 namespace Drupal\Tests\metatag\Functional;
 
-use Drupal\Tests\BrowserTestBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Ensures that meta tags are rendering correctly on forum pages.
  *
  * @group metatag
  */
-class ForumTest extends BrowserTestBase {
+class MetatagForumTest extends BrowserTestBase {
 
   use StringTranslationTrait;
 

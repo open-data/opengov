@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\config_translation\Functional;
 
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -12,6 +14,9 @@ use Drupal\Tests\BrowserTestBase;
  */
 class ConfigTranslationDateFormatUiTest extends BrowserTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'language',
     'config_translation',
@@ -45,7 +50,7 @@ class ConfigTranslationDateFormatUiTest extends BrowserTestBase {
   /**
    * Tests date format translation behavior.
    */
-  public function testDateFormatUI() {
+  public function testDateFormatUI(): void {
     $this->drupalGet('admin/config/regional/date-time');
 
     // Assert translation link unlocked date format.
@@ -66,7 +71,7 @@ class ConfigTranslationDateFormatUiTest extends BrowserTestBase {
   /**
    * Tests date format translation.
    */
-  public function testDateFormatTranslation() {
+  public function testDateFormatTranslation(): void {
 
     $this->drupalGet('admin/config/regional/date-time');
 

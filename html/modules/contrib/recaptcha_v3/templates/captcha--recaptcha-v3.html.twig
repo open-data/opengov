@@ -1,0 +1,23 @@
+
+{#
+/**
+ * @file
+ * Default theme implementation for a reCAPTCHA v3.
+ *
+ * Available variables:
+ * - is_visible: Boolean to indicate if the CAPTCHA is visible or was
+ *   already solved (but element still needed for hidden inputs).
+ * - attributes: HTML attributes for the containing element.
+ * - title: The captcha title
+ * - description: The captcha description
+ * - element: The captcha element itself (image, recaptcha, ...)
+ *
+ * @see template_preprocess_captcha()
+ *
+ * @ingroup themeable
+ */
+#}
+
+{% block captcha %}
+  {{ element }}
+{% endblock %}

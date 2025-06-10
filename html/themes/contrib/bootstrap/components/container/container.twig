@@ -1,0 +1,14 @@
+{% set classes = full_width ? 'full-width' : container ? 'container' : '' %}
+
+{% set style = background_image ? 'background-image:url("' ~ background_image ~ '");' : '' %}
+{% set style = background_color ? style ~ 'background-color:' ~ background_color ~ '");' : style %}
+
+<section {{ attributes.addClass(classes).setAttribute('style', style) }}>
+  {% if full_width and container %}
+    <div class="container">
+  {% endif %}
+    {% block content %}{% endblock %}
+  {% if full_width and container %}
+    </div>
+  {% endif %}
+</section>

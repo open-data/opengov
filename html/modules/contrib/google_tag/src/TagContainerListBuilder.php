@@ -4,8 +4,8 @@ namespace Drupal\google_tag;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\google_tag\Entity\TagContainer;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\google_tag\Entity\TagContainer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,7 +22,7 @@ class TagContainerListBuilder extends ConfigEntityListBuilder {
    */
   protected $configFactory;
 
-   /**
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {

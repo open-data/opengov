@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\views_ui\Functional;
 
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -25,9 +27,7 @@ class StorageTest extends UITestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['views_ui', 'language'];
 
@@ -36,7 +36,7 @@ class StorageTest extends UITestBase {
    *
    * @see views_ui_edit_details_form
    */
-  public function testDetails() {
+  public function testDetails(): void {
     $view_name = 'test_view';
 
     ConfigurableLanguage::createFromLangcode('fr')->save();

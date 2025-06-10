@@ -103,7 +103,7 @@ class ConfigOverrideIntegrationTest extends SearchApiBrowserTestBase {
     ];
     $this->submitForm($edit, 'Save');
     $this->assertSession()
-      ->pageTextContains('Please configure the used datasources.');
+      ->pageTextContains('Configure the used datasources.');
     $this->submitForm([], 'Save');
     $this->checkForMetaRefresh();
     $this->assertSession()

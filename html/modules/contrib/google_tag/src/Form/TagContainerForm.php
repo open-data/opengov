@@ -64,12 +64,7 @@ class TagContainerForm extends EntityForm {
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   Language manager.
    */
-  public function __construct(
-    ConditionManager $condition_manager,
-    ContextRepositoryInterface $context_repository,
-    GoogleTagEventManager $tag_event_manager,
-    LanguageManagerInterface $language_manager
-  ) {
+  public function __construct(ConditionManager $condition_manager, ContextRepositoryInterface $context_repository, GoogleTagEventManager $tag_event_manager, LanguageManagerInterface $language_manager) {
     $this->conditionManager = $condition_manager;
     $this->contextRepository = $context_repository;
     $this->tagEventManager = $tag_event_manager;
@@ -93,38 +88,27 @@ class TagContainerForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    $form['#id'] = Html::getId($form_state->getBuildInfo()['form_id']);
 
     // Store the gathered contexts in the form state for other objects to use
     // during form building.
     $form_state->setTemporaryValue('gathered_contexts', $this->contextRepository->getAvailableContexts());
 
-    // The main premise of entity forms is that we get to work with an entity
-    // object at all times instead of checking submitted values from the form
-    // state.
-    $id_count = $form_state->get('id_count');
-    // If the id_count is null, we're loading for the first time, load in IDS.
-    if ($id_count === NULL) {
-      $accounts = $this->entity->get('tag_container_ids');
-      $id_count = empty($accounts) ? 1 : count($accounts);
-      $form_state->set('id_count', $id_count);
-    }
-    $id_prefix = implode('-', ['general', 'accounts']);
-    $wrapper_id = Html::getUniqueId($id_prefix . '-add-more-wrapper');
-
-    $form['general'] = [
+    $accounts_wrapper_id = Html::getUniqueId('accounts-add-more-wrapper');
+    $form['accounts_wrapper'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Google Tag ID(s)'),
-      '#prefix' => '<div id="' . $wrapper_id . '">',
-      '#description' => $this->t(
-        'This ID is unique to each site you want to track separately, and is in the form of UA-xxxxx-yy, G-xxxxxxxx, AW-xxxxxxxxx, or DC-xxxxxxxx. To get a Web Property ID, <a href=":analytics">register your site with Google Analytics</a>, or if you already have registered your site, go to your Google Analytics Settings page to see the ID next to every site profile. <a href=":webpropertyid">Find more information in the documentation</a>.', [
-          ':analytics' => 'https://marketingplatform.google.com/about/analytics/',
-          ':webpropertyid' => Url::fromUri('https://developers.google.com/analytics/resources/concepts/gaConceptsAccounts',
-            ['fragment' => 'webProperty'])->toString(),
-        ]),
+      '#prefix' => '<div id="' . $accounts_wrapper_id . '">',
+      '#description' => $this->t('This ID is unique to each site you want to track separately, and is in the form of UA-xxxxx-yy, G-xxxxxxxx, AW-xxxxxxxxx, or DC-xxxxxxxx. To get a Web Property ID, <a href=":analytics">register your site with Google Analytics</a>, or if you already have registered your site, go to your Google Analytics Settings page to see the ID next to every site profile. <a href=":webpropertyid">Find more information in the documentation</a>.', [
+        ':analytics' => 'https://marketingplatform.google.com/about/analytics/',
+        ':webpropertyid' => Url::fromUri('https://developers.google.com/analytics/resources/concepts/gaConceptsAccounts', ['fragment' => 'webProperty'])->toString(),
+      ]),
       '#suffix' => '</div>',
     ];
     // Filter order (tabledrag).
-    $form['general']['accounts'] = [
+    $form['accounts_wrapper']['accounts'] = [
+      '#input' => FALSE,
+      '#tree' => TRUE,
       '#type' => 'table',
       '#tabledrag' => [
         [
@@ -133,61 +117,85 @@ class TagContainerForm extends EntityForm {
           'group' => 'account-order-weight',
         ],
       ],
-      '#tree' => TRUE,
     ];
 
-    for ($i = 0; $i < $id_count; $i++) {
-      // This makes sure removed fields don't reappear in the form.
-      if ($i === $form_state->get('remove_ids')) {
-        continue;
+    $accounts = $form_state->getValue('accounts', []);
+    if ($accounts === []) {
+      $entity_accounts = $this->entity->get('tag_container_ids');
+      foreach ($entity_accounts as $index => $account) {
+        $accounts[$index]['value'] = $account;
+        $accounts[$index]['weight'] = $index;
       }
+      // Default fallback.
+      if (count($accounts) === 0) {
+        $accounts[] = ['value' => '', 'weight' => 0];
+      }
+    }
 
-      $form['general']['accounts'][$i]['#attributes']['class'][] = 'draggable';
-      $form['general']['accounts'][$i]['#weight'] = $i;
-      $form['general']['accounts'][$i]['value'] = [
-        '#default_value' => (string) ($accounts[$i] ?? ''),
+    foreach ($accounts as $index => $account) {
+      $form['accounts_wrapper']['accounts'][$index]['#attributes']['class'][] = 'draggable';
+      $form['accounts_wrapper']['accounts'][$index]['#weight'] = $account['weight'];
+      $form['accounts_wrapper']['accounts'][$index]['value'] = [
+        '#default_value' => (string) ($account['value'] ?? ''),
         '#maxlength' => 20,
-        '#required' => ($i === 0),
+        '#required' => (count($accounts) === 1),
         '#size' => 20,
         '#type' => 'textfield',
         '#pattern' => TagContainer::GOOGLE_TAG_MATCH,
+        '#ajax' => [
+          'callback' => [self::class, 'storeGtagAccountsCallback'],
+          'disable-refocus' => TRUE,
+          'event' => 'change',
+          'wrapper' => 'advanced-settings-wrapper',
+        ],
+        '#attributes' => [
+          'data-disable-refocus' => 'true',
+        ],
       ];
 
-      $form['general']['accounts'][$i]['weight'] = [
+      $form['accounts_wrapper']['accounts'][$index]['weight'] = [
         '#type' => 'weight',
-        '#title' => $this->t('Weight for @title', ['@title' => (string) ($accounts[$i] ?? '')]),
+        '#title' => $this->t('Weight for @title', ['@title' => (string) ($account['value'] ?? '')]),
         '#title_display' => 'invisible',
         '#delta' => 50,
-        '#default_value' => $i,
-        '#parents' => ['accounts', $i, 'weight'],
+        '#default_value' => $index,
+        '#parents' => ['accounts', $index, 'weight'],
         '#attributes' => ['class' => ['account-order-weight']],
       ];
 
       // If there is more than one id, add the remove button.
-      if ($id_count > 1) {
-        $form['general']['accounts'][$i]['remove'] = [
+      if (count($accounts) > 1) {
+        $form['accounts_wrapper']['accounts'][$index]['remove'] = [
           '#type' => 'submit',
-          '#name' => 'remove_gtag_ids_' . $i,
           '#value' => $this->t('Remove'),
-          '#submit' => ['::removeGtagCallback'],
-          '#limit_validation_errors' => [],
+          '#name' => 'remove_gtag_id_' . $index,
+          '#parameter_index' => $index,
+          '#limit_validation_errors' => [
+            ['accounts'],
+          ],
+          '#submit' => [
+            [self::class, 'removeGtagCallback'],
+          ],
           '#ajax' => [
-            'callback' => '::gtagFieldCallback',
-            'wrapper' => $wrapper_id,
+            'callback' => [self::class, 'gtagFormCallback'],
+            'wrapper' => $form['#id'],
           ],
         ];
       }
     }
 
-    $form['general']['add_gtag_id'] = [
+    $id_prefix = implode('-', ['accounts_wrapper', 'accounts']);
+    // Add blank account.
+    $form['accounts_wrapper']['add_gtag_id'] = [
       '#type' => 'submit',
       '#value' => $this->t('Add another ID'),
       '#name' => str_replace('-', '_', $id_prefix) . '_add_gtag_id',
-      '#submit' => ['::addGtagCallback'],
-      '#limit_validation_errors' => [],
+      '#submit' => [
+        [self::class, 'addGtagCallback'],
+      ],
       '#ajax' => [
-        'callback' => '::gtagFieldCallback',
-        'wrapper' => $wrapper_id,
+        'callback' => [self::class, 'ajaxRefreshAccounts'],
+        'wrapper' => $accounts_wrapper_id,
         'effect' => 'fade',
       ],
     ];
@@ -302,18 +310,7 @@ class TagContainerForm extends EntityForm {
 
     $form['conditions'] = $this->conditionsForm([], $form_state);
 
-    // Only show Advanced GTM settings if one of the IDs belong to GTM.
-    if ($this->entity->getGtmId()) {
-      $form['advanced_settings'] = [
-        '#type' => 'fieldset',
-        '#title' => $this->t('Advanced settings'),
-        '#description' => $this->t('The settings affecting the snippet contents for this container.'),
-        '#attributes' => ['class' => ['google-tag']],
-        '#open' => FALSE,
-        '#tree' => TRUE,
-      ];
-      $form['advanced_settings']['gtm'] = $this->gtmAdvancedFieldset($form_state);
-    }
+    $form['advanced_settings'] = $this->getAdvancedSettings([], $form_state, $accounts);
 
     $form['status'] = [
       '#type' => 'checkbox',
@@ -430,6 +427,59 @@ class TagContainerForm extends EntityForm {
   }
 
   /**
+   * Builds form elements for advanced settings configuration.
+   *
+   * Currently, only Google Tag Manager has advanced settings. However, this
+   * form could be used to add Google Tag / GA / etc options as well.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $accounts
+   *   A keyed array containing the all the gtag accounts for the container.
+   *
+   * @return array
+   *   The augmented form array with the insertion condition elements.
+   */
+  protected function getAdvancedSettings(array $form, FormStateInterface $form_state, array $accounts) {
+    // Advanced Settings. These are specific settings per ID.
+    $advanced_settings = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Advanced settings'),
+      '#description' => $this->t('The settings affecting the snippet contents for this container.'),
+      '#attributes' => ['class' => ['google-tag']],
+      '#prefix' => '<div id="advanced-settings-wrapper">',
+      '#suffix' => '</div>',
+      '#open' => FALSE,
+      '#tree' => TRUE,
+    ];
+    // Allow disabling of consent options when using non Ads tags.
+    $advanced_settings['consent_mode'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enforce Privacy Consent Policy'),
+      '#description' => $this->t("In certain countries and for certain tags (Ads), user consent is required before sending any data. Please review this  <a href='https://www.google.com/about/company/user-consent-policy-help/'>Google FAQ</a> before disabling."),
+      '#default_value' => !empty($this->entity->get('advanced_settings')['consent_mode']),
+    ];
+
+    // Only show Advanced GTM settings if one of the IDs belong to GTM.
+    $gtm_ids = array_slice(
+      array_filter(
+        $accounts,
+        static fn ($id) => preg_match(TagContainer::GOOGLE_TAG_MANAGER_MATCH, $id['value'])
+      ),
+      0);
+
+    // Add processing / ajax input and append it to the form.
+    foreach ($gtm_ids as $gtm_id) {
+      $advanced_settings_data = $this->entity->getGtmSettings($gtm_id['value']);
+      $advanced_settings['gtm'][$gtm_id['value']] = $this->gtmAdvancedFieldset($advanced_settings_data, $gtm_id['value']);
+    }
+
+    return $advanced_settings;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
@@ -437,16 +487,6 @@ class TagContainerForm extends EntityForm {
     $this->validateConditionsForm($form, $form_state);
 
     $this->buildEntity($form, $form_state);
-    /* TODO causes Call to undefined method Drupal
-    // Core\Config\Schema\Undefined:: getIterator() due to missing config ID.
-    $violations = $this->entity->getTypedData()->validate();
-    foreach ($violations as $violation) {
-    $form_state->setErrorByName(
-    str_replace('.', '][', $violation->getPropertyPath())
-    , $violation->getMessage()
-    );
-    }
-     */
 
     $this->validateEventsForm($form, $form_state);
   }
@@ -558,8 +598,8 @@ class TagContainerForm extends EntityForm {
     // properly filtered.
     // @see https://www.drupal.org/project/google_tag/issues/3345719#comment-15009415
     // @see BlockForm::submitForm()
-    // @TODO: I believe that with the fix on https://www.drupal.org/project/google_tag/issues/3357105
-    // this is no longer necessary, but as BlockForm::submitForm() is still
+    // The fix on https://www.drupal.org/project/google_tag/issues/3357105
+    // may not be necessary, but as BlockForm::submitForm() is still
     // doing we are leaving it for now.
     $this->entity->save();
 
@@ -594,8 +634,10 @@ class TagContainerForm extends EntityForm {
       $condition = $form_state->get(['conditions', $condition_id]);
       $condition->submitConfigurationForm($form['conditions'][$condition_id], SubformState::createForSubform($form['conditions'][$condition_id], $form, $form_state));
       $configuration = $condition->getConfiguration();
+
       // Due to strict type checking, cast negation to a boolean.
-      $configuration['negate'] = (bool) $configuration['negate'];
+      $configuration['negate'] = (bool) (array_key_exists('negate', $configuration) ? $configuration['negate'] : FALSE);
+
       // Update the insertion conditions on the container.
       $this->entity->getInsertionConditions()->addInstanceId($condition_id, $configuration);
     }
@@ -606,8 +648,8 @@ class TagContainerForm extends EntityForm {
    *
    * Selects and returns the fieldset with the names in it.
    */
-  public function gtagFieldCallback(array &$form, FormStateInterface $form_state) {
-    return $form['general'];
+  public static function gtagFormCallback(array &$form, FormStateInterface $form_state) {
+    return $form;
   }
 
   /**
@@ -615,14 +657,12 @@ class TagContainerForm extends EntityForm {
    *
    * Decrements the max counter and causes a form rebuild.
    */
-  public function removeGtagCallback(array &$form, FormStateInterface $form_state) {
-    $removed_trigger = $form_state->getTriggeringElement();
-    $gtag_id = (int) substr($removed_trigger['#name'], strlen('remove_gtags_ids'));
-    $form_state->set('remove_ids', $gtag_id);
-
-    // Since our buildForm() method relies on the value of 'num_names' to
-    // generate 'name' form elements, we have to tell the form to rebuild. If we
-    // don't do this, the form builder will not call buildForm().
+  public static function removeGtagCallback(array &$form, FormStateInterface $form_state) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $index = $triggering_element['#parameter_index'];
+    $accounts = $form_state->getValue('accounts', []);
+    unset($accounts[$index]);
+    $form_state->setValue('accounts', $accounts);
     $form_state->setRebuild();
   }
 
@@ -631,14 +671,24 @@ class TagContainerForm extends EntityForm {
    *
    * Increments the max counter and causes a rebuild.
    */
-  public function addGtagCallback(array &$form, FormStateInterface $form_state) {
-    $id_field = $form_state->get('id_count');
-    $add_button = $id_field + 1;
-    $form_state->set('id_count', $add_button);
-    // Since our buildForm() method relies on the value of 'num_names' to
-    // generate 'gtag_id' form elements, we have to tell the form to
-    // rebuild. If we don't do this, the form builder will not call buildForm().
+  public static function addGtagCallback(array &$form, FormStateInterface $form_state) {
+    $accounts = $form_state->getValue('accounts', []);
+    $accounts[] = [
+      'value' => '',
+      'weight' => count($accounts),
+    ];
+    $form_state->setValue('accounts', $accounts);
     $form_state->setRebuild();
+  }
+
+  /**
+   * Submit handler for the "add-one-more" button.
+   *
+   * Increments the max counter and causes a rebuild.
+   */
+  public static function storeGtagAccountsCallback(array &$form, FormStateInterface $form_state) {
+    // Update Advanced Settings Form.
+    return $form['advanced_settings'];
   }
 
   /**
@@ -690,6 +740,21 @@ class TagContainerForm extends EntityForm {
    */
   public static function ajaxRefreshMetricsDimensions(array $form, FormStateInterface $form_state) {
     return $form['dimensions_metrics_wrapper'];
+  }
+
+  /**
+   * Callback for add more gtag accounts.
+   *
+   * @param array $form
+   *   Form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return mixed
+   *   Accounts wrapper.
+   */
+  public static function ajaxRefreshAccounts(array $form, FormStateInterface $form_state) {
+    return $form['accounts_wrapper'];
   }
 
 }

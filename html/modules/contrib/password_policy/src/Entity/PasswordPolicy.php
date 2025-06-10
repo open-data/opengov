@@ -2,8 +2,8 @@
 
 namespace Drupal\password_policy\Entity;
 
-use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\password_policy\PasswordPolicyInterface;
 
 /**

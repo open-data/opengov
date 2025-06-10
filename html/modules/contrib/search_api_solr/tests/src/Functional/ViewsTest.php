@@ -5,9 +5,9 @@ namespace Drupal\Tests\search_api_solr\Functional;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Utility\Utility;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\Tests\search_api\Functional\SearchApiBrowserTestBase;
 use Drupal\Tests\search_api\Functional\ViewsTest as SearchApiViewsTest;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 
 /**
  * Tests the Views integration of the Search API.
@@ -29,7 +29,7 @@ class ViewsTest extends SearchApiViewsTest {
    * {@inheritdoc}
    */
   public function setUp(): void {
-    // Skip parent::setUp().
+    // Skip parent::setUp() to use Solr iunstead of the DB backend!
     SearchApiBrowserTestBase::setUp();
 
     // Add a second language.

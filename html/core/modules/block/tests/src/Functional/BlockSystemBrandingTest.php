@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\block\Functional;
 
 /**
@@ -10,9 +12,7 @@ namespace Drupal\Tests\block\Functional;
 class BlockSystemBrandingTest extends BlockTestBase {
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['block', 'system'];
 
@@ -37,7 +37,7 @@ class BlockSystemBrandingTest extends BlockTestBase {
   /**
    * Tests system branding block configuration.
    */
-  public function testSystemBrandingSettings() {
+  public function testSystemBrandingSettings(): void {
     $site_logo_xpath = '//div[@id="block-site-branding"]/a/img';
     $site_name_xpath = '//div[@id="block-site-branding"]/a[text() = "Drupal"]';
     $site_slogan_xpath = '//div[@id="block-site-branding"]/descendant::text()[last()]';

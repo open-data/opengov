@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Module hooks for Advanced Email Validation module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function advanced_email_validation_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.advanced_email_validation':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Advanced Email Validation module allows you to ensure user accounts created on your site conform to configurable rules, including the ability to reject emails from free and disposable email providers.') . '</p>';
+      $output .= '<p>' . t('For more information, see the <a href=":advanced-email-validation-project">Project page for the Advanced Email Validation module</a>.', [':advanced-email-validation-project' => 'https://www.drupal.org/project/advanced_email_validation']) . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ *
+ * Add extra email validation to the User entity type's mail field.
+ */
+function advanced_email_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if ($entity_type->id() === 'user') {
+    if (isset($fields['mail'])) {
+      $config = \Drupal::config('advanced_email_validation.settings');
+      if ($validateAccountOn = $config->get('validate_account_on')) {
+        if ($validateAccountOn['created']) {
+          $fields['mail']->addConstraint('AEVNewEmail');
+        }
+        if ($validateAccountOn['updated']) {
+          $fields['mail']->addConstraint('AEVChangedEmail');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function advanced_email_validation_theme() {
+  $info = [
+    'webform_handler_advanced_email_webform_validator_handler_summary' => [
+      'variables' => ['settings' => NULL, 'handler' => []],
+    ],
+  ];
+
+  return $info;
+}

@@ -126,10 +126,10 @@ interface SimpleSitemapInterface extends ConfigEntityInterface {
   /**
    * Returns the timestamp of the sitemap chunk generation.
    *
-   * @return string|null
+   * @return int|null
    *   Timestamp of sitemap chunk generation.
    */
-  public function getCreated(): ?string;
+  public function getCreated(): ?int;
 
   /**
    * Returns the number of links indexed in the sitemap content.

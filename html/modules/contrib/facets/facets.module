@@ -68,6 +68,11 @@ function facets_theme($existing, $type, $theme, $path) {
         'context' => [],
       ],
     ],
+    'facets_views_plugin' => [
+      'variables' => [
+        'content' => [],
+      ],
+    ],
   ];
 }
 
@@ -204,7 +209,7 @@ function facets_entity_predelete(EntityInterface $entity) {
  * @see https://www.drupal.org/node/1842756
  */
 function facets_preprocess_facets_item_list(array &$variables) {
-  /** @var FacetInterface $facet */
+  /** @var \Drupal\facets\Entity\FacetInterface $facet */
   $facet = $variables['facet'];
   if ($facet !== NULL) {
     if ($facet->get('show_title') === TRUE) {
@@ -335,7 +340,7 @@ function facets_system_breadcrumb_alter(Breadcrumb &$breadcrumb, RouteMatchInter
       }
       else {
         $crumb_text = implode(', ', $facet_crumb_items);
-      };
+      }
       $link = Link::fromTextAndUrl($crumb_text, $facet_url);
       $breadcrumb->addLink($link);
     }

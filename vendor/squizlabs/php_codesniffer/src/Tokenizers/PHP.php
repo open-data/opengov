@@ -231,6 +231,7 @@ class PHP extends Tokenizer
                 T_CONTINUE => T_CONTINUE,
                 T_THROW    => T_THROW,
                 T_EXIT     => T_EXIT,
+                T_GOTO     => T_GOTO,
             ],
             'strict' => true,
             'shared' => true,
@@ -251,6 +252,7 @@ class PHP extends Tokenizer
                 T_CONTINUE => T_CONTINUE,
                 T_THROW    => T_THROW,
                 T_EXIT     => T_EXIT,
+                T_GOTO     => T_GOTO,
             ],
             'strict' => true,
             'shared' => true,
@@ -799,6 +801,46 @@ class PHP extends Tokenizer
 
                     break;
                 }
+            }//end if
+
+            /*
+                Prior to PHP 7.4, PHP didn't support stand-alone PHP open tags at the end of a file
+                (without a new line), so we need to make sure that the tokenization in PHPCS is consistent
+                cross-version PHP by retokenizing to T_OPEN_TAG.
+            */
+
+            if (PHP_VERSION_ID < 70400
+                && $tokenIsArray === true
+                // PHP < 7.4 with short open tags off.
+                && (($stackPtr === ($numTokens - 1)
+                && $token[0] === T_INLINE_HTML
+                && stripos($token[1], '<?php') === 0)
+                // PHP < 7.4 with short open tags on.
+                || ($stackPtr === ($numTokens - 2)
+                && $token[0] === T_OPEN_TAG
+                && $token[1] === '<?'
+                && is_array($tokens[($stackPtr + 1)]) === true
+                && $tokens[($stackPtr + 1)][0] === T_STRING
+                && strtolower($tokens[($stackPtr + 1)][1]) === 'php'))
+            ) {
+                if ($token[0] === T_INLINE_HTML) {
+                    $finalTokens[$newStackPtr] = [
+                        'code'    => T_OPEN_TAG,
+                        'type'    => 'T_OPEN_TAG',
+                        'content' => $token[1],
+                    ];
+                } else {
+                    $finalTokens[$newStackPtr] = [
+                        'code'    => T_OPEN_TAG,
+                        'type'    => 'T_OPEN_TAG',
+                        'content' => $token[1].$tokens[($stackPtr + 1)][1],
+                    ];
+
+                    $stackPtr++;
+                }
+
+                $newStackPtr++;
+                continue;
             }//end if
 
             /*
@@ -1494,6 +1536,12 @@ class PHP extends Tokenizer
                     ];
                     $newStackPtr++;
 
+                    // Also modify the original token stack so that
+                    // future checks (like looking for T_NULLABLE) can
+                    // detect the T_READONLY token more easily.
+                    $tokens[$stackPtr][0] = T_READONLY;
+                    $token[0] = T_READONLY;
+
                     if (PHP_CODESNIFFER_VERBOSITY > 1 && $type !== T_READONLY) {
                         echo "\t\t* token $stackPtr changed from $type to T_READONLY".PHP_EOL;
                     }
@@ -2142,6 +2190,7 @@ class PHP extends Tokenizer
                         || $tokenType === T_FN
                         || isset(Tokens::$methodPrefixes[$tokenType]) === true
                         || $tokenType === T_VAR
+                        || $tokenType === T_READONLY
                     ) {
                         if (PHP_CODESNIFFER_VERBOSITY > 1) {
                             echo "\t\t* token $stackPtr changed from ? to T_NULLABLE".PHP_EOL;
@@ -2249,7 +2298,7 @@ class PHP extends Tokenizer
                         ) {
                             // Non-empty content.
                             if (is_array($tokens[$x]) === true && $tokens[$x][0] === T_USE) {
-                                // Found a use statements, so search ahead for the closing parenthesis.
+                                // Found a use statement, so search ahead for the closing parenthesis.
                                 for ($x += 1; $x < $numTokens; $x++) {
                                     if (is_array($tokens[$x]) === false && $tokens[$x] === ')') {
                                         continue(2);
@@ -2817,7 +2866,10 @@ class PHP extends Tokenizer
                     }
                 }
 
-                if (isset($this->tokens[$x]) === true && $this->tokens[$x]['code'] === T_OPEN_PARENTHESIS) {
+                if (isset($this->tokens[$x]) === true
+                    && $this->tokens[$x]['code'] === T_OPEN_PARENTHESIS
+                    && isset($this->tokens[$x]['parenthesis_closer']) === true
+                ) {
                     $ignore  = Tokens::$emptyTokens;
                     $ignore += [
                         T_ARRAY                  => T_ARRAY,
@@ -2995,7 +3047,7 @@ class PHP extends Tokenizer
                     }//end if
                 }//end if
 
-                // If after all that, the extra tokens are not set, this is not an arrow function.
+                // If after all that, the extra tokens are not set, this is not a (valid) arrow function.
                 if (isset($this->tokens[$i]['scope_closer']) === false) {
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $line = $this->tokens[$i]['line'];
@@ -3376,7 +3428,8 @@ class PHP extends Tokenizer
                         && (isset(Tokens::$scopeModifiers[$this->tokens[$x]['code']]) === true
                         || $this->tokens[$x]['code'] === T_VAR
                         || $this->tokens[$x]['code'] === T_STATIC
-                        || $this->tokens[$x]['code'] === T_READONLY)
+                        || $this->tokens[$x]['code'] === T_READONLY
+                        || $this->tokens[$x]['code'] === T_FINAL)
                     ) {
                         // This will also confirm constructor property promotion parameters, but that's fine.
                         $confirmed = true;

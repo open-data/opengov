@@ -32,13 +32,6 @@
         "drupal/search_api_autocomplete": "Allows adding autocomplete suggestions to search fields.",
         "drupal/search_api_solr": "Adds support for using Apache Solr as a backend."
     },
-    "extra": {
-        "drush": {
-            "services": {
-                "drush.services.yml": "^9 || ^10 || ^11"
-            }
-        }
-    },
     "conflict": {
         "drupal/search_api_solr": "2.* || 3.0 || 3.1"
     }

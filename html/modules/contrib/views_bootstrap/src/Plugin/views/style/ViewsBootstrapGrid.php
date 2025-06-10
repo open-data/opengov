@@ -41,22 +41,11 @@ class ViewsBootstrapGrid extends StylePluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
+    $options['grid_class'] = ['default' => ''];
     foreach (ViewsBootstrap::getBreakpoints() as $breakpoint) {
       $breakpoint_option = "col_$breakpoint";
       $options[$breakpoint_option] = ['default' => 'none'];
     }
-    $options['col_class_custom'] = ['default' => ''];
-    $options['col_class_default'] = ['default' => TRUE];
-    $options['row_class_custom'] = ['default' => ''];
-    $options['row_class_default'] = ['default' => TRUE];
-    $options['default'] = ['default' => ''];
-    $options['info'] = ['default' => []];
-    $options['override'] = ['default' => TRUE];
-    $options['sticky'] = ['default' => FALSE];
-    $options['order'] = ['default' => 'asc'];
-    $options['caption'] = ['default' => ''];
-    $options['summary'] = ['default' => ''];
-    $options['description'] = ['default' => ''];
     return $options;
   }
 
@@ -66,13 +55,25 @@ class ViewsBootstrapGrid extends StylePluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
+    $form['grid_class'] = [
+      '#title' => $this->t('Grid row custom class'),
+      '#description' => $this->t('Additional classes to provide on the grid row. Separated by a space.'),
+      '#type' => 'textfield',
+      '#size' => '30',
+      '#default_value' => $this->options['grid_class'],
+      '#weight' => 1,
+    ];
+
+    $form['row_class']['#title'] = $this->t('Custom column class');
+    $form['row_class']['#weight'] = 2;
+
     foreach (ViewsBootstrap::getBreakpoints() as $breakpoint) {
       $breakpoint_option = "col_$breakpoint";
       $prefix = 'col' . ($breakpoint != 'xs' ? '-' . $breakpoint : '');
       $form[$breakpoint_option] = [
         '#type' => 'select',
         '#title' => $this->t("Column width of items at @breakpoint breakpoint", ['@breakpoint' => $breakpoint]),
-        '#default_value' => isset($this->options[$breakpoint_option]) ? $this->options[$breakpoint_option] : NULL,
+        '#default_value' => $this->options[$breakpoint_option] ?? NULL,
         '#description' => $this->t("Set the number of columns each item should take up at the @breakpoint breakpoint and higher.", ['@breakpoint' => $breakpoint]),
         '#options' => [
           'none' => $this->t('None (or inherit from previous)'),

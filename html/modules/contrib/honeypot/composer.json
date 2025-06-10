@@ -20,6 +20,6 @@
         "drupal/core": "^9.2 || ^10"
     },
     "require-dev": {
-        "drupal/rules": "^3.0"
+        "drupal/rules": "^3.x-dev"
     }
 }

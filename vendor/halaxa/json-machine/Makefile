@@ -5,15 +5,14 @@ LATEST_PHP := 8.0 3.1.1
 COVERAGE_PHP := 7.4 3.1.1
 
 define PHP_VERSIONS
-"7.0 2.7.2"\
-"7.1 2.9.8"\
 "7.2 3.1.1"\
 "7.3 3.1.1"\
 "7.4 3.1.1"\
 "8.0 3.1.1"\
 "8.1 3.1.1"\
 "8.2 3.2.0"\
-"8.3-rc 3.3.0alpha3"
+"8.3 3.3.2"\
+"8.4 3.4.0beta1"
 endef
 
 define DOCKER_RUN
@@ -30,7 +29,7 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: composer-validate cs-check phpstan tests-all ## Run all necessary stuff before commit.
+build: composer-update cs-check phpstan tests-all ## Run all necessary stuff before commit.
 
 
 tests: ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
@@ -67,8 +66,8 @@ performance-tests: ## Run performance tests
 	@$(call DOCKER_RUN,$(LATEST_PHP),composer performance-tests)
 
 
-composer-validate: ## Validate composer.json contents
-	@$(call DOCKER_RUN,$(LATEST_PHP),composer validate)
+composer-update: ## Validate composer.json contents
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer update)
 
 
 release: .env build

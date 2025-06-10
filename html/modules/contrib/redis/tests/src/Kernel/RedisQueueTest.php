@@ -25,7 +25,7 @@ class RedisQueueTest extends CoreQueueTest {
   /**
    * Tests Redis non-blocking queue.
    */
-  public function testRedisNonBlockingQueue() {
+  public function testRedisNonBlockingQueue(): void {
     self::setUpSettings();
     $client_factory = \Drupal::service('redis.factory');
     $settings = ['reserve_timeout' => NULL];
@@ -59,7 +59,7 @@ class RedisQueueTest extends CoreQueueTest {
   /**
    * Tests Redis blocking queue.
    */
-  public function testRedisBlockingQueue() {
+  public function testRedisBlockingQueue(): void {
     self::setUpSettings();
     // Create two queues.
     $client_factory = \Drupal::service('redis.factory');
@@ -82,7 +82,7 @@ class RedisQueueTest extends CoreQueueTest {
    *
    * We override tests from core class we extend to prevent them from running.
    */
-  public function testSystemQueue() {
+  public function testSystemQueue(): void {
     $this->markTestSkipped();
   }
 
@@ -91,7 +91,7 @@ class RedisQueueTest extends CoreQueueTest {
    *
    * We override tests from core class we extend to prevent them from running.
    */
-  public function testMemoryQueue() {
+  public function testMemoryQueue(): void {
     $this->markTestSkipped();
   }
 

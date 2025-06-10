@@ -4,6 +4,7 @@ namespace Drupal\facets\Plugin\facets\widget;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
+use Drupal\facets\Result\ResultInterface;
 use Drupal\facets\Widget\WidgetPluginBase;
 
 /**
@@ -36,6 +37,17 @@ class DropdownWidget extends WidgetPluginBase {
     $build['#attached']['library'][] = 'facets/drupal.facets.dropdown-widget';
     $build['#attached']['library'][] = 'facets/drupal.facets.general';
     return $build;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildListItems(FacetInterface $facet, ResultInterface $result) {
+    $items = parent::buildListItems($facet, $result);
+
+    $items['#attributes']['data-drupal-facet-widget-element-class'] = 'facets-dropdown';
+
+    return $items;
   }
 
   /**

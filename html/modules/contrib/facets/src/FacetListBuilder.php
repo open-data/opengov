@@ -107,7 +107,6 @@ class FacetListBuilder extends DraggableListBuilder {
     $facet_configs = \Drupal::entityTypeManager()
       ->getStorage('facets_facet')
       ->load($entity->getConfigTarget());
-
     $row = [
       'type' => [
         '#theme_wrappers' => [
@@ -225,6 +224,9 @@ class FacetListBuilder extends DraggableListBuilder {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $groups = $this->loadGroups();
 
+    $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
+    $form['facets_3_block_support'] = ['#markup' => '<p>' . t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
+
     $form['facets'] = [
       '#type' => 'table',
       '#header' => $this->buildHeader(),
@@ -300,7 +302,7 @@ class FacetListBuilder extends DraggableListBuilder {
       foreach ($groups['lone_facets'] as $facet) {
         // Facets core search moved into a separate project. Show a clean
         // message to notify users how to resolve their broken facets.
-        if (substr($facet->getFacetSourceId(), 0, 16) == 'core_node_search') {
+        if ($facet->getFacetSourceId() && substr($facet->getFacetSourceId(), 0, 16) == 'core_node_search') {
           $project_link = Link::fromTextAndUrl('https://www.drupal.org/project/facets_core_search', Url::fromUri('https://www.drupal.org/project/facets_core_search'))->toString();
           \Drupal::messenger()->addError(
             $this->t(
@@ -328,7 +330,9 @@ class FacetListBuilder extends DraggableListBuilder {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $entities = $this->storage->loadMultiple(array_keys($form_state->getValue('facets')));
+    $facets = $form_state->getValue('facets');
+    $facets = is_string($facets) ? [] : $facets;
+    $entities = $this->storage->loadMultiple(array_keys($facets));
     /** @var \Drupal\block\BlockInterface[] $entities */
     foreach ($entities as $entity_id => $entity) {
       $entity_values = $form_state->getValue(['facets', $entity_id]);
@@ -358,6 +362,13 @@ class FacetListBuilder extends DraggableListBuilder {
 
     $facet_source_groups = [];
     foreach ($facet_sources as $facet_source) {
+
+      // For now, we hide the facet sources for views display default.
+      // They should not be used to attach block facets.
+      if (substr($facet_source["display_id"], 0, 14) == 'views_default:') {
+        continue;
+      }
+
       $facet_source_groups[$facet_source['id']] = [
         'facet_source' => $facet_source,
         'facets' => [],

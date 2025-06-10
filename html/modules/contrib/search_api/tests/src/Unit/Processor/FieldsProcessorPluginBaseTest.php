@@ -44,12 +44,12 @@ class FieldsProcessorPluginBaseTest extends UnitTestCase {
     $this->index = $this->createMock(IndexInterface::class);
     $this->index->expects($this->any())
       ->method('status')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
     $items = $this->getTestItem();
     $fields = $items[$this->itemIds[0]]->getFields();
     $this->index->expects($this->any())
       ->method('getFields')
-      ->will($this->returnValue($fields));
+      ->willReturn($fields);
 
     $this->processor = new TestFieldsProcessorPlugin(['#index' => $this->index], '', []);
   }

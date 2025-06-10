@@ -1,5 +1,14 @@
 ## Type hints
 
+#### SlevomatCodingStandard.TypeHints.ClassConstantTypeHint 🔧
+
+* Checks for missing typehints in case they can be declared natively.
+* Reports useless `@var` annotation (or whole documentation comment) because the type of constant is always clear.
+
+Sniff provides the following settings:
+
+* `enableNativeTypeHint`: enforces native typehint. It's on by default if you're on PHP 8.3+
+
 #### SlevomatCodingStandard.TypeHints.DeclareStrictTypes 🔧
 
 Enforces having `declare(strict_types = 1)` at the top of each PHP file. Allows configuring how many newlines should be between the `<?php` opening tag and the `declare` statement.
@@ -22,6 +31,18 @@ Sniff provides the following settings:
 #### SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint
 
 Disallows usage of "mixed" type hint in phpDocs.
+
+#### SlevomatCodingStandard.TypeHints.DNFTypeHintFormat 🔧
+
+Checks format of DNF type hints.
+
+Sniff provides the following settings:
+
+* `enable`: either to enable or not this sniff. By default, it is enabled for PHP versions 8.0 or higher.
+* `withSpacesAroundOperators`: `yes` requires spaces around `|` and `&`, `no` requires no space around `|`and `&`. None is set by default so both are enabled.
+* `withSpacesInsideParentheses`: `yes` requires spaces inside parentheses, `no` requires no spaces inside parentheses. None is set by default so both are enabled.
+* `shortNullable`: `yes` requires usage of `?` for nullable type hint, `no` disallows it. None is set by default so both are enabled.
+* `nullPosition`: `first` requires `null` on first position in the type hint, `last` requires last position. None is set by default so `null` can be everywhere.
 
 #### SlevomatCodingStandard.TypeHints.LongTypeHints 🔧
 
@@ -100,7 +121,7 @@ Sniff provides the following settings:
 * `enableStandaloneNullTrueFalseTypeHints`: enforces to transform `@return true`, `@return false` or `@return null` into native typehints. It's on by default if you're on PHP 8.2+.
 * `traversableTypeHints`: enforces which typehints must have specified contained type. E.g. if you set this to `\Doctrine\Common\Collections\Collection`, then `\Doctrine\Common\Collections\Collection` must always be supplied with the contained type: `\Doctrine\Common\Collections\Collection|Foo[]`.
 
-This sniff can cause an error if you're overriding or implementing a parent method which does not have typehints. In such cases add `@phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint` annotation to the method to have this sniff skip it.
+You can add `@phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint` annotation to the method to skip the check.
 
 #### SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing 🔧
 

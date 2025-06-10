@@ -31,7 +31,7 @@ abstract class SubmitterBase {
   /**
    * The Drupal state service.
    *
-   * @var \Drupal\workflows\StateInterface
+   * @var \Drupal\Core\State\StateInterface
    */
   protected $state;
 
@@ -70,11 +70,13 @@ abstract class SubmitterBase {
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct(ClientInterface $http_client,
-                              Logger $logger,
-                              StateInterface $state,
-                              TimeInterface $time,
-                              ConfigFactoryInterface $config_factory) {
+  public function __construct(
+    ClientInterface $http_client,
+    Logger $logger,
+    StateInterface $state,
+    TimeInterface $time,
+    ConfigFactoryInterface $config_factory,
+  ) {
     $this->httpClient = $http_client;
     $this->logger = $logger;
     $this->state = $state;
@@ -101,7 +103,7 @@ abstract class SubmitterBase {
       return TRUE;
     }
     catch (TransferException $e) {
-      watchdog_exception('simple_sitemap_engines', $e);
+      $this->logger->logException($e);
       $this->onFailure();
       return FALSE;
     }

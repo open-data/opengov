@@ -4,6 +4,7 @@ namespace Drupal\facets\Plugin\facets\query_type;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\facets\QueryType\QueryTypeRangeBase;
+use Drupal\facets\Result\Result;
 
 /**
  * Support for date facets within the Search API scope.
@@ -106,6 +107,18 @@ class SearchApiDate extends QueryTypeRangeBase {
 
     $configuration['granularity'] = $granularity;
     $this->setConfiguration($configuration);
+
+    // Add unprocessed active values to the result. These are selected items that do not match the results anymore.
+    $active_items = $this->facet->getActiveItems();
+    foreach ($active_items as $val) {
+      if (!isset($facet_results[$val])) {
+        // Don't call getDisplayValue here. The value is already a processed and
+        // would lead to IllegalArgumentException.
+        $result = new Result($this->facet, $val, $val, 0);
+        $result->setActiveState(TRUE);
+        $facet_results[$val] = $result;
+      }
+    }
 
     $this->facet->setResults($facet_results);
     return $this->facet;
@@ -253,6 +266,42 @@ class SearchApiDate extends QueryTypeRangeBase {
     else {
       return $this->calculateResultFilterAbsolute($value);
     }
+  }
+  public function getDisplayValue($raw_value) {
+    $dateTime = new DrupalDateTime();
+    switch ($this->getGranularity()) {
+      case static::FACETAPI_DATE_YEAR:
+        $format = 'Y';
+        $dateTime = $dateTime::createFromFormat('Y', $raw_value);
+        break;
+
+      case static::FACETAPI_DATE_MONTH:
+        $format = 'F Y';
+        $dateTime = $dateTime::createFromFormat('Y-m', $raw_value);
+        break;
+
+      case static::FACETAPI_DATE_DAY:
+        $format = 'd F Y';
+        $dateTime = $dateTime::createFromFormat('Y-m-d', $raw_value);
+        break;
+
+      case static::FACETAPI_DATE_HOUR:
+        $format = 'd/m/Y H\h';
+        $dateTime = $dateTime::createFromFormat('Y-m-d\TH', $raw_value);
+        break;
+
+      case static::FACETAPI_DATE_MINUTE:
+        $format = 'd/m/Y H:i';
+        $dateTime = $dateTime::createFromFormat('Y-m-d\TH:i', $raw_value);
+        break;
+
+      default:
+        $format = 'd/m/Y H:i:s';
+        $dateTime = $dateTime::createFromFormat('Y-m-d\TH:i:s', $raw_value);
+        break;
+    }
+    $date_format = $this->getDateFormat() ?: $format;
+    return $dateTime->format($date_format);
   }
 
   /**

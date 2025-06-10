@@ -22,7 +22,7 @@ class BatchController implements ContainerInjectionInterface {
    */
   public function __construct(
     protected string $root,
-    protected BatchStorageInterface $batchStorage
+    protected BatchStorageInterface $batchStorage,
   ) {
     require_once $this->root . '/core/includes/batch.inc';
   }
@@ -58,19 +58,6 @@ class BatchController implements ContainerInjectionInterface {
       return $output;
     }
     elseif (isset($output)) {
-      // Directly render a status message placeholder without any messages.
-      // Messages are not intended to be show on the batch page, but in the
-      // event an error in a AJAX callback the messages will be displayed.
-      // @todo Remove in https://drupal.org/i/3396099.
-      $output['batch_messages'] = [
-        '#theme' => 'status_messages',
-        '#message_list' => [],
-        '#status_headings' => [
-          'status' => $this->t('Status message'),
-          'error' => $this->t('Error message'),
-          'warning' => $this->t('Warning message'),
-        ],
-      ];
       $title = $output['#title'] ?? NULL;
       $page = [
         '#type' => 'page',

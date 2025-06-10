@@ -12,7 +12,7 @@ trait SitemapGetterTrait {
   /**
    * The currently set sitemaps.
    *
-   * @var \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface[]
    */
   protected $sitemaps;
 

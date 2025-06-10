@@ -1,10 +1,10 @@
 fontawesome.svg:
-  remote: &fontawesome_remote https://use.fontawesome.com/releases/v6.4.0/fontawesome-free-6.4.0-web.zip
+  remote: &fontawesome_remote https://use.fontawesome.com/releases/v6.4.2/fontawesome-free-6.4.2-web.zip
   license: &fontawesome_svg_license
     name: CC BY 4.0
     url: https://fontawesome.com/license
     gpl-compatible: true
-  version: &fontawesome_version "6.4.0"
+  version: &fontawesome_version "6.4.2"
   header: true
   js:
     /libraries/fontawesome/js/all.min.js: { minified: true, attributes: { defer: true } }

@@ -32,3 +32,6 @@ metatag.settings:
     tag_scroll_max_height:
       type: string
       label: 'Add max height value'
+    tag_trim_end:
+      type: string
+      label: 'End of the word trimming'

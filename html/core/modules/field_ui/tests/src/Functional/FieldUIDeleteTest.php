@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\field_ui\Functional;
 
 use Drupal\field\Entity\FieldConfig;
@@ -19,9 +21,7 @@ class FieldUIDeleteTest extends BrowserTestBase {
   use FieldUiTestTrait;
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'node',
@@ -72,7 +72,7 @@ class FieldUIDeleteTest extends BrowserTestBase {
   /**
    * Tests that deletion removes field storages and fields as expected.
    */
-  public function testDeleteField() {
+  public function testDeleteField(): void {
     $field_label = $this->randomMachineName();
     $field_name_input = 'test';
     $field_name = 'field_test';

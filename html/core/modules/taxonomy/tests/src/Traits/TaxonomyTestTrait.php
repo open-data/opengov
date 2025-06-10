@@ -7,6 +7,7 @@ namespace Drupal\Tests\taxonomy\Traits;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\TermInterface;
 use Drupal\taxonomy\VocabularyInterface;
 
 /**
@@ -23,7 +24,7 @@ trait TaxonomyTestTrait {
    * @return \Drupal\taxonomy\VocabularyInterface
    *   A vocabulary used for testing.
    */
-  public function createVocabulary(array $values = []) {
+  protected function createVocabulary(array $values = []) {
     $values += [
       'name' => $this->randomMachineName(),
       'description' => $this->randomMachineName(),
@@ -48,7 +49,7 @@ trait TaxonomyTestTrait {
    * @return \Drupal\taxonomy\TermInterface
    *   The new taxonomy term object.
    */
-  public function createTerm(VocabularyInterface $vocabulary, $values = []) {
+  protected function createTerm(VocabularyInterface $vocabulary, $values = []) {
     $term = Term::create($values + [
       'name' => $this->randomMachineName(),
       'description' => [
@@ -59,6 +60,22 @@ trait TaxonomyTestTrait {
       'vid' => $vocabulary->id(),
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
+    $term->save();
+    return $term;
+  }
+
+  /**
+   * Creates a new revision for a given taxonomy term.
+   *
+   * @param \Drupal\taxonomy\TermInterface $term
+   *   A taxonomy term object.
+   *
+   * @return \Drupal\taxonomy\TermInterface
+   *   The new taxonomy term object.
+   */
+  protected function createTaxonomyTermRevision(TermInterface $term) {
+    $term->set('name', $this->randomMachineName());
+    $term->setNewRevision();
     $term->save();
     return $term;
   }

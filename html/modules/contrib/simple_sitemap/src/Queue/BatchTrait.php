@@ -2,6 +2,7 @@
 
 namespace Drupal\simple_sitemap\Queue;
 
+use Drupal\Core\Batch\BatchBuilder;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -37,15 +38,15 @@ trait BatchTrait {
    *   TRUE if batch was added and FALSE otherwise.
    */
   public function batchGenerate(string $from = self::GENERATE_TYPE_FORM, ?array $variants = NULL): bool {
-    $this->batch = [
-      'title' => $this->t('Generating XML sitemaps'),
-      'init_message' => $this->t('Initializing...'),
+    $this->batch = (new BatchBuilder())
+      ->setTitle($this->t('Generating XML sitemaps'))
+      ->setInitMessage($this->t('Initializing...'))
       // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
-      'error_message' => $this->t(self::$batchErrorMessage),
-      'progress_message' => $this->t('Processing items from the queue.<br>Each sitemap gets published after all of its items have been processed.'),
-      'operations' => [[__CLASS__ . '::' . 'doBatchGenerate', []]],
-      'finished' => [__CLASS__, 'finishGeneration'],
-    ];
+      ->setErrorMessage($this->t(self::$batchErrorMessage))
+      ->setProgressMessage($this->t('Processing items from the queue.<br>Each sitemap gets published after all of its items have been processed.'))
+      ->addOperation([static::class, 'doBatchGenerate'])
+      ->setFinishCallback([static::class, 'finishGeneration'])
+      ->toArray();
 
     switch ($from) {
 

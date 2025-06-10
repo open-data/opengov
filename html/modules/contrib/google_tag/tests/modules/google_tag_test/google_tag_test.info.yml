@@ -1,10 +1,11 @@
-name: Google Tag Nightwatch
+name: 'Google Tag Tests'
 type: module
-core_version_requirement: ^9.5 || ^10
+description: 'Support module for Google Tag testing.'
+package: Testing
 dependencies:
   - google_tag:google_tag
 
-# Information added by Drupal.org packaging script on 2023-05-23
-version: '2.0.2'
+# Information added by Drupal.org packaging script on 2025-01-29
+version: '2.0.8'
 project: 'google_tag'
-datestamp: 1684879599
+datestamp: 1738126306

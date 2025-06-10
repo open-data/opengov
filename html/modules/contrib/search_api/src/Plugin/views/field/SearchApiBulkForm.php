@@ -5,6 +5,7 @@ namespace Drupal\search_api\Plugin\views\field;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
@@ -32,7 +33,7 @@ class SearchApiBulkForm extends BulkForm {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     parent::init($view, $display, $options);
 
     $entity_type_ids = array_values($this->getIndex()->getEntityTypes());
@@ -140,7 +141,7 @@ class SearchApiBulkForm extends BulkForm {
         if (!$this->getEntity($row)) {
           continue;
         }
-        $entity = $this->getEntityTranslation($this->getEntity($row), $row);
+        $entity = $this->getEntityTranslationByRelationship($this->getEntity($row), $row);
 
         $form[$this->options['id']][$row_index] = [
           '#type' => 'checkbox',
@@ -274,17 +275,46 @@ class SearchApiBulkForm extends BulkForm {
     }
 
     // The first three items will always be the entity type, langcode and ID.
-    list($entity_type_id, $langcode, $id) = $key_parts;
+    [$entity_type_id, $langcode, $id] = $key_parts;
 
     // Load the entity or a specific revision depending on the given key.
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
-    $entity = $revision_id ? $storage->loadRevision($revision_id) : $storage->load($id);
+    if ($revision_id && $storage instanceof RevisionableStorageInterface) {
+      $entity = $storage->loadRevision($revision_id);
+    }
+    else {
+      $entity = $storage->load($id);
+    }
 
     if ($entity instanceof TranslatableInterface) {
       $entity = $entity->getTranslation($langcode);
     }
 
     return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isWorkspaceSafeForm(array $form, FormStateInterface $form_state): bool {
+    // Only return TRUE if all the index's datasources return workspace-safe
+    // entity types.
+    foreach ($this->getIndex()->getDatasources() as $datasource) {
+      $entity_type_id = $datasource->getEntityTypeId();
+      if ($entity_type_id === NULL) {
+        return FALSE;
+      }
+      try {
+        $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+      }
+      catch (PluginNotFoundException) {
+        return FALSE;
+      }
+      if (!$this->isWorkspaceSafeEntityType($entity_type)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
 
 }

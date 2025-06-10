@@ -6,11 +6,11 @@
  */
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
@@ -74,19 +74,21 @@ function search_api_solr_cron() {
   }
 
   foreach (search_api_solr_get_servers(TRUE) as $server) {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $server->getBackend();
     try {
-      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-      $backend = $server->getBackend();
       $connector = $backend->getSolrConnector();
-      $is_drupal_only_writeable = [];
+      $is_drupal_only_writeable[$server->id()] = FALSE;
+      $last_update_on_server[$server->id()] = 0;
 
       if ($indexes = $server->getIndexes(['status' => TRUE])) {
         $document_counts[$server->id()] = $backend->getDocumentCounts();
         $is_drupal_only_writeable[$server->id()] = TRUE;
-        $last_update_on_server[$server->id()] = 0;
+        $optimized = FALSE;
 
         foreach ($indexes as $index) {
           if ($backend->finalizeIndex($index)) {
+            /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
             $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
           }
           $is_drupal_only_writeable[$server->id()] &= !Utility::hasIndexJustSolrDocumentDatasource($index);
@@ -94,20 +96,23 @@ function search_api_solr_cron() {
           if ($last_update > $last_update_on_server[$server->id()]) {
             $last_update_on_server[$server->id()] = $last_update;
           }
-        }
-
-        if ($end_of_day && $backend->isOptimizeEnabled()) {
-          $endpoint = $backend->getCollectionEndpoint($index);
-          $connector->optimize($endpoint);
-          $backend->getLogger()
-            ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+          if (!$optimized && $end_of_day && $backend->isOptimizeEnabled()) {
+            $endpoint = $backend->getCollectionEndpoint($index);
+            $connector->optimize($endpoint);
+            $optimized = TRUE;
+            /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
+            $backend->getLogger()
+              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+          }
         }
       }
-      else {
-        $is_drupal_only_writeable[$server->id()] = FALSE;
-      }
 
-      if ($is_drupal_only_writeable[$server->id()] && \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()]) {
+      if (
+        $is_drupal_only_writeable[$server->id()] &&
+        \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()] &&
+        // @todo Add config option for pause between suggester builds.
+        \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < ($request_time - 1800)
+      ) {
         $suggester = TRUE;
 
         foreach ($backend->getDisabledRequestHandlers() as $disabledRequestHandler) {
@@ -120,14 +125,15 @@ function search_api_solr_cron() {
         if ($suggester) {
           $query = $connector->getSuggesterQuery();
           $query->addParam('suggest.buildAll', TRUE);
-          $connector->execute($query);
+          $connector->fireAndForget($query);
         }
 
         \Drupal::state()->set('search_api_solr.' . $server->id() . '.last_build', $request_time);
       }
     }
     catch (SearchApiException $e) {
-      watchdog_exception('search_api', $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
+      /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
+      \Drupal\Core\Utility\Error::logException($backend->getLogger(), $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
     }
   }
 
@@ -189,6 +195,7 @@ function search_api_solr_default_index_third_party_settings() {
     'term_modifiers' => [
       'slop' => 3,
       'fuzzy' => 1,
+      'fuzzy_analyzer' => TRUE,
     ],
     'advanced' => [
       'index_prefix' => '',
@@ -231,8 +238,10 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
     }
 
     $settings = [];
+    /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
+    $form_object = $form_state->getFormObject();
     /** @var \Drupal\search_api\IndexInterface $index */
-    $index = $form_state->getFormObject()->getEntity();
+    $index = $form_object->getEntity();
     if (!$index->isNew()) {
       $settings = $index->getThirdPartySettings('search_api_solr');
     }
@@ -326,6 +335,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['multilingual']['use_language_undefined_as_fallback_language'],
     ];
 
+    $langcode_options = [];
     foreach (\Drupal::languageManager()->getLanguages() as $language) {
       $langcode_options[$language->getId()] = $language->getName();
     }
@@ -540,7 +550,11 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
 
     $form['third_party_settings']['search_api_solr']['mlt']['interestingTerms'] = [
       '#type' => 'select',
-      '#options' => ['none' => 'none', 'list' => 'list', 'details' => 'details'],
+      '#options' => [
+        'none' => t('none'),
+        'list' => t('list'),
+        'details' => t('details'),
+      ],
       '#title' => t('interestingTerms'),
       '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
       '#default_value' => $settings['mlt']['interestingTerms'],
@@ -571,6 +585,13 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['term_modifiers']['fuzzy'],
     ];
 
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['fuzzy_analyzer'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Fuzzy analyzer'),
+      '#description' => t('Fuzzy searches turn off field anlyzers by default. This option querys the analyzed fields withoput fuzziness in parallel.'),
+      '#default_value' => $settings['term_modifiers']['fuzzy_analyzer'],
+    ];
+
     $form['third_party_settings']['search_api_solr']['advanced'] = [
       '#tree' => TRUE,
       '#type' => 'details',
@@ -591,13 +612,12 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['advanced']['collection'],
     ];
 
-    $zones = system_time_zones(TRUE, TRUE);
     $form['third_party_settings']['search_api_solr']['advanced']['timezone'] = [
       '#type' => 'select',
       '#title' => t('Time zone'),
       '#description' => t("For correct date calculations the time zone to use is sent to the Solr server. By default the individual time zone of the current user will be used. If not available the site's default time zone will be used as fallback. But by setting a time zone here you can force a time zone for every query targeting this index."),
       '#default_value' => $settings['advanced']['timezone'],
-      '#options' => $zones,
+      '#options' => \Drupal\Core\Datetime\TimeZoneFormHelper::getOptionsList(TRUE),
     ];
   }
 }
@@ -645,7 +665,7 @@ function search_api_solr_form_search_api_index_form_validate_server(array &$elem
 function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
   $form_object = $form_state->getFormObject();
-  /** @var \Drupal\search_api\IndexInterface $this_index */
+  /** @var \Drupal\search_api\IndexInterface $index */
   $index = $form_object->getEntity();
 
   if (Utility::hasIndexSolrDatasources($index)) {
@@ -663,7 +683,7 @@ function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInt
         ],
         'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode([
-          'width' => 700,
+          'width' => '90%',
         ]),
       ],
       '#weight' => -10,
@@ -772,6 +792,7 @@ function search_api_solr_entity_operation(EntityInterface $entity) {
  */
 function search_api_solr_entity_type_alter(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_types['search_api_index']->setClass(\Drupal\search_api_solr\Entity\Index::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
   $entity_types['search_api_index']->setFormClass('add_solr_document_fields', IndexAddSolrDocumentFieldsForm::class);

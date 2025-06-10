@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\system\Kernel\Entity\EntityReferenceSelection;
 
 use Drupal\comment\Tests\CommentTestTrait;
@@ -31,9 +33,7 @@ class EntityReferenceSelectionAccessTest extends KernelTestBase {
   use UserCreationTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'comment',
@@ -72,10 +72,13 @@ class EntityReferenceSelectionAccessTest extends KernelTestBase {
       'name' => '',
     ]);
     $anonymous_user->save();
+
+    // Create role for administrator.
     $admin_user = User::create([
       'uid' => 1,
       'name' => 'admin',
       'status' => 1,
+      'roles' => [$this->createRole(['administer users'])],
     ]);
     $admin_user->save();
   }

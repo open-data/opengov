@@ -89,7 +89,7 @@ class ServerClearConfirmForm extends EntityConfirmFormBase {
       catch (SearchApiException $e) {
         $message = '%type while clearing index %index: @message in %function (line %line of %file).';
         $variables = [
-          '%index' => $index->label(),
+          '%index' => $index->label() ?? $index->id(),
         ];
         $variables += Error::decodeException($e);
         $this->getLogger('search_api')->error($message, $variables);

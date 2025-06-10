@@ -51,6 +51,7 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
         $form['boosts'][$field_id] = [
           '#type' => 'details',
           '#title' => $field->getLabel(),
+          '#description' => $this->t('Boost more recent dates. Note that the boost factor gets applied only if you sort your results by "Search API Relevance" (or "score" if you perform low level queries).'),
         ];
 
         $form['boosts'][$field_id]['boost'] = [
@@ -96,6 +97,13 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
           '#title' => $this->t('Constant b'),
           '#default_value' => $this->configuration['boosts'][$field_id]['b'] ?? 0.05,
         ];
+
+        $form['boosts'][$field_id]['support_future_dates'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Support future dates'),
+          '#default_value' => $this->configuration['boosts'][$field_id]['support_future_dates'] ?? FALSE,
+          '#description' => $this->t('Check this box if this field can contain future dates.'),
+        ];
       }
     }
 
@@ -124,7 +132,11 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
 
     $boosts = $query->getOption('solr_document_boost_factors', []);
     foreach ($this->configuration['boosts'] as $field_id => $boost) {
-      $boosts[$field_id] = sprintf('product(%.2F,recip(ms(%s,%s),%s,%.3F,%3F))', $boost['boost'], $boost['resolution'], SolrBackendInterface::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
+      $support_future_dates = $boost['support_future_dates'] ?? FALSE;
+      $formula = $support_future_dates
+        ? 'product(%.2F,recip(abs(ms(%s,%s)),%s,%.3F,%3F))'
+        : 'product(%.2F,recip(ms(%s,%s),%s,%.3F,%3F))';
+      $boosts[$field_id] = sprintf($formula, $boost['boost'], $boost['resolution'], SolrBackendInterface::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
     }
     if ($boosts) {
       $query->setOption('solr_document_boost_factors', $boosts);

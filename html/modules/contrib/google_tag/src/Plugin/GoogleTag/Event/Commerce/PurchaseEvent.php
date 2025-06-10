@@ -41,12 +41,7 @@ final class PurchaseEvent extends EventBase implements ContainerFactoryPluginInt
   /**
    * {@inheritDoc}
    */
-  public static function create(
-    ContainerInterface $container,
-    array $configuration,
-    $plugin_id,
-    $plugin_definition
-  ) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = new self($configuration, $plugin_id, $plugin_definition);
     $instance->transformer = $container->get('commerce_order.adjustment_transformer');
     return $instance;

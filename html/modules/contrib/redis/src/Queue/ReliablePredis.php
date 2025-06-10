@@ -38,20 +38,20 @@ class ReliablePredis extends ReliableQueueBase {
   public function createItem($data) {
     $record = new \stdClass();
     $record->data = $data;
-    $record->qid = $this->incrementId();
+    $record->item_id = $this->incrementId();
     // We cannot rely on REQUEST_TIME because many items might be created
     // by a single request which takes longer than 1 second.
     $record->timestamp = time();
 
     $pipe = $this->client->pipeline();
-    $pipe->hsetnx($this->availableItems, $record->qid, serialize($record));
+    $pipe->hsetnx($this->availableItems, $record->item_id, serialize($record));
     $pipe->lLen($this->availableListKey);
-    $pipe->lpush($this->availableListKey, $record->qid);
+    $pipe->lpush($this->availableListKey, $record->item_id);
     $result = $pipe->execute();
 
     $success = $result[0] && $result[2] > $result[1];
 
-    return $success ? $record->qid : FALSE;
+    return $success ? $record->item_id : FALSE;
   }
 
   /**
@@ -92,7 +92,8 @@ class ReliablePredis extends ReliableQueueBase {
       $job = $this->client->hget($this->availableItems, $qid);
       if ($job) {
         $item = unserialize($job);
-        $this->client->setex($this->leasedKeyPrefix . $item->qid, $lease_time, '1');
+        $item->item_id ??= $item->qid;
+        $this->client->setex($this->leasedKeyPrefix . $item->item_id, $lease_time, '1');
       }
     }
 
@@ -104,8 +105,8 @@ class ReliablePredis extends ReliableQueueBase {
    */
   public function releaseItem($item) {
     $this->client->pipeline()
-      ->lrem($this->claimedListKey, -1, $item->qid)
-      ->lpush($this->availableListKey, $item->qid)
+      ->lrem($this->claimedListKey, -1, $item->item_id)
+      ->lpush($this->availableListKey, $item->item_id)
       ->execute();
   }
 
@@ -114,9 +115,9 @@ class ReliablePredis extends ReliableQueueBase {
    */
   public function deleteItem($item) {
     $this->client->pipeline()
-      ->lrem($this->claimedListKey, -1, $item->qid)
-      ->lrem($this->availableListKey, -1, $item->qid)
-      ->hdel($this->availableItems, $item->qid)
+      ->lrem($this->claimedListKey, -1, $item->item_id)
+      ->lrem($this->availableListKey, -1, $item->item_id)
+      ->hdel($this->availableItems, $item->item_id)
       ->execute();
   }
 

@@ -144,7 +144,7 @@ interface DatasourceInterface extends IndexPluginInterface {
    *
    * @see https://www.drupal.org/node/3051902
    */
-  public function checkItemAccess(ComplexDataInterface $item, AccountInterface $account = NULL);
+  public function checkItemAccess(ComplexDataInterface $item, ?AccountInterface $account = NULL);
 
   /**
    * Checks whether a user has permission to view the given item.
@@ -158,7 +158,7 @@ interface DatasourceInterface extends IndexPluginInterface {
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function getItemAccessResult(ComplexDataInterface $item, AccountInterface $account = NULL);
+  public function getItemAccessResult(ComplexDataInterface $item, ?AccountInterface $account = NULL);
 
   /**
    * Returns the available view modes for this datasource.
@@ -299,7 +299,7 @@ interface DatasourceInterface extends IndexPluginInterface {
    *
    * @see \Drupal\search_api\Datasource\DatasourceInterface::canContainEntityReferences()
    */
-  public function getAffectedItemsForEntityChange(EntityInterface $entity, array $foreign_entity_relationship_map, EntityInterface $original_entity = NULL): array;
+  public function getAffectedItemsForEntityChange(EntityInterface $entity, array $foreign_entity_relationship_map, ?EntityInterface $original_entity = NULL): array;
 
   /**
    * Retrieves any dependencies of the given fields.

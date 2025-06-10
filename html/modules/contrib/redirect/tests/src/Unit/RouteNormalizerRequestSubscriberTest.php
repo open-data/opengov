@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\redirect\Unit;
 
+use Drupal\Core\Path\CurrentPathStack;
+use Drupal\path_alias\AliasManager;
 use Drupal\Tests\UnitTestCase;
 use Drupal\redirect\EventSubscriber\RouteNormalizerRequestSubscriber;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -69,7 +73,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
     $request_uri = 'https://example.com/route-to-normalize';
     $request_query = [];
 
-    $event = $this->getGetResponseEventStub($request_uri, http_build_query($request_query), HttpKernelInterface::MASTER_REQUEST, TRUE);
+    $event = $this->getGetResponseEventStub($request_uri, http_build_query($request_query), HttpKernelInterface::MAIN_REQUEST, TRUE);
     // We set '_disable_route_normalizer' as a request attribute and expect to leave onKernelRequestRedirect at the beginning,
     // i.e. $this->redirectChecker->canRedirect($request) should never be called.
     $subscriber = $this->getSubscriber($request_uri, TRUE, FALSE);
@@ -116,6 +120,17 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
    * @return \Drupal\redirect\EventSubscriber\RouteNormalizerRequestSubscriber
    */
   protected function getSubscriber($request_uri, $enabled = TRUE, $call_expected = TRUE) {
+
+    $alias_manager = $this->createMock(AliasManager::class);
+    $alias_manager->expects($this->any())
+      ->method('setCacheKey')
+      ->with('/current-path');
+
+    $current_path = $this->createMock(CurrentPathStack::class);
+    $current_path->expects($this->any())
+      ->method('getPath')
+      ->willReturn('/current-path');
+
     return new RouteNormalizerRequestSubscriber(
       $this->getUrlGeneratorStub($request_uri, $call_expected),
       $this->getPathMatcherStub($call_expected),
@@ -125,7 +140,9 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
           'default_status_code' => 301,
         ],
       ]),
-      $this->getRedirectCheckerStub($call_expected)
+      $this->getRedirectCheckerStub($call_expected),
+      $alias_manager,
+      $current_path
     );
   }
 
@@ -207,7 +224,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
    *
    * @return \Symfony\Component\HttpKernel\Event\RequestEvent
    */
-  protected function getGetResponseEventStub($path_info, $query_string, $request_type = HttpKernelInterface::MASTER_REQUEST, $set_request_attribute = FALSE) {
+  protected function getGetResponseEventStub($path_info, $query_string, $request_type = HttpKernelInterface::MAIN_REQUEST, $set_request_attribute = FALSE) {
     $request = Request::create($path_info . '?' . $query_string, 'GET', [], [], [], ['SCRIPT_NAME' => 'index.php', 'SCRIPT_FILENAME' => 'index.php']);
 
     if ($set_request_attribute === TRUE) {

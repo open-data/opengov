@@ -2,9 +2,10 @@
 
 namespace Drupal\Tests\metatag_extended_perms\Functional;
 
-use Drupal\Tests\BrowserTestBase;
-use Drupal\Tests\metatag\Functional\MetatagHelperTrait;
 use Drupal\node\Entity\NodeType;
+use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+use Drupal\Tests\metatag\Functional\MetatagHelperTrait;
 
 /**
  * Verify the new permissions are added.
@@ -14,6 +15,7 @@ use Drupal\node\Entity\NodeType;
 class PermissionsTest extends BrowserTestBase {
 
   // Contains helper methods.
+  use FieldUiTestTrait;
   use MetatagHelperTrait;
 
   /**
@@ -198,15 +200,7 @@ class PermissionsTest extends BrowserTestBase {
     $this->drupalGet('node/add/page');
 
     // Add a metatag field to the entity type test_entity.
-    $this->drupalGet('admin/structure/types/manage/page/fields/add-field');
-    $this->assertSession()->statusCodeEquals(200);
-    $edit = [
-      'label' => 'Metatag',
-      'field_name' => 'metatag',
-      'new_storage_type' => 'metatag',
-    ];
-    $this->submitForm($edit, 'Save and continue');
-    $this->submitForm([], 'Save field settings');
+    $this->fieldUIAddNewField('admin/structure/types/manage/page', 'metatag', 'Metatag', 'metatag');
 
     // Clear all settings.
     $this->container->get('entity_field.manager')->clearCachedFieldDefinitions();

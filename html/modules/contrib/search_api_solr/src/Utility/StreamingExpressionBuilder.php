@@ -31,6 +31,8 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
   protected $checkpointsCollection;
 
   /**
+   * The index filter query.
+   *
    * @var string
    */
   protected $indexFilterQuery;
@@ -335,15 +337,15 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * @param bool $single_term
    *   (optional) Escapes the value as single term if TRUE, otherwise as phrase.
    *   Defaults to TRUE.
-   * @param string $search_api_field_name
+   * @param string|null $search_api_field_name
    *   (optional) If provided the method will use it to check for each processor
    *   whether it is supposed to be run on the value. If the name is not
-   *   provided no processor will act on the value.
+   *   provided, no processor will act on the value.
    *
    * @return string
    *   The escaped value.
    */
-  public function _escaped_value(string $value, bool $single_term = TRUE, string $search_api_field_name = NULL) {
+  public function _escaped_value(string $value, bool $single_term = TRUE, ?string $search_api_field_name = NULL) {
     if (is_string($value) && $search_api_field_name) {
       foreach ($this->index->getProcessorsByStage(ProcessorInterface::STAGE_PREPROCESS_QUERY) as $processor) {
         if ($processor instanceof SolrProcessorInterface) {
@@ -414,14 +416,14 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * @param bool $single_term
    *   (optional) Escapes the value as single term if TRUE, otherwise as phrase.
    *   Defaults to TRUE.
-   * @param string $search_api_field_name
+   * @param string|null $search_api_field_name
    *   (optional) Passed on to _escaped_value();
    *   Influences whether processors act on the values.
    *
    * @return string
    *   The imploded string of escaped values.
    */
-  public function _escape_and_implode(string $glue, array $values, $single_term = TRUE, string $search_api_field_name = NULL) {
+  public function _escape_and_implode(string $glue, array $values, $single_term = TRUE, ?string $search_api_field_name = NULL) {
     $escaped_values = [];
     foreach ($values as $value) {
       $escaped_values[] = $this->_escaped_value($value, $single_term, $search_api_field_name);
@@ -762,7 +764,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * a very high fixed value makes no sense as this would waste memory in Solr
    * Cloud and might lead to out of memory exceptions. The numbers are prepared
    * via search_api_solr_cron(). If the cron hasn't run yet the function return
-   * 1024 as fallback.
+   * 512 as fallback.
    *
    * @return int
    *   Integer of the row limit.

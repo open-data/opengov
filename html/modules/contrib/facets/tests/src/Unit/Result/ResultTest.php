@@ -43,6 +43,15 @@ class ResultTest extends UnitTestCase {
     $url = new Url('foo');
     $result->setUrl($url);
     $this->assertSame($url, $result->getUrl());
+
+    $property = ['foo', 'bar'];
+    $value = 'baz';
+    $result->set($property, $value);
+    $this->assertSame($value, $result->get($property));
+
+    $storage = ['foo' => ['bar']];
+    $result->setStorage($storage);
+    $this->assertSame($storage, $result->getStorage());
   }
 
 }

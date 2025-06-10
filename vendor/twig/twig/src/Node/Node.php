@@ -20,6 +20,8 @@ use Twig\Source;
  * Represents a node in the AST.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @implements \IteratorAggregate<int|string, Node>
  */
 #[YieldReady]
 class Node implements \Countable, \IteratorAggregate
@@ -45,9 +47,13 @@ class Node implements \Countable, \IteratorAggregate
      */
     public function __construct(array $nodes = [], array $attributes = [], int $lineno = 0)
     {
+        if (self::class === static::class) {
+            trigger_deprecation('twig/twig', '3.15', \sprintf('Instantiating "%s" directly is deprecated; the class will become abstract in 4.0.', self::class));
+        }
+
         foreach ($nodes as $name => $node) {
             if (!$node instanceof self) {
-                throw new \InvalidArgumentException(\sprintf('Using "%s" for the value of node "%s" of "%s" is not supported. You must pass a \Twig\Node\Node instance.', \is_object($node) ? $node::class : (null === $node ? 'null' : \gettype($node)), $name, static::class));
+                throw new \InvalidArgumentException(\sprintf('Using "%s" for the value of node "%s" of "%s" is not supported. You must pass a \Twig\Node\Node instance.', get_debug_type($node), $name, static::class));
             }
         }
         $this->nodes = $nodes;
@@ -59,7 +65,7 @@ class Node implements \Countable, \IteratorAggregate
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $repr = static::class;
 
@@ -99,6 +105,13 @@ class Node implements \Countable, \IteratorAggregate
         return $repr;
     }
 
+    public function __clone()
+    {
+        foreach ($this->nodes as $name => $node) {
+            $this->nodes[$name] = clone $node;
+        }
+    }
+
     /**
      * @return void
      */
@@ -136,6 +149,9 @@ class Node implements \Countable, \IteratorAggregate
         return \array_key_exists($name, $this->attributes);
     }
 
+    /**
+     * @return mixed
+     */
     public function getAttribute(string $name)
     {
         if (!\array_key_exists($name, $this->attributes)) {

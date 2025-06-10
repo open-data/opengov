@@ -19,7 +19,7 @@ class GoogleAnalyticsFormValidationTest extends WebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = ['google_analytics', 'token', 'node'];
+  protected static $modules = ['google_analytics', 'token', 'node'];
 
   /**
    * {@inheritdoc}

@@ -1,0 +1,5 @@
+# Schema for the configuration files of the Bootstrap Subtheme.
+
+bootstrap_subtheme.settings:
+  type: bootstrap.settings
+  label: 'Bootstrap settings'

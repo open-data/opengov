@@ -1,0 +1,13 @@
+name: 'Advanced email validation test'
+type: module
+description: 'Support module for advanced email validation testing.'
+package: 'Advanced Email Validation Testing'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - 'advanced_email_validation:advanced_email_validation'
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2024-10-21
+version: '2.0.2'
+project: 'advanced_email_validation'
+datestamp: 1729475968

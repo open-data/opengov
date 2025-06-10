@@ -9,16 +9,16 @@ dependencies:
     - bootstrap
 id: bootstrap_account_menu
 theme: bootstrap
-region: navigation_collapsible
-weight: 11
+region: secondary_menu
+weight: -7
 provider: null
 plugin: 'system_menu_block:account'
 settings:
   id: 'system_menu_block:account'
   label: 'User account menu'
-  provider: system
   label_display: '0'
+  provider: system
   level: 1
-  depth: 2
+  depth: 1
   expand_all_items: false
 visibility: {  }

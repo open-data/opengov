@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\facets\Unit\Plugin\widget;
 
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Tests\facets\Unit\Drupal10CompatibilityUnitTestCase;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetInterface;
@@ -11,6 +12,8 @@ use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Drupal\facets\FacetSource\FacetSourcePluginManager;
+use Drupal\facets\UrlProcessor\UrlProcessorInterface;
 
 /**
  * Base class for widget unit tests.
@@ -64,10 +67,18 @@ abstract class WidgetTestBase extends Drupal10CompatibilityUnitTestCase {
     $url_generator = $this->prophesize(UrlGeneratorInterface::class);
     $widget_manager = $this->prophesize(WidgetPluginManager::class);
 
+    $url_processor = $this->createMock(UrlProcessorInterface::class);
+    $manager = $this->createMock(FacetSourcePluginManager::class);
+    $manager->method('createInstance')->willReturn($url_processor);
+
+    $em = $this->prophesize(EntityTypeManager::class);
+
     $container = new ContainerBuilder();
     $container->set('plugin.manager.facets.widget', $widget_manager->reveal());
+    $container->set('plugin.manager.facets.url_processor', $manager);
     $container->set('string_translation', $string_translation->reveal());
     $container->set('url_generator', $url_generator->reveal());
+    $container->set('entity_type.manager', $em->reveal());
     \Drupal::setContainer($container);
   }
 

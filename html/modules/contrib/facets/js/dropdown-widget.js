@@ -40,6 +40,7 @@
       $dropdown.addClass('facets-dropdown');
       $dropdown.addClass('js-facets-widget');
       $dropdown.addClass('js-facets-dropdown');
+      $dropdown.attr('name', $ul.data('drupal-facet-filter-key') + '[]')
 
       var id = $(this).data('drupal-facet-id');
       // Add aria-labelledby attribute to reference label.
@@ -58,9 +59,12 @@
       $links.each(function () {
         var $link = $(this);
         var active = $link.hasClass('is-active');
+        var type = $link.data('drupal-facet-widget-element-class');
         var $option = $('<option></option>')
           .attr('value', $link.attr('href'))
-          .data($link.data());
+          .data($link.data())
+          .addClass(type)
+          .val($link.data('drupal-facet-filter-value'));
         if (active) {
           has_active = true;
           // Set empty text value to this link to unselect facet.
@@ -86,7 +90,6 @@
         var anchor = $($ul).find("[data-drupal-facet-item-id='" + $(this).find(':selected').data('drupalFacetItemId') + "']");
         var $linkElement = (anchor.length > 0) ? $(anchor) : $ul.find('.default-option a');
         var url = $linkElement.attr('href');
-
         $(this).trigger('facets_filter', [ url ]);
       });
 

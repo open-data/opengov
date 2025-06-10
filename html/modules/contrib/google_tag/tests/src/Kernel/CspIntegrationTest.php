@@ -20,19 +20,7 @@ final class CspIntegrationTest extends KernelTestBase {
   protected static $modules = ['google_tag'];
 
   /**
-   * {@inheritDoc}
-   */
-  protected function setUp(): void {
-    // PHPUnit has `checkRequirements` as a private method since 9.x.
-    // We run Drupal's `checkRequirements` again, here, to verify our module
-    // requirement.
-    // @todo remove after https://www.drupal.org/i/3261817
-    $this->checkRequirements();
-    parent::setUp();
-  }
-
-  /**
-   * Tests container definition without csp module..
+   * Tests container definition without csp module.
    */
   public function testWithoutCsp(): void {
     self::assertFalse(

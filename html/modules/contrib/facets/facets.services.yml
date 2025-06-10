@@ -24,6 +24,7 @@ services:
       - '@plugin.manager.facets.facet_source'
       - '@plugin.manager.facets.processor'
       - '@entity_type.manager'
+      - '@current_route_match'
   facets.utility.date_handler:
     class: Drupal\facets\Utility\FacetsDateHandler
     arguments:
@@ -46,3 +47,8 @@ services:
   facets.language_switcher_links_alterer:
     class: Drupal\facets\LanguageSwitcherLinksAlterer
     arguments: ['@language_manager', '@cache.default', '@entity_type.manager', '@plugin.manager.facets.url_processor']
+  cache_context.facets_filter:
+    class: Drupal\facets\Cache\Context\FacetsFilterCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }

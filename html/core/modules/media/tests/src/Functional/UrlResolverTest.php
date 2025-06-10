@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\media\Functional;
 
 use Drupal\Tests\media\Traits\OEmbedTestTrait;
+
+// cspell:ignore dailymotion
 
 /**
  * Tests the oEmbed URL resolver service.
@@ -37,7 +41,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    *
    * @return array
    */
-  public function providerEndpointMatching() {
+  public static function providerEndpointMatching() {
     return [
       'match by endpoint: Twitter' => [
         'https://twitter.com/Dries/status/999985431595880448',
@@ -71,7 +75,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    *
    * @dataProvider providerEndpointMatching
    */
-  public function testEndpointMatching($url, $resource_url) {
+  public function testEndpointMatching($url, $resource_url): void {
     $this->assertSame(
       $resource_url,
       $this->container->get('media.oembed.url_resolver')->getResourceUrl($url)
@@ -83,7 +87,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    *
    * @depends testEndpointMatching
    */
-  public function testResourceUrlAlterHook() {
+  public function testResourceUrlAlterHook(): void {
     $this->container->get('module_installer')->install(['media_test_oembed']);
 
     $resource_url = $this->container->get('media.oembed.url_resolver')
@@ -99,7 +103,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    *
    * @return array
    */
-  public function providerUrlDiscovery() {
+  public static function providerUrlDiscovery() {
     return [
       'JSON resource' => [
         'video_vimeo.html',
@@ -126,7 +130,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    *
    * @dataProvider providerUrlDiscovery
    */
-  public function testUrlDiscovery($url, $resource_url) {
+  public function testUrlDiscovery($url, $resource_url): void {
     $this->assertSame(
       $this->container->get('media.oembed.url_resolver')->getResourceUrl($url),
       $resource_url

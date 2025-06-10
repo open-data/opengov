@@ -9,7 +9,7 @@ use Drupal\search_api\Tracker\TrackerPluginBase;
 use Drupal\search_api_test\TestPluginTrait;
 
 /**
- * Provides a tracker implementation which uses a FIFO-like processing order.
+ * Provides a dummy tracker for testing purposes.
  *
  * @SearchApiTracker(
  *   id = "search_api_test",
@@ -76,7 +76,7 @@ class TestTracker extends TrackerPluginBase implements PluginFormInterface {
   /**
    * {@inheritdoc}
    */
-  public function trackItemsDeleted(array $ids = NULL) {
+  public function trackItemsDeleted(?array $ids = NULL) {
     $this->logMethodCall(__FUNCTION__, func_get_args());
   }
 

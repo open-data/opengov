@@ -2,10 +2,13 @@
 
 namespace Drupal\password_policy_length\Plugin\PasswordConstraint;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\password_policy\PasswordConstraintBase;
 use Drupal\password_policy\PasswordPolicyValidation;
 use Drupal\user\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Enforces a specific character length for passwords.
@@ -17,7 +20,48 @@ use Drupal\user\UserInterface;
  *   errorMessage = @Translation("The length of your password is too short.")
  * )
  */
-class PasswordLength extends PasswordConstraintBase {
+class PasswordLength extends PasswordConstraintBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    EntityTypeManagerInterface $entity_type_manager,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -84,8 +128,13 @@ class PasswordLength extends PasswordConstraintBase {
     $new_operation = $form_state->getValue('character_operation');
     $new_length = $form_state->getValue('character_length');
     if ($id <> 'password_length') {
-      $entity = \Drupal::entityTypeManager()->getStorage('password_policy')->load($id);
+      $entity = $this->entityTypeManager->getStorage('password_policy')->load($id);
       $constraints = $entity->get('policy_constraints');
+
+      // Limit validation check for this plugin only.
+      $constraints = array_filter($constraints, function ($constraint) {
+        return $constraint['id'] === "password_length";
+      });
       foreach ($constraints as $constraint) {
         $constraint_operation = $constraint["character_operation"];
         $constraint_length = $constraint["character_length"];

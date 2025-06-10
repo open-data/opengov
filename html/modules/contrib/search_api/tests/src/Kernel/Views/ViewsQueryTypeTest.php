@@ -71,7 +71,7 @@ class ViewsQueryTypeTest extends KernelTestBase {
     $executable = \Drupal::getContainer()->get('views.executable')->get($view);
     $display = $executable->getDisplay();
     $this->assertEquals('search_api_query', $display->getOption('query')['type']);
-    $this->assertEquals('none', $display->getOption('cache')['type']);
+    $this->assertEquals('search_api_none', $display->getOption('cache')['type']);
   }
 
 }

@@ -55,14 +55,14 @@ class SimpleSitemapType extends ConfigEntityBase implements SimpleSitemapTypeInt
   /**
    * The sitemap generator.
    *
-   * @var \Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapGeneratorInterface
+   * @var \Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapGeneratorInterface|null
    */
   protected $sitemapGenerator;
 
   /**
    * The URL generators.
    *
-   * @var \Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\UrlGeneratorInterface[]
+   * @var \Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\UrlGeneratorInterface[]|null
    */
   protected $urlGenerators;
 

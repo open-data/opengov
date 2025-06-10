@@ -6,7 +6,7 @@ dependencies:
   - drupal:node
 hidden: true
 
-# Information added by Drupal.org packaging script on 2023-11-25
-version: '8.x-1.31'
+# Information added by Drupal.org packaging script on 2025-02-23
+version: '8.x-1.38'
 project: 'search_api'
-datestamp: 1700926327
+datestamp: 1740298964

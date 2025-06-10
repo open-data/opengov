@@ -4,6 +4,39 @@ All notable changes to the Solarium library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.7]
+### Added
+- Additional test coverage
+
+### Changed
+- PHPUnit 9 → 10
+
+### Removed
+- PHP 8.0 support
+
+## [6.3.6]
+### Added
+- PHP 8.4 support
+- Solarium\QueryType\Select\Query\Quey::setCanCancel()
+- Solarium\QueryType\Select\Query\Quey::setQueryUuid()
+- Solarium\QueryType\Select\Query\Quey::setPartialResults()
+- Solarium\QueryType\Select\Query\Quey::setCpuAllowed()
+- Solarium\QueryType\Select\Query\Quey::setMemAllowed()
+- Solarium\QueryType\Select\Query\Quey::setSegmentTerminateEarly()
+- Solarium\QueryType\Select\Query\Quey::setMultiThreaded()
+
+### Fixed
+- JSON update requests correctly handle `Stringable` object set as field value
+
+### Changed
+- JSON update requests give precedence to `Stringable` over `JsonSerializable` for object set as field value to keep behaviour consistent across request formats
+
+### Removed
+- Support for config objects, you have to convert them to an array before passing to a constructor or `setOptions()`
+
+### Deprecated
+- Solarium\Core\Query\AbstractQuery::setTimeAllowed(), moved to Solarium\QueryType\Select\Query\Query
+
 ## [6.3.5]
 ### Added
 - Option `buildAll` for Suggesters

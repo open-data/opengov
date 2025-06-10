@@ -6,6 +6,7 @@ use Drupal\Component\Assertion\Inspector;
 use Drupal\Component\Serialization\SerializationInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheTagsChecksumInterface;
+use Drupal\Core\Cache\ChainedFastBackend;
 use Drupal\Core\Site\Settings;
 
 /**
@@ -96,6 +97,11 @@ class Relay extends CacheBase {
    * {@inheritdoc}
    */
   public function set($cid, $data, $expire = Cache::PERMANENT, array $tags = []) {
+
+    if ($this->isLastWriteTimestamp($cid)) {
+      $this->client->Set($this->getPrefix() . ':' . $cid, $data);
+      return;
+    }
 
     $ttl = $this->getExpiration($expire);
 

@@ -7,7 +7,6 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Url;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Result\Result;
 use Drupal\facets\Result\ResultInterface;
@@ -49,33 +48,22 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
       if (empty($result->getUrl())) {
         return $this->buildResultItem($result);
       }
-      else {
-        // When the facet is being build in an AJAX request, and the facetsource
-        // is a block, we need to update the url to use the current request url.
-        if ($result->getUrl()->isRouted() && $result->getUrl()->getRouteName() === 'facets.block.ajax') {
-          $request = \Drupal::request();
-          $url_object = \Drupal::service('path.validator')
-            ->getUrlIfValid($request->getPathInfo());
-          if ($url_object) {
-            $url = $result->getUrl();
-            $options = $url->getOptions();
-            $route_params = $url_object->getRouteParameters();
-            $route_name = $url_object->getRouteName();
-            $result->setUrl(new Url($route_name, $route_params, $options));
-          }
-        }
 
-        return $this->buildListItems($facet, $result);
-      }
+      return $this->buildListItems($facet, $result);
     }, $facet->getResults());
 
     $widget = $facet->getWidget();
+
+    $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
+    /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $url_processor */
+    $url_processor = $urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
 
     return [
       '#theme' => $this->getFacetItemListThemeHook($facet),
       '#facet' => $facet,
       '#items' => $items,
       '#attributes' => [
+        'data-drupal-facet-filter-key' => $url_processor->getFilterKey(),
         'data-drupal-facet-id' => $facet->id(),
         'data-drupal-facet-alias' => $facet->getUrlAlias(),
         'class' => [$facet->getActiveItems() ? 'facet-active' : 'facet-inactive'],
@@ -198,10 +186,20 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
       $items['#attributes']['class'][] = 'is-active';
     }
 
+    $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
+    /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $url_processor */
+    $url_processor = $urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
+
     $items['#wrapper_attributes'] = ['class' => $classes];
-    $items['#attributes']['data-drupal-facet-item-id'] = Html::getClass($this->facet->getUrlAlias() . '-' . strtr($result->getRawValue(), ' \'\"', '---'));
+    $items['#attributes']['data-drupal-facet-item-id'] = Html::getClass($facet->getUrlAlias() . '-' . strtr($result->getRawValue(), ' \'\"', '---'));
     $items['#attributes']['data-drupal-facet-item-value'] = $result->getRawValue();
     $items['#attributes']['data-drupal-facet-item-count'] = $result->getCount();
+    $items['#attributes']['data-drupal-facet-filter-value'] = $facet->getUrlAlias() . $url_processor->getSeparator() . $result->getRawValue();
+
+    if ($facet->getShowOnlyOneResult()) {
+      $items['#attributes']['data-drupal-facet-single-selection-group'] = Html::getClass($facet->getUrlAlias());
+    }
+
     return $items;
   }
 

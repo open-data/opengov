@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\user\Kernel;
 
 use Drupal\KernelTests\Core\Config\ConfigEntityValidationTestBase;
@@ -9,6 +11,7 @@ use Drupal\user\Entity\Role;
  * Tests validation of user_role entities.
  *
  * @group user
+ * @group #slow
  */
 class RoleValidationTest extends ConfigEntityValidationTestBase {
 

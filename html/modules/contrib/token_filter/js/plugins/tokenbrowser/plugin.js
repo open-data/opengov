@@ -1,63 +1,63 @@
 /**
  * @file
- * Drupal Entity embed plugin.
+ * Drupal token browser plugin.
  */
 
 (function ($, Drupal, CKEDITOR) {
-
-  "use strict";
-
   CKEDITOR.plugins.add('tokenbrowser', {
-
     // The plugin initialization logic goes inside this method.
-    beforeInit: function (editor) {
-
+    beforeInit(editor) {
       // Generic command.
       editor.addCommand('edittokenbrowser', {
-        modes: {wysiwyg: 1},
+        modes: { wysiwyg: 1 },
         canUndo: true,
-        exec: function (editor, data) {
+        exec(editor, data) {
           data = data || {};
 
           // We have no current existingValues.
-          var existingValues = {};
+          const existingValues = {};
 
           // Set all options for the model.
-          var dialogOptions = {
+          const dialogOptions = {
             dialogClass: 'token-browser-dialog',
             autoResize: false,
             modal: false,
             draggable: true,
           };
-          var dialogSettings = drupalSettings.dialog;
+          const dialogSettings = drupalSettings.dialog;
 
           // We have no current saveCallback.
-          var saveCallback = function (values) {};
+          const saveCallback = function (values) {};
 
           // Set the active CKEditor id.
           Drupal.ckeditorActiveId = editor.name;
 
           // Open token browser dialog.
-          Drupal.ckeditor.openDialog(editor, data.link, existingValues, saveCallback, dialogOptions);
-
-        }
+          Drupal.ckeditor.openDialog(
+            editor,
+            data.link,
+            existingValues,
+            saveCallback,
+            dialogOptions,
+          );
+        },
       });
 
       // Register the toolbar buttons.
       if (editor.ui.addButton) {
-        for (var key in editor.config.TokenBrowser_buttons) {
-          var button = editor.config.TokenBrowser_buttons[key];
+        Object.keys(editor.config.TokenBrowser_buttons).forEach(function (key) {
+          const button = editor.config.TokenBrowser_buttons[key];
           editor.ui.addButton(button.id, {
             label: button.label,
             data: button,
-            click: function (editor) {
+            click(editor) {
               editor.execCommand('edittokenbrowser', this.data);
             },
-            icon: button.image
+            icon: button.image,
           });
-        }
+        });
       }
-    }
+    },
   });
-
+  // eslint-disable-next-line no-undef
 })(jQuery, Drupal, CKEDITOR);

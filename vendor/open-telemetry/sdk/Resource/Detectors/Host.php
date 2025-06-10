@@ -8,10 +8,14 @@ use OpenTelemetry\SDK\Common\Attribute\Attributes;
 use OpenTelemetry\SDK\Resource\ResourceDetectorInterface;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use OpenTelemetry\SemConv\ResourceAttributes;
+use const PHP_OS;
+use const PHP_OS_FAMILY;
 use function php_uname;
+use function strtolower;
 
 /**
  * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.8.0/specification/resource/semantic_conventions/host.md#host
+ * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.8.0/specification/resource/semantic_conventions/os.md
  */
 final class Host implements ResourceDetectorInterface
 {
@@ -31,6 +35,10 @@ final class Host implements ResourceDetectorInterface
             ResourceAttributes::HOST_NAME => php_uname('n'),
             ResourceAttributes::HOST_ARCH => php_uname('m'),
             ResourceAttributes::HOST_ID => $this->getMachineId(),
+            ResourceAttributes::OS_TYPE => strtolower(PHP_OS_FAMILY),
+            ResourceAttributes::OS_DESCRIPTION => php_uname('r'),
+            ResourceAttributes::OS_NAME => PHP_OS,
+            ResourceAttributes::OS_VERSION => php_uname('v'),
         ];
 
         return ResourceInfo::create(Attributes::create($attributes), ResourceAttributes::SCHEMA_URL);
@@ -47,14 +55,32 @@ final class Host implements ResourceDetectorInterface
         };
     }
 
+    /**
+     * @phan-suppress PhanTypeMismatchArgumentInternal
+     */
+    private function readFile(string $file): string|false
+    {
+        set_error_handler(static fn () => true);
+
+        try {
+            $contents = file_get_contents($file);
+
+            return $contents !== false ? trim($contents) : false;
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     private function getLinuxId(): ?string
     {
         $paths = [self::PATH_ETC_MACHINEID, self::PATH_VAR_LIB_DBUS_MACHINEID];
 
         foreach ($paths as $path) {
             $file = $this->dir . $path;
-            if (is_file($file) && is_readable($file)) {
-                return trim(file_get_contents($file));
+
+            $contents = $this->readFile($file);
+            if ($contents !== false) {
+                return $contents;
             }
         }
 
@@ -64,8 +90,10 @@ final class Host implements ResourceDetectorInterface
     private function getBsdId(): ?string
     {
         $file = $this->dir . self::PATH_ETC_HOSTID;
-        if (is_file($file) && is_readable($file)) {
-            return trim(file_get_contents($file));
+
+        $contents = $this->readFile($file);
+        if ($contents !== false) {
+            return $contents;
         }
 
         $out = exec('which kenv && kenv -q smbios.system.uuid');

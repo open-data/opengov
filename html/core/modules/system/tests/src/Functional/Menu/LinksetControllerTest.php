@@ -121,14 +121,11 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
           'bar',
           1729,
           TRUE,
-          FALSE,
-          0,
           -1,
           3.141592,
         ],
         'data-baz' => '42',
         '*ignored' => '¯\_(ツ)_/¯',
-        '¯\_(ツ)_/¯' => 'ok',
         "hreflang" => "en-mx",
         "media" => "???",
         "type" => "???",
@@ -157,7 +154,7 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
    *
    * @throws \Exception
    */
-  public function testBasicFunctions() {
+  public function testBasicFunctions(): void {
     $this->enableEndpoint(TRUE);
     $expected_linkset = $this->getReferenceLinksetDataFromFile(__DIR__ . '/../../../fixtures/linkset/linkset-menu-main.json');
     $response = $this->doRequest('GET', Url::fromUri('base:/system/menu/main/linkset'));
@@ -175,7 +172,7 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
    * assert a cache hit. Finally, a new menu item is created to ensure that the
    * cached response is properly invalidated.
    */
-  public function testCacheability() {
+  public function testCacheability(): void {
     $this->enableEndpoint(TRUE);
     $expected_cacheability = new CacheableMetadata();
     $expected_cacheability->addCacheContexts([
@@ -219,7 +216,7 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
    * access controls. E.g. it does not output links to which the current user
    * does not have access (if it can be determined).
    */
-  public function testAccess() {
+  public function testAccess(): void {
     $this->enableEndpoint(TRUE);
     $expected_cacheability = new CacheableMetadata();
     $expected_cacheability->addCacheContexts(['user.permissions']);
@@ -276,16 +273,14 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
    * YAML-defined link ("My account") and a dynamic code-defined link
    * ("Log in/out")
    */
-  public function testUserAccountMenu() {
+  public function testUserAccountMenu(): void {
     $this->enableEndpoint(TRUE);
     $expected_cacheability = new CacheableMetadata();
     $expected_cacheability->addCacheContexts([
-      'user.permissions',
       'user.roles:authenticated',
     ]);
     $expected_cacheability->addCacheTags([
       'config:system.menu.account',
-      'config:user.role.anonymous',
       'http_response',
     ]);
     $response = $this->doRequest('GET', Url::fromUri('base:/system/menu/account/linkset'));
@@ -315,7 +310,7 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
   /**
    * Tests that menu items can use a custom link relation.
    */
-  public function testCustomLinkRelation() {
+  public function testCustomLinkRelation(): void {
     $this->enableEndpoint(TRUE);
     $this->assertTrue($this->container->get('module_installer')->install(['decoupled_menus_test'], TRUE), 'Installed modules.');
     $response = $this->doRequest('GET', Url::fromUri('base:/system/menu/account/linkset'), 200, $this->authorAccount);
@@ -328,7 +323,7 @@ final class LinksetControllerTest extends LinksetControllerTestBase {
   /**
    * Test that api route does not exist if the config option is disabled.
    */
-  public function testDisabledEndpoint() {
+  public function testDisabledEndpoint(): void {
     $this->doRequest('GET', Url::fromUri('base:/system/menu/main/linkset'), 404);
   }
 

@@ -4,12 +4,12 @@ namespace Drupal\password_policy_history\Plugin\PasswordConstraint;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\password_policy\PasswordConstraintBase;
 use Drupal\password_policy\PasswordPolicyValidation;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Password\PasswordInterface;
 
 /**
  * Enforces a limit repeated use of the same password.

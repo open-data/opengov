@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace League\Csv\Serializer;
 
 use Closure;
+use Deprecated;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -42,6 +43,7 @@ final class CallbackCasting implements TypeCasting
     private Closure $callback;
     private array $options = [];
     private string $message;
+    private readonly TypeCastingInfo $info;
 
     public function __construct(
         ReflectionProperty|ReflectionParameter $reflectionProperty,
@@ -55,6 +57,12 @@ final class CallbackCasting implements TypeCasting
         };
 
         $this->callback = fn (mixed $value, bool $isNullable, mixed ...$arguments): mixed => $value;
+        $this->info = TypeCastingInfo::fromAccessor($reflectionProperty);
+    }
+
+    public function info(): TypeCastingInfo
+    {
+        return $this->info;
     }
 
     /**
@@ -96,12 +104,12 @@ final class CallbackCasting implements TypeCasting
             return ($this->callback)($value, $this->isNullable, ...$this->options);
         } catch (Throwable $exception) {
             ! $exception instanceof TypeCastingFailed || throw $exception;
-            null !== $value || throw TypeCastingFailed::dueToNotNullableType($this->type, $exception);
+            null !== $value || throw TypeCastingFailed::dueToNotNullableType($this->type, $exception, $this->info);
 
             throw TypeCastingFailed::dueToInvalidValue(match (true) {
                 '' === $value => 'empty string',
                 default => $value,
-            }, $this->type, $exception);
+            }, $this->type, $exception, $this->info);
         }
     }
 
@@ -376,6 +384,7 @@ final class CallbackCasting implements TypeCasting
      * @see CallbackCasting::unregisterType()
      * @codeCoverageIgnore
      */
+    #[Deprecated(message:'use League\Csv\Serializer\CallbackCasting::unregisterType() instead', since:'league/csv:9.13.0')]
     public static function unregister(string $type): bool
     {
         return self::unregisterType($type);

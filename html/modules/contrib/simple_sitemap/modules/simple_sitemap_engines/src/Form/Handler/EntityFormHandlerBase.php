@@ -2,13 +2,13 @@
 
 namespace Drupal\simple_sitemap_engines\Form\Handler;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\simple_sitemap\Form\Handler\EntityFormHandlerBase as BaseEntityFormHandlerBase;
-use Drupal\simple_sitemap\Form\FormHelper;
 use Drupal\simple_sitemap\Entity\EntityHelper;
+use Drupal\simple_sitemap\Form\FormHelper;
+use Drupal\simple_sitemap\Form\Handler\EntityFormHandlerBase as BaseEntityFormHandlerBase;
 use Drupal\simple_sitemap\Manager\Generator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a base class for altering an entity form.

@@ -68,4 +68,8 @@ class ShowSiblingsProcessor extends ProcessorPluginBase implements BuildProcesso
     return $build;
   }
 
+  public function supportsFacet(FacetInterface $facet) {
+    return $facet->getFacetType() == 'facet_entity';
+  }
+
 }

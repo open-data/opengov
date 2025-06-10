@@ -52,14 +52,22 @@ class IconManagerService implements IconManagerServiceInterface {
     $configuration_settings = $this->configFactory->get('fontawesome.settings');
 
     // Determine which files we are using.
-    $activeFiles = [
-      'use_solid_file' => is_null($configuration_settings->get('use_solid_file')) === TRUE ? TRUE : $configuration_settings->get('use_solid_file'),
-      'use_regular_file' => is_null($configuration_settings->get('use_regular_file')) === TRUE ? TRUE : $configuration_settings->get('use_regular_file'),
-      'use_light_file' => is_null($configuration_settings->get('use_light_file')) === TRUE ? TRUE : $configuration_settings->get('use_light_file'),
-      'use_brands_file' => is_null($configuration_settings->get('use_brands_file')) === TRUE ? TRUE : $configuration_settings->get('use_brands_file'),
-      'use_duotone_file' => is_null($configuration_settings->get('use_duotone_file')) === TRUE ? TRUE : $configuration_settings->get('use_duotone_file'),
-      'use_thin_file' => is_null($configuration_settings->get('use_thin_file')) === TRUE ? TRUE : $configuration_settings->get('use_thin_file'),
-    ];
+    $activeFiles = [];
+    foreach ([
+      'solid',
+      'regular',
+      'light',
+      'brands',
+      'duotone',
+      'thin',
+      'sharpregular',
+      'sharplight',
+      'sharpsolid',
+      'custom',
+    ] as $type) {
+      $settingName = 'use_' . $type . '_file';
+      $activeFiles[$settingName] = is_null($configuration_settings->get($settingName)) === TRUE ? TRUE : $configuration_settings->get($settingName);
+    }
 
     foreach ($iconData as $icon => $data) {
       foreach ($iconData[$icon]['styles'] as $style) {
@@ -67,50 +75,78 @@ class IconManagerService implements IconManagerServiceInterface {
         switch ($style) {
           case 'brands':
             if (!$activeFiles['use_brands_file']) {
-
               break;
             }
-            $iconPrefix = 'fab';
+            $iconPrefix = 'fa-brands';
             break;
 
           case 'light':
+            // Don't show if unavailable.
             if (!$activeFiles['use_light_file']) {
               break;
             }
-            $iconPrefix = 'fal';
+            $iconPrefix = 'fa-light';
             break;
 
           case 'regular':
+            // Don't show if unavailable.
             if (!$activeFiles['use_regular_file']) {
               break;
             }
-            $iconPrefix = 'far';
-            break;
-
-          case 'thin':
-            if (!$activeFiles['use_thin_file']) {
-              break;
-            }
-            $iconPrefix = 'fat';
+            $iconPrefix = 'fa-regular';
             break;
 
           case 'duotone':
+            // Don't show if unavailable.
             if (!$activeFiles['use_duotone_file']) {
               break;
             }
-            $iconPrefix = 'fad';
+            $iconPrefix = 'fa-duotone';
+            break;
+
+          case 'thin':
+            // Don't show if unavailable.
+            if (!$activeFiles['use_thin_file']) {
+              break;
+            }
+            $iconPrefix = 'fa-thin';
+            break;
+
+          case 'sharpregular':
+            // Don't show if unavailable.
+            if (!$activeFiles['use_sharpregular_file']) {
+              break;
+            }
+            $iconPrefix = 'fa-sharp fa-regular';
+            break;
+
+          case 'sharpsolid':
+            // Don't show if unavailable.
+            if (!$activeFiles['use_sharpsolid_file']) {
+              break;
+            }
+            $iconPrefix = 'fa-sharp fa-solid';
+            break;
+
+          case 'sharplight':
+            // Don't show if unavailable.
+            if (!$activeFiles['use_sharplight_file']) {
+              break;
+            }
+            $iconPrefix = 'fa-sharp fa-light';
             break;
 
           case 'kit_uploads':
-            $iconPrefix = 'fak';
+            $iconPrefix = 'fa-kit';
             break;
 
           default:
           case 'solid':
+            // Don't show if unavailable.
             if (!$activeFiles['use_solid_file']) {
               break;
             }
-            $iconPrefix = 'fas';
+            $iconPrefix = 'fa-solid';
             break;
         }
         if (!empty($iconPrefix)) {
@@ -199,7 +235,7 @@ class IconManagerService implements IconManagerServiceInterface {
    *   The base name for the icon.
    */
   public function getIconBaseNameFromClass($class) {
-    [$prefix, $base] = explode('fa-', $class);
+    [$prefix, $base] = explode(' fa-', $class);
     return $base;
   }
 
@@ -213,7 +249,7 @@ class IconManagerService implements IconManagerServiceInterface {
    *   The icon prefix.
    */
   public function getIconPrefixFromClass($class) {
-    [$prefix, $base] = explode('fa-', $class);
+    [$prefix, $base] = explode(' fa-', $class);
     return trim($prefix);
   }
 

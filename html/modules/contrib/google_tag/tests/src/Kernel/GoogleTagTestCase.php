@@ -31,6 +31,11 @@ abstract class GoogleTagTestCase extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('user');
+    // With respect to the change record https://www.drupal.org/node/3394444,
+    // it is required to register path_alias entity schema in kernel tests.
+    if (version_compare(\Drupal::VERSION, '10.3', '>=')) {
+      $this->installEntitySchema('path_alias');
+    }
     $this->installConfig(['system', 'user']);
   }
 

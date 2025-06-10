@@ -1028,7 +1028,7 @@ final class DocParser
     private function PlainValue()
     {
         if ($this->lexer->isNextToken(DocLexer::T_OPEN_CURLY_BRACES)) {
-            return $this->Arrayx();
+            return $this->ArrayX();
         }
 
         if ($this->lexer->isNextToken(DocLexer::T_AT)) {
@@ -1094,7 +1094,7 @@ final class DocParser
      *
      * @return array
      */
-    private function Arrayx()
+    private function ArrayX()
     {
         $array = $values = array();
 

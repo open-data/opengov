@@ -1,0 +1,5 @@
+entity.recaptcha_v3_action.add_form:
+  route_name: entity.recaptcha_v3_action.add_form
+  title: "Add reCAPTCHA v3 action"
+  appears_on:
+    - entity.recaptcha_v3_action.collection

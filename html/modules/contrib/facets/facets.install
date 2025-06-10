@@ -7,7 +7,6 @@
 
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Entity\FacetSource;
-use Drupal\block\Entity\Block;
 use Drupal\facets\Plugin\facets\facet_source\SearchApiDisplay;
 
 /**
@@ -175,18 +174,8 @@ function facets_update_8005() {
  * Update facet blocks configuration with a block id used for AJAX support.
  */
 function facets_update_8006() {
-  $query = \Drupal::entityQuery('block')
-    ->condition('plugin', 'facet_block', 'STARTS_WITH')
-    ->accessCheck()
-    ->execute();
-
-  foreach ($query as $block_id) {
-    $block = Block::load($block_id);
-    $configuration = $block->get('settings');
-    $configuration['block_id'] = $block_id;
-    $block->set('settings', $configuration);
-    $block->save();
-  }
+  // Empty update hook, we do not support this anymore.
+  // @see https://www.drupal.org/project/facets/issues/3073444
 }
 
 /**

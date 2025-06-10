@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\KernelTests\Core\Entity;
 
 use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
@@ -13,9 +15,7 @@ use Drupal\language\Entity\ConfigurableLanguage;
 class EntityValidationTest extends EntityKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['filter', 'text', 'language'];
 
@@ -97,7 +97,7 @@ class EntityValidationTest extends EntityKernelTestBase {
   /**
    * Tests validating test entity types.
    */
-  public function testValidation() {
+  public function testValidation(): void {
     // Ensure that the constraint manager is marked as cached cleared.
 
     // Use the protected property on the cache_clearer first to check whether
@@ -197,7 +197,7 @@ class EntityValidationTest extends EntityKernelTestBase {
   /**
    * Tests composite constraints.
    */
-  public function testCompositeConstraintValidation() {
+  public function testCompositeConstraintValidation(): void {
     $entity = $this->createTestEntity('entity_test_composite_constraint');
     $violations = $entity->validate();
     $this->assertEquals(0, $violations->count());
@@ -220,7 +220,7 @@ class EntityValidationTest extends EntityKernelTestBase {
   /**
    * Tests the EntityChangedConstraintValidator with multiple translations.
    */
-  public function testEntityChangedConstraintOnConcurrentMultilingualEditing() {
+  public function testEntityChangedConstraintOnConcurrentMultilingualEditing(): void {
     $this->installEntitySchema('entity_test_mulrev_changed');
     $storage = \Drupal::entityTypeManager()
       ->getStorage('entity_test_mulrev_changed');

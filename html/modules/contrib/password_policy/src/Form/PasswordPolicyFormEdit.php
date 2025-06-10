@@ -6,15 +6,15 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\user\RoleStorageInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Url;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\password_policy\Entity\PasswordPolicy;
+use Drupal\user\RoleStorageInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form that lists out the constraints for the policy.
@@ -191,6 +191,7 @@ class PasswordPolicyFormEdit extends PasswordPolicyForm {
     else {
       $this->messenger()->addMessage($this->t('The password policy was not saved.'));
     }
+    return $status;
   }
 
   /**

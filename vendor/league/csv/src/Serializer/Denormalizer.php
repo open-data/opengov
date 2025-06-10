@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace League\Csv\Serializer;
 
 use Closure;
+use Deprecated;
 use Iterator;
 use League\Csv\MapIterator;
 use ReflectionAttribute;
@@ -65,6 +66,7 @@ final class Denormalizer
      *
      * Enables converting empty string to the null value.
      */
+    #[Deprecated(message:'use League\Csv\Serializer\MapRecord::$convertEmptyStringToNull or League\Csv\Serializer\MapCell::$convertEmptyStringToNullinstead', since:'league/csv:9.17.0')]
     public static function allowEmptyStringAsNull(): void
     {
         self::$convertEmptyStringToNull = true;
@@ -78,6 +80,7 @@ final class Denormalizer
      *
      * Disables converting empty string to the null value.
      */
+    #[Deprecated(message:'use League\Csv\Serializer\MapRecord::$convertEmptyStringToNull or League\Csv\Serializer\MapCell::$convertEmptyStringToNullinstead', since:'league/csv:9.17.0')]
     public static function disallowEmptyStringAsNull(): void
     {
         self::$convertEmptyStringToNull = false;
@@ -158,7 +161,7 @@ final class Denormalizer
 
     /**
      * @param class-string $className
-     * @param array<?string> $record
+     * @param array<array-key, mixed> $record
      *
      * @throws DenormalizationFailed
      * @throws MappingFailed

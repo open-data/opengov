@@ -11,6 +11,8 @@ use Drupal\Tests\search_api\Kernel\PostRequestIndexingTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\views\Tests\AssertViewsCacheTagsTrait;
 
+// cspell:ignore angua littlebottom überwald
+
 /**
  * Tests that cached Search API views get invalidated at the right occasions.
  *
@@ -130,7 +132,6 @@ class ViewsCacheInvalidationTest extends KernelTestBase {
 
     $this->installSchema('node', ['node_access']);
     $this->installSchema('search_api', ['search_api_item']);
-    $this->installSchema('system', ['sequences']);
 
     $this->installEntitySchema('node');
     $this->installEntitySchema('search_api_task');

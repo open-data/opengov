@@ -7,6 +7,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
@@ -17,6 +18,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * A basic form with a passed entity with an interface.
  */
 class SolrConfigForm extends FormBase {
+
+  use LoggerTrait {
+    getLogger as getSearchApiLogger;
+  }
 
   /**
    * The date formatter service.
@@ -54,7 +59,7 @@ class SolrConfigForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL) {
     $form['#title'] = $this->t('List of configuration files found');
 
     try {
@@ -99,8 +104,8 @@ class SolrConfigForm extends FormBase {
       }
     }
     catch (SearchApiException $e) {
-      watchdog_exception('search_api_solr', $e, '%type while retrieving config files of Solr server @server: @message in %function (line %line of %file).', ['@server' => $search_api_server->label()]);
-      $form['info']['#markup'] = $this->t('An error occured while trying to load the list of files.');
+      $this->logException($e, '%type while retrieving config files of Solr server @server: @message in %function (line %line of %file).', ['@server' => $search_api_server->label()]);
+      $form['info']['#markup'] = $this->t('An error occurred while trying to load the list of files.');
     }
 
     return $form;
@@ -125,6 +130,19 @@ class SolrConfigForm extends FormBase {
    */
   public function access(ServerInterface $search_api_server) {
     return AccessResult::allowedIf($search_api_server->hasValidBackend() && $search_api_server->getBackend() instanceof SearchApiSolrBackend)->addCacheableDependency($search_api_server);
+  }
+
+  /**
+   * Get Logger.
+   *
+   * @param string $channel
+   *   The log channel.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger.
+   */
+  protected function getLogger($channel = '') {
+    return $this->getSearchApiLogger();
   }
 
 }

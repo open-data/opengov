@@ -40,10 +40,10 @@ class Update extends Query implements ConditionInterface {
    *
    * This variable is a nested array in the following format:
    * @code
-   * <some field> => array(
+   * <some field> => [
    *  'condition' => <condition to execute, as a string>,
    *  'arguments' => <array of arguments for condition, or NULL for none>,
-   * );
+   * ];
    * @endcode
    *
    * @var array
@@ -103,7 +103,7 @@ class Update extends Query implements ConditionInterface {
    * @return $this
    *   The called object.
    */
-  public function expression($field, $expression, array $arguments = NULL) {
+  public function expression($field, $expression, ?array $arguments = NULL) {
     $this->expressionFields[$field] = [
       'expression' => $expression,
       'arguments' => $arguments,
@@ -164,6 +164,12 @@ class Update extends Query implements ConditionInterface {
    *   The prepared statement.
    */
   public function __toString() {
+    if (!is_array($this->fields) ||
+      !is_array($this->arguments) ||
+      !is_array($this->expressionFields)) {
+      throw new \UnexpectedValueException();
+    }
+
     // Create a sanitized comment string to prepend to the query.
     $comments = $this->connection->makeComment($this->comments);
 

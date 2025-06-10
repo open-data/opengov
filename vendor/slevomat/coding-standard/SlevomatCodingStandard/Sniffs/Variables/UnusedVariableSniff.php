@@ -42,6 +42,7 @@ use const T_GLOBAL;
 use const T_HEREDOC;
 use const T_IF;
 use const T_INC;
+use const T_INLINE_ELSE;
 use const T_LIST;
 use const T_MINUS_EQUAL;
 use const T_MOD_EQUAL;
@@ -72,8 +73,7 @@ class UnusedVariableSniff implements Sniff
 
 	public const CODE_UNUSED_VARIABLE = 'UnusedVariable';
 
-	/** @var bool */
-	public $ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach = false;
+	public bool $ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach = false;
 
 	/**
 	 * @return array<int, (int|string)>
@@ -208,7 +208,7 @@ class UnusedVariableSniff implements Sniff
 		$phpcsFile->addError(
 			sprintf('Unused variable %s.', $variableName),
 			$variablePointer,
-			self::CODE_UNUSED_VARIABLE
+			self::CODE_UNUSED_VARIABLE,
 		);
 	}
 
@@ -281,7 +281,7 @@ class UnusedVariableSniff implements Sniff
 		$possibleShortListCloserPointer = TokenHelper::findNextExcluding(
 			$phpcsFile,
 			array_merge(TokenHelper::$ineffectiveTokenCodes, [T_VARIABLE, T_COMMA]),
-			$variablePointer + 1
+			$variablePointer + 1,
 		);
 		if ($tokens[$possibleShortListCloserPointer]['code'] === T_CLOSE_SHORT_ARRAY) {
 			return $tokens[TokenHelper::findNextEffective($phpcsFile, $possibleShortListCloserPointer + 1)]['code'] === T_EQUAL;
@@ -370,7 +370,7 @@ class UnusedVariableSniff implements Sniff
 			T_VARIABLE,
 			$variableName,
 			$tokens[$loopCloserPointer]['bracket_opener'] + 1,
-			$loopCloserPointer
+			$loopCloserPointer,
 		) !== null;
 	}
 
@@ -399,7 +399,7 @@ class UnusedVariableSniff implements Sniff
 				T_VARIABLE,
 				$variableName,
 				$tokens[$loopConditionPointer]['parenthesis_opener'] + 1,
-				$tokens[$loopConditionPointer]['parenthesis_closer']
+				$tokens[$loopConditionPointer]['parenthesis_closer'],
 			);
 			if (
 				$variableUsedInLoopConditionPointer === null
@@ -414,7 +414,7 @@ class UnusedVariableSniff implements Sniff
 
 			$pointerBeforeVariableUsedInLoopCondition = TokenHelper::findPreviousEffective(
 				$phpcsFile,
-				$variableUsedInLoopConditionPointer - 1
+				$variableUsedInLoopConditionPointer - 1,
 			);
 			if ($tokens[$pointerBeforeVariableUsedInLoopCondition]['code'] === T_BITWISE_AND) {
 				return true;
@@ -463,6 +463,11 @@ class UnusedVariableSniff implements Sniff
 				T_CONCAT_EQUAL,
 			], true)) {
 				continue;
+			}
+
+			$previousPointer = TokenHelper::findPreviousEffective($phpcsFile, $i - 1);
+			if ($tokens[$previousPointer]['code'] === T_INLINE_ELSE) {
+				return true;
 			}
 
 			$parenthesisOwnerPointer = $this->findNestedParenthesisWithOwner($phpcsFile, $i);
@@ -657,9 +662,9 @@ class UnusedVariableSniff implements Sniff
 				Tokens::$operators,
 				Tokens::$assignmentTokens,
 				Tokens::$booleanOperators,
-				Tokens::$castTokens
+				Tokens::$castTokens,
 			),
-			true
+			true,
 		);
 	}
 

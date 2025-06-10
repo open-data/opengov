@@ -42,12 +42,15 @@ function simple_sitemap_engines_requirements(string $phase): array {
 }
 
 /**
- * Implements hook_install().
+ * Implements hook_modules_installed().
+ *
+ * Using hook_modules_installed instead of hook_install, as this module's routes do not seem to be available yet.
  */
-function simple_sitemap_engines_install() {
-  \Drupal::messenger()->addWarning(t('In order to generate a verification key for the IndexNow service and choose which sitemaps are to be submitted to search engines, visit <a href="@url">this</a> configuration page.',
-    ['@url' => Url::fromRoute('simple_sitemap.engines.settings')->toString()])
-  );
+function simple_sitemap_engines_modules_installed($modules) {
+  if (in_array('simple_sitemap_engines', $modules, TRUE)) {
+    \Drupal::messenger()->addWarning(t('In order to generate a verification key for the IndexNow service and choose which sitemaps are to be submitted to search engines, visit <a href="@url">this</a> configuration page.',
+      ['@url' => Url::fromRoute('simple_sitemap.engines.settings')->toString()]));
+  }
 }
 
 /**
@@ -139,7 +142,7 @@ function simple_sitemap_engines_update_8402() {
 }
 
 /**
- * Creating new simple_sitemap_engine entities.
+ * Adding 'IndexNow' and 'Yandex' search engine entities.
  */
 function simple_sitemap_engines_update_8403() {
   if (NULL === SimpleSitemapEngine::load('yandex')) {
@@ -156,5 +159,43 @@ function simple_sitemap_engines_update_8403() {
       'label' => 'IndexNow',
       'index_now_url' => "https://api.indexnow.org/indexnow?url=[url]&key=[key]",
     ])->save();
+  }
+}
+
+/**
+ * Adding 'Seznam', 'Naver' and 'Yep' search engine entities.
+ */
+function simple_sitemap_engines_update_8404() {
+  if (NULL === SimpleSitemapEngine::load('naver')) {
+    SimpleSitemapEngine::create([
+      'id' => 'naver',
+      'label' => 'Naver',
+      'index_now_url' => "https://searchadvisor.naver.com/indexnow?url=[url]&key=[key]",
+    ])->save();
+  }
+
+  if (NULL === SimpleSitemapEngine::load('seznam')) {
+    SimpleSitemapEngine::create([
+      'id' => 'seznam',
+      'label' => 'Seznam',
+      'index_now_url' => "https://search.seznam.cz/indexnow?url=[url]&key=[key]",
+    ])->save();
+  }
+
+  if (NULL === SimpleSitemapEngine::load('yep')) {
+    SimpleSitemapEngine::create([
+      'id' => 'yep',
+      'label' => 'Yep',
+      'index_now_url' => "https://indexnow.yep.com/indexnow?url=[url]&key=[key]",
+    ])->save();
+  }
+}
+
+/**
+ * Removing the Google engine, as it supports neither sitemap pinging nor IndexNow.
+ */
+function simple_sitemap_engines_update_8405() {
+  if ($engine = SimpleSitemapEngine::load('google')) {
+    $engine->delete();
   }
 }

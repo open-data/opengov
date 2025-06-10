@@ -62,9 +62,9 @@ class BooleanItemProcessor extends ProcessorPluginBase implements BuildProcessor
       '#title' => $this->t('On value'),
       '#type' => 'textfield',
       '#default_value' => $config['on_value'],
-      '#description' => $this->t('Use this label instead of <em>0</em> for the <em>On</em> or <em>True</em> value. Leave empty to hide this item.'),
+      '#description' => $this->t('Use this label instead of <em>1</em> for the <em>On</em> or <em>True</em> value. Leave empty to hide this item.'),
       '#states' => [
-        'required' => ['input[name="facet_settings[boolean_item][settings][off_value]"' => ['empty' => TRUE]],
+        'required' => ['input[name="facet_settings[boolean_item][settings][off_value]"]' => ['empty' => TRUE]],
       ],
     ];
 
@@ -72,9 +72,9 @@ class BooleanItemProcessor extends ProcessorPluginBase implements BuildProcessor
       '#title' => $this->t('Off value'),
       '#type' => 'textfield',
       '#default_value' => $config['off_value'],
-      '#description' => $this->t('Use this label instead of <em>1</em> for the <em>Off</em> or <em>False</em> value. Leave empty to hide this item.'),
+      '#description' => $this->t('Use this label instead of <em>0</em> for the <em>Off</em> or <em>False</em> value. Leave empty to hide this item.'),
       '#states' => [
-        'required' => ['input[name="facet_settings[boolean_item][settings][on_value]"' => ['empty' => TRUE]],
+        'required' => ['input[name="facet_settings[boolean_item][settings][on_value]"]' => ['empty' => TRUE]],
       ],
     ];
 

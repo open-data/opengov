@@ -77,7 +77,15 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
   /**
    * Tests if exposed filtering via AJAX works for the "Content" View.
    */
-  public function testExposedFiltering() {
+  public function testExposedFiltering(): void {
+    // Create an account that can update the sticky flag.
+    $user = $this->drupalCreateUser([
+      'access content overview',
+      'administer nodes',
+      'edit any page content',
+    ]);
+    $this->drupalLogin($user);
+
     // Visit the View page.
     $this->drupalGet('admin/content');
 
@@ -149,7 +157,7 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
   /**
    * Tests if exposed filtering via AJAX works in a modal.
    */
-  public function testExposedFiltersInModal() {
+  public function testExposedFiltersInModal(): void {
     $this->drupalGet('views-test-modal/modal');
 
     $assert = $this->assertSession();
@@ -197,7 +205,7 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
   /**
    * Tests exposed filtering via AJAX with a button element.
    */
-  public function testExposedFilteringWithButtonElement() {
+  public function testExposedFilteringWithButtonElement(): void {
     // Install theme to test with template system.
     \Drupal::service('theme_installer')->install(['views_test_theme']);
 

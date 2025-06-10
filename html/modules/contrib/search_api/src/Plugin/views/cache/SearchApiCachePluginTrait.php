@@ -117,12 +117,6 @@ trait SearchApiCachePluginTrait {
 
     $view = $this->getView();
     $query = $this->getQuery();
-    $data = [
-      'result' => $view->result,
-      'total_rows' => $view->total_rows ?? 0,
-      'current_page' => $view->getCurrentPage(),
-      'search_api results' => $query->getSearchApiResults(),
-    ];
 
     // Get the max-age value according to the configuration of the view.
     $expire = $this->cacheSetMaxAge($type);
@@ -156,8 +150,29 @@ trait SearchApiCachePluginTrait {
     }
     $tags = Cache::mergeTags($this->getCacheTags(), $query->getCacheTags());
 
-    $this->getCacheBackend()
-      ->set($this->generateResultsKey(), $data, $expire, $tags);
+    // Unset the search_api_view query options to avoid serializing the full
+    // ViewExecutable object in the cache. Keep the previous values so we can
+    // restore them afterwards. (In 99% of cases both values will just be
+    // $this->view but better to be extra-careful.)
+    $search_api_query = $query->getSearchApiQuery();
+    $view_in_query = $search_api_query->setOption('search_api_view', NULL);
+    $view_in_query_original = $search_api_query->getOriginalQuery()->setOption('search_api_view', NULL);
+
+    try {
+      $data = [
+        'result' => $view->result,
+        'total_rows' => $view->total_rows ?? 0,
+        'current_page' => $view->getCurrentPage(),
+        'search_api results' => $query->getSearchApiResults(),
+      ];
+      $this->getCacheBackend()
+        ->set($this->generateResultsKey(), $data, $expire, $tags);
+    }
+    finally {
+      // We reset the search_api_view query options to their original values.
+      $search_api_query->setOption('search_api_view', $view_in_query);
+      $search_api_query->getOriginalQuery()->setOption('search_api_view', $view_in_query_original);
+    }
   }
 
   /**
@@ -186,7 +201,9 @@ trait SearchApiCachePluginTrait {
         $this->getQueryHelper()->addResults($results);
 
         try {
-          $this->getQuery()->setSearchApiQuery($results->getQuery());
+          $query = $results->getQuery();
+          $query->setOption('search_api_view', $view);
+          $this->getQuery()->setSearchApiQuery($query);
         }
         catch (SearchApiException) {
           // Ignore.

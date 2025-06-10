@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\KernelTests;
 
 use Drupal\Core\Form\FormState;
@@ -24,13 +26,13 @@ abstract class ConfigFormTestBase extends KernelTestBase {
    * Contains details for form key, configuration object name, and config key.
    * Example:
    * @code
-   *   array(
-   *     'user_mail_cancel_confirm_body' => array(
+   *   [
+   *     'user_mail_cancel_confirm_body' => [
    *       '#value' => $this->randomString(),
    *       '#config_name' => 'user.mail',
    *       '#config_key' => 'cancel_confirm.body',
-   *     ),
-   *   );
+   *     ],
+   *   ];
    * @endcode
    *
    * @var array
@@ -40,7 +42,7 @@ abstract class ConfigFormTestBase extends KernelTestBase {
   /**
    * Submit the system_config_form ensure the configuration has expected values.
    */
-  public function testConfigForm() {
+  public function testConfigForm(): void {
     // Programmatically submit the given values.
     $values = [];
     foreach ($this->values as $form_key => $data) {

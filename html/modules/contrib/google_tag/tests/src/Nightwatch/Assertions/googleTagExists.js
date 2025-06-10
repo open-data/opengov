@@ -11,11 +11,15 @@ GoogleTagExists = function () {
   };
   this.command = function (callback) {
     const self = this;
-    return this.api.execute(function () {
-      return typeof gtag;
-    }, [], function (result) {
-      callback.call(self, result)
-    });
-  }
+    return this.api.execute(
+      function () {
+        return typeof gtag;
+      },
+      [],
+      function (result) {
+        callback.call(self, result);
+      },
+    );
+  };
 };
 module.exports.assertion = GoogleTagExists;

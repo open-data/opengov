@@ -2,6 +2,7 @@
 
 namespace Drupal\redis\Controller;
 
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Predis\Client;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
@@ -168,20 +169,21 @@ class ReportController extends ControllerBase {
     }
 
     $end = microtime(TRUE);
+    /** @var array|false $memory_config */
     $memory_config = $this->redis->config('get', 'maxmemory*');
-
-    if ($memory_config['maxmemory']) {
+    // Redis default for maxmemory is 0 for "unlimited" (ie system limit).
+    if (!empty($memory_config['maxmemory'])) {
       $memory_value = $this->t('@used_memory / @max_memory (@used_percentage%), maxmemory policy: @policy', [
         '@used_memory' => $info['used_memory_human'] ?? $info['Memory']['used_memory_human'],
-        '@max_memory' => format_size($memory_config['maxmemory']),
-        '@used_percentage' => (int) ($info['used_memory'] ?? $info['Memory']['used_memory'] / $memory_config['maxmemory'] * 100),
+        '@max_memory' => static::formatSize($memory_config['maxmemory']),
+        '@used_percentage' => (int) (($info['used_memory'] ?? $info['Memory']['used_memory']) / $memory_config['maxmemory'] * 100),
         '@policy' => $memory_config['maxmemory-policy'],
       ]);
     }
     else {
       $memory_value = $this->t('@used_memory / unlimited, maxmemory policy: @policy', [
         '@used_memory' => $info['used_memory_human'] ?? $info['Memory']['used_memory_human'],
-        '@policy' => $memory_config['maxmemory-policy'],
+        '@policy' => $memory_config['maxmemory-policy'] ?? '',
       ]);
     }
 
@@ -213,9 +215,9 @@ class ReportController extends ControllerBase {
       'read_write' => [
         'title' => $this->t('Read/Write'),
         'value' => $this->t('@read read (@percent_read%), @write written (@percent_write%), @commands commands in @connections connections.', [
-          '@read' => format_size($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']),
+          '@read' => static::formatSize($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']),
           '@percent_read' => round(100 / (($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']) + ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])) * ($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes'])),
-          '@write' => format_size($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes']),
+          '@write' => static::formatSize($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes']),
           '@percent_write' => round(100 / (($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']) + ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])) * ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])),
           '@commands' => $info['total_commands_processed'] ?? $info['Stats']['total_commands_processed'],
           '@connections' => $info['total_connections_received'] ?? $info['Stats']['total_connections_received'],
@@ -249,7 +251,7 @@ class ReportController extends ControllerBase {
     ];
 
     // Warnings/hints.
-    if ($memory_config['maxmemory-policy'] == 'noeviction') {
+    if (!empty($memory_config['maxmemory-policy']) && $memory_config['maxmemory-policy'] == 'noeviction') {
       $redis_url = Url::fromUri('https://redis.io/topics/lru-cache', [
         'fragment' => 'eviction-policies',
         'attributes' => [
@@ -273,8 +275,8 @@ class ReportController extends ControllerBase {
       $requirements['relay'] = [
         'title' => $this->t('Relay'),
         'value' => t("@used / @total memory usage, eviction policy: @policy", [
-          '@used' => format_size($stats['memory']['active'] ?? 0),
-          '@total' => format_size($stats['memory']['total'] ?? 0),
+          '@used' => static::formatSize($stats['memory']['active'] ?? 0),
+          '@total' => static::formatSize($stats['memory']['total'] ?? 0),
           '@policy' => ini_get('relay.eviction_policy')
         ]),
       ];
@@ -309,7 +311,7 @@ class ReportController extends ControllerBase {
    *
    * @return \Generator
    */
-  protected function scan($match, $count = 10000) {
+  protected function scan($match, $count = 1000) {
     $it = NULL;
     if ($this->redis instanceof \Redis || $this->redis instanceof \Relay\Relay) {
       while ($keys = $this->redis->scan($it, $this->getPrefix() . '*', $count)) {
@@ -318,6 +320,25 @@ class ReportController extends ControllerBase {
     }
     elseif ($this->redis instanceof Client) {
       yield from new Keyspace($this->redis, $match, $count);
+    }
+  }
+
+  /**
+   * Generates a string representation for the given byte count.
+   *
+   * @param int $size
+   *   A size in bytes.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   A translated string representation of the size.
+   */
+  protected function formatSize($size) {
+    if (class_exists(ByteSizeMarkup::class)) {
+      return ByteSizeMarkup::create($size ?? 0);
+    }
+    else {
+      // @phpstan-ignore-next-line
+      return format_size($size);
     }
   }
 

@@ -3,9 +3,11 @@
 namespace Drupal\Core\Mail\Plugin\Mail;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Mail\Attribute\Mail;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -48,13 +50,12 @@ use Symfony\Component\Mime\Email;
  *
  * @see https://symfony.com/doc/current/mailer.html#using-built-in-transports
  *
- * @Mail(
- *   id = "symfony_mailer",
- *   label = @Translation("Symfony mailer (Experimental)"),
- * )
- *
  * @internal
  */
+#[Mail(
+  id: 'symfony_mailer',
+  label: new TranslatableMarkup('Symfony mailer (Experimental)'),
+)]
 class SymfonyMailer implements MailInterface, ContainerFactoryPluginInterface {
 
   /**
@@ -92,15 +93,19 @@ class SymfonyMailer implements MailInterface, ContainerFactoryPluginInterface {
    */
   public function __construct(
     protected LoggerInterface $logger,
-    protected ?MailerInterface $mailer = NULL) {
+    protected ?MailerInterface $mailer = NULL,
+  ) {
   }
 
   public function format(array $message) {
-    // Convert any HTML to plain-text.
     foreach ($message['body'] as &$part) {
+      // If the message contains HTML, convert it to plain text (which also
+      // wraps the mail body).
       if ($part instanceof MarkupInterface) {
         $part = MailFormatHelper::htmlToText($part);
       }
+      // If the message does not contain HTML, it still needs to be wrapped
+      // properly.
       else {
         $part = MailFormatHelper::wrapMail($part);
       }
@@ -122,7 +127,7 @@ class SymfonyMailer implements MailInterface, ContainerFactoryPluginInterface {
           if (in_array(strtolower($name), self::MAILBOX_LIST_HEADERS, TRUE)) {
             // Split values by comma, but ignore commas encapsulated in double
             // quotes.
-            $value = str_getcsv($value, ',');
+            $value = str_getcsv($value, escape: '\\');
           }
           $headers->addHeader($name, $value);
         }

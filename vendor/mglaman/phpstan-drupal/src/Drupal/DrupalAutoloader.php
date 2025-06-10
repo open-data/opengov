@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use Composer\Autoload\ClassLoader;
+use Drupal\Component\DependencyInjection\Container as DrupalContainer;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
@@ -12,6 +13,7 @@ use PHPStan\DependencyInjection\Container;
 use PHPUnit\Framework\Test;
 use ReflectionClass;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -89,7 +91,7 @@ class DrupalAutoloader
 
         // Trigger deprecation error if drupal_root is used.
         if (is_string($drupalParams['drupal_root'])) {
-            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
+            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discovered automatically.', E_USER_DEPRECATED);
         }
 
         $finder = new DrupalFinderComposerRuntime();
@@ -108,7 +110,10 @@ class DrupalAutoloader
         // Attach synthetic services
         // @see \Drupal\Core\DrupalKernel::attachSynthetic
         $this->serviceMap['kernel'] = ['class' => DrupalKernelInterface::class];
+        $this->serviceMap[DrupalKernelInterface::class] = ['alias' => 'kernel'];
         $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
+        $this->serviceMap['service_container'] = ['class' => DrupalContainer::class];
+        $this->serviceMap[ContainerInterface::class] = ['alias' => 'service_container'];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
@@ -225,6 +230,16 @@ class DrupalAutoloader
                             $argument = str_replace('@', '', $argument);
                         }
                     });
+                }
+                // Handle shorthand syntax for service definition:
+                // @code
+                //   Drupal\foo\FooService: {}
+                //   Drupal\foo\BarService:
+                //     tags:
+                //       - { name: foo_bar }
+                // @endcode
+                if (!isset($serviceDefinition['class']) && class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
                 }
                 // @todo sanitize "calls" and "configurator" and "factory"
                 /**

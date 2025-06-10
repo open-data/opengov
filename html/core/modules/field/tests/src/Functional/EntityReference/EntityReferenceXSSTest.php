@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\field\Functional\EntityReference;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
@@ -17,9 +19,7 @@ class EntityReferenceXSSTest extends BrowserTestBase {
   use EntityReferenceFieldCreationTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node'];
 
@@ -31,7 +31,7 @@ class EntityReferenceXSSTest extends BrowserTestBase {
   /**
    * Tests markup is escaped in the entity reference select and label formatter.
    */
-  public function testEntityReferenceXSS() {
+  public function testEntityReferenceXSS(): void {
     $this->drupalCreateContentType(['type' => 'article']);
 
     // Create a node with markup in the title.
@@ -58,7 +58,9 @@ class EntityReferenceXSSTest extends BrowserTestBase {
       ->save();
 
     // Create a node and reference the node with markup in the title.
-    $this->drupalLogin($this->rootUser);
+    $this->drupalLogin($this->drupalCreateUser([
+      'create article content',
+    ]));
     $this->drupalGet('node/add/article');
     $this->assertSession()->assertEscaped($referenced_node->getTitle());
     $this->assertSession()->assertEscaped($node_type_two->label());

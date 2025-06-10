@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\migrate\Kernel;
 
 use Drupal\Core\Database\Database;
@@ -58,6 +60,9 @@ abstract class MigrateTestBase extends KernelTestBase implements MigrateMessageI
    */
   protected $logger;
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['migrate'];
 
   /**

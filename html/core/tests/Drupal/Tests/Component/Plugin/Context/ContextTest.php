@@ -16,7 +16,7 @@ class ContextTest extends TestCase {
   /**
    * Data provider for testGetContextValue.
    */
-  public function providerGetContextValue() {
+  public static function providerGetContextValue() {
     return [
       ['context_value', 'context_value', FALSE, 'data_type'],
       [NULL, NULL, FALSE, 'data_type'],
@@ -28,7 +28,7 @@ class ContextTest extends TestCase {
    * @covers ::getContextValue
    * @dataProvider providerGetContextValue
    */
-  public function testGetContextValue($expected, $context_value, $is_required, $data_type) {
+  public function testGetContextValue($expected, $context_value, $is_required, $data_type): void {
     // Mock a Context object.
     $mock_context = $this->getMockBuilder('Drupal\Component\Plugin\Context\Context')
       ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ class ContextTest extends TestCase {
   /**
    * Data provider for testHasContextValue.
    */
-  public function providerHasContextValue() {
+  public static function providerHasContextValue() {
     return [
       [TRUE, FALSE],
       [TRUE, 0],
@@ -116,7 +116,7 @@ class ContextTest extends TestCase {
   /**
    * @covers ::getContextValue
    */
-  public function testDefaultValue() {
+  public function testDefaultValue(): void {
     $mock_definition = $this->createMock('Drupal\Component\Plugin\Context\ContextDefinitionInterface');
 
     $mock_definition->expects($this->once())

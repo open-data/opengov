@@ -277,7 +277,7 @@ class BasicTrackerTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api\Kernel\BasicTrackerTest::testTracking()
    */
-  public function trackingDataProvider() {
+  public static function trackingDataProvider() {
     return [
       'FIFO' => ['fifo'],
       'LIFO' => ['lifo'],
@@ -303,7 +303,7 @@ class BasicTrackerTest extends KernelTestBase {
       $connection->method($method)->willThrowException(new \Exception());
     }
     $transaction = $this->getMockBuilder(Transaction::class)
-      ->disableOriginalConstructor()
+      ->setConstructorArgs([$connection, '', ''])
       ->getMock();
     $rolled_back = FALSE;
     $rollback = function () use (&$rolled_back) {
@@ -337,7 +337,7 @@ class BasicTrackerTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api\Kernel\BasicTrackerTest::testExceptionHandling()
    */
-  public function exceptionHandlingDataProvider() {
+  public static function exceptionHandlingDataProvider() {
     return [
       'trackItemsInserted()' => ['trackItemsInserted', [['']]],
       'trackItemsUpdated()' => ['trackItemsUpdated', [['']]],

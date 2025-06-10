@@ -60,7 +60,7 @@ interface TrackerInterface extends IndexPluginInterface {
    *   (optional) The item IDs of the deleted items; or NULL to remove all
    *   items.
    */
-  public function trackItemsDeleted(array $ids = NULL);
+  public function trackItemsDeleted(?array $ids = NULL);
 
   /**
    * Removes all items from the tracker, or only those of a specific datasource.

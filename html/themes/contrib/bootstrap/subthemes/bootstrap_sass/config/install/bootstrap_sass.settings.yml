@@ -1,0 +1,52 @@
+# Library.
+# ----------------------------
+bootstrap_library: 'production'
+# Layout.
+# ----------------------------
+bootstrap_sidebar_position: 'both'
+bootstrap_content_offset: 0
+bootstrap_sidebar_first_width: 4
+bootstrap_sidebar_first_offset: 0
+bootstrap_sidebar_second_width: 3
+bootstrap_sidebar_second_offset: 0
+
+# Container.
+# ----------------------------
+bootstrap_fluid_container: 0
+
+# Buttons.
+# ----------------------------
+bootstrap_button: 1
+bootstrap_button_size: ''
+bootstrap_button_outline: 0
+
+# Navbar.
+# ----------------------------
+bootstrap_navbar_toggle: 'navbar-toggleable-lg'
+bootstrap_navbar_container: 'navbar-toggleable-md'
+bootstrap_navbar_top_position: ''
+bootstrap_navbar_top_color: 'navbar-dark'
+bootstrap_navbar_top_background: ''
+bootstrap_navbar_position: ''
+bootstrap_navbar_color: 'navbar-dark'
+bootstrap_navbar_background: 'bg-primary'
+
+# Messages.
+# ----------------------------
+bootstrap_messages_widget: 'toasts'
+
+# Form.
+# ----------------------------
+bootstrap_radio: 'custom'
+bootstrap_checkbox: 'switch'
+bootstrap_select: 'custom'
+bootstrap_file: 'custom'
+
+# Colors.
+# ----------------------------
+bootstrap_system_messages: 'messages_light'
+
+# Tables.
+# ----------------------------
+bootstrap_table_hover: 1
+bootstrap_table_style: 'table-striped'

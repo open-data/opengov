@@ -1,0 +1,20 @@
+{% set image_classes = [
+  'figure-img',
+  'img-fluid',
+  rounded ? 'rounded',
+] %}
+
+{% set caption_classes = [
+  'figure-caption',
+  caption_alignment == 'end' ? 'text-end'
+] %}
+
+<figure class="figure">
+  {% block image %}
+    <img{{ attributes.addClass(image_classes) }} src="{{ image_url }}" >
+  {% endblock %}
+
+  {% if caption %}
+    <figcaption{{create_attribute({class:caption_classes})}}>{{ caption }}</figcaption>
+  {% endif %}
+</figure>

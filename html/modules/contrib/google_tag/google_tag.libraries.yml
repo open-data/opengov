@@ -1,9 +1,11 @@
 gtag:
+  header: true
   js:
     js/gtag.js: { preprocess: false }
   drupalSettings:
     gtag:
       tagId: null
+      consentMode: true
       otherIds: []
       events: []
   dependencies:
@@ -15,6 +17,7 @@ gtag.ajax:
     - core/drupal.ajax
 
 gtm:
+  header: true
   js:
     js/gtm.js: { preprocess: false }
   drupalSettings:

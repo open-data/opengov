@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Theme template for Bootstrap accordion
+ *
+ * Available variables:
+ *  - id: A unique identifier.
+ *  - items: An array containing the elements of the accordion.
+ *  - style: flush | default
+ *  - classes: An array of utility classes.
+ */
+#}
+{%
+  set classes = [
+    'accordion',
+    style == 'flush' ? 'accordion-flush',
+  ]
+%}
+<div id="{{ id }}" {{ attributes.addClass(classes) }}>
+  {% for key, item in items %}
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{key}}" aria-expanded="true" aria-controls="#collapse-{{key}}">
+        {{ item.header }}
+      </button>
+    </h2>
+    {%
+      set item_classes = [
+        'accordion-collapse',
+        'collapse',
+        item.show ? 'show',
+      ]
+    %}
+    <div id="collapse-{{key}}" class="{{ item_classes | join(' ') }}" data-bs-parent="#{{ id }}">
+      <div class="accordion-body">
+        {{ item.body | raw }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>

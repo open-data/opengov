@@ -169,7 +169,7 @@ class CommandHelper implements LoggerAwareInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if one of the affected indexes had an invalid tracker set.
    */
-  public function indexStatusCommand(array $indexId = NULL) {
+  public function indexStatusCommand(?array $indexId = NULL) {
     $indexes = $this->loadIndexes($indexId);
     if (!$indexes) {
       return [];
@@ -207,9 +207,9 @@ class CommandHelper implements LoggerAwareInterface {
    * @throws \Drupal\search_api\ConsoleException
    *   Thrown if no indexes could be loaded.
    */
-  public function enableIndexCommand(array $index_ids = NULL) {
+  public function enableIndexCommand(?array $index_ids = NULL) {
     if (!$this->getIndexCount()) {
-      throw new ConsoleException($this->t('There are no indexes defined. Please create an index before trying to enable it.'));
+      throw new ConsoleException($this->t('There are no indexes defined. Create an index before trying to enable it.'));
     }
 
     $indexes = $this->loadIndexes($index_ids);
@@ -235,9 +235,9 @@ class CommandHelper implements LoggerAwareInterface {
    * @throws \Drupal\search_api\ConsoleException
    *   Thrown if no indexes could be loaded.
    */
-  public function disableIndexCommand(array $index_ids = NULL) {
+  public function disableIndexCommand(?array $index_ids = NULL) {
     if (!$this->getIndexCount()) {
-      throw new ConsoleException($this->t('There are no indexes defined. Please create an index before trying to disable it.'));
+      throw new ConsoleException($this->t('There are no indexes defined. Create an index before trying to disable it.'));
     }
 
     $indexes = $this->loadIndexes($index_ids);
@@ -275,7 +275,7 @@ class CommandHelper implements LoggerAwareInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if one of the affected indexes had an invalid tracker set.
    */
-  public function indexItemsToIndexCommand(array $indexIds = NULL, $limit = NULL, $batchSize = NULL) {
+  public function indexItemsToIndexCommand(?array $indexIds = NULL, $limit = NULL, $batchSize = NULL) {
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return FALSE;
@@ -283,7 +283,12 @@ class CommandHelper implements LoggerAwareInterface {
 
     $batchSet = FALSE;
     foreach ($indexes as $index) {
-      if (!$index->status() || $index->isReadOnly()) {
+      if (!$index->status()) {
+        $this->logger->warning($this->t("The index @index is disabled.", ['@index' => $index->label()]));
+        continue;
+      }
+      if ($index->isReadOnly()) {
+        $this->logger->warning($this->t("The index @index is read-only.", ['@index' => $index->label()]));
         continue;
       }
       $tracker = $index->getTrackerInstance();
@@ -335,7 +340,7 @@ class CommandHelper implements LoggerAwareInterface {
         $batchSet = TRUE;
       }
       catch (SearchApiException) {
-        throw new ConsoleException($this->t("Couldn't create a batch, please check the batch size and limit parameters."));
+        throw new ConsoleException($this->t("Couldn't create a batch, check the batch size and limit parameters."));
       }
     }
 
@@ -358,7 +363,7 @@ class CommandHelper implements LoggerAwareInterface {
    *   Thrown if one of the affected indexes had an invalid tracker set, or some
    *   other internal error occurred.
    */
-  public function resetTrackerCommand(array $indexIds = NULL, array $entityTypes = []) {
+  public function resetTrackerCommand(?array $indexIds = NULL, array $entityTypes = []) {
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return FALSE;
@@ -377,7 +382,7 @@ class CommandHelper implements LoggerAwareInterface {
             $reindexed_datasources[] = $datasource->label();
           }
         }
-        $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
+        $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
         $this->moduleHandler->invokeAllDeprecated($description, 'search_api_index_reindex', [$index, FALSE]);
         $event_name = SearchApiEvents::REINDEX_SCHEDULED;
         $event = new ReindexScheduledEvent($index, FALSE);
@@ -407,7 +412,7 @@ class CommandHelper implements LoggerAwareInterface {
    * @return bool
    *   TRUE if any index was affected, FALSE otherwise.
    */
-  public function rebuildTrackerCommand(array $indexIds = NULL) {
+  public function rebuildTrackerCommand(?array $indexIds = NULL) {
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return FALSE;
@@ -436,7 +441,7 @@ class CommandHelper implements LoggerAwareInterface {
    *   Thrown if one of the affected indexes had an invalid tracker set, or some
    *   other internal error occurred.
    */
-  public function clearIndexCommand(array $indexIds = NULL) {
+  public function clearIndexCommand(?array $indexIds = NULL) {
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return FALSE;
@@ -657,7 +662,7 @@ class CommandHelper implements LoggerAwareInterface {
    * @return \Drupal\search_api\IndexInterface[]
    *   An array of search indexes.
    */
-  public function loadIndexes(array $indexIds = NULL) {
+  public function loadIndexes(?array $indexIds = NULL) {
     if ($indexIds === [NULL]) {
       $indexIds = NULL;
     }
@@ -674,7 +679,7 @@ class CommandHelper implements LoggerAwareInterface {
    * @return \Drupal\search_api\ServerInterface[]
    *   An array of search servers.
    */
-  public function loadServers(array $serverIds = NULL) {
+  public function loadServers(?array $serverIds = NULL) {
     return $this->serverStorage->loadMultiple($serverIds);
   }
 

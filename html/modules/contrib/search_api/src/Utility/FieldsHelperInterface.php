@@ -173,7 +173,7 @@ interface FieldsHelperInterface {
    * @return \Drupal\search_api\Item\ItemInterface
    *   A search item with the given values.
    */
-  public function createItem(IndexInterface $index, $id, DatasourceInterface $datasource = NULL);
+  public function createItem(IndexInterface $index, $id, ?DatasourceInterface $datasource = NULL);
 
   /**
    * Creates a search item object by wrapping an existing complex data object.
@@ -196,7 +196,7 @@ interface FieldsHelperInterface {
    * @throws \InvalidArgumentException
    *   Thrown if both $datasource and $id are NULL.
    */
-  public function createItemFromObject(IndexInterface $index, ComplexDataInterface $originalObject, $id = NULL, DatasourceInterface $datasource = NULL);
+  public function createItemFromObject(IndexInterface $index, ComplexDataInterface $originalObject, $id = NULL, ?DatasourceInterface $datasource = NULL);
 
   /**
    * Creates a new field object wrapping a field of the given index.

@@ -5,6 +5,7 @@ namespace Drupal\facets\Plugin\facets\widget;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Result\Result;
+use Drupal\facets\Result\ResultInterface;
 use Drupal\facets\Widget\WidgetPluginBase;
 
 /**
@@ -66,7 +67,6 @@ class LinksWidget extends WidgetPluginBase {
 
       unset($active_filters[$facet->id()]);
 
-      /** @var \Drupal\facets\Utility\FacetsUrlGenerator $urlGenerator */
       $urlGenerator = \Drupal::service('facets.utility.url_generator');
       if ($active_filters) {
         $url = $urlGenerator->getUrl($active_filters, FALSE);
@@ -74,7 +74,7 @@ class LinksWidget extends WidgetPluginBase {
       else {
         $request = \Drupal::request();
         $facet_source = $facet->getFacetSource();
-        $url = clone $urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
+        $url = $urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
         $params = $request->query->all();
         unset($params[$url_processor->getFilterKey()]);
         if (\array_key_exists('page', $params)) {
@@ -117,13 +117,24 @@ class LinksWidget extends WidgetPluginBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  protected function buildListItems(FacetInterface $facet, ResultInterface $result) {
+    $items = parent::buildListItems($facet, $result);
+
+    $items['#attributes']['data-drupal-facet-widget-element-class'] = 'facets-link';
+
+    return $items;
+  }
+
+  /**
    * Appends widget library and relevant information for it to build array.
    *
    * @param array $build
    *   Reference to build array.
    */
   protected function appendWidgetLibrary(array &$build) {
-    $build['#attached']['library'][] = 'facets/drupal.facets.link-widget';
+    $build['#attached']['library'][] = 'facets/drupal.facets.checkbox-widget';
     $build['#attributes']['class'][] = 'js-facets-links';
   }
 

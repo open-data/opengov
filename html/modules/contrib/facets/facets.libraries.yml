@@ -30,15 +30,11 @@ widget:
     - core/drupal
     - core/once
 
-drupal.facets.link-widget:
-  version: VERSION
-  js:
-    js/link-widget.js: {}
-  dependencies:
-    - facets/widget
-
 drupal.facets.checkbox-widget:
   version: VERSION
+  css:
+    theme:
+      css/checkbox-widget.css: { }
   js:
     js/checkbox-widget.js: {}
   dependencies:
@@ -72,11 +68,3 @@ soft-limit:
     - core/once
     - core/drupal
     - core/drupalSettings
-
-drupal.facets.views-ajax:
-  js:
-    js/facets-views-ajax.js: {}
-  dependencies:
-    - facets/widget
-    - core/drupalSettings
-    - core/drupal.ajax

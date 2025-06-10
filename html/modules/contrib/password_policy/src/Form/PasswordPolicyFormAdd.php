@@ -12,8 +12,8 @@ class PasswordPolicyFormAdd extends PasswordPolicyForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $formState) {
-    $status = parent::save($form, $formState);
+  public function save(array $form, FormStateInterface $form_state) {
+    $status = parent::save($form, $form_state);
 
     if ($status) {
       $this->messenger()->addMessage($this->t('The password policy %label has been added.', [
@@ -24,9 +24,10 @@ class PasswordPolicyFormAdd extends PasswordPolicyForm {
       $this->messenger()->addMessage($this->t('The password policy was not saved.'));
     }
 
-    $formState->setRedirect('entity.password_policy.edit_form', [
+    $form_state->setRedirect('entity.password_policy.edit_form', [
       'password_policy' => $this->entity->id(),
     ]);
+    return $status;
   }
 
 }

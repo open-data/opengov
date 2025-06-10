@@ -35,7 +35,7 @@ class PasswordBlacklistTest extends UnitTestCase {
   /**
    * Provides data for the testPasswordBlacklist method.
    */
-  public function passwordBlacklistDataProvider() {
+  public static function passwordBlacklistDataProvider(): array {
     return [
       // Passing conditions.
       [

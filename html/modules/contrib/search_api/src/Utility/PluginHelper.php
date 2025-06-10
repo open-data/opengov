@@ -77,8 +77,8 @@ class PluginHelper implements PluginHelperInterface {
       $configuration['#index'] = $index;
       return $this->{$type . "PluginManager"}->createInstance($plugin_id, $configuration);
     }
-    catch (PluginException) {
-      throw new SearchApiException("Unknown $type plugin with ID '$plugin_id'");
+    catch (PluginException $e) {
+      throw new SearchApiException($e->getMessage(), 0, $e);
     }
   }
 
@@ -103,7 +103,7 @@ class PluginHelper implements PluginHelperInterface {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if an unknown $type or plugin ID is given.
    */
-  protected function createIndexPlugins(IndexInterface $index, $type, array $plugin_ids = NULL, array $configurations = []) {
+  protected function createIndexPlugins(IndexInterface $index, $type, ?array $plugin_ids = NULL, array $configurations = []) {
     if (!isset($this->{$type . "PluginManager"})) {
       throw new SearchApiException("Unknown plugin type '$type'");
     }
@@ -147,21 +147,21 @@ class PluginHelper implements PluginHelperInterface {
   /**
    * {@inheritdoc}
    */
-  public function createDatasourcePlugins(IndexInterface $index, array $plugin_ids = NULL, array $configuration = []) {
+  public function createDatasourcePlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configuration = []) {
     return $this->createIndexPlugins($index, 'datasource', $plugin_ids, $configuration);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function createProcessorPlugins(IndexInterface $index, array $plugin_ids = NULL, array $configuration = []) {
+  public function createProcessorPlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configuration = []) {
     return $this->createIndexPlugins($index, 'processor', $plugin_ids, $configuration);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function createTrackerPlugins(IndexInterface $index, array $plugin_ids = NULL, array $configuration = []) {
+  public function createTrackerPlugins(IndexInterface $index, ?array $plugin_ids = NULL, array $configuration = []) {
     return $this->createIndexPlugins($index, 'tracker', $plugin_ids, $configuration);
   }
 

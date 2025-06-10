@@ -52,7 +52,7 @@ class MetatagEntityFieldItemList extends FieldItemList {
       $metatags_for_entity = $metatag_manager->tagsFromEntityWithDefaults($entity);
 
       // Trigger hook_metatags_alter().
-      // Allow modules to override tags or the entity used for token replacements.
+      // Allow modules to override tags or entity used for token replacements.
       $context = [
         'entity' => &$entity,
       ];

@@ -174,7 +174,7 @@ class SearchApiGranularTest extends Drupal10CompatibilityUnitTestCase {
    * @return array
    *   Test data.
    */
-  public static function provideDataForCalculateResultFilter(): array {
+  public static function provideDataForCalculateResultFilter() {
     return [
       'normal' => [10, ['display' => 8.0, 'raw' => 8.0]],
       'under_min' => [4, FALSE],

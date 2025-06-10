@@ -1,0 +1,7 @@
+advanced_email_validation.settings:
+  path: '/admin/config/people/advanced-email-validation'
+  defaults:
+    _title: 'Advanced email validation settings'
+    _form: 'Drupal\advanced_email_validation\Form\SettingsForm'
+  requirements:
+    _permission: 'administer advanced email validation'

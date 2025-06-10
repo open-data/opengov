@@ -1,0 +1,43 @@
+/**
+ * @file
+ * Visual styles for Bootstrap's form components.
+ */
+
+.form-required::after {
+  content: '';
+  vertical-align: super;
+  display: inline-block;
+  background-image: url(../../images/required.svg);
+  background-repeat: no-repeat;
+  background-size: 7px 7px;
+  width: 7px;
+  height: 7px;
+  margin: 0 0.3em;
+}
+
+form .form-actions {
+  align-self: flex-end;
+}
+
+form .filter-wrapper {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+form .form-type-textarea {
+  margin-bottom: 0;
+}
+
+/* link-edit-summary css */
+.link-edit-summary {
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  color: var(--bs-link-color);
+}
+
+.image-button.form-control {
+  border:none;
+}

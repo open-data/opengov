@@ -160,7 +160,6 @@ class GoogleAnalyticsCustomDimensionsAndMetricsTest extends BrowserTestBase {
       ],
     ];
     $this->config('google_analytics.settings')->set('custom.parameters', $google_analytics_custom_dimension)->save();
-    dump('<pre>' . print_r($google_analytics_custom_dimension, TRUE) . '</pre>');
 
     // Test on frontpage.
     $this->drupalGet('');

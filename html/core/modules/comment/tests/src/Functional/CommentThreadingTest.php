@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\comment\Functional;
 
 use Drupal\comment\CommentManagerInterface;
@@ -17,9 +19,34 @@ class CommentThreadingTest extends CommentTestBase {
   protected $defaultTheme = 'stark';
 
   /**
+   * Check the reply link on unpublished comments.
+   */
+  public function testCommentReplyLinkUnpublished(): void {
+    // Set comments to have a subject with preview disabled.
+    $this->setCommentPreview(DRUPAL_DISABLED);
+    $this->setCommentForm(FALSE);
+    $this->setCommentSettings('default_mode', CommentManagerInterface::         COMMENT_MODE_THREADED, 'Comment paging changed.');
+
+    // Create a node.
+    $this->drupalLogin($this->adminUser);
+    $this->node = $this->drupalCreateNode(['type' => 'article', 'promote' => 1, 'uid' => $this->webUser->id()]);
+
+    // Post comment #1.
+    $comment_text = $this->randomMachineName();
+    $comment1 = $this->postComment($this->node, $comment_text, '', TRUE);
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->pageTextContains('Reply');
+    $comment1->setUnpublished();
+    $comment1->save();
+
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->pageTextNotContains('Reply');
+  }
+
+  /**
    * Tests the comment threading.
    */
-  public function testCommentThreading() {
+  public function testCommentThreading(): void {
     // Set comments to have a subject with preview disabled.
     $this->setCommentPreview(DRUPAL_DISABLED);
     $this->setCommentForm(TRUE);
@@ -31,7 +58,6 @@ class CommentThreadingTest extends CommentTestBase {
     $this->node = $this->drupalCreateNode(['type' => 'article', 'promote' => 1, 'uid' => $this->webUser->id()]);
 
     // Post comment #1.
-    $this->drupalLogin($this->webUser);
     $subject_text = $this->randomMachineName();
     $comment_text = $this->randomMachineName();
 

@@ -7,6 +7,7 @@ use Drupal\Component\Assertion\Inspector;
 use Drupal\Component\Serialization\SerializationInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\ChainedFastBackend;
 use Drupal\Core\Site\Settings;
 use Drupal\redis\RedisPrefixTrait;
 
@@ -127,9 +128,33 @@ abstract class CacheBase implements CacheBackendInterface {
   }
 
   /**
+   * Checks whether the cache id is the last write timestamp.
+   *
+   * Cache requests for this are streamlined to bypass the full cache API as
+   * that needs two extra requests to check for delete or invalidate all flags.
+   *
+   * Most requests will only fetch this single timestamp from bins using the
+   * ChainedFast backend.
+   *
+   * @param string $cid
+   *   The requested cache id.
+   *
+   * @return bool
+   */
+  protected function isLastWriteTimestamp(string $cid): bool {
+    return $cid === ChainedFastBackend::LAST_WRITE_TIMESTAMP_PREFIX . 'cache_' . $this->bin;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function get($cid, $allow_invalid = FALSE) {
+
+    if ($this->isLastWriteTimestamp($cid)) {
+      $timestamp = $this->client->get($this->getPrefix() . ':' . $cid);
+      return $timestamp ? (object) ['data' => $timestamp] : NULL;
+    }
+
     $cids = [$cid];
     $cache = $this->getMultiple($cids, $allow_invalid);
     return reset($cache);
@@ -158,7 +183,13 @@ abstract class CacheBase implements CacheBackendInterface {
     $in_transaction = \Drupal::database()->inTransaction();
     if ($in_transaction) {
       if (empty($this->delayedDeletions)) {
-        \Drupal::database()->addRootTransactionEndCallback([$this, 'postRootTransactionCommit']);
+        if (method_exists(\Drupal::database(), 'transactionManager')) {
+          \Drupal::database()->transactionManager()->addPostTransactionCallback([$this, 'postRootTransactionCommit']);
+        }
+        else {
+          /** @phpstan-ignore-next-line */
+          \Drupal::database()->addRootTransactionEndCallback([$this, 'postRootTransactionCommit']);
+        }
       }
       $this->delayedDeletions = array_unique(array_merge($this->delayedDeletions, $cids));
     }
@@ -308,7 +339,7 @@ abstract class CacheBase implements CacheBackendInterface {
 
     $cache = (object) $values;
 
-    $cache->tags = explode(' ', $cache->tags);
+    $cache->tags = $cache->tags ? explode(' ', $cache->tags) : [];
 
     // Check expire time, allow to have a cache invalidated explicitly, don't
     // check if already invalid.
@@ -318,6 +349,12 @@ abstract class CacheBase implements CacheBackendInterface {
       // Check if invalidateTags() has been called with any of the items's tags.
       if ($cache->valid && !$this->checksumProvider->isValid($cache->checksum, $cache->tags)) {
         $cache->valid = FALSE;
+      }
+
+      if (Settings::get('redis_invalidate_all_as_delete', FALSE) === FALSE) {
+        // Remove the bin cache tag to not expose that, otherwise it is reused
+        // by the fast backend in the FastChained implementation.
+        $cache->tags = array_diff($cache->tags, [$this->getTagForBin()]);
       }
     }
 
@@ -360,7 +397,9 @@ abstract class CacheBase implements CacheBackendInterface {
   protected function createEntryHash($cid, $data, $expire, array $tags) {
     // Always add a cache tag for the current bin, so that we can use that for
     // invalidateAll().
-    $tags[] = $this->getTagForBin();
+    if (Settings::get('redis_invalidate_all_as_delete', FALSE) === FALSE) {
+      $tags[] = $this->getTagForBin();
+    }
     assert(Inspector::assertAllStrings($tags), 'Cache Tags must be strings.');
     $hash = [
       'cid' => $cid,
@@ -406,8 +445,15 @@ abstract class CacheBase implements CacheBackendInterface {
    * {@inheritdoc}
    */
   public function invalidateAll() {
-    // To invalidate the whole bin, we invalidate a special tag for this bin.
-    $this->checksumProvider->invalidateTags([$this->getTagForBin()]);
+    if (Settings::get('redis_invalidate_all_as_delete', FALSE) === FALSE) {
+      // To invalidate the whole bin, we invalidate a special tag for this bin.
+      $this->checksumProvider->invalidateTags([$this->getTagForBin()]);
+    }
+    else {
+      // If the optimization for invalidate all is enabled, treat it as a
+      // deleteAll() so we only have to check one thing.
+      $this->deleteAll();
+    }
   }
 
   /**

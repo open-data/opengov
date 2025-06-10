@@ -11,10 +11,9 @@ use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr\Utility\Utility as SolrUtility;
+use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\user\Entity\User;
 
 /**
@@ -47,15 +46,16 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * into languages that should be available in all test and those only
    * required for special tests.
    *
-   * @see checkSchemaLanguages()
-   *
    * @var array
+   *
+   * @see checkSchemaLanguages()
    */
   protected $moreLanguageIds = [
     'ar' => 'ar',
     'bg' => 'bg',
     'ca' => 'ca',
     'cs' => 'cs',
+    'cy' => 'cy',
     'da' => 'da',
     'el' => 'el',
     'es' => 'es',
@@ -148,12 +148,44 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   }
 
   /**
+   * Regression tests for facets with counts of 0.
+   *
+   * @see https://www.drupal.org/node/1658964
+   */
+  protected function regressionTest1658964() {
+    return;
+
+    // @todo activate this regression test.
+    // @codingStandardsIgnoreStart
+    $query = $this->buildSearch();
+    $facets['type'] = [
+      'field' => 'type',
+      'limit' => 0,
+      'min_count' => 0,
+      'missing' => TRUE,
+    ];
+    $query->setOption('search_api_facets', $facets);
+    $query->addCondition('type', 'article');
+    $query->range(0, 0);
+    $results = $query->execute();
+    $expected = [
+      ['count' => 2, 'filter' => '"article"'],
+      ['count' => 0, 'filter' => '!'],
+      ['count' => 0, 'filter' => '"item"'],
+    ];
+    $facets = $results->getExtraData('search_api_facets', [])['type'];
+    usort($facets, [$this, 'facetCompare']);
+    $this->assertEquals($expected, $facets, 'Correct facets were returned');
+    // @codingStandardsIgnoreEnd
+  }
+
+  /**
    * Regression tests for #2469547.
    */
   protected function regressionTest2469547() {
     return;
 
-    // @todo Fix coding standard.
+    // @todo activate this regression test.
     // @codingStandardsIgnoreStart
     $query = $this->buildSearch();
     $facets = [];
@@ -337,6 +369,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
           $language_ids['zh-hant'] = FALSE;
           if (version_compare($targeted_solr_major_version, '6', '<')) {
             $language_ids['ar'] = FALSE;
+            $language_ids['cy'] = FALSE;
             $language_ids['ja'] = FALSE;
             $language_ids['hu'] = FALSE;
             $language_ids['sk'] = FALSE;
@@ -743,6 +776,54 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
     $this->assertEquals('tm_X3b_en_body:("some" "text")', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', '2024-03-04', '=');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:"2024-03-04T00:00:00Z"', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', '*', '=');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:*', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', NULL, '=');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('(*:* -ds_changed:[* TO *])', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', ['2024-03-04', '2024-03-20'], 'BETWEEN');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', ['*', '2024-03-20'], 'BETWEEN');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:[* TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', ['2024-03-04', '*'], 'BETWEEN');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO *]', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', [NULL, '2024-03-20'], 'BETWEEN');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:[* TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->addCondition('changed', ['2024-03-04', NULL], 'BETWEEN');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO *]', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
   }
 
   /**
@@ -940,8 +1021,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $index = $this->getIndex();
     $index->set('datasource_settings', $index->get('datasource_settings') + [
-        'entity:user' => [],
-      ]);
+      'entity:user' => [],
+    ]);
     $info = [
       'label' => 'uid',
       'type' => 'integer',
@@ -1423,7 +1504,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
-    /** @var SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $backend_config = $server->getBackendConfig();
@@ -1521,7 +1602,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   /**
    * Data provider for testConfigGeneration method.
    */
-  public function configGenerationDataProvider() {
+  public static function configGenerationDataProvider() {
     // @codingStandardsIgnoreStart
     return [[[
       'schema_extra_types.xml' => [

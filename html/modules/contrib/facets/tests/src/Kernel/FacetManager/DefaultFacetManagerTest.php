@@ -171,6 +171,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
       $query->getCacheContexts(),
       $facet_mars->getFacetSource()->getCacheContexts(),
       [
+        'facets_filter:f',
         'fpc_query_type_plugin',
         'dummy_query_pre_query',
       ]
@@ -302,7 +303,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
    *
    * @see ::testBuildCacheabilityMetadata
    */
-  public static function buildCacheabilityMetadataProvider(): array {
+  public static function buildCacheabilityMetadataProvider() {
     $basic = [
       'contexts' => [
         // Facet API uses Request query params to populate active facets values.
@@ -318,6 +319,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
         // Added by views view source plugin.
         'url',
         'languages:language_interface',
+        'facets_filter:f',
       ],
       'tags' => [
         // Facet controls query and look & feel of the facet results, so it's
@@ -331,10 +333,10 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
         'fpc:build_processor',
         // Added by build fpc_sort_processor process plugin.
         'fpc:sort_processor',
-        'search_api_list:database_search_index',
         // Added by views view source plugin.
         'config:views.view.search_api_test_view',
         'config:search_api.index.database_search_index',
+        'search_api_list:database_search_index',
       ],
     ];
     return [
@@ -347,12 +349,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
       // strategy.
       [
         'search_api:views_page__search_api_test_view__page_2_sapi_tag',
-        array_merge_recursive(
-          $basic,
-          [
-            'max-age' => Cache::PERMANENT,
-          ]
-        ),
+        $basic + ['max-age' => Cache::PERMANENT],
       ],
       // Expected cacheability for the facet with a source that has TIME cache
       // strategy.

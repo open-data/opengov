@@ -27,9 +27,7 @@ final class CommerceOrderSubscriber implements EventSubscriberInterface {
    * @param \Drupal\google_tag\EventCollectorInterface $eventCollector
    *   Collector service.
    */
-  public function __construct(
-    EventCollectorInterface $eventCollector
-  ) {
+  public function __construct(EventCollectorInterface $eventCollector) {
     $this->eventCollector = $eventCollector;
   }
 

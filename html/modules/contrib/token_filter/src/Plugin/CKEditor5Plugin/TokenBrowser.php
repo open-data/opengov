@@ -16,31 +16,44 @@ use Drupal\Core\Utility\Token;
 use Drupal\editor\EditorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConfigurableInterface, ContainerFactoryPluginInterface
-{
+/**
+ * Token browser for CKEditor5.
+ */
+class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConfigurableInterface, ContainerFactoryPluginInterface {
 
   use CKEditor5PluginConfigurableTrait;
 
   use DynamicPluginConfigWithCsrfTokenUrlTrait;
 
+  /**
+   * Token service.
+   */
   protected Token $tokenService;
 
+  /**
+   * CSRF Token generator class.
+   */
   protected CsrfTokenGenerator $csrfTokenGenerator;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(
     array $configuration,
     string $plugin_id,
     CKEditor5PluginDefinition $plugin_definition,
     Token $token_service,
-    CsrfTokenGenerator $csrf_token_generator
+    CsrfTokenGenerator $csrf_token_generator,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->tokenService = $token_service;
     $this->csrfTokenGenerator = $csrf_token_generator;
   }
 
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): TokenBrowser
-  {
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): TokenBrowser {
     return new static(
       $configuration,
       $plugin_id,
@@ -50,8 +63,10 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
     );
   }
 
-  public function getDynamicPluginConfig(array $static_plugin_config, EditorInterface $editor): array
-  {
+  /**
+   * {@inheritdoc}
+   */
+  public function getDynamicPluginConfig(array $static_plugin_config, EditorInterface $editor): array {
     $config = $static_plugin_config;
     $config += [
       'drupalTokenBrowser' => [
@@ -62,16 +77,19 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
     return $config;
   }
 
-
-  public function defaultConfiguration()
-  {
+  /**
+   * {@inheritDoc}
+   */
+  public function defaultConfiguration() {
     return [
       'token_types' => [],
     ];
   }
 
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)
-  {
+  /**
+   * {@inheritDoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     // Get config.
     $config = $this->getConfiguration();
 
@@ -90,7 +108,7 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
       '#type' => 'select',
       '#title' => $this->t('Token types'),
       '#description' => $this->t('Optionally restrict the token types to show in the browser. Select none to show all.'),
-      '#multiple' => true,
+      '#multiple' => TRUE,
       '#options' => $parent_token_types,
       '#default_value' => $config['token_types'],
     ];
@@ -98,12 +116,16 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
     return $form;
   }
 
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void
-  {
+  /**
+   * {@inheritDoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
   }
 
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void
-  {
+  /**
+   * {@inheritDoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $this->configuration['token_types'] = $form_state->getValue('token_types');
   }
 
@@ -115,8 +137,7 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
    *
    * @see \Drupal\token\Controller\TokenTreeController::outputTree()
    */
-  protected function getUrl($token_types = null)
-  {
+  protected function getUrl($token_types = NULL) {
     $url = Url::fromRoute('token.tree');
     $options['query'] = [
       'options' => Json::encode($this->getQueryOptions($token_types)),
@@ -134,15 +155,15 @@ class TokenBrowser extends CKEditor5PluginDefault implements CKEditor5PluginConf
    *
    * @see \Drupal\token\TreeBuilderInterface::buildRenderable()
    */
-  protected function getQueryOptions($token_types = null)
-  {
+  protected function getQueryOptions($token_types = NULL) {
     return [
       'token_types' => $token_types ?: 'all',
-      'global_types' => false,
-      'click_insert' => true,
-      'show_restricted' => false,
-      'show_nested' => false,
+      'global_types' => FALSE,
+      'click_insert' => TRUE,
+      'show_restricted' => FALSE,
+      'show_nested' => FALSE,
       'recursion_limit' => 3,
     ];
   }
+
 }

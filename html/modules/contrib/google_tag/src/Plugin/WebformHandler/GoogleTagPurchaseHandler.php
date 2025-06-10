@@ -33,12 +33,7 @@ final class GoogleTagPurchaseHandler extends WebformHandlerBase {
   /**
    * {@inheritDoc}
    */
-  public static function create(
-    ContainerInterface $container,
-    array $configuration,
-    $plugin_id,
-    $plugin_definition
-  ) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->eventCollector = $container->get('google_tag.event_collector');
     return $instance;

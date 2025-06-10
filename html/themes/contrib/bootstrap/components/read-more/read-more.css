@@ -1,0 +1,23 @@
+/**
+ * @file
+ * This file is used to style the more link.
+ */
+
+.read-more {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  padding-right: 20px; /* LTR */
+}
+[dir="rtl"] .read-more {
+  padding-right: unset;
+  padding-left: 20px;
+}
+.read-more__icon {
+  position: absolute;
+  top: 50%;
+  right: 0; /* LTR */
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+}

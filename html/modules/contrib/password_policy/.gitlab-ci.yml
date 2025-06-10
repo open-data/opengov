@@ -10,3 +10,12 @@ include:
       - '/includes/include.drupalci.main.yml'
       - '/includes/include.drupalci.variables.yml'
       - '/includes/include.drupalci.workflows.yml'
+variables:
+  # Broaden test coverage.
+  OPT_IN_TEST_PREVIOUS_MINOR: 1
+  OPT_IN_TEST_NEXT_MINOR: 1
+  OPT_IN_TEST_NEXT_MAJOR: 1
+
+  # Use PHP 8.1 instead of 7.4 for Previous Major Drupal Core.
+  CORE_PREVIOUS_PHP_MIN: 8.1
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
