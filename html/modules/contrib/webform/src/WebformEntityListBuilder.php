@@ -575,7 +575,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
         $access_type = 'users';
         $access_value = $account->id();
       }
-      elseif ($role = $this->getEntityStorage('user_role')->load($keys)) {
+      elseif ($role = $this->getEntityStorage('user_role')->load(mb_convert_encoding($keys, 'ASCII', 'UTF-8'))) {
         $access_type = 'roles';
         $access_value = $role->id();
       }
@@ -620,9 +620,9 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
 
     // Filter by (form) state.
     switch ($state) {
-      case WebformInterface::STATUS_OPEN;
-      case WebformInterface::STATUS_CLOSED;
-      case WebformInterface::STATUS_SCHEDULED;
+      case WebformInterface::STATUS_OPEN:
+      case WebformInterface::STATUS_CLOSED:
+      case WebformInterface::STATUS_SCHEDULED:
         $query->condition('status', $state);
         break;
     }

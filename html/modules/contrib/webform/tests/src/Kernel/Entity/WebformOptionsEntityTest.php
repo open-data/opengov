@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\webform\Kernel\Entity;
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\webform\Entity\WebformOptions;
 

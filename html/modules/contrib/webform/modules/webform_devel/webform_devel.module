@@ -5,8 +5,8 @@
  * Provides development tools Webform module.
  */
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Utility\WebformYaml;
 
 /**

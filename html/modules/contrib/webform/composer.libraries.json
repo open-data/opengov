@@ -71,13 +71,13 @@
             "type": "package",
             "package": {
                 "name": "choices/choices",
-                "version": "9.0.1",
+                "version": "11.0.2",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "choices"
                 },
                 "dist": {
-                    "url": "https://github.com/Choices-js/Choices/archive/refs/tags/v9.0.1.zip",
+                    "url": "https://github.com/Choices-js/Choices/archive/refs/tags/v11.0.2.zip",
                     "type": "zip"
                 },
                 "license": "MIT"
@@ -183,13 +183,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/inputmask",
-                "version": "5.0.8",
+                "version": "5.0.9",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.inputmask"
                 },
                 "dist": {
-                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/refs/tags/5.0.8.zip",
+                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/refs/tags/5.0.9.zip",
                     "type": "zip"
                 },
                 "license": "MIT"

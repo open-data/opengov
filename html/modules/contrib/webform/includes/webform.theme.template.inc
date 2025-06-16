@@ -9,7 +9,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\RenderElement;
+use Drupal\Core\Render\Element\RenderElementBase;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
@@ -278,15 +278,19 @@ function template_preprocess_webform_submission(array &$variables) {
  *
  * @param array $variables
  *   An associative array containing:
- *   - data: An array of elements to display in view mode.
- *   - webform_submission: The webform submissions object.
- *   - view_mode: View mode; e.g., 'html', 'text', 'table', 'yaml', etc.
+ *   - elements: An associative array containing the properties of the element.
+ *     Properties used: #view_mode, #webform_submission.
  */
 function template_preprocess_webform_submission_data(array &$variables) {
   $variables['view_mode'] = $variables['elements']['#view_mode'];
   $variables['webform_submission'] = $variables['elements']['#webform_submission'];
   if ($variables['webform_submission'] instanceof WebformSubmissionInterface) {
     $variables['webform'] = $variables['webform_submission']->getWebform();
+  }
+
+  $variables['content'] = [];
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
   }
 }
 
@@ -715,7 +719,7 @@ function template_preprocess_webform_horizontal_rule(array &$variables) {
 function template_preprocess_webform_section(array &$variables) {
   $element = $variables['element'];
   Element::setAttributes($element, ['id']);
-  RenderElement::setAttributes($element);
+  RenderElementBase::setAttributes($element);
   $variables['attributes'] = $element['#attributes'] ?? [];
   $variables['prefix'] = $element['#field_prefix'] ?? NULL;
   $variables['suffix'] = $element['#field_suffix'] ?? NULL;

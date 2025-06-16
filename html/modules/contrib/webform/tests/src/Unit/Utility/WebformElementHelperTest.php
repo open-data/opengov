@@ -37,7 +37,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @see testIsTitleDisplayed()
    */
-  public function providerIsTitleDisplayed() {
+  public static function providerIsTitleDisplayed() {
     $tests[] = [['#title' => 'Test'], TRUE];
     $tests[] = [['#title' => 'Test', '#title_display' => 'above'], TRUE];
     $tests[] = [[], FALSE];
@@ -69,7 +69,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @see testGetIgnoredProperties()
    */
-  public function providerGetIgnoredProperties() {
+  public static function providerGetIgnoredProperties() {
     // Nothing ignored.
     $tests[] = [
       ['#value' => 'text'],
@@ -116,7 +116,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @see testRemoveIgnoredProperties()
    */
-  public function providerRemoveIgnoredProperties() {
+  public static function providerRemoveIgnoredProperties() {
     // Nothing removed.
     $tests[] = [
       ['#value' => 'text'],
@@ -196,7 +196,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @see testConvertRenderMarkupToStrings()
    */
-  public function providerConvertRenderMarkupToStrings() {
+  public static function providerConvertRenderMarkupToStrings() {
     return [
       [
         ['test' => Markup::create('markup')],
@@ -231,7 +231,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @see testHasProperty()
    */
-  public function providerHasProperty() {
+  public static function providerHasProperty() {
     return [
       [
         [[], '#required', NULL],

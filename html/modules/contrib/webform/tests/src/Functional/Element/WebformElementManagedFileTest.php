@@ -78,7 +78,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $assert_session->responseContains('<label style="color: red" for="edit-managed-file-single-button-custom-upload-button--2" class="button button-action webform-file-button">{Custom label}</label>');
 
     // Check comma delimited file extensions.
-    $assert_session->responseContains('Allowed types: txt, text.');
+    $assert_session->responseContains('Allowed types: txt text.');
 
     /* Element processing */
 

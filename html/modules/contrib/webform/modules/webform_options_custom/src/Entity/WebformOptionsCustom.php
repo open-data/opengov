@@ -2,12 +2,12 @@
 
 namespace Drupal\webform_options_custom\Entity;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform_options_custom\Element\WebformOptionsCustom as WebformOptionsCustomElement;
 use Drupal\webform_options_custom\WebformOptionsCustomInterface;

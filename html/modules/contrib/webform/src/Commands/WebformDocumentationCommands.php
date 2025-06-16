@@ -115,7 +115,7 @@ class WebformDocumentationCommands extends WebformCommandsBase {
 
     $index_html = '<h1>Webform Help</h1><ul>';
     foreach ($help as $help_name => $help_section) {
-      $help_html = $this->renderer->renderPlain($help_section);
+      $help_html = $this->renderer->renderInIsolation($help_section);
       $help_html = $this->tidyDocs($help_html);
 
       if ($help_name === 'videos') {

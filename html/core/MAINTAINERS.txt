@@ -7,11 +7,11 @@ This file lists the active maintainers. For a list of past maintainers, see:
 https://www.drupal.org/core/maintainers/past
 
 
-Core committers
----------------
+Drupal Core Leadership team
+---------------------------
 
-The Drupal core committers oversee the development of Drupal as a whole. The
-core committers for Drupal are (in alphabetical order):
+Consists of people with varied skills who make decisions about the general
+direction of the project. Members by role (in alphabetical order):
 
 Project Lead
 - Dries Buytaert 'dries' https://www.drupal.org/u/dries
@@ -46,10 +46,11 @@ Core JavaScript packages
 - Théodore Biadala 'nod_' https://www.drupal.org/u/nod_
 - Sally Young 'justafish' https://www.drupal.org/u/justafish
 
-Committer team facilitators
+Team facilitators
 - Pamela Barone 'pameeela' https://www.drupal.org/u/pameeela
+- Griffyn Heels 'griffynh' https://www.drupal.org/u/griffynh (provisional)
 
-Core initiative facilitators
+Initiative facilitators
 - Gábor Hojtsy 'Gábor Hojtsy' https://www.drupal.org/u/gábor-hojtsy
 
 Subsystem maintainers
@@ -240,7 +241,7 @@ Help
 - Andrey Postnikov 'andypost' https://www.drupal.org/u/andypost
 
 Image
-- Claudiu Cristea 'claudiu.cristea' https://www.drupal.org/u/claudiu.cristea
+- ?
 
 Inline Form Errors
 - Daniël Smidt 'dmsmidt' https://www.drupal.org/u/dmsmidt
@@ -285,7 +286,6 @@ Markup
 Media
 - Sean Blommaert 'seanB' https://www.drupal.org/u/seanb
 - Marcos Cano 'marcoscano' https://www.drupal.org/u/marcoscano
-- Christian Fritsch 'chr.fritsch' https://www.drupal.org/u/chr.fritsch
 - Adam Globus-Hoenich 'phenaproxima' https://www.drupal.org/u/phenaproxima
 
   Media Library
@@ -293,11 +293,9 @@ Media
   - Adam Globus-Hoenich 'phenaproxima' https://www.drupal.org/u/phenaproxima
 
 Menu
-- Daniel Wehner 'dawehner' https://www.drupal.org/u/dawehner
 - Peter Wolanin 'pwolanin' https://www.drupal.org/u/pwolanin
 
 Menu Link Content
-- Daniel Wehner 'dawehner' https://www.drupal.org/u/dawehner
 - Peter Wolanin 'pwolanin' https://www.drupal.org/u/pwolanin
 
 Menu UI
@@ -317,7 +315,7 @@ Navigation
 - Pablo López 'plopesc' https://www.drupal.org/u/plopesc
 
 Node
-- ?
+- Adam Bramley 'acbramley' https://www.drupal.org/u/acbramley
 
 Node Access
 - Ken Rickard 'agentrickard' https://www.drupal.org/u/agentrickard
@@ -379,6 +377,7 @@ Search
 - Peter Wolanin 'pwolanin' https://www.drupal.org/u/pwolanin
 
 Serialization
+- Brad Jones 'bradjones1' https://www.drupal.org/u/bradjones1
 - Damian Lee 'damiankloip' https://www.drupal.org/u/damiankloip
 
 Settings Tray
@@ -418,6 +417,7 @@ Theme API
   Single-Directory Components
   - Mateu Aguiló Bosch 'e0ipso' https://www.drupal.org/u/e0ipso
   - Pierre Dureau 'pdureau' https://www.drupal.org/u/pdureau
+  - Jean Valverde 'mogtofu33' https://www.drupal.org/u/mogtofu33
 
 Token
 - ?
@@ -453,7 +453,6 @@ User
 - Kristiaan Van den Eynde 'kristiaanvandeneynde' https://www.drupal.org/u/kristiaanvandeneynde
 
 Views
-- Daniel Wehner 'dawehner' https://www.drupal.org/u/dawehner
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
 - Damian Lee 'damiankloip' https://www.drupal.org/u/damiankloip
 - Jess Myrbo 'xjm' https://www.drupal.org/u/xjm
@@ -488,7 +487,6 @@ Performance
 Testing
 - Alex Pott 'alexpott' https://www.drupal.org/u/alexpott
 - Sascha Grossenbacher 'Berdir' https://www.drupal.org/u/berdir
-- Daniel Wehner 'dawehner' https://www.drupal.org/u/dawehner
 - Alberto M. 'mondrake' https://www.drupal.org/u/mondrake
 
 Usability
@@ -536,12 +534,10 @@ get involved. They organize communications and logistics, and actively
 participate in mentoring.
 
 - Chris Darke 'chrisdarke' https://www.drupal.org/u/chrisdarke
-- Mauricio Dinarte 'dinarcon' https://www.drupal.org/u/dinarcon
 - Brian Gilbert 'realityloop' https://www.drupal.org/u/realityloop
 - Lucas Hedding 'heddn' https://www.drupal.org/u/heddn
-- AmyJune Hineline 'volkswagenchick' https://www.drupal.org/u/volkswagenchick
-- Tara King 'sparklingrobots' https://www.drupal.org/u/sparklingrobots
 - Rachel Lawson 'rachel_norfolk' https://www.drupal.org/u/rachel_norfolk
 - Elli Ludwigson 'ekl1773' https://www.drupal.org/u/ekl1773
 - Jess Myrbo 'xjm' https://www.drupal.org/u/xjm
 - Matthew Radcliffe 'mradcliffe' https://www.drupal.org/u/mradcliffe
+- James Shields 'lostcarpark' https://www.drupal.org/u/lostcarpark

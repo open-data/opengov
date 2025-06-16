@@ -135,7 +135,7 @@ class QueryStringWebformSourceEntity extends WebformSourceEntityBase {
    *   An associative array contains a source entity's route options
    *   query string parameters.
    */
-  public static function getRouteOptionsQuery(EntityInterface $entity = NULL) {
+  public static function getRouteOptionsQuery(?EntityInterface $entity = NULL) {
     if (!$entity) {
       return [];
     }

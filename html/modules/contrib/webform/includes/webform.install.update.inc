@@ -3731,7 +3731,7 @@ function webform_update_8192() {
         '#items' => $links,
       ],
     ];
-    return \Drupal::service('renderer')->renderPlain($build);
+    return \Drupal::service('renderer')->renderInIsolation($build);
   }
 }
 
@@ -4309,4 +4309,34 @@ function webform_update_8636() {
  */
 function webform_update_8637() {
   _webform_update_admin_settings();
+}
+
+/**
+ * Issue #3485556: Webform text format appears in the formats list.
+ */
+function webform_update_8638() {
+  // Ensure that authenticated role has access to the webform_default format.
+  // In Drupal 11.1, this permission became visible and needs to suppressed.
+  /** @var \Drupal\filter\FilterFormatInterface $filter_format */
+  $filter_format = \Drupal::entityTypeManager()
+    ->getStorage('filter_format')
+    ->load('webform_default');
+  /** @var \Drupal\user\RoleInterface $role */
+  $role = \Drupal::entityTypeManager()
+    ->getStorage('user_role')
+    ->load('authenticated');
+  if ($filter_format && !$role->hasPermission('use text format webform_default')) {
+    $role->grantPermission('use text format webform_default');
+    var_export($role->toArray());
+    $role->save();
+  }
+}
+
+/**
+ * Deprecate Webform Bootstrap 3.x support.
+ */
+function webform_update_8639() {
+  \Drupal::configFactory()->getEditable('webform.settings')
+    ->clear('requirements.bootstrap')
+    ->save();
 }

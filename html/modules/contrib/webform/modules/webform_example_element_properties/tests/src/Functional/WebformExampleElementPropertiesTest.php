@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\webform_example_element_properties\Functiona;
+namespace Drupal\Tests\webform_example_element_properties\Functional;
 
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 

@@ -120,7 +120,7 @@ class InlineDocCommentDeclarationSniff implements Sniff
 
 		if ($this->allowDocCommentAboveReturn) {
 			$pointerAfterCommentClosePointer = TokenHelper::findNextEffective($phpcsFile, $commentClosePointer + 1);
-			if ($tokens[$pointerAfterCommentClosePointer]['code'] === T_RETURN) {
+			if ($pointerAfterCommentClosePointer === null || $tokens[$pointerAfterCommentClosePointer]['code'] === T_RETURN) {
 				return;
 			}
 		}
@@ -148,7 +148,11 @@ class InlineDocCommentDeclarationSniff implements Sniff
 		}
 
 		$phpcsFile->fixer->beginChangeset();
-		$phpcsFile->fixer->replaceToken($commentOpenPointer, sprintf('/**%s', substr($tokens[$commentOpenPointer]['content'], 2)));
+		FixerHelper::replace(
+			$phpcsFile,
+			$commentOpenPointer,
+			sprintf('/**%s', substr($tokens[$commentOpenPointer]['content'], 2)),
+		);
 		$phpcsFile->fixer->endChangeset();
 	}
 
@@ -210,7 +214,8 @@ class InlineDocCommentDeclarationSniff implements Sniff
 
 			$phpcsFile->fixer->beginChangeset();
 
-			$phpcsFile->fixer->addContent(
+			FixerHelper::add(
+				$phpcsFile,
 				$annotation->getStartPointer(),
 				sprintf(
 					' %s %s ',

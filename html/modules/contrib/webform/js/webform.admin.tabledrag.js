@@ -5,8 +5,6 @@
 
 (function ($, Drupal) {
 
-  'use strict';
-
   // Make sure that dropButton behavior exists.
   if (!Drupal.behaviors.tableDrag) {
     return;

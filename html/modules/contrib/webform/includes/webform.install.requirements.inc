@@ -108,40 +108,6 @@ function webform_requirements($phase) {
   $requirements += $libraries_manager->requirements();
 
   /* ************************************************************************ */
-  // Check Bootstrap theme.
-  /* ************************************************************************ */
-
-  if (\Drupal::config('webform.settings')->get('requirements.bootstrap')) {
-    $bootstrap_enabled = FALSE;
-    $themes = \Drupal::service('theme_handler')->listInfo();
-    foreach ($themes as $theme) {
-      if ((isset($theme->base_themes) && isset($theme->base_themes['bootstrap'])) || $theme === 'bootstrap') {
-        $bootstrap_enabled = TRUE;
-      }
-    }
-    if ($bootstrap_enabled) {
-      if (\Drupal::moduleHandler()->moduleExists('webform_bootstrap')) {
-        $requirements['webform_bootstrap'] = [
-          'title' => t('Webform: Bootstrap integration'),
-          'value' => t('Webform Bootstrap sub-module installed.'),
-        ];
-      }
-      else {
-        $t_args = [
-          ':install_href' => Url::fromRoute('system.modules_list')->toString(),
-          ':disable_href' => Url::fromRoute('webform.config.advanced')->toString(),
-        ];
-        $requirements['webform_bootstrap'] = [
-          'title' => t('Webform: Bootstrap integration'),
-          'value' => t('Webform Bootstrap Integration sub-module not installed.'),
-          'description' => t('The <a href=":install_href">Webform Bootstrap sub-module</a> helps support Webform to Bootstrap integration. <a href=":disable_href">Disable Webform Bootstrap Integration warning</a>', $t_args),
-          'severity' => REQUIREMENT_WARNING,
-        ];
-      }
-    }
-  }
-
-  /* ************************************************************************ */
   // Check Clientside validation module.
   /* ************************************************************************ */
 
@@ -231,14 +197,14 @@ function webform_requirements($phase) {
       $requirements['webform_spam'] = [
         'title' => t('Webform: Spam protection'),
         'value' => t('Webform Spam protection module installed.'),
-        'description' => \Drupal::service('renderer')->renderPlain($installed_projects),
+        'description' => \Drupal::service('renderer')->renderInIsolation($installed_projects),
       ];
     }
     else {
       $requirements['webform_spam'] = [
         'title' => t('Webform: Spam protection'),
         'value' => t('Webform <a href=":href">Spam protection module</a> missing. Please install one of the below modules.', [':href' => 'https://www.drupal.org/node/206787']),
-        'description' => \Drupal::service('renderer')->renderPlain($available_projects),
+        'description' => \Drupal::service('renderer')->renderInIsolation($available_projects),
         'severity' => REQUIREMENT_WARNING,
       ];
     }

@@ -4,14 +4,14 @@ namespace Drupal\webform\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 
 /**
  * Provides a webform element for entering a signature.
  *
  * @FormElement("webform_signature")
  */
-class WebformSignature extends FormElement {
+class WebformSignature extends FormElementBase {
 
   /**
    * {@inheritdoc}

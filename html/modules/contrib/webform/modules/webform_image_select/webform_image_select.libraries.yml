@@ -1,5 +1,4 @@
 webform_image_select.element:
-  version: VERSION
   css:
     component:
       css/webform_image_select.element.css: {}

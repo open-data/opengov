@@ -45,7 +45,7 @@ abstract class TextBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
     // Counter.
@@ -327,7 +327,7 @@ abstract class TextBase extends WebformElementBase {
     $properties = $this->getConfigurationFormProperties($form, $form_state);
 
     // Validate #pattern's regular expression.
-    // @see \Drupal\Core\Render\Element\FormElement::validatePattern
+    // @see \Drupal\Core\Render\Element\FormElementBase::validatePattern
     // @see http://stackoverflow.com/questions/4440626/how-can-i-validate-regex
     if (!empty($properties['#pattern'])) {
       set_error_handler('_webform_entity_element_validate_rendering_error_handler');
@@ -360,7 +360,7 @@ abstract class TextBase extends WebformElementBase {
    *
    * @return array
    *   An associative array keyed my input mask contain input mask title,
-   *   example, and patterh.
+   *   example, and pattern.
    */
   protected function getInputMasks() {
     $input_masks = [

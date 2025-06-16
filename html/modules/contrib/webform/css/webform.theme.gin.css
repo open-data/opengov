@@ -18,12 +18,12 @@ div.block-help-block {
  * @see claro/css/src/components/messages.css
  */
 .webform-message .messages.messages--webform {
+  padding-left: 0;
   color: #fff;
   border: 2px solid transparent;
   border-radius: 12px;
   background-color: #353641;
   box-shadow: none;
-  padding-left: 0;
 }
 
 .webform-message .messages.messages--webform .messages__content {

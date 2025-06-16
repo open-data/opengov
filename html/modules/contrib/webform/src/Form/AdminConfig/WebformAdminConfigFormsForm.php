@@ -281,7 +281,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       'default_form_submit_back' => [
         'group' => $this->t('Navigation'),
         'title' => $this->t('Submit previous page when browser back button is clicked for all webforms'),
-        'description' => $this->t("If checked, the browser back button will submit the previous page and navigate back emulating the behaviour of user clicking a wizard or preview page's back button."),
+        'description' => $this->t("If checked, the browser back button will submit the previous page and navigate back emulating the behavior of user clicking a wizard or preview page's back button."),
       ],
       'default_form_unsaved' => [
         'group' => $this->t('Navigation'),

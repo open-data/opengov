@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // @see https://github.com/cferdinandi/tabby
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.formTabs = Drupal.webform.formTabs || {};

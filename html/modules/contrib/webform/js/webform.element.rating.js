@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // All options can be override using custom data-* attributes.
   // @see https://github.com/gjunge/rateit.js/wiki#options.
 

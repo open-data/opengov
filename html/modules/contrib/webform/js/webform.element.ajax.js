@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   /**
    * Attach behaviors to trigger submit button from input onchange.
    *

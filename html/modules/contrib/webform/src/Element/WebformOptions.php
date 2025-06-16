@@ -2,11 +2,11 @@
 
 namespace Drupal\webform\Element;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Utility\WebformYaml;
@@ -19,7 +19,7 @@ use Drupal\webform\Utility\WebformYaml;
  *
  * @FormElement("webform_options")
  */
-class WebformOptions extends FormElement {
+class WebformOptions extends FormElementBase {
 
   /**
    * {@inheritdoc}
@@ -217,7 +217,7 @@ class WebformOptions extends FormElement {
   /**
    * Convert values from webform_multiple element to options.
    *
-   * @param array $values
+   * @param array|null $values
    *   An array of values.
    * @param bool $options_description
    *   Options has description.
@@ -225,7 +225,7 @@ class WebformOptions extends FormElement {
    * @return array
    *   An array of options.
    */
-  public static function convertValuesToOptions(array $values = NULL, $options_description = FALSE) {
+  public static function convertValuesToOptions(?array $values = NULL, $options_description = FALSE) {
     $options = [];
     if ($values && is_array($values)) {
       foreach ($values as $option_value => $option) {

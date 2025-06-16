@@ -72,7 +72,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Must define a '#default_value' for Datetime element to prevent the
     // below error.
     // Notice: Undefined index: #default_value in Drupal\Core\Datetime\Element\Datetime::valueCallback().
@@ -424,7 +424,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
    *
    * @see \Drupal\webform\Plugin\WebformElement\DateTime::prepare
    */
-  public static function dateCallback(array &$element, FormStateInterface $form_state, DrupalDateTime $date = NULL) {
+  public static function dateCallback(array &$element, FormStateInterface $form_state, ?DrupalDateTime $date = NULL) {
     // Make sure the date element is being displayed.
     if (!isset($element['date'])) {
       return;
@@ -455,7 +455,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
    *
    * @see \Drupal\webform\Plugin\WebformElement\DateTime::prepare
    */
-  public static function timeCallback(array &$element, FormStateInterface $form_state, DrupalDateTime $date = NULL) {
+  public static function timeCallback(array &$element, FormStateInterface $form_state, ?DrupalDateTime $date = NULL) {
     // Make sure the time element is being displayed.
     if (!isset($element['time'])) {
       return;

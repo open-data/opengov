@@ -57,7 +57,7 @@ class WebformSubmissionLogManager implements WebformSubmissionLogManagerInterfac
   /**
    * {@inheritdoc}
    */
-  public function getQuery(EntityInterface $webform_entity = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL, array $options = []): SelectInterface {
+  public function getQuery(?EntityInterface $webform_entity = NULL, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL, array $options = []): SelectInterface {
     // Default options.
     $options += [
       'header' => NULL,
@@ -129,7 +129,7 @@ class WebformSubmissionLogManager implements WebformSubmissionLogManagerInterfac
   /**
    * {@inheritdoc}
    */
-  public function loadByEntities(EntityInterface $webform_entity = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL, array $options = []) {
+  public function loadByEntities(?EntityInterface $webform_entity = NULL, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL, array $options = []) {
     $result = $this->getQuery($webform_entity, $source_entity, $account, $options)
       ->execute();
     $records = [];

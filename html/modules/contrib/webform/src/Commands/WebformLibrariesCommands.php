@@ -70,6 +70,7 @@ class WebformLibrariesCommands extends WebformCommandsBase {
   }
 
   /* ************************************************************************ */
+  // cSpell:disable
   // Libraries status.
   /* ************************************************************************ */
 
@@ -394,6 +395,7 @@ class WebformLibrariesCommands extends WebformCommandsBase {
    * @aliases wfcu,webform-composer-update
    */
   public function composerUpdate(array $options = ['disable-tls' => FALSE]) {
+    // cSpell:enable
     $composer_json = $this->composer_json;
     $composer_directory = $this->composer_directory;
 

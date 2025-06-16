@@ -38,7 +38,7 @@ class WebformArrayHelperTest extends UnitTestCase {
    *
    * @see testToString()
    */
-  public function providerToString() {
+  public static function providerToString() {
     $tests[] = [['Jack', 'Jill'], 'and', 'Jack and Jill'];
     $tests[] = [['Jack', 'Jill'], 'or', 'Jack or Jill'];
     $tests[] = [['Jack', 'Jill', 'Bill'], 'and', 'Jack, Jill, and Bill'];
@@ -69,7 +69,7 @@ class WebformArrayHelperTest extends UnitTestCase {
    *
    * @see testIsAssociative()
    */
-  public function providerIsAssociative() {
+  public static function providerIsAssociative() {
     $tests[] = [['Jack'], FALSE];
     $tests[] = [[0 => 'Jack', 1 => 'Jill'], FALSE];
     $tests[] = [[0 => 'Jack', 2 => 'Jill'], TRUE];
@@ -104,7 +104,7 @@ class WebformArrayHelperTest extends UnitTestCase {
    *
    * @see testInArray()
    */
-  public function providerInArray() {
+  public static function providerInArray() {
     $tests[] = [[], ['A', 'B', 'C'], FALSE];
     $tests[] = [['A'], ['A', 'B', 'C'], TRUE];
     $tests[] = [['A', 'B'], ['A', 'B', 'C'], TRUE];

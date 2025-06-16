@@ -68,7 +68,7 @@ function webform_bootstrap_webform_element_alter(array &$element, FormStateInter
   }
 
   if ($smart_description_enabled && isset($element['#description']) && is_array($element['#description']) && (empty($element['#smart_description']) || $element['#smart_description'] === TRUE)) {
-    $element['#description'] = \Drupal::service('renderer')->renderPlain($element['#description']);
+    $element['#description'] = \Drupal::service('renderer')->renderInIsolation($element['#description']);
   }
 
   // Enable Bootstrap .input-group wrapper for #field_prefix.

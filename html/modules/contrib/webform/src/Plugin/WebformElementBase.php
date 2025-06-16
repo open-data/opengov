@@ -688,7 +688,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     $attributes_property = ($this->hasWrapper($element)) ? '#wrapper_attributes' : '#attributes';
     if ($webform_submission) {
       // Add webform and webform_submission IDs to every element.
@@ -830,7 +830,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
   /**
    * {@inheritdoc}
    */
-  public function finalize(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function finalize(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Set element's #element_validate callback so that is not replaced when
     // we append additional #pre_render callbacks.
     $this->setElementDefaultCallback($element, 'pre_render');
@@ -876,7 +876,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
   /**
    * {@inheritdoc}
    */
-  public function checkAccessRules($operation, array $element, AccountInterface $account = NULL) {
+  public function checkAccessRules($operation, array $element, ?AccountInterface $account = NULL) {
     // Respect elements that already have their #access set to FALSE.
     if (isset($element['#access']) && $element['#access'] === FALSE) {
       return FALSE;
@@ -974,7 +974,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
   /**
    * {@inheritdoc}
    */
-  public function replaceTokens(array &$element, EntityInterface $entity = NULL) {
+  public function replaceTokens(array &$element, ?EntityInterface $entity = NULL) {
     $bubbleable_metadata = new WebformBubbleableMetadata();
 
     foreach ($element as $key => $value) {
@@ -1000,10 +1000,10 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    *
    * @param array $element
    *   An element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission
    *   A webform submission.
    */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementValidateCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Validation callbacks are only applicable to inputs.
     if (!$this->isInput($element)) {
       return;
@@ -1027,10 +1027,10 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    *
    * @param array $element
    *   An element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission
    *   A webform submission.
    */
-  protected function prepareElementPreRenderCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementPreRenderCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Do nothing.
   }
 

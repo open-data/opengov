@@ -92,7 +92,7 @@ states_custom_condition:
     $this->drupalGet('/webform/test_element_states');
 
     // Check 'States custom selector'.
-    $assert_session->responseContains('<option value="custom_selector" selected="selected">custom_selector</option>');
+    $this->assertEquals('custom_selector', $assert_session->optionExists('states_custom_selector[states][1][selector]', 'custom_selector')->getValue());
 
     // Check 'States unsupport operator'.
     $assert_session->responseContains('Conditional logic (Form API #states) is using the <em class="placeholder">XXX</em> operator. Form API #states must be manually entered.');

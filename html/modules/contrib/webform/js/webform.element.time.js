@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // @see https://github.com/jonthornton/jquery-timepicker#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.timePicker = Drupal.webform.timePicker || {};
@@ -28,13 +26,6 @@
 
       $(once('webformTimePicker', 'input[data-webform-time-format]', context)).each(function () {
         var $input = $(this);
-
-        // Skip if time inputs are supported by the browser and input is not a text field.
-        // @see \Drupal\webform\Element\WebformDatetime
-        if (window.Modernizr && Modernizr.inputtypes && Modernizr.inputtypes.time === true && $input.attr('type') !== 'text') {
-          return;
-        }
-
         var options = {};
         options.timeFormat = $input.data('webformTimeFormat');
         if ($input.attr('min')) {

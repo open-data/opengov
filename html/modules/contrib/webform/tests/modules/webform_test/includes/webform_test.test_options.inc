@@ -5,7 +5,7 @@
  * Generate test options example.
  */
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\webform\Entity\WebformOptions;
 
 /**

@@ -113,7 +113,7 @@ class WebformVariantApplyForm extends WebformDeleteFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL) {
     $this->webform = $webform;
 
     $variant_id = $this->getRequest()->query->get('variant_id');

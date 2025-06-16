@@ -5,8 +5,6 @@
 
 (function ($, Drupal, drupalSettings, once) {
 
-  'use strict';
-
   // @see https://github.com/jackocnr/intl-tel-input#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.intlTelInput = Drupal.webform.intlTelInput || {};
@@ -55,7 +53,7 @@
         };
 
         var validate = function () {
-          if ($.trim($telephone.val())) {
+          if ($telephone.val().trim()) {
             if (!$telephone.intlTelInput('isValidNumber')) {
               $telephone.addClass('error');
               var placeholder = $telephone.attr('placeholder');

@@ -333,7 +333,7 @@ class SettingsWebformHandler extends WebformHandlerBase {
       '#header' => $header,
       '#rows' => $rows,
     ];
-    $this->messenger()->addWarning($this->renderer->renderPlain($build));
+    $this->messenger()->addWarning($this->renderer->renderInIsolation($build));
   }
 
   /* ************************************************************************ */

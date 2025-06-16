@@ -87,8 +87,9 @@ class WebformCompositeTest extends WebformBrowserTestBase {
 
     // Check editing custom options are rendered.
     $this->drupalGet('/webform/test_composite');
-    $assert_session->responseContains('<select data-drupal-selector="edit-address-custom-options-state-province" id="edit-address-custom-options-state-province" name="address_custom_options[state_province]" class="form-select"><option value="" selected="selected">- None -</option><option value="Yes">Yes</option><option value="No">No</option></select>');
-    $assert_session->responseContains('<select data-drupal-selector="edit-address-custom-options-country" id="edit-address-custom-options-country" name="address_custom_options[country]" class="form-select"><option value="" selected="selected">- None -</option><option value="one">One</option><option value="two">Two</option><option value="three">Three</option></select>');
+    $this->assertEquals('one', $assert_session->optionExists('address_custom_options[country]', 'One')->getValue());
+    $this->assertEquals('two', $assert_session->optionExists('address_custom_options[country]', 'Two')->getValue());
+    $this->assertEquals('three', $assert_session->optionExists('address_custom_options[country]', 'Three')->getValue());
 
     // Check composite element with custom options warning message.
     $this->drupalGet('/admin/structure/webform/manage/test_composite/element/address_custom_options/edit');
@@ -100,8 +101,12 @@ class WebformCompositeTest extends WebformBrowserTestBase {
 
     // Check editing custom options are not removed.
     $this->drupalGet('/webform/test_composite');
-    $assert_session->responseContains('<select data-drupal-selector="edit-address-custom-options-state-province" id="edit-address-custom-options-state-province" name="address_custom_options[state_province]" class="form-select"><option value="" selected="selected">- None -</option><option value="Yes">Yes</option><option value="No">No</option></select>');
-    $assert_session->responseContains('<select data-drupal-selector="edit-address-custom-options-country" id="edit-address-custom-options-country" name="address_custom_options[country]" class="form-select"><option value="" selected="selected">- None -</option><option value="one">One</option><option value="two">Two</option><option value="three">Three</option></select>');
+    $this->assertEquals('Yes', $assert_session->optionExists('address_custom_options[state_province]', 'Yes')->getValue());
+    $this->assertEquals('No', $assert_session->optionExists('address_custom_options[state_province]', 'No')->getValue());
+
+    $this->assertEquals('one', $assert_session->optionExists('address_custom_options[country]', 'One')->getValue());
+    $this->assertEquals('two', $assert_session->optionExists('address_custom_options[country]', 'Two')->getValue());
+    $this->assertEquals('three', $assert_session->optionExists('address_custom_options[country]', 'Three')->getValue());
 
   }
 

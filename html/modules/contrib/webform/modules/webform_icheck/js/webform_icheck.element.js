@@ -5,8 +5,6 @@
 
 (function ($, Drupal) {
 
-  'use strict';
-
   // @see http://icheck.fronteed.com/#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.iCheck = Drupal.webform.iCheck || {};

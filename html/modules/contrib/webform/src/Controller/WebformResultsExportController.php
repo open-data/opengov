@@ -198,7 +198,7 @@ class WebformResultsExportController extends ControllerBase implements Container
    *
    * @see http://www.jeffgeerling.com/blogs/jeff-geerling/using-batch-api-build-huge-csv
    */
-  public static function batchSet(WebformInterface $webform, EntityInterface $source_entity = NULL, array $export_options) {
+  public static function batchSet(WebformInterface $webform, ?EntityInterface $source_entity, array $export_options) {
     if (!empty($export_options['excluded_columns']) && is_string($export_options['excluded_columns'])) {
       $excluded_columns = explode(',', $export_options['excluded_columns']);
       $export_options['excluded_columns'] = array_combine($excluded_columns, $excluded_columns);
@@ -240,7 +240,7 @@ class WebformResultsExportController extends ControllerBase implements Container
    * @param mixed|array $context
    *   The batch current context.
    */
-  public static function batchProcess(WebformInterface $webform, EntityInterface $source_entity = NULL, array $export_options = [], &$context = []) {
+  public static function batchProcess(WebformInterface $webform, ?EntityInterface $source_entity, array $export_options = [], &$context = []) {
     /** @var \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter */
     $submission_exporter = \Drupal::service('webform_submission.exporter');
     $submission_exporter->setWebform($webform);

@@ -39,7 +39,7 @@ class WebformReflectionHelperTest extends UnitTestCase {
    *
    * @see testGetParentClasses()
    */
-  public function providerGetParentClasses() {
+  public static function providerGetParentClasses() {
     $tests[] = [new WebformReflectionTestParent(), '', ['WebformReflectionTestParent']];
     $tests[] = [new WebformReflectionTestChild(), '', ['WebformReflectionTestParent', 'WebformReflectionTestChild']];
     $tests[] = [new WebformReflectionTestGrandChild(), '', ['WebformReflectionTestParent', 'WebformReflectionTestChild', 'WebformReflectionTestGrandChild']];

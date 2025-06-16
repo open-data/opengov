@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // @see https://rvera.github.io/image-picker/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.imageSelect = Drupal.webform.imageSelect || {};

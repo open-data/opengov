@@ -2,9 +2,8 @@
 
 namespace Drupal\Tests\webform_submission_export_import\Functional;
 
-use Drupal\Component\Utility\DeprecationHelper;
-use Drupal\file\Entity\File;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\file\Entity\File;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -195,13 +194,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $assert_session->responseContains('<strong>Row #2:</strong> [file] Invalid file URL (/webform/plain/tests/files/sample.gif). URLS must begin with http:// or https://.');
     $assert_session->responseContains('<strong>Row #2:</strong> [composites] YAML is not valid.');
     $assert_session->responseContains('<strong>Row #3:</strong> The email address <em class="placeholder">not an email address</em> is not valid.');
-    // @todo Remove once Drupal 10.1.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 10.1) {
-      $assert_session->responseContains('<strong>Row #3:</strong> The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed');
-    }
-    else {
-      $assert_session->responseContains('<strong>Row #3:</strong> An illegal choice has been detected. Please contact the site administrator.');
-    }
+    $assert_session->responseContains('<strong>Row #3:</strong> The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed');
 
     // Check the submission 1 (valid) record.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
@@ -262,12 +255,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     // not treated as errors.
     $actual_stats = $importer->import();
     WebformElementHelper::convertRenderMarkupToStrings($actual_stats);
-    $validation_error = DeprecationHelper::backwardsCompatibleCall(
-      currentVersion: \Drupal::VERSION,
-      deprecatedVersion: '10.2',
-      currentCallable: fn() => 'The email address <em class="placeholder">not an email address</em> is not valid. Use the format user@example.com.',
-      deprecatedCallable: fn() => 'The email address <em class="placeholder">not an email address</em> is not valid.',
-    );
+    $validation_error = 'The email address <em class="placeholder">not an email address</em> is not valid. Use the format user@example.com.';
     $expected_stats = [
       'created' => 1,
       'updated' => 1,
@@ -287,9 +275,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
         3 => [
           0 => $validation_error,
           1 => $validation_error,
-          2 => (floatval(\Drupal::VERSION) >= 10.1)
-            ? 'The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed.'
-            : 'An illegal choice has been detected. Please contact the site administrator.',
+          2 => 'The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed.',
         ],
       ],
     ];

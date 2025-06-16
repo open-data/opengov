@@ -95,7 +95,7 @@ class WebformHandlerDeleteForm extends WebformDeleteFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL, $webform_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $webform_handler = NULL) {
     $this->webform = $webform;
     $this->webformHandler = $this->webform->getHandler($webform_handler);
 

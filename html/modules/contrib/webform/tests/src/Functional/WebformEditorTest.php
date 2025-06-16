@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\file\Entity\File;
 use Drupal\Tests\TestFileCreationTrait;
+use Drupal\file\Entity\File;
 
 /**
  * Tests for webform editor.

@@ -715,7 +715,7 @@ class WebformElementHelper {
    */
   public static function convertToString($element) {
     if (is_array($element)) {
-      return (string) \Drupal::service('renderer')->renderPlain($element);
+      return (string) \Drupal::service('renderer')->renderInIsolation($element);
     }
     else {
       return (string) $element;

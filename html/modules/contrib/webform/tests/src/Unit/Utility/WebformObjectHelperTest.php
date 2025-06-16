@@ -39,7 +39,7 @@ class WebformObjectHelperTest extends UnitTestCase {
    *
    * @see testSortByProperty()
    */
-  public function providerSortByProperty() {
+  public static function providerSortByProperty() {
     $object = new \stdClass();
     $object->c = 'c';
     $object->a = 'a';

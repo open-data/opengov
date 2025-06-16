@@ -46,7 +46,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @see testToPlainText()
    */
-  public function providerToPlainText() {
+  public static function providerToPlainText() {
     $tests = [];
     $tests[] = ['some text', 'some text'];
     $tests[] = ['some &amp; text', 'some & text'];
@@ -86,7 +86,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @see testToHtmlMarkup()
    */
-  public function providerToHtmlMarkup() {
+  public static function providerToHtmlMarkup() {
     $tests = [];
     $tests[] = ['some text', 'some text'];
     $tests[] = ['some & text', 'some & text'];
@@ -117,7 +117,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @see testContainsHtml()
    */
-  public function providerContainsHtml() {
+  public static function providerContainsHtml() {
     $tests = [];
     $tests[] = ['some text', FALSE];
     $tests[] = ['<b>some text</b>', TRUE];
@@ -146,7 +146,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @see testHasBlockTags()
    */
-  public function providerHasBlockTags() {
+  public static function providerHasBlockTags() {
     $tests = [];
     $tests[] = ['some text', FALSE];
     $tests[] = ['<b>some text</b>', FALSE];

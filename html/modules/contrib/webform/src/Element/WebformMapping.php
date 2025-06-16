@@ -5,7 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
@@ -15,7 +15,7 @@ use Drupal\webform\Utility\WebformOptionsHelper;
  *
  * @FormElement("webform_mapping")
  */
-class WebformMapping extends FormElement {
+class WebformMapping extends FormElementBase {
 
   /**
    * Require all.
