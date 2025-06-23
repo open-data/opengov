@@ -158,6 +158,7 @@ function _webform_icheck_is_supported($element_type) {
  *   The iCheck style options.
  */
 function _webform_icheck_get_options() {
+  // cspell:ignore grey Grey
   return [
     (string) t('Minimal') => [
       'minimal' => t('Minimal: Black'),

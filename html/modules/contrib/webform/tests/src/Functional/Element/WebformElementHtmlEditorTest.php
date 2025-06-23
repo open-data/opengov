@@ -18,7 +18,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  protected static $modules = ['editor', 'ckeditor', 'webform'];
+  protected static $modules = ['editor', 'webform'];
 
   /**
    * Webforms to load.
@@ -70,7 +70,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check that attributes are support by the default 'webform' filter format.
     $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p class="other">Some text</p>');
+    $this->assertEquals('<p class="other">Some text</p>', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     // Disable HTML editor.
     $this->drupalGet('/admin/structure/webform/config/elements');
@@ -84,7 +84,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check that attributes are support when the HTML editor is disabled.
     $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p class="other">Some text</p>');
+    $this->assertEquals('<p class="other">Some text</p>', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     // Enable HTML editor and element text format.
     $this->drupalGet('/admin/structure/webform/config/elements');
@@ -102,14 +102,14 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check that attributes are NOT support by the basic_html filter format.
     $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p>');
+    $this->assertEquals('<p>Some text</p>', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     // Check that tidy removed <p> tags.
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), 'Some text');
+    $this->assertEquals('Some text', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p><p>More text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p><p>More text</p>');
+    $this->assertEquals('<p>Some text</p><p>More text</p>', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     // Disable HTML tidy.
     $this->drupalGet('/admin/structure/webform/config/elements');
@@ -117,7 +117,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check that tidy is disabled.
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p>');
+    $this->assertEquals('<p>Some text</p>', (string) \Drupal::service('renderer')->renderInIsolation($build));
 
     /* Email text format */
 

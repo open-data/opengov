@@ -5,8 +5,6 @@
 
 (function ($, drupalSettings, once) {
 
-  'use strict';
-
   // Disable clientside validation for webforms submitted using Ajax.
   // This prevents Computed elements with Ajax from breaking.
   // @see \Drupal\clientside_validation_jquery\Form\ClientsideValidationjQuerySettingsForm

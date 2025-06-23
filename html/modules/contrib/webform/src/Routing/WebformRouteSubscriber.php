@@ -34,7 +34,7 @@ class WebformRouteSubscriber extends RouteSubscriberBase {
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration object factory.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory = NULL) {
+  public function __construct(ModuleHandlerInterface $module_handler, ?ConfigFactoryInterface $config_factory = NULL) {
     $this->moduleHandler = $module_handler;
     $this->configFactory = $config_factory ?: \Drupal::configFactory();
   }

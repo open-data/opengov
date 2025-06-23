@@ -507,7 +507,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
           'key' => $key,
         ]),
         '#attributes' => $offcanvas_dialog_attributes,
-        '#prefix' => !empty($indentation) ? $this->renderer->renderPlain($indentation) : '',
+        '#prefix' => !empty($indentation) ? $this->renderer->renderInIsolation($indentation) : '',
       ],
     ];
     if (!empty($element['#admin_notes'])) {

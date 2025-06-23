@@ -1,5 +1,4 @@
 webform_shortcuts:
-  version: VERSION
   js:
     js/webform_shortcuts.js: {}
   dependencies:

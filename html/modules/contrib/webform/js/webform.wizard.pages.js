@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   /**
    * Link the wizard's previous pages.
    *

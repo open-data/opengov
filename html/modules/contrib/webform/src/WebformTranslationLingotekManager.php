@@ -2,8 +2,8 @@
 
 namespace Drupal\webform;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Serialization\Yaml;
 
 /**
  * Defines a class to translate webform Lingotek integration.
@@ -47,7 +47,7 @@ class WebformTranslationLingotekManager implements WebformTranslationLingotekMan
         }
         break;
 
-      case 'webform';
+      case 'webform':
         // Replace elements with just the translatable properties
         // (i.e. #title, #description, #options, etc…) so that Lingotek's
         // translation services can correctly translate each element.
@@ -57,13 +57,13 @@ class WebformTranslationLingotekManager implements WebformTranslationLingotekMan
         $this->encodeTokens($source_data);
         break;
 
-      case 'webform_image_select_images';
+      case 'webform_image_select_images':
         // Convert images YAML string to an associative array.
         $source_data['images'] = Yaml::decode($source_data['images']);
         break;
 
-      case 'webform_options';
-      case 'webform_options_custom';
+      case 'webform_options':
+      case 'webform_options_custom':
         // Convert options YAML string to an associative array.
         $options = Yaml::decode($source_data['options']);
 
@@ -105,7 +105,7 @@ class WebformTranslationLingotekManager implements WebformTranslationLingotekMan
         }
         break;
 
-      case 'webform';
+      case 'webform':
         $this->decodeTokens($data);
 
         /** @var \Drupal\webform\WebformInterface $translation */
@@ -113,15 +113,15 @@ class WebformTranslationLingotekManager implements WebformTranslationLingotekMan
         $data['elements'] = Yaml::encode($data['elements']);
         break;
 
-      case 'webform_image_select_images';
+      case 'webform_image_select_images':
         /** @var \Drupal\webform_image_select\WebformImageSelectImagesInterface $translation */
         // Convert images associative array back to YAML string.
         $translation->setImages($data['images']);
         $data['images'] = Yaml::encode($data['images']);
         break;
 
-      case 'webform_options';
-      case 'webform_options_custom';
+      case 'webform_options':
+      case 'webform_options_custom':
         $options = $data['options'];
         // If '_optgroups_' are defined we need to translate the optgroups.
         if (isset($options['_optgroups_'])) {

@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // @see https://github.com/ractoon/jQuery-Text-Counter#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.counter = Drupal.webform.counter || {};

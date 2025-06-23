@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\webform\Functional\Field;
 
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 
 /**

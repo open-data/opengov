@@ -124,7 +124,7 @@ interface WebformElementManagerInterface extends PluginManagerInterface, CachedD
    * @throws \Exception
    *   Throw exception if entity type is not a webform or webform submission.
    */
-  public function getElementInstance(array $element, EntityInterface $entity = NULL);
+  public function getElementInstance(array $element, ?EntityInterface $entity = NULL);
 
   /**
    * Gets sorted plugin definitions.
@@ -139,7 +139,7 @@ interface WebformElementManagerInterface extends PluginManagerInterface, CachedD
    * @return array[]
    *   An array of plugin definitions, sorted by category and label.
    */
-  public function getSortedDefinitions(array $definitions = NULL, $sort_by = 'label');
+  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label');
 
   /**
    * Get all translatable properties from all elements.

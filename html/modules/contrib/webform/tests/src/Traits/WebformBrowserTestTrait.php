@@ -3,10 +3,10 @@
 namespace Drupal\Tests\webform\Traits;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;

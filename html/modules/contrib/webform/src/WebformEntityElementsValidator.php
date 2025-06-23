@@ -441,7 +441,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
             '#items' => $items,
           ],
         ];
-        $messages[] = $this->renderer->renderPlain($build);
+        $messages[] = $this->renderer->renderInIsolation($build);
       }
       return $messages;
     }
@@ -595,7 +595,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
           '#items' => [$message],
         ],
       ];
-      return $this->renderer->renderPlain($build);
+      return $this->renderer->renderInIsolation($build);
     }
 
     return $message;

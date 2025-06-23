@@ -5,9 +5,9 @@
  * Webform install helper functions.
  */
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\system\Entity\Action;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Entity\Webform;
@@ -467,8 +467,11 @@ function _webform_update_elements_clear_properties_recursive(array &$element, ar
 /**
  * Update the Webform module's default hidden text format and editor.
  *
- * Determines if the CKEditor 5 or 4 module installed and imports the
+ * Determines if the CKEditor 5 module installed and imports the
  * appropriate configuration file.
+ *
+ * The below approach and code can be updated to support ckeditor6 when it
+ * is available and required.
  */
 function _webform_update_html_editor() {
   // Make sure the Webform module is installed, since we do call this function
@@ -492,9 +495,6 @@ function _webform_update_html_editor() {
   $current_version = \Drupal::config($ckeditor_file_name)->get('editor') ?: NULL;
   if (\Drupal::moduleHandler()->moduleExists('ckeditor5')) {
     $ckeditor_version = 'ckeditor5';
-  }
-  elseif (\Drupal::moduleHandler()->moduleExists('ckeditor')) {
-    $ckeditor_version = 'ckeditor';
   }
   else {
     $ckeditor_version = NULL;

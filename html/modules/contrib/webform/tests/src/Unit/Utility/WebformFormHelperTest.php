@@ -38,7 +38,7 @@ class WebformFormHelperTest extends UnitTestCase {
    *
    * @see testCleanupFormStateValues()
    */
-  public function providerCleanupFormStateValues() {
+  public static function providerCleanupFormStateValues() {
     $tests[] = [['key' => 'value'], [], ['key' => 'value']];
     $tests[] = [['key' => 'value', 'form_token' => 'ignored'], [], ['key' => 'value']];
     $tests[] = [['key' => 'value', 'form_token' => 'ignored'], ['key'], []];

@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\webform\Functional\Element;
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**

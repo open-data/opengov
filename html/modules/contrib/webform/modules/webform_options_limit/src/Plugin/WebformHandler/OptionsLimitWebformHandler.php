@@ -96,7 +96,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
   /**
    * {@inheritdoc}
    */
-  public function setSourceEntity(EntityInterface $source_entity = NULL) {
+  public function setSourceEntity(?EntityInterface $source_entity = NULL) {
     $this->sourceEntity = $source_entity;
     return $this;
   }

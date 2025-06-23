@@ -60,7 +60,7 @@ class WebformCustomComposite extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
     // Set cardinality.
@@ -95,7 +95,7 @@ class WebformCustomComposite extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementPreRenderCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementPreRenderCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepareElementPreRenderCallbacks($element, $webform_submission);
 
     // Set custom wrapper type to theme wrappers.

@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   /**
    * Element (read) more.
    *

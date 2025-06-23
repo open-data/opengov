@@ -3,12 +3,12 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use CommerceGuys\Addressing\AddressFormat\FieldOverride;
-use Drupal\address\FieldHelper;
-use Drupal\address\LabelHelper;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Mail\MailFormatHelper;
+use Drupal\address\FieldHelper;
+use Drupal\address\LabelHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -116,7 +116,7 @@ class Address extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
     $element['#theme_wrappers'] = [];
@@ -130,7 +130,7 @@ class Address extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementValidateCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepareElementValidateCallbacks($element, $webform_submission);
 
     $element['#element_validate'][] = [get_class($this), 'validateAddress'];
@@ -139,7 +139,7 @@ class Address extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementPreRenderCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementPreRenderCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepareElementPreRenderCallbacks($element, $webform_submission);
 
     // Replace 'form_element' theme wrapper with composite form element.
@@ -249,7 +249,7 @@ class Address extends WebformCompositeBase {
     $format = $this->getItemFormat($element);
     if ($format === 'value') {
       $build = $this->buildAddress($element, $webform_submission, $options);
-      $html = $this->renderer->renderPlain($build);
+      $html = $this->renderer->renderInIsolation($build);
       return trim(MailFormatHelper::htmlToText($html));
     }
     else {

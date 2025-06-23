@@ -109,7 +109,7 @@ class WebformTokenManager implements WebformTokenManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function replace($text, EntityInterface $entity = NULL, array $data = [], array $options = [], BubbleableMetadata $bubbleable_metadata = NULL) {
+  public function replace($text, ?EntityInterface $entity = NULL, array $data = [], array $options = [], ?BubbleableMetadata $bubbleable_metadata = NULL) {
     // Replace tokens within an array.
     if (is_array($text)) {
       foreach ($text as $key => $token_value) {
@@ -165,7 +165,7 @@ class WebformTokenManager implements WebformTokenManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function replaceNoRenderContext($text, EntityInterface $entity = NULL, array $data = [], array $options = []) {
+  public function replaceNoRenderContext($text, ?EntityInterface $entity = NULL, array $data = [], array $options = []) {
     // Create BubbleableMetadata object which will be ignored.
     $bubbleable_metadata = new BubbleableMetadata();
     return $this->replace($text, $entity, $data, $options, $bubbleable_metadata);

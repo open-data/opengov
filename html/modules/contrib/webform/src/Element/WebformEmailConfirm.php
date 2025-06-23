@@ -4,7 +4,7 @@ namespace Drupal\webform\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
@@ -15,7 +15,7 @@ use Drupal\webform\Utility\WebformElementHelper;
  *
  * @FormElement("webform_email_confirm")
  */
-class WebformEmailConfirm extends FormElement {
+class WebformEmailConfirm extends FormElementBase {
 
   use WebformCompositeFormElementTrait;
 

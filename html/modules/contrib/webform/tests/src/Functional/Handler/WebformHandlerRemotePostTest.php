@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Handler;
 
-use Drupal\file\Entity\File;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\file\Entity\File;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 
@@ -338,9 +338,7 @@ options:
 
     $this->postSubmission($webform);
 
-    // @todo Remove once Drupal 10.0.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 10) {
-      $assert_session->responseContains("form_params:
+    $assert_session->responseContains("form_params:
   boolean_true: true
   integer: 100
   float: 100.01
@@ -352,21 +350,6 @@ options:
       textfield: &#039;&#039;
       number: 0.0
       checkbox: false");
-    }
-    else {
-      $assert_session->responseContains("form_params:
-  boolean_true: true
-  integer: 100
-  float: 100.01
-  checkbox: false
-  number: &#039;&#039;
-  number_multiple: {  }
-  custom_composite:
-    -
-      textfield: &#039;&#039;
-      number: !!float 0
-      checkbox: false");
-    }
 
     $edit = [
       'checkbox' => TRUE,
@@ -377,9 +360,7 @@ options:
       'custom_composite[items][0][number]' => '20.5',
     ];
     $this->postSubmission($webform, $edit);
-    // @todo Remove once Drupal 10.0.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 10) {
-      $assert_session->responseContains("form_params:
+    $assert_session->responseContains("form_params:
   boolean_true: true
   integer: 100
   float: 100.01
@@ -392,22 +373,6 @@ options:
       textfield: text
       checkbox: true
       number: 20.5");
-    }
-    else {
-      $assert_session->responseContains("form_params:
-  boolean_true: true
-  integer: 100
-  float: 100.01
-  checkbox: true
-  number: !!float 10
-  number_multiple:
-    - 10.5
-  custom_composite:
-    -
-      textfield: text
-      checkbox: true
-      number: 20.5");
-    }
 
     /* ********************************************************************** */
     // POST error.

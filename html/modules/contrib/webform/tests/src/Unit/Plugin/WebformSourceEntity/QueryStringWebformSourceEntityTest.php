@@ -211,7 +211,7 @@ class QueryStringWebformSourceEntityTest extends UnitTestCase {
    *
    * @see testGetCurrentSourceEntity()
    */
-  public function providerGetCurrentSourceEntity() {
+  public static function providerGetCurrentSourceEntity() {
     $tests[] = [
       [
         'source_entity_has_translation' => FALSE,

@@ -7,8 +7,6 @@
 
 (function ($, drupalSettings) {
 
-  'use strict';
-
   var shortcuts = drupalSettings.webform.shortcuts;
 
   // Add element.

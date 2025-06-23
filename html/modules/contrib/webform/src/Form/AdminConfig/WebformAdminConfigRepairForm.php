@@ -8,7 +8,7 @@ use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Repare webform configuration form.
+ * Repair webform configuration form.
  */
 class WebformAdminConfigRepairForm extends ConfirmFormBase {
 

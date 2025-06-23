@@ -203,21 +203,30 @@ class WebformElementController extends ControllerBase {
       // Cast TranslatableMarkup to string.
       $label = (string) $label;
 
-      if ($operator === 'STARTS_WITH' && stripos($label, $q) === 0) {
-        $matches[$label] = [
-          'value' => $label,
-          'label' => $label,
-        ];
-      }
-      // Default to CONTAINS even when operator is empty.
-      elseif (stripos($label, $q) !== FALSE) {
-        $matches[$label] = [
-          'value' => $label,
-          'label' => $label,
-        ];
+      switch ($operator) {
+        case 'STARTS_WITH':
+          if (stripos($label, $q) === 0) {
+            $matches[$label] = [
+              'value' => $label,
+              'label' => $label,
+            ];
+          }
+          break;
+
+        // Default to CONTAINS even when operator is empty.
+        default:
+          if (stripos($label, $q) !== FALSE) {
+            $matches[$label] = [
+              'value' => $label,
+              'label' => $label,
+            ];
+          }
+          break;
+
       }
 
     }
+
   }
 
 }

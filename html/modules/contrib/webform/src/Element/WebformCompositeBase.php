@@ -5,13 +5,13 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
  * Provides an base composite webform element.
  */
-abstract class WebformCompositeBase extends FormElement implements WebformCompositeInterface {
+abstract class WebformCompositeBase extends FormElementBase implements WebformCompositeInterface {
 
   use WebformCompositeFormElementTrait;
 

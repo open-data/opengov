@@ -163,7 +163,10 @@ table td > .button:only-child {
 /*****************************************************************************   */
 
 .webform-multiple-table td input[type="image"] + input[type="image"],
-.webform-states-table td.webform-states-table--operations input[type="image"] + input[type="image"] {
+.webform-states-table
+  td.webform-states-table--operations
+  input[type="image"]
+  + input[type="image"] {
   margin-left: 2px;
 }
 
@@ -171,16 +174,25 @@ table.webform-states-table td {
   padding: 1em 0.25rem;
 }
 
-table.webform-states-table td.webform-states-table--operator > .form-item > .form-element {
+table.webform-states-table
+  td.webform-states-table--operator
+  > .form-item
+  > .form-element {
   width: auto;
   min-width: inherit;
 }
 
-table.webform-states-table td.webform-states-table--selector > .form-item > .form-element--type-select {
+table.webform-states-table
+  td.webform-states-table--selector
+  > .form-item
+  > .form-element--type-select {
   width: 100%;
 }
 
-table.webform-states-table td.webform-states-table--condition > .form-item > .form-element--type-select {
+table.webform-states-table
+  td.webform-states-table--condition
+  > .form-item
+  > .form-element--type-select {
   width: 5em;
 }
 
@@ -189,15 +201,16 @@ table.webform-states-table td.webform-states-table--condition > .form-item > .fo
 /*****************************************************************************   */
 
 /**
- * Remove margin around checkboxes buttons.
+ * Fix checkbox via dialog/off-canvas tray.
  *
  * @see claro/css/src/components/form--checkbox-radio.css
  */
-.webform-options-display-buttons .form-type--boolean {
-  margin-left: 0;
-}
-[dir="rtl"] .webform-options-display-buttons .form-type--boolean {
-  margin-right: 0;
+.ui-dialog .form-type--boolean .form-boolean {
+  position: inherit;
+  inset-block-start: inherit;
+  float: none; /* LTR */
+  margin-inline-start: inherit;
+  transform: none;
 }
 
 /*****************************************************************************   */
@@ -221,7 +234,9 @@ div.webform-form-filter input.webform-form-filter-text {
  *
  * @see /admin/structure/webform/manage/[webform_id]/element/add
  */
-.webform-ui-element-type-select-form > details > .claro-details__wrapper.details-wrapper {
+.webform-ui-element-type-select-form
+  > details
+  > .claro-details__wrapper.details-wrapper {
   margin: 0.5em 1em 0 1em;
   padding: 0;
 }
@@ -325,10 +340,13 @@ div.webform-form-filter input.webform-form-filter-text {
   margin: 0;
 }
 
-.webform-off-canvas #drupal-off-canvas .form-type--boolean {
+.webform-off-canvas #drupal-off-canvas-wrapper .form-type--boolean {
   margin-left: 1.6875rem;
 }
 
-.webform-off-canvas #drupal-off-canvas .form-item .form-item__description {
+.webform-off-canvas
+  #drupal-off-canvas-wrapper
+  .form-item
+  .form-item__description {
   color: #55565b;
 }

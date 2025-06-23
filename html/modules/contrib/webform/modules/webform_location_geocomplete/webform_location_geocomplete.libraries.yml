@@ -1,5 +1,4 @@
 webform_location_geocomplete.element:
-  version: VERSION
   css:
     component:
       css/webform_location_geocomplete.element.css: {}

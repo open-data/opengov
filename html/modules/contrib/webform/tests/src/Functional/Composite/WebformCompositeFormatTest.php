@@ -44,6 +44,7 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
 
     // Check composite elements item formatted as HTML.
     $body = $this->getMessageBody($submission, 'email_html');
+    // cspell:disable
     $elements = [
       'Text format (Plain text)' => '<p>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Negat esse eam, inquit, propter se expetendam. Primum Theophrasti, Strato, physicum se voluit; Id mihi magnum videtur. Itaque mihi non satis videmini considerare quod iter sit naturae quaeque progressio. Quare hoc videndum est, possitne nobis hoc ratio philosophorum dare. Est enim tanti philosophi tamque nobilis audacter sua decreta defendere.&lt;/p&gt;</p>',
       'Likert (Value)' => '<ul><li><b>Please answer question 1?:</b> 1</li><li><b>How about now answering question 2?:</b> 1</li><li><b>Finally, here is question 3?:</b> 1</li></ul>',
@@ -61,6 +62,7 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
       'Advanced address (List)' => '<ul><li><b>Given name:</b> John</li><li><b>Family name:</b> Smith</li><li><b>Organization:</b> Google Inc.</li><li><b>Address line 1:</b> 1098 Alta Ave</li><li><b>Postal code:</b> 94043</li><li><b>Locality:</b> Mountain View</li><li><b>Administrative area:</b> CA</li><li><b>Country code:</b> US</li><li><b>Language code:</b> en</li></ul>',
       'Link (Value)' => '<a href="http://example.com">Loremipsum</a>',
     ];
+    // cspell:enable
     foreach ($elements as $label => $value) {
       $this->assertStringContainsString('<b>' . $label . '</b><br />' . $value, $body, new FormattableMarkup('Found @label: @value', ['@label' => $label, '@value' => $value]));
     }

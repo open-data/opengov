@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   // @see http://api.jqueryui.com/dialog/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.termsOfServiceModal = Drupal.webform.termsOfServiceModal || {};

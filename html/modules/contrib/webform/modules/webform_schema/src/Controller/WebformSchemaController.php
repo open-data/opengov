@@ -63,7 +63,7 @@ class WebformSchemaController extends ControllerBase implements ContainerInjecti
       $handle = fopen('php://output', 'r+');
 
       // Header.
-      fputcsv($handle, $this->schemaManager->getColumns());
+      fputcsv($handle, $this->schemaManager->getColumns(), escape: '\\');
 
       // Rows.
       $elements = $this->schemaManager->getElements($webform);
@@ -71,9 +71,9 @@ class WebformSchemaController extends ControllerBase implements ContainerInjecti
         $element['options_text'] = implode($multiple_delimiter, $element['options_text']);
         $element['options_value'] = implode($multiple_delimiter, $element['options_value']);
         $element['notes'] = trim(MailFormatHelper::htmlToText(
-          $this->renderer->renderPlain($element['notes'])
+          $this->renderer->renderInIsolation($element['notes'])
         ));
-        fputcsv($handle, $element);
+        fputcsv($handle, $element, escape: '\\');
       }
 
       fclose($handle);

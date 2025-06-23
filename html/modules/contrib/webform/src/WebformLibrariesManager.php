@@ -194,7 +194,7 @@ class WebformLibrariesManager implements WebformLibrariesManagerInterface {
       $t_args = [':href' => ($this->moduleHandler->moduleExists('help')) ? Url::fromRoute('help.page', ['name' => 'webform'], ['fragment' => 'libraries'])->toString() : 'https://www.drupal.org/docs/8/modules/webform/webform-libraries'];
       $description['download'] = [
         '#markup' => '<hr/>' .
-          $this->t('Please download external libraries using one the <a href=":href">recommended methods</a>.', $t_args),
+          $this->t('Please download external libraries using one of the <a href=":href">recommended methods</a>.', $t_args),
       ];
       $t_args = [':href' => Url::fromRoute('webform.config.advanced')->toString()];
       $description['cdn'] = [
@@ -209,7 +209,7 @@ class WebformLibrariesManager implements WebformLibrariesManagerInterface {
       'webform_libraries' => [
         'title' => $this->t('Webform: External libraries'),
         'value' => $this->t('@total libraries (@installed installed; @excluded excluded; @missing CDN)', $stats),
-        'description' => $this->renderer->renderPlain($description),
+        'description' => $this->renderer->renderInIsolation($description),
         'severity' => $severity,
       ],
     ];
@@ -343,8 +343,8 @@ class WebformLibrariesManager implements WebformLibrariesManagerInterface {
       'description' => $this->t('Input masks ensures a predefined format is entered. This can be useful for dates, numerics, phone numbers, etc…'),
       'notes' => $this->t('Input masks are used to ensure predefined and custom formats for text fields.'),
       'homepage_url' => Url::fromUri('https://robinherbots.github.io/Inputmask/'),
-      'download_url' => Url::fromUri('https://github.com/RobinHerbots/jquery.inputmask/archive/refs/tags/5.0.8.zip'),
-      'version' => '5.0.8',
+      'download_url' => Url::fromUri('https://github.com/RobinHerbots/jquery.inputmask/archive/refs/tags/5.0.9.zip'),
+      'version' => '5.0.9',
       'license' => 'MIT',
     ];
     $libraries['jquery.intl-tel-input'] = [
@@ -445,8 +445,8 @@ class WebformLibrariesManager implements WebformLibrariesManagerInterface {
       'description' => $this->t('Choices.js is a lightweight, configurable select box/text input plugin. Similar to Select2 and Selectize but without the jQuery dependency.'),
       'notes' => $this->t('Choices.js is used to improve the user experience for select menus. Choices.js is an alternative to Select2.'),
       'homepage_url' => Url::fromUri('https://choices-js.github.io/Choices/'),
-      'download_url' => Url::fromUri('https://github.com/Choices-js/Choices/archive/refs/tags/v9.0.1.zip'),
-      'version' => '9.0.1',
+      'download_url' => Url::fromUri('https://github.com/Choices-js/Choices/archive/refs/tags/v11.0.2.zip'),
+      'version' => '11.0.2',
       'license' => 'MIT',
     ];
     $libraries['jquery.chosen'] = [

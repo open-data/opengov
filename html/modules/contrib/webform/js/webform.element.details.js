@@ -5,8 +5,6 @@
 
 (function ($, Drupal) {
 
-  'use strict';
-
   /**
    * Attach handler to details with invalid inputs.
    *

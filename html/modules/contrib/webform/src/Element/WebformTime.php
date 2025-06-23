@@ -5,7 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 
 /**
  * Provides a webform element for time selection.
@@ -20,7 +20,7 @@ use Drupal\Core\Render\Element\FormElement;
  *
  * @FormElement("webform_time")
  */
-class WebformTime extends FormElement {
+class WebformTime extends FormElementBase {
 
   /**
    * {@inheritdoc}

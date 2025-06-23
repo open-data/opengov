@@ -13,11 +13,11 @@
  * Below functions are copied from editor.module.
  */
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\file\FileInterface;
 use Drupal\filter\FilterFormatInterface;

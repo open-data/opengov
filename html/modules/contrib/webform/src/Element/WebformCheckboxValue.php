@@ -4,7 +4,7 @@ namespace Drupal\webform\Element;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
@@ -12,7 +12,7 @@ use Drupal\webform\Utility\WebformElementHelper;
  *
  * @FormElement("webform_checkbox_value")
  */
-class WebformCheckboxValue extends FormElement {
+class WebformCheckboxValue extends FormElementBase {
 
   /**
    * {@inheritdoc}

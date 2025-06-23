@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Element;
 
-use Drupal\file\Entity\File;
 use Drupal\Tests\TestFileCreationTrait;
+use Drupal\file\Entity\File;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 

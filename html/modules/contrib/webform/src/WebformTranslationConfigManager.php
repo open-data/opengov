@@ -2,7 +2,7 @@
 
 namespace Drupal\webform;
 
-use Drupal\block\Entity\Block;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\TypedConfigManagerInterface;
@@ -10,9 +10,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\block\Entity\Block;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Entity\Webform;
@@ -93,7 +93,7 @@ class WebformTranslationConfigManager implements WebformTranslationConfigManager
    * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
    *   The typed config manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, FormBuilderInterface $form_builder, WebformElementManagerInterface $element_manager, WebformTranslationManagerInterface $translation_manager, TypedConfigManagerInterface $typed_config_manager = NULL) {
+  public function __construct(ModuleHandlerInterface $module_handler, FormBuilderInterface $form_builder, WebformElementManagerInterface $element_manager, WebformTranslationManagerInterface $translation_manager, ?TypedConfigManagerInterface $typed_config_manager = NULL) {
     $this->formBuilder = $form_builder;
     $this->moduleHandler = $module_handler;
     $this->elementManager = $element_manager;

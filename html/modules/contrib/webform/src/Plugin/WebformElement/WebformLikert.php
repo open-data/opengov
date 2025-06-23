@@ -143,6 +143,12 @@ class WebformLikert extends WebformElementBase {
             'width' => '40%',
           ];
           foreach ($element['#answers'] as $answer_value => $answer_text) {
+            // Convert to an integer if necessary.
+            // @todo Should this conversion happen earlier, for example by
+            //   overriding the getValue() method?
+            if (is_int($answer_value) && !is_int($question_value) && is_numeric($question_value)) {
+              $question_value = (int) $question_value;
+            }
             $row[$answer_value] = [
               'data' => ($question_value === $answer_value) ? ['#markup' => '&#10007;'] : '',
               'align' => 'center',
@@ -160,6 +166,17 @@ class WebformLikert extends WebformElementBase {
             'class' => ['webform-likert-table'],
           ],
           '#attached' => ['library' => ['webform/webform.element.likert']],
+        ];
+
+      case 'average':
+        $avg = '';
+        $filtered = array_filter($value);
+        if (count($filtered)) {
+          $avg = round(array_sum($filtered) / count($filtered), 3);
+        }
+        return [
+          '#type' => 'markup',
+          '#markup' => $avg,
         ];
 
       default:
@@ -299,6 +316,7 @@ class WebformLikert extends WebformElementBase {
     return parent::getItemFormats() + [
       'list' => $this->t('List'),
       'table' => $this->t('Table'),
+      'average' => $this->t('Average'),
     ];
   }
 

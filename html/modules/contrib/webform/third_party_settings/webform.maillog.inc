@@ -74,6 +74,6 @@ function maillog_webform_submission_form_alter(array &$form, FormStateInterface 
   ];
 
   if ($build) {
-    \Drupal::messenger()->addWarning(\Drupal::service('renderer')->renderPlain($build));
+    \Drupal::messenger()->addWarning(\Drupal::service('renderer')->renderInIsolation($build));
   }
 }

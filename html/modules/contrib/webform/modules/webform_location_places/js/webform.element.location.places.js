@@ -5,8 +5,6 @@
 
 (function ($, Drupal, drupalSettings, once) {
 
-  'use strict';
-
   // @see https://github.com/algolia/places
   // @see https://community.algolia.com/places/documentation.html#options
   Drupal.webform = Drupal.webform || {};

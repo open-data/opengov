@@ -4,7 +4,7 @@ namespace Drupal\webform\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
@@ -12,7 +12,7 @@ use Drupal\webform\Utility\WebformElementHelper;
  *
  * @FormElement("webform_height")
  */
-class WebformHeight extends FormElement {
+class WebformHeight extends FormElementBase {
 
   use WebformCompositeFormElementTrait;
 
@@ -205,6 +205,16 @@ class WebformHeight extends FormElement {
       if (strpos($key, '__') !== FALSE) {
         [$element_key, $property_key] = explode('__', ltrim($key, '#'));
         if (isset($element['container'][$element_key])) {
+          // When min/max is an empty string, set the value to NULL
+          // to prevent the below exception.
+          //
+          // TypeError: Unsupported operand types: string - string in
+          // Drupal\Component\Utility\Number::validStep()
+          // (line 34 of core/lib/Drupal/Component/Utility/Number.php).
+          if (in_array($property_key, ['min', 'max']) && $value === '') {
+            $value = NULL;
+          }
+
           $element['container'][$element_key]["#$property_key"] = $value;
         }
       }

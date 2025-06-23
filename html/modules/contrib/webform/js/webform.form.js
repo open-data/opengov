@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   /**
    * Remove single submit event listener.
    *

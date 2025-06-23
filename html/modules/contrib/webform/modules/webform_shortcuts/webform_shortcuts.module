@@ -5,6 +5,7 @@
  * Provides keyboard shortcuts to create and save webform elements.
  */
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Utility\WebformTextHelper;
@@ -41,6 +42,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
 
   // Get shortcuts settings.
   $config = \Drupal::config('webform_shortcuts.settings');
+  $cache = CacheableMetadata::createFromObject($config);
 
   // Shortcuts.
   // phpcs:disable Squiz.Arrays.ArrayDeclaration.KeySpecified
@@ -100,10 +102,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
   }
   $variables['content']['help']['#attached']['drupalSettings']['webform']['shortcuts'] = $settings;
 
-  // Add config to render array caching.
-  $renderer = \Drupal::service('renderer');
-  $renderer->addCacheableDependency($variables['content']['help'], $config);
-
+  $cache->applyTo($variables['content']['help']);
 }
 
 /**

@@ -176,7 +176,7 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL, $key = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $key = NULL) {
     $this->webform = $webform;
     $this->key = $key;
     $this->element = $webform->getElement($key);

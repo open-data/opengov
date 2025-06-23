@@ -5,8 +5,6 @@
 
 (function ($) {
 
-  'use strict';
-
   // From: https://stackoverflow.com/a/39019647
   if (window.history && window.history.pushState) {
     window.history.pushState('', null, '');

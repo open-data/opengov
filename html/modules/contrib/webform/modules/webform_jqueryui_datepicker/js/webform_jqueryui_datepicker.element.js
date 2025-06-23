@@ -3,9 +3,7 @@
  * Override polyfill for HTML5 date input and provide support for custom date formats.
  */
 
-(function ($, Modernizr, Drupal) {
-
-  'use strict';
+(function ($, Drupal) {
 
   // @see http://api.jqueryui.com/datepicker/
   Drupal.webform = Drupal.webform || {};
@@ -29,12 +27,6 @@
       var $context = $(context);
       $(once('datePicker', $(context).find('input[data-drupal-date-format]'))).each(function () {
         var $input = $(this);
-
-        // Skip if date inputs are supported by the browser and input is not a text field.
-        // @see \Drupal\webform\Element\WebformDatetime
-        if (window.Modernizr && Modernizr.inputtypes && Modernizr.inputtypes.date === true && $input.attr('type') !== 'text') {
-          return;
-        }
 
         var options = $.extend({
           changeMonth: true,
@@ -117,4 +109,4 @@
     */
   };
 
-})(jQuery, Modernizr, Drupal);
+})(jQuery, Drupal);
