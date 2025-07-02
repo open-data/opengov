@@ -13,7 +13,7 @@ class WebformHandlerDuplicateForm extends WebformHandlerAddForm {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL, $webform_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $webform_handler = NULL) {
     $form = parent::buildForm($form, $form_state, $webform, $webform_handler);
     $form['#title'] = $this->t('Duplicate @label handler', ['@label' => $this->webformHandler->label()]);
     return $form;

@@ -2,9 +2,9 @@
 
 namespace Drupal\webform_cards\Form;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 
@@ -23,7 +23,7 @@ class WebformCardsConvertForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL) {
     $form['#title'] = $this->t('Convert @title wizard pages to cards', ['@title' => $webform->label()]);
     $form['webform_id'] = [
       '#type' => 'value',

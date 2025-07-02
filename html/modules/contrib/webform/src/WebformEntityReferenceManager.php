@@ -82,12 +82,12 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
    *   The current user.
    * @param \Drupal\user\UserDataInterface $user_data
    *   The user data service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface|null $module_handler
    *   The module handler class to use for loading includes.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(RouteMatchInterface $route_match, AccountInterface $current_user, UserDataInterface $user_data, ModuleHandlerInterface $module_handler = NULL, EntityTypeManagerInterface $entity_type_manager = NULL) {
+  public function __construct(RouteMatchInterface $route_match, AccountInterface $current_user, UserDataInterface $user_data, ?ModuleHandlerInterface $module_handler = NULL, ?EntityTypeManagerInterface $entity_type_manager = NULL) {
     $this->routeMatch = $route_match;
     $this->currentUser = $current_user;
     $this->userData = $user_data;
@@ -166,14 +166,14 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
   /**
    * {@inheritdoc}
    */
-  public function hasField(EntityInterface $entity = NULL) {
+  public function hasField(?EntityInterface $entity = NULL) {
     return $this->getFieldName($entity) ? TRUE : FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFieldName(EntityInterface $entity = NULL) {
+  public function getFieldName(?EntityInterface $entity = NULL) {
     $field_names = $this->getFieldNames($entity);
     return $field_names ? reset($field_names) : '';
   }
@@ -181,7 +181,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
   /**
    * {@inheritdoc}
    */
-  public function getFieldNames(EntityInterface $entity = NULL) {
+  public function getFieldNames(?EntityInterface $entity = NULL) {
     if ($entity === NULL || !$entity instanceof FieldableEntityInterface) {
       return [];
     }
@@ -212,7 +212,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
   /**
    * {@inheritdoc}
    */
-  public function getWebform(EntityInterface $entity = NULL) {
+  public function getWebform(?EntityInterface $entity = NULL) {
     if ($webform_id = $this->getUserWebformId($entity)) {
       return Webform::load($webform_id);
     }
@@ -227,7 +227,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
   /**
    * {@inheritdoc}
    */
-  public function getWebforms(EntityInterface $entity = NULL) {
+  public function getWebforms(?EntityInterface $entity = NULL) {
     // Cache the source entity's webforms.
     $entity_id = $entity->getEntityTypeId() . '-' . $entity->id();
     if (isset($this->webforms[$entity_id])) {

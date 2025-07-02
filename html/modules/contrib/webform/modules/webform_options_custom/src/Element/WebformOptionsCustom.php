@@ -8,7 +8,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\Core\Render\Markup;
 use Drupal\webform\Element\WebformCompositeFormElementTrait;
 use Drupal\webform\Utility\WebformArrayHelper;
@@ -22,7 +22,7 @@ use Drupal\webform_options_custom\Entity\WebformOptionsCustom as WebformOptionsC
  *
  * @FormElement("webform_options_custom")
  */
-class WebformOptionsCustom extends FormElement implements WebformOptionsCustomInterface {
+class WebformOptionsCustom extends FormElementBase implements WebformOptionsCustomInterface {
 
   use WebformCompositeFormElementTrait;
 

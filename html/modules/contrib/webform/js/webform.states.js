@@ -5,8 +5,6 @@
 
 (function ($, Drupal, once) {
 
-  'use strict';
-
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.states = Drupal.webform.states || {};
   Drupal.webform.states.slideDown = Drupal.webform.states.slideDown || {};

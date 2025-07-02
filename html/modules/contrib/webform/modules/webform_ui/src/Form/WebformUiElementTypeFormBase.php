@@ -74,7 +74,7 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL) {
     $form['#prefix'] = '<div id="webform-ui-element-type-ajax-wrapper">';
     $form['#suffix'] = '</div>';
 

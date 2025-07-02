@@ -54,13 +54,22 @@ tr.webform-states-table--state td select {
   border-radius: 50%;
 }
 
-.webform-states-table td.webform-states-table--operations input[type="image"] + input[type="image"] {
+.webform-states-table
+  td.webform-states-table--operations
+  input[type="image"]
+  + input[type="image"] {
   margin-left: 2px;
 }
 
-.webform-states-table td.webform-states-table--operations input[type="image"]:hover,
-.webform-states-table td.webform-states-table--operations input[type="image"]:focus,
-.webform-states-table td.webform-states-table--operations input[type="image"]:active {
+.webform-states-table
+  td.webform-states-table--operations
+  input[type="image"]:hover,
+.webform-states-table
+  td.webform-states-table--operations
+  input[type="image"]:focus,
+.webform-states-table
+  td.webform-states-table--operations
+  input[type="image"]:active {
   opacity: 1;
   background: none;
 }

@@ -528,13 +528,13 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    *   A webform submission.
    * @param string $operation
    *   The operation that is to be performed on $entity.
-   * @param \Drupal\Core\Session\AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface|null $account
    *   The account trying to access the entity.
    *
    * @return \Drupal\Core\Core\AccessResultInterface
    *   The result of the access check. No option returns a neutral result.
    */
-  public function access(WebformSubmissionInterface $webform_submission, $operation, AccountInterface $account = NULL);
+  public function access(WebformSubmissionInterface $webform_submission, $operation, ?AccountInterface $account = NULL);
 
   /* ************************************************************************ */
   // Preprocessing methods.
@@ -583,13 +583,13 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    *   The element's properties.
    * @param string $operation
    *   The operation that is to be performed on $entity.
-   * @param \Drupal\Core\Session\AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface|null $account
    *   The account trying to access the entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The result of the access check. Defaults to neutral.
    */
-  public function accessElement(array &$element, $operation, AccountInterface $account = NULL);
+  public function accessElement(array &$element, $operation, ?AccountInterface $account = NULL);
 
   /**
    * Acts on a element after it has been created.

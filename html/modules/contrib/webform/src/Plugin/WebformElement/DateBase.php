@@ -59,7 +59,7 @@ abstract class DateBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Don't used 'datetime_wrapper', instead use 'form_element' wrapper.
     // Note: Below code must be executed before parent::prepare().
     // @see \Drupal\Core\Datetime\Element\Datelist
@@ -127,7 +127,7 @@ abstract class DateBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementValidateCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     $element['#element_validate'] = array_merge([[get_class($this), 'preValidateDate']], $element['#element_validate']);
     $element['#element_validate'][] = [get_class($this), 'validateDate'];
     parent::prepareElementValidateCallbacks($element, $webform_submission);
@@ -194,7 +194,7 @@ abstract class DateBase extends WebformElementBase {
     if ($format === 'raw') {
       return $value;
     }
-    elseif (DateFormat::load($format)) {
+    elseif (DateFormat::load(mb_convert_encoding($format, 'ASCII', 'UTF-8'))) {
       return $this->dateFormatter->format($timestamp, $format);
     }
     else {

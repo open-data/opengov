@@ -266,7 +266,7 @@ function hook_webform_element_ELEMENT_TYPE_alter(array &$element, \Drupal\Core\F
  * @return \Drupal\Core\Access\AccessResult
  *   The access provided. Return neutral if no change.
  */
-function hook_webform_element_access($operation, array &$element, \Drupal\Core\Session\AccountInterface $account = NULL, array $context = []) {
+function hook_webform_element_access($operation, array &$element, ?\Drupal\Core\Session\AccountInterface $account = NULL, array $context = []) {
   // Load the current webform and submission for element's context.
   $webform = $context['webform'];
   $webform_submission = $context['webform_submission'];

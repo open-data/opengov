@@ -114,7 +114,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
    *
    * @see testPurge()
    */
-  public function providerPurge() {
+  public static function providerPurge() {
     // phpcs:disable Drupal.Commenting.InlineComment.SpacingBefore
     // The structure of each test case data is the following:
     // 0: (string) The webform 'purge' setting

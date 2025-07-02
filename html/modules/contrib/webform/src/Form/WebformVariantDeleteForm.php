@@ -94,7 +94,7 @@ class WebformVariantDeleteForm extends WebformDeleteFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL, $webform_variant = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $webform_variant = NULL) {
     $this->webform = $webform;
     $this->webformVariant = $this->webform->getVariant($webform_variant);
 

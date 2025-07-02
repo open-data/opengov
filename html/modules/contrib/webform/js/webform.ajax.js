@@ -3,9 +3,7 @@
  * JavaScript behaviors for Ajax.
  */
 
-(function ($, Drupal, drupalSettings, once) {
-
-  'use strict';
+(function ($, Drupal, drupalSettings, once, tabbable) {
 
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.ajax = Drupal.webform.ajax || {};
@@ -167,7 +165,11 @@
       setTimeout(function () {$element.removeClass('color-success');}, 3000);
 
       // Focus first tabbable item for the updated elements and handlers.
-      $element.find(':tabbable:not(.tabledrag-handle)').eq(0).trigger('focus');
+      const tabbableElements = tabbable.tabbable($element.get(0));
+      const filteredElements = tabbableElements.filter(element => !element.classList.contains('tabledrag-handle'));
+      if (filteredElements.length) {
+        filteredElements[0].focus();
+      }
 
       // Scroll element into view.
       Drupal.webformScrolledIntoView($element);
@@ -255,6 +257,9 @@
       updateKey = (response.url.match(/[?|&]update=([^&]+)($|&)/)) ? RegExp.$1 : null;
       addElement = (response.url.match(/[?|&]add_element=([^&]+)($|&)/)) ? RegExp.$1 : null;
       $('.webform-ajax-refresh').trigger('click');
+      // Ensure the off canvas dialog is always closed and removed.
+      // @see Drupal.AjaxCommands.prototype.closeDialog
+      $('#drupal-off-canvas').hide();
     }
     else {
       // Clear unsaved information flag so that the current webform page
@@ -294,11 +299,11 @@
    *   The HTTP status code.
    */
   Drupal.AjaxCommands.prototype.webformCloseDialog = function (ajax, response, status) {
-    if ($('#drupal-off-canvas').length) {
+    if ($('#drupal-off-canvas-wrapper').length) {
       // Close off-canvas system tray which is not triggered by close dialog
       // command.
       // @see Drupal.behaviors.offCanvasEvents
-      $('#drupal-off-canvas').remove();
+      $('#drupal-off-canvas-wrapper').remove();
       $('body').removeClass('js-tray-open');
       // Remove all *.off-canvas events
       $(document).off('.off-canvas');
@@ -333,4 +338,4 @@
     }
   };
 
-})(jQuery, Drupal, drupalSettings, once);
+})(jQuery, Drupal, drupalSettings, once, tabbable);

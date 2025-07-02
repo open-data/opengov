@@ -17,7 +17,7 @@ final class GeneratedServiceProviderData {
             default => [],
             \OpenTelemetry\API\Instrumentation\AutoInstrumentation\HookManagerInterface::class => [
                 ...((true && (($r = new \Nevay\SPI\ServiceProviderDependency\ExtensionDependency('opentelemetry', '^1.0'))->hash() !== false && $r->isSatisfied())) ? [
-                \OpenTelemetry\API\Instrumentation\AutoInstrumentation\ExtensionHookManager::class, // open-telemetry/api 1.2.3 (extra.spi)
+                \OpenTelemetry\API\Instrumentation\AutoInstrumentation\ExtensionHookManager::class, // open-telemetry/api 1.3.0 (extra.spi)
                 ] : []),
             ],
         };

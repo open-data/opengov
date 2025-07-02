@@ -321,26 +321,26 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    *
    * @param array $element
    *   An element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission
    *   A webform submission. Webform submission is optional
    *   since it is not used by composite sub elements.
    *
    * @see \Drupal\webform\Element\WebformCompositeBase::processWebformComposite
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL);
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL);
 
   /**
    * Finalize an element to be rendered within a webform.
    *
    * @param array $element
    *   An element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission
    *   A webform submission. Webform submission is optional
    *   since it is not used by composite sub elements.
    *
    * @see \Drupal\webform\Element\WebformCompositeBase::processWebformComposite
    */
-  public function finalize(array &$element, WebformSubmissionInterface $webform_submission = NULL);
+  public function finalize(array &$element, ?WebformSubmissionInterface $webform_submission = NULL);
 
   /**
    * Alter an element's associated form.
@@ -362,7 +362,7 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    *   Usually "create", "update", or "view".
    * @param array $element
    *   An element.
-   * @param \Drupal\Core\Session\AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface|null $account
    *   The user session for which to check access.
    *
    * @return bool
@@ -374,7 +374,7 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    *
    * @see \Drupal\webform\WebformAccessRulesManagerInterface::checkWebformAccess
    */
-  public function checkAccessRules($operation, array $element, AccountInterface $account = NULL);
+  public function checkAccessRules($operation, array $element, ?AccountInterface $account = NULL);
 
   /**
    * Replace tokens for all element properties.
@@ -384,7 +384,7 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    * @param \Drupal\Core\Entity\EntityInterface|null $entity
    *   A webform or webform submission entity.
    */
-  public function replaceTokens(array &$element, EntityInterface $entity = NULL);
+  public function replaceTokens(array &$element, ?EntityInterface $entity = NULL);
 
   /**
    * Display element disabled warning.

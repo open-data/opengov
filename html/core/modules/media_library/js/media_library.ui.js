@@ -326,15 +326,14 @@
         const id = e.currentTarget.value;
 
         // Update the selection.
-        const position = currentSelection.indexOf(id);
         if (e.currentTarget.checked) {
           // Check if the ID is not already in the selection and add if needed.
-          if (position === -1) {
+          if (!currentSelection.includes(id)) {
             currentSelection.push(id);
           }
-        } else if (position !== -1) {
+        } else if (currentSelection.includes(id)) {
           // Remove the ID when it is in the current selection.
-          currentSelection.splice(position, 1);
+          currentSelection.splice(currentSelection.indexOf(id), 1);
         }
 
         const mediaLibraryModalSelection = document.querySelector(
@@ -411,7 +410,9 @@
         return;
       }
       window.addEventListener('dialog:afterclose', () => {
-        Drupal.MediaLibrary.currentSelection = [];
+        // This empty the array while keeping the existing array reference,
+        // to keep event listeners working.
+        Drupal.MediaLibrary.currentSelection.length = 0;
       });
     },
   };

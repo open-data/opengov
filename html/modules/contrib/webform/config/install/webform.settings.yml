@@ -337,7 +337,6 @@ libraries:
     - jquery.chosen
 requirements:
   cdn: true
-  bootstrap: true
   clientside_validation: true
   spam: true
 langcode: en

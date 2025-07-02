@@ -1,5 +1,4 @@
 webform_icheck.element:
-  version: VERSION
   css:
     component:
       css/webform_icheck.element.css: {}

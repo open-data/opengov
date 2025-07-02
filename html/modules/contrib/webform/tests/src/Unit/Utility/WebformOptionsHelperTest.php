@@ -38,7 +38,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testHasOption()
    */
-  public function providerHasOption() {
+  public static function providerHasOption() {
     $tests[] = ['value', ['value' => 'text'], TRUE];
     $tests[] = ['value', [], FALSE];
     $tests[] = [3, [1 => 'One', 2 => 'Two', 'optgroup' => [3 => 'Three']], TRUE];
@@ -71,7 +71,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testGetOptionsText()
    */
-  public function providerGetOptionsText() {
+  public static function providerGetOptionsText() {
     $tests[] = [['value'], ['value' => 'text'], ['text']];
     $tests[] = [[1, 3], [1 => 'One', 2 => 'Two', 'optgroup' => [3 => 'Three']], ['One', 'Three']];
     $tests[] = [[2], ['optgroup1' => [1 => 'One'], 'optgroup2' => [2 => 'Two']], ['Two']];
@@ -100,7 +100,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testConvertOptionsToString()
    */
-  public function providerConvertOptionsToString() {
+  public static function providerConvertOptionsToString() {
     $tests[] = [[99 => 99], ['99' => 99]];
     $tests[] = [[TRUE => 99], ['1' => 99]];
     return $tests;
@@ -142,7 +142,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testRange()
    */
-  public function providerRange() {
+  public static function providerRange() {
     $tests[] = [['#min' => 1, '#max' => 3], [1 => 1, 2 => 2, 3 => 3]];
     $tests[] = [['#min' => 0, '#max' => 6, '#step' => 2], [0 => 0, 2 => 2, 4 => 4, 6 => 6]];
     $tests[] = [['#min' => 'A', '#max' => 'C'], ['A' => 'A', 'B' => 'B', 'C' => 'C']];
@@ -173,7 +173,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testEncodeConfig()
    */
-  public function providerEncodeConfig() {
+  public static function providerEncodeConfig() {
     $tests[] = [
       ['one' => 1, 'two' => 2, 'with.period' => 'with period'],
       [
@@ -207,7 +207,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @see testDecodeConfig()
    */
-  public function providerDecodeConfig() {
+  public static function providerDecodeConfig() {
     $tests[] = [
       [
         ['value' => 'one', 'text' => 1],

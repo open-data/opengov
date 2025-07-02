@@ -5,8 +5,6 @@
 
 (function ($, Drupal, drupalSettings, once) {
 
-  'use strict';
-
   /**
    * Move toggle weight element to the first child of the edit form.
    *

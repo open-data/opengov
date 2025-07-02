@@ -11,7 +11,7 @@
 
 ## INTRODUCTION
 
-The Webform module is a form builder and submission manager for Drupal 8/9.
+The Webform module is a form builder and submission manager for Drupal 10/11.
 
 The primary use case for this module is to:
 

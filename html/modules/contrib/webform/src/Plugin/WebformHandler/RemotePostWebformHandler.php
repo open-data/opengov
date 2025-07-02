@@ -3,6 +3,7 @@
 namespace Drupal\webform\Plugin\WebformHandler;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\RedirectCommand;
@@ -10,7 +11,6 @@ use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformMessage;
@@ -759,7 +759,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
             break;
 
           case 'bool':
-          case 'boolean';
+          case 'boolean':
             $data[$key] = (bool) $type_value;
             break;
 
@@ -900,7 +900,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * @param string $type
    *   The type of message to be displayed to the end use.
    */
-  protected function debug($message, $state, $request_url, $request_method, $request_type, $request_options, ResponseInterface $response = NULL, $type = 'warning') {
+  protected function debug($message, $state, $request_url, $request_method, $request_type, $request_options, ?ResponseInterface $response = NULL, $type = 'warning') {
     if (empty($this->configuration['debug'])) {
       return;
     }
@@ -1023,7 +1023,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       '#markup' => $message,
     ];
 
-    $this->messenger()->addMessage($this->renderer->renderPlain($build), $type);
+    $this->messenger()->addMessage($this->renderer->renderInIsolation($build), $type);
   }
 
   /**
@@ -1164,7 +1164,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     $build_message = [
       '#markup' => $this->replaceTokens($custom_response_message, $this->getWebform(), $token_data),
     ];
-    $message = \Drupal::service('renderer')->renderPlain($build_message);
+    $message = \Drupal::service('renderer')->renderInIsolation($build_message);
     $type = ($this->responseHasError($response)) ? MessengerInterface::TYPE_ERROR : MessengerInterface::TYPE_STATUS;
     $this->messenger()->addMessage($message, $type);
     return TRUE;

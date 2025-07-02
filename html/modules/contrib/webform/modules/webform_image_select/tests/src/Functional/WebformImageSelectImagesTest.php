@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\webform_image_select\Functional;
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Tests\webform\Functional\Element\WebformElementBrowserTestBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform_image_select\Entity\WebformImageSelectImages;

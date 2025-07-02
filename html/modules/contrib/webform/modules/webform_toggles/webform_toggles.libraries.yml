@@ -1,5 +1,4 @@
 webform_toggles.element:
-  version: VERSION
   css:
     component:
       css/webform_toggles.element.css: {}

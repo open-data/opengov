@@ -1,5 +1,4 @@
 webform_location_places.element:
-  version: VERSION
   css:
     component:
       css/webform.element.location.places.css: {}

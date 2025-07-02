@@ -15,7 +15,6 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\webform\Entity\Webform;
@@ -101,8 +100,7 @@ function webform_modules_installed($modules) {
   $email_provider->check();
 
   // Update Webform HTML editor.
-  if (in_array('ckeditor', $modules)
-    || in_array('ckeditor5', $modules)) {
+  if (in_array('ckeditor5', $modules)) {
     \Drupal::moduleHandler()->loadInclude('webform', 'inc', 'includes/webform.install') .
     _webform_update_html_editor();
   }
@@ -134,8 +132,7 @@ function webform_modules_uninstalled($modules) {
   $email_provider->check();
 
   // Update Webform HTML editor.
-  if (in_array('ckeditor', $modules)
-    || in_array('ckeditor5', $modules)) {
+  if (in_array('ckeditor5', $modules)) {
     \Drupal::moduleHandler()->loadInclude('webform', 'inc', 'includes/webform.install') .
     _webform_update_html_editor();
   }
@@ -862,9 +859,14 @@ function webform_file_download($uri) {
  *   An empty array if the file name length is smaller than the limit or an
  *   array containing an error message if it's not or is empty.
  *
+ * @deprecated in webform:6.3.0 and is removed from webform:7.0.0. Use
+ *   'FileNameLength' file validator plugin instead.
+ *
+ * @see https://www.drupal.org/node/3475420
  * @see file_validate_name_length()
  */
 function webform_file_validate_name_length(FileInterface $file) {
+  @trigger_error(__FUNCTION__ . "() is deprecated in webform:6.3.0 and is removed from webform:7.0.0. Use 'FileNameLength' file validator plugin instead. See https://www.drupal.org/node/3475420", E_USER_DEPRECATED);
   $errors = [];
   // Don't display error is the file_validate_name_length() has already
   // displayed a warning because the files length is over 240.
@@ -954,40 +956,6 @@ function webform_webform_access_rules() {
   ];
 }
 
-/**
- * Implements hook_field_info_alter().
- */
-function webform_field_info_alter(&$info) {
-  // @todo Remove once Drupal 10.2.x is only supported.
-  if (floatval(\Drupal::VERSION) < 10.2) {
-    $info['webform']['category'] = new TranslatableMarkup("Reference");
-  }
-}
-
-/* ************************************************************************** */
-// Devel generate info hooks.
-/* ************************************************************************** */
-
-/**
- * Implements hook_devel_generate_info_alter().
- */
-function webform_devel_generate_info_alter(array &$generators) {
-  if (!isset($generators['webform_submission'])) {
-    return;
-  }
-
-  // Use deprecated generator because the devel_generate.module changed the
-  // DevelGenerateBaseInterface.
-  //
-  // @see \Drupal\webform\Plugin\DevelGenerate\WebformSubmissionDevelGenerateDeprecated
-  // @see https://www.drupal.org/project/webform/issues/3155654
-  // @see https://gitlab.com/drupalspoons/devel/-/issues/324
-  $info = \Drupal::service('extension.list.module')->getExtensionInfo('devel_generate');
-  if (!empty($info['version']) && strpos($info['version'], '8.x-') === 0) {
-    $generators['webform_submission']['class'] = 'Drupal\webform\Plugin\DevelGenerate\WebformSubmissionDevelGenerateDeprecated';
-  }
-}
-
 /* ************************************************************************** */
 // Element info hooks.
 /* ************************************************************************** */
@@ -1028,7 +996,7 @@ function webform_element_info_alter(array &$info) {
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current state of the form.
  * @param array $complete_form
- *   The complete webform structure.
+ *   The complete form structure.
  *
  * @return array
  *   The processed element.
@@ -1036,6 +1004,11 @@ function webform_element_info_alter(array &$info) {
 function webform_process_options(&$element, FormStateInterface $form_state, &$complete_form) {
   if (!WebformElementHelper::isWebformElement($element)) {
     return $element;
+  }
+
+  // Set #webform_element for all options (checkboxes and radios).
+  foreach (Element::children($element) as $key) {
+    $element[$key]['#webform_element'] = TRUE;
   }
 
   // Description display.
@@ -1050,7 +1023,6 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
 
       [$title, $description] = WebformOptionsHelper::splitOption($title);
       $element[$key]['#title'] = $title;
-      $element[$key]['#webform_element'] = TRUE;
       $element[$key][$description_property_name] = $description;
     }
   }

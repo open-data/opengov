@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;

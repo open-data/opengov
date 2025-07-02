@@ -50,7 +50,7 @@ class WebformBubbleableMetadataTest extends UnitTestCase {
    * @return array
    *   Test data
    */
-  public function providerTestAppendTo() {
+  public static function providerTestAppendTo() {
     return [
       [
         (new WebformBubbleableMetadata())->setCacheContexts(['bar']),

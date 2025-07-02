@@ -42,7 +42,7 @@ class WebformCardsDraftJavaScriptTest extends WebformWebDriverTestBase {
 
     // Save a draft.
     $page->pressButton('edit-draft');
-    $assert_session->responseContains('Submission saved. You may return to this form later and it will restore the current values.');
+    $this->assertTrue($assert_session->waitForText('Submission saved. You may return to this form later and it will restore the current values.'));
     $this->assertElementNotVisible('[data-webform-key="card_1"]');
     $this->assertElementVisible('[data-webform-key="card_2"]');
 

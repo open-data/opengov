@@ -600,7 +600,7 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
         'webform' => [
           '#theme' => 'webform_codemirror',
           '#type' => 'html',
-          '#code' => (string) \Drupal::service('renderer')->renderPlain($link),
+          '#code' => (string) \Drupal::service('renderer')->renderInIsolation($link),
           '#suffix' => '<br/>',
         ],
         'source_entity' => [
@@ -615,7 +615,7 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
             'link' => [
               '#theme' => 'webform_codemirror',
               '#type' => 'html',
-              '#code' => (string) \Drupal::service('renderer')->renderPlain($source_entity_link),
+              '#code' => (string) \Drupal::service('renderer')->renderInIsolation($source_entity_link),
             ],
           ],
         ],

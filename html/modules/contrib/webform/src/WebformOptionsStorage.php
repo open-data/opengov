@@ -3,9 +3,9 @@
 namespace Drupal\webform;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\WebformCompositeBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

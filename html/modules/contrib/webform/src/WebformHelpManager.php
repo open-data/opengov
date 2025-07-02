@@ -5,13 +5,13 @@
 
 namespace Drupal\webform;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Path\PathMatcherInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -867,7 +867,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
             'url' => 'https://www.webwash.net/moving-forward-webform-drupal-8/ ',
           ],
           [
-            'title' => $this->t('How to Make an Advanced Webform in Drupal 8 | OSTrainging'),
+            'title' => $this->t('How to Make an Advanced Webform in Drupal 8 | OSTraining'),
             'url' => 'https://www.ostraining.com/blog/drupal/how-to-make-a-complex-webform-in-drupal-8/',
           ],
         ],
@@ -884,6 +884,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
           ],
         ],
       ],
+      // cSpell:disable
       'about' => [
         'title' => $this->t('About Webform & the Drupal community'),
         'content' => $this->t('This screencast introduces you to the maintainer and community behind the Webform module.'),
@@ -1601,7 +1602,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         'entity.webform.collection',
       ],
     ];
-
+    // cSpell:enable
     /* ********************************************************************** */
     // Installation.
     /* ********************************************************************** */
@@ -1624,7 +1625,8 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'message_type' => 'webform',
       'message_close' => TRUE,
       'message_storage' => WebformMessage::STORAGE_STATE,
-      'access' => $this->currentUser->hasPermission('administer webform'),
+      'access' => $this->currentUser->hasPermission('administer webform')
+        && !$this->configFactory->get('webform.settings')->get('ui.promotions_disabled'),
       'attached' => ['library' => ['webform/webform.promotions']],
       'routes' => [
         // @see /admin/modules

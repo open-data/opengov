@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\webform\Entity\Webform;
 
@@ -106,6 +106,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][textfield][title]', 'Campo de texto');
 
     // Check select with options translation.
+    // cSpell:disable
     $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][select_options][title]', 'Seleccione (opciones)');
 
     // Check select with custom options translation.
@@ -161,8 +162,8 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     // Check translated webform options.
     $this->drupalGet('/es/webform/test_translation');
     $assert_session->responseContains('<label for="edit-textfield">Campo de texto</label>');
-    $assert_session->responseContains('<option value="1">Uno</option>');
-    $assert_session->responseContains('<option value="4">Las cuatro</option>');
+    $this->assertEquals('1', $assert_session->optionExists('select_options', 'Uno')->getValue());
+    $this->assertEquals('4', $assert_session->optionExists('select_custom[select]', 'Las cuatro')->getValue());
 
     // Check translated webform custom composite.
     $this->drupalGet('/es/webform/test_translation');
@@ -188,8 +189,8 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     // Check that webform is not translated into French.
     $this->drupalGet('/fr/webform/test_translation');
     $assert_session->responseContains('<label for="edit-textfield">Text field</label>');
-    $assert_session->responseContains('<option value="1">One</option>');
-    $assert_session->responseContains('<option value="4">Four</option>');
+    $this->assertEquals('1', $assert_session->optionExists('select_options', 'One')->getValue());
+    $this->assertEquals('4', $assert_session->optionExists('select_custom[select]', 'Four')->getValue());
     $assert_session->responseContains('Site name: Test Website');
 
     // Check that French config elements returns the default languages elements.
@@ -438,7 +439,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     $this->drupalGet('/es/webform/test_translation', ['query' => ['variant' => 'test']]);
     $assert_session->responseContains('<label for="edit-textfield">Campo de texto</label>');
     $assert_session->responseContains('<label for="edit-select-options">Seleccione (opciones)</label>');
-
+    // cSpell:enable
     // Check French (not translated) webform.
     $this->drupalGet('/fr/webform/test_translation');
     $assert_session->responseContains('<label for="edit-textfield">Text field</label>');

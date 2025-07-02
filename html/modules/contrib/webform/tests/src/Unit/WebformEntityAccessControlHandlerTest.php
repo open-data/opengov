@@ -222,7 +222,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
    *
    * @see testCheckAccess()
    */
-  public function providerCheckAccess() {
+  public static function providerCheckAccess() {
     $tests = [];
 
     /* ********************************************************************** */

@@ -3,6 +3,7 @@
 namespace Drupal\webform\Controller;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheableResponse;
@@ -10,7 +11,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\HtmlResponse;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\Webform as WebformElement;
 use Drupal\webform\Routing\WebformUncacheableResponse;
 use Drupal\webform\WebformInterface;
@@ -205,7 +205,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    * @return array
    *   A render array representing a webform confirmation page
    */
-  public function confirmation(Request $request, WebformInterface $webform = NULL, WebformSubmissionInterface $webform_submission = NULL) {
+  public function confirmation(Request $request, ?WebformInterface $webform = NULL, ?WebformSubmissionInterface $webform_submission = NULL) {
     /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
     if (!$webform) {
       [$webform, $source_entity] = $this->requestHandler->getWebformEntities();
@@ -285,9 +285,10 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    *
    * @see \Drupal\webform\Entity\Webform::getSubmissionForm
    */
-  protected function getVariants(Request $request, WebformInterface $webform, EntityInterface $source_entity = NULL) {
-    // Get variants from '_webform_variant query string parameter.
-    $webform_variant = $request->query->get('_webform_variant');
+  protected function getVariants(Request $request, WebformInterface $webform, ?EntityInterface $source_entity = NULL) {
+    // Get variants from '_webform_variant' query string parameter.
+    $query = $request->query->all();
+    $webform_variant = $query['_webform_variant'] ?? [];
     if ($webform_variant && ($webform->access('update') || $webform->access('test'))) {
       return $webform_variant;
     }
@@ -412,7 +413,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    * @return string
    *   The webform label as a render array.
    */
-  public function title(WebformInterface $webform = NULL) {
+  public function title(?WebformInterface $webform = NULL) {
     /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
     if (!$webform) {
       [$webform, $source_entity] = $this->requestHandler->getWebformEntities();

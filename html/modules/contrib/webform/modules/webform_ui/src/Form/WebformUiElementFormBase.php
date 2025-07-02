@@ -145,7 +145,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, WebformInterface $webform = NULL, $key = NULL, $parent_key = NULL, $type = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $key = NULL, $parent_key = NULL, $type = NULL) {
     // Override an element's default value using the $form_state.
     if ($form_state->get('default_value')) {
       $this->element['#default_value'] = $form_state->get('default_value');

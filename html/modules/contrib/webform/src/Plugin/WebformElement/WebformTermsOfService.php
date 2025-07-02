@@ -70,7 +70,7 @@ class WebformTermsOfService extends Checkbox {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     // Restore #title with curly brackets.
     if (isset($element['#_webform_terms_of_service_title'])) {
       $element['#title'] = $element['#_webform_terms_of_service_title'];

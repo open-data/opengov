@@ -5,8 +5,6 @@
 
 (function ($, Drupal, debounce, once) {
 
-  'use strict';
-
   /**
    * Filter webform autocomplete handler.
    *
