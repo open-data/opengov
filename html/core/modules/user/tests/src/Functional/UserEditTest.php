@@ -28,7 +28,8 @@ class UserEditTest extends BrowserTestBase {
     $user2 = $this->drupalCreateUser([]);
     $this->drupalLogin($user1);
 
-    // Test that error message appears when attempting to use a non-unique user name.
+    // Test that error message appears when attempting to use a non-unique user
+    // name.
     $edit['name'] = $user2->getAccountName();
     $this->drupalGet("user/" . $user1->id() . "/edit");
     $this->submitForm($edit, 'Save');
@@ -36,7 +37,7 @@ class UserEditTest extends BrowserTestBase {
 
     // Check that the default value in user name field
     // is the raw value and not a formatted one.
-    \Drupal::state()->set('user_hooks_test_user_format_name_alter', TRUE);
+    \Drupal::keyValue('user_hooks_test')->set('user_format_name_alter', TRUE);
     \Drupal::service('module_installer')->install(['user_hooks_test']);
     Cache::invalidateTags(['rendered']);
     $this->drupalGet('user/' . $user1->id() . '/edit');
@@ -257,6 +258,29 @@ class UserEditTest extends BrowserTestBase {
     $this->drupalLogin($user);
     $this->drupalGet("user/" . $user->id() . "/edit");
     $this->assertFalse($this->getSession()->getPage()->hasField('mail'));
+  }
+
+  /**
+   * Tests that an admin cannot edit their own account status.
+   */
+  public function testAdminSelfBlocking(): void {
+    // Create an admin user with permission to manage other users.
+    $admin = $this->drupalCreateUser(['administer users']);
+    $user = $this->drupalCreateUser();
+
+    // Log in as the admin and attempt to edit their own profile.
+    $this->drupalLogin($admin);
+    $this->drupalGet("user/" . $admin->id() . "/edit");
+
+    // Ensure the status field is not rendered.
+    $this->assertSession()->fieldNotExists('edit-status-0');
+    $this->assertSession()->fieldNotExists('edit-status-1');
+
+    // Test editing another user to ensure the status field is rendered.
+    $this->drupalGet("user/" . $user->id() . "/edit");
+    $this->assertSession()->fieldExists('edit-status-0');
+    $this->assertSession()->fieldEnabled('edit-status-0');
+    $this->assertSession()->fieldEnabled('edit-status-1');
   }
 
 }

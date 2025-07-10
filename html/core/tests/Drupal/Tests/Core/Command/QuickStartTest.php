@@ -24,6 +24,7 @@ use Symfony\Component\Process\Process;
  * @requires extension pdo_sqlite
  *
  * @group Command
+ * @group #slow
  */
 class QuickStartTest extends TestCase {
 
@@ -56,6 +57,7 @@ class QuickStartTest extends TestCase {
     $php_executable_finder = new PhpExecutableFinder();
     $this->php = $php_executable_finder->find();
     $this->root = dirname(substr(__DIR__, 0, -strlen(__NAMESPACE__)), 2);
+    chdir($this->root);
     if (!is_writable("{$this->root}/sites/simpletest")) {
       $this->markTestSkipped('This test requires a writable sites/simpletest directory');
     }
@@ -152,7 +154,8 @@ class QuickStartTest extends TestCase {
       $this->php,
       'core/scripts/drupal',
       'install',
-      'testing',
+      'minimal',
+      "--password='secret'",
       "--site-name='Test site {$this->testDb->getDatabasePrefix()}'",
     ];
     $install_process = new Process($install_command, NULL, ['DRUPAL_DEV_SITE_PATH' => $this->testDb->getTestSitePath()]);
@@ -160,6 +163,7 @@ class QuickStartTest extends TestCase {
     $result = $install_process->run();
     // The progress bar uses STDERR to write messages.
     $this->assertStringContainsString('Congratulations, you installed Drupal!', $install_process->getErrorOutput());
+    $this->assertStringContainsString("Password: 'secret'", $install_process->getOutput());
     $this->assertSame(0, $result);
 
     // Run the PHP built-in webserver.
@@ -272,7 +276,7 @@ class QuickStartTest extends TestCase {
    *
    * @see \Drupal\Core\File\FileSystemInterface::deleteRecursive()
    */
-  protected function fileUnmanagedDeleteRecursive($path, $callback = NULL) {
+  protected function fileUnmanagedDeleteRecursive($path, $callback = NULL): bool {
     if (isset($callback)) {
       call_user_func($callback, $path);
     }

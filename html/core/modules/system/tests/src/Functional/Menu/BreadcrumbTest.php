@@ -388,6 +388,15 @@ class BreadcrumbTest extends BrowserTestBase {
     $this->drupalGet('menu-test/breadcrumb1/breadcrumb2/breadcrumb3');
     $this->assertSession()->responseContains('<script>alert(12);</script>');
     $this->assertSession()->assertEscaped('<script>alert(123);</script>');
+
+    // Assert that the breadcrumb cacheability is respected after not applying.
+    $this->assertBreadcrumb(Url::fromRoute('menu_test.skippable-breadcrumb', [], [
+      'query' => [
+        'menu_test_skip_breadcrumbs' => 'yes',
+      ],
+    ]), []);
+    $trail = $home + ['menu-test' => 'Menu test root'];
+    $this->assertBreadcrumb(Url::fromRoute('menu_test.skippable-breadcrumb'), $trail);
   }
 
   /**
@@ -407,7 +416,7 @@ class BreadcrumbTest extends BrowserTestBase {
       $this->assertBreadcrumb('menu-test/breadcrumb1', []);
       $this->fail($message);
     }
-    catch (ExpectationFailedException $e) {
+    catch (ExpectationFailedException) {
       $this->assertTrue(TRUE, $message);
     }
 
@@ -417,7 +426,7 @@ class BreadcrumbTest extends BrowserTestBase {
       $this->assertBreadcrumb('menu-test/breadcrumb1', $home);
       $this->fail($message);
     }
-    catch (ExpectationFailedException $e) {
+    catch (ExpectationFailedException) {
       $this->assertTrue(TRUE, $message);
     }
 
@@ -434,7 +443,7 @@ class BreadcrumbTest extends BrowserTestBase {
       $this->assertBreadcrumb('menu-test/breadcrumb1', $trail);
       $this->fail($message);
     }
-    catch (ExpectationFailedException $e) {
+    catch (ExpectationFailedException) {
       $this->assertTrue(TRUE, $message);
     }
   }

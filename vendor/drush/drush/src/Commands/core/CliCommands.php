@@ -4,10 +4,22 @@ declare(strict_types=1);
 
 namespace Drush\Commands\core;
 
+use Drupal\Component\DependencyInjection\Container;
+use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Config\ConfigBase;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityTypeRepositoryInterface;
+use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
+use Drush\Psysh\Caster;
 use Drush\Psysh\DrushCommand;
 use Drush\Psysh\DrushHelpCommand;
 use Drush\Psysh\Shell;
@@ -15,27 +27,20 @@ use Drush\Runtime\Runtime;
 use Drush\Utils\FsUtils;
 use Psy\Configuration;
 use Psy\VersionUpdater\Checker;
-use Drush\Boot\DrupalBootLevels;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class CliCommands extends DrushCommands
 {
+    use AutowireTrait;
+
     const DOCS_REPL = 'docs:repl';
     const PHP = 'php:cli';
 
     public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager
+        protected EntityTypeManagerInterface $entityTypeManager,
+        protected EntityTypeRepositoryInterface $entityTypeRepository,
+        protected EntityTypeBundleInfoInterface $entityTypeBundleInfo
     ) {
         parent::__construct();
-    }
-
-    public static function create(ContainerInterface $container): self
-    {
-        $commandHandler = new static(
-            $container->get('entity_type.manager')
-        );
-
-        return $commandHandler;
     }
 
     /**
@@ -58,6 +63,7 @@ final class CliCommands extends DrushCommands
     #[CLI\Option(name: 'cwd', description: 'A directory to change to before launching the shell. Default is the project root directory')]
     #[CLI\Topics(topics: [self::DOCS_REPL])]
     #[CLI\Usage(name: '$node = Node::load(1)', description: 'Entity classes are available without their namespace. For example, Node::load(1) works instead of Drupal\Node\entity\Node::load(1).')]
+    #[CLI\Usage(name: '$node = NodeArticle::load(1)', description: 'Entity bundles classes are also available without their namespace. For example, NodeArticle::load(1) works instead of Drupal\node_article\entity\NodeArticle::load(1).')]
     #[CLI\Usage(name: '$paragraph = Paragraph::loadRevision(1)', description: 'Also, a loadRevision static method is made available for easier load of revisions.')]
     #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
     public function cli(array $options = ['version-history' => false, 'cwd' => self::REQ]): void
@@ -110,6 +116,7 @@ final class CliCommands extends DrushCommands
         // command in preflight still, but the subscriber instances are already
         // created from before. Call terminate() regardless, this is a no-op for all
         // DrupalBoot classes except DrupalBoot8.
+        // @phpstan-ignore if.alwaysTrue
         if ($bootstrap = Drush::bootstrap()) {
             $bootstrap->terminate();
         }
@@ -176,13 +183,13 @@ final class CliCommands extends DrushCommands
     protected function getCasters(): array
     {
         return [
-            \Drupal\Core\Entity\ContentEntityInterface::class => \Drush\Psysh\Caster::castContentEntity(...),
-            \Drupal\Core\Field\FieldItemListInterface::class => \Drush\Psysh\Caster::castFieldItemList(...),
-            \Drupal\Core\Field\FieldItemInterface::class => \Drush\Psysh\Caster::castFieldItem(...),
-            \Drupal\Core\Config\Entity\ConfigEntityInterface::class => \Drush\Psysh\Caster::castConfigEntity(...),
-            \Drupal\Core\Config\ConfigBase::class => \Drush\Psysh\Caster::castConfig(...),
-            \Drupal\Component\DependencyInjection\Container::class => \Drush\Psysh\Caster::castContainer(...),
-            \Drupal\Component\Render\MarkupInterface::class => \Drush\Psysh\Caster::castMarkup(...),
+            ContentEntityInterface::class => Caster::castContentEntity(...),
+            FieldItemListInterface::class => Caster::castFieldItemList(...),
+            FieldItemInterface::class => Caster::castFieldItem(...),
+            ConfigEntityInterface::class => Caster::castConfigEntity(...),
+            ConfigBase::class => Caster::castConfig(...),
+            Container::class => Caster::castContainer(...),
+            MarkupInterface::class => Caster::castMarkup(...),
         ];
     }
 
@@ -191,7 +198,6 @@ final class CliCommands extends DrushCommands
      *
      * This can either be site specific (default) or Drupal version specific.
      *
-     * @param array $options
      *
      * @return string.
      */
@@ -308,17 +314,36 @@ final class CliCommands extends DrushCommands
 
     public function makeEntitiesAvailableWithShortClassNames(): void
     {
-        foreach ($this->entityTypeManager->getDefinitions() as $definition) {
-            $class = $definition->getClass();
-            $reflectionClass = new \ReflectionClass($class);
-            $parts = explode('\\', $class);
-            $end = end($parts);
-            // https://github.com/drush-ops/drush/pull/5729 and https://github.com/drush-ops/drush/issues/5730.
-            if ($reflectionClass->isAbstract() || $reflectionClass->isFinal() || class_exists($end)) {
-                continue;
+        // The entity type repository stores a map from class name to entity
+        // type id, sneak our short classes in there.
+        $classNameEntityTypeMapReflection = (new \ReflectionObject($this->entityTypeRepository))->getProperty('classNameEntityTypeMap');
+        $classNameEntityTypeMap = $classNameEntityTypeMapReflection->getValue($this->entityTypeRepository);
+        foreach ($this->entityTypeManager->getDefinitions() as $entityTypeId => $definition) {
+            $classNameEntityTypeMap = $this->createShortClassForEntityClass($definition->getClass(), $entityTypeId, $classNameEntityTypeMap);
+            foreach ($this->entityTypeBundleInfo->getAllBundleInfo() as $bundles) {
+                foreach ($bundles as $info) {
+                    if (isset($info['class'])) {
+                        $classNameEntityTypeMap = $this->createShortClassForEntityClass($info['class'], $entityTypeId, $classNameEntityTypeMap);
+                    }
+                }
             }
-            // Make it possible to easily load revisions.
-            eval(sprintf('class %s extends %s {
+        }
+        $classNameEntityTypeMapReflection->setValue($this->entityTypeRepository, $classNameEntityTypeMap);
+    }
+
+    public function createShortClassForEntityClass(string $class, string $entityTypeId, array $classNameEntityTypeMap): array
+    {
+        $reflectionClass = new \ReflectionClass($class);
+        $parts = explode('\\', $class);
+        $end = end($parts);
+        // https://github.com/drush-ops/drush/pull/5729, https://github.com/drush-ops/drush/issues/5730
+        // and https://github.com/drush-ops/drush/issues/5899.
+        if ($reflectionClass->isFinal() || $reflectionClass->isAbstract() || class_exists($end)) {
+            return $classNameEntityTypeMap;
+        }
+        $classNameEntityTypeMap[$end] = $entityTypeId;
+        // Make it possible to easily load revisions.
+        eval(sprintf('class %s extends %s {
                 public static function loadRevision($id) {
                     $entity_type_repository = \Drupal::service("entity_type.repository");
                     $entity_type_manager = \Drupal::entityTypeManager();
@@ -326,6 +351,6 @@ final class CliCommands extends DrushCommands
                     return $storage->loadRevision($id);
                 }
             }', $end, $class));
-        }
+        return $classNameEntityTypeMap;
     }
 }

@@ -9,7 +9,7 @@ use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\ckeditor5\Traits\CKEditor5TestTrait;
 use Drupal\user\RoleInterface;
-use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * Tests for CKEditor 5 to ensure correct focus management in dialogs.
@@ -42,6 +42,9 @@ class CKEditor5DialogTest extends CKEditor5TestBase {
     Editor::create([
       'format' => 'test_format',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
       'settings' => [
         'toolbar' => [
           'items' => ['link'],
@@ -50,7 +53,7 @@ class CKEditor5DialogTest extends CKEditor5TestBase {
     ])->save();
 
     $this->assertSame([], array_map(
-      function (ConstraintViolation $v) {
+      function (ConstraintViolationInterface $v) {
         return (string) $v->getMessage();
       },
       iterator_to_array(CKEditor5::validatePair(
@@ -78,7 +81,7 @@ class CKEditor5DialogTest extends CKEditor5TestBase {
     // Make sure the input field can have focus and we can type into it.
     $input->setValue($link_url);
     // Save the new link.
-    $page->find('css', '.ck-balloon-panel .ck-button-save')->click();
+    $page->find('xpath', "//button[span[text()='Insert']]")->click();
     // Make sure something was added to the text.
     $this->assertNotEmpty($content_area->getText());
   }

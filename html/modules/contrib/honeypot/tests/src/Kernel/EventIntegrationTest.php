@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\honeypot\Kernel;
 
 use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
@@ -45,7 +47,6 @@ class EventIntegrationTest extends RulesKernelTestBase {
     $this->installConfig(['field']);
     $this->installConfig(['node']);
     $this->installSchema('node', ['node_access']);
-    $this->installSchema('system', ['sequences']);
   }
 
   /**

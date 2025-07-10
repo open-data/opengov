@@ -9,27 +9,21 @@ use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\link\LinkItemInterface;
 use Drush\Attributes as CLI;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Commands\field\FieldCreateCommands;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class LinkHooks extends DrushCommands
 {
+    use AutowireTrait;
+
     public function __construct(
         protected ModuleHandlerInterface $moduleHandler
     ) {
-    }
-
-    public static function create(ContainerInterface $container): self
-    {
-        $commandHandler = new static(
-            $container->get('module_handler')
-        );
-
-        return $commandHandler;
+        parent::__construct();
     }
 
     #[CLI\Hook(type: HookManager::OPTION_HOOK, target: FieldCreateCommands::CREATE)]
@@ -93,7 +87,7 @@ final class LinkHooks extends DrushCommands
 
     protected function askLinkType(): int
     {
-        return $this->io()->choice('Allowed link type', [
+        return (int) $this->io()->choice('Allowed link type', [
             LinkItemInterface::LINK_INTERNAL => (string) t('Internal links only'),
             LinkItemInterface::LINK_EXTERNAL => (string) t('External links only'),
             LinkItemInterface::LINK_GENERIC => (string) t('Both internal and external links'),
@@ -102,7 +96,7 @@ final class LinkHooks extends DrushCommands
 
     protected function askAllowLinkText(): int
     {
-        return $this->io()->choice('Allow link text', [
+        return (int) $this->io()->choice('Allow link text', [
             DRUPAL_DISABLED => (string) t('Disabled'),
             DRUPAL_OPTIONAL => (string) t('Optional'),
             DRUPAL_REQUIRED => (string) t('Required'),

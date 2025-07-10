@@ -52,12 +52,43 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
         throw new \InvalidArgumentException(sprintf('Property %s with value %s does not exist on %s.', $property, $value, __CLASS__));
       }
     }
+
+    // In version CKEditor5 45.0.0, the icons were renamed, so if any
+    // drupalElementStyles are specifying icons, deprecate use of the old names
+    // and provide a mapping for backwards compatibility.
+    // @see https://ckeditor.com/docs/ckeditor5/latest/updating/guides/changelog.html#new-installation-methods-improvements-icons-replacement
+    // @see https://github.com/ckeditor/ckeditor5/blob/v44.3.0/packages/ckeditor5-core/src/index.ts
+    // @see https://github.com/ckeditor/ckeditor5/blob/v45.0.0/packages/ckeditor5-icons/src/index.ts
+    if (!isset($this->ckeditor5) || !isset($this->ckeditor5['config']['drupalElementStyles']) || !is_array($this->ckeditor5['config']['drupalElementStyles'])) {
+      return;
+    }
+
+    foreach ($this->ckeditor5['config']['drupalElementStyles'] as $group_id => &$groups) {
+      if (!is_array($groups)) {
+        continue;
+      }
+
+      foreach ($groups as &$style) {
+        if (is_array($style) && isset($style['icon']) && is_string($style['icon']) && !preg_match('/^(<svg)|(Icon)/', $style['icon'])) {
+          $deprecated_icon = $style['icon'];
+          $style['icon'] = match ($deprecated_icon) {
+            'objectLeft' => 'IconObjectInlineLeft',
+            'objectRight' => 'IconObjectInlineRight',
+            'objectBlockLeft' => 'IconObjectLeft',
+            'objectBlockRight' => 'IconObjectRight',
+            default => 'Icon' . ucfirst($style['icon'])
+          };
+          @trigger_error(sprintf('The icon configuration value "%s" in drupalElementStyles group %s for CKEditor5 plugin %s is deprecated in drupal:11.2.0 and will be removed in drupal:12.0.0. Try using "%s" instead. See https://www.drupal.org/node/3528806', $deprecated_icon, $group_id, $this->id(), $style['icon']), E_USER_DEPRECATED);
+        }
+      }
+    }
   }
 
   /**
    * Gets an array representation of this CKEditor 5 plugin definition.
    *
    * @return array
+   *   The array representation of this CKEditor 5 plugin definition.
    */
   public function toArray(): array {
     return [
@@ -347,12 +378,14 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Gets the human-readable name of the CKEditor plugin.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The human-readable name of the CKEditor plugin.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$label
    */
   public function label(): TranslatableMarkup {
     $label = $this->drupal['label'];
     if (!$label instanceof TranslatableMarkup) {
+      // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
       $label = new TranslatableMarkup($label);
     }
     return $label;
@@ -380,6 +413,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin has conditions.
    *
    * @return bool
+   *   TRUE if the plugin has conditions, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$conditions
    */
@@ -403,6 +437,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin has toolbar items.
    *
    * @return bool
+   *   TRUE if the plugin has toolbar items, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$toolbar_items
    */
@@ -432,6 +467,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin has an asset library to load.
    *
    * @return bool
+   *   TRUE if the plugin has an asset library to load, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$library
    */
@@ -461,6 +497,8 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin has an asset library to load on the admin UI.
    *
    * @return bool
+   *   TRUE if the plugin has an asset library to load on the admin UI, FALSE
+   *   otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$admin_library
    */
@@ -526,6 +564,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin allows creating/editing elements and attributes.
    *
    * @return bool
+   *   TRUE if the plugin has elements, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\DrupalAspectsOfCKEditor5Plugin::$elements
    */
@@ -549,6 +588,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin loads CKEditor 5 plugin classes.
    *
    * @return bool
+   *   TRUE if the plugin loads CKEditor 5 plugin classes, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\CKEditor5AspectsOfCKEditor5Plugin::$plugins
    */
@@ -572,6 +612,7 @@ final class CKEditor5PluginDefinition extends PluginDefinition implements Plugin
    * Whether this plugin has additional values for the CKEditor 5 configuration.
    *
    * @return bool
+   *   TRUE if there are additional configuration values, FALSE otherwise.
    *
    * @see \Drupal\ckeditor5\Annotation\CKEditor5AspectsOfCKEditor5Plugin::$config
    */

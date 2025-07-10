@@ -51,12 +51,6 @@ class TestSiteInstallCommand extends Command {
    */
   protected array $originalShutdownCallbacks = [];
 
-  /**
-   * The translation file directory for the test environment.
-   *
-   * This is set in BrowserTestBase::prepareEnvironment().
-   */
-  protected string $translationFilesDirectory;
 
   /**
    * The config importer that can be used in a test.
@@ -85,17 +79,6 @@ class TestSiteInstallCommand extends Command {
    * @var string
    */
   protected $langcode = 'en';
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Remove and fix test to not rely on super user.
-   * @see https://www.drupal.org/project/drupal/issues/3437620
-   */
-  public function __construct(?string $name = NULL) {
-    parent::__construct($name);
-    $this->usesSuperUserAccessPolicy = TRUE;
-  }
 
   /**
    * {@inheritdoc}

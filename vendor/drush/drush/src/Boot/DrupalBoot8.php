@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Drush\Boot;
 
-use Drupal\Core\DrupalKernelInterface;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Drupal\Core\Database\Database;
-use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\DrupalKernel;
+use Drupal\Core\DrupalKernelInterface;
+use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drush\Config\ConfigLocator;
 use Drush\Drupal\DrushLoggerServiceProvider;
+use Drush\Drupal\Migrate\MigrateRunnerServiceProvider;
 use Drush\Drush;
+use Drush\Runtime\LegacyServiceFinder;
+use Drush\Runtime\LegacyServiceInstantiator;
 use Drush\Runtime\ServiceManager;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Filesystem\Path;
+use Robo\Robo;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Robo\Robo;
-use Drush\Runtime\LegacyServiceInstantiator;
-use Drush\Runtime\LegacyServiceFinder;
+use Symfony\Component\HttpKernel\TerminableInterface;
 
 class DrupalBoot8 extends DrupalBoot
 {
@@ -63,7 +62,7 @@ class DrupalBoot8 extends DrupalBoot
         return false;
     }
 
-    public function getVersion($drupal_root): string
+    public function getVersion($root): string
     {
         return \Drupal::VERSION;
     }
@@ -179,10 +178,13 @@ class DrupalBoot8 extends DrupalBoot
         parent::bootstrapDrupalDatabase($manager);
     }
 
-    public function bootstrapDrupalConfiguration(BootstrapManager $manager, AnnotationData $annotationData = null): void
+    public function bootstrapDrupalConfiguration(BootstrapManager $manager, ?AnnotationData $annotationData = null): void
     {
         // Coax \Drupal\Core\DrupalKernel::discoverServiceProviders to add our logger.
         $GLOBALS['conf']['container_service_providers'][] = DrushLoggerServiceProvider::class;
+        // Implement a hook in behalf of 'system' module until #2952291 lands.
+        // @see https://www.drupal.org/project/drupal/issues/2952291
+        $GLOBALS['conf']['container_service_providers'][] = MigrateRunnerServiceProvider::class;
 
         // Default to the standard kernel.
         $kernel = Kernels::DRUPAL;
@@ -192,7 +194,6 @@ class DrupalBoot8 extends DrupalBoot
         $request = $this->getRequest();
         $kernel_factory = Kernels::getKernelFactory($kernel);
         $allow_dumping = $kernel !== Kernels::UPDATE;
-        /** @var DrupalKernelInterface kernel */
         $this->kernel = $kernel_factory($request, $this->autoloader, 'prod', $allow_dumping, $manager->getRoot());
 
         // Unset drupal error handler and restore Drush's one.
@@ -212,6 +213,10 @@ class DrupalBoot8 extends DrupalBoot
         $this->logger->debug(dt('Finished bootstrap of the Drupal Kernel.'));
 
         parent::bootstrapDrupalFull($manager);
+
+        // Directly add the Drupal core bootstrapped commands.
+        Drush::getApplication()->addCommands($this->serviceManager->instantiateDrupalCoreBootstrappedCommands());
+
         $this->addDrupalModuleDrushCommands($manager);
 
         // Set a default account to make sure the correct timezone is set
@@ -305,7 +310,19 @@ class DrupalBoot8 extends DrupalBoot
             } else {
                 $response = new HtmlResponse();
             }
+            assert($this->kernel instanceof TerminableInterface);
             $this->kernel->terminate($this->getRequest(), $response);
         }
+    }
+
+    /**
+     * Initialize a site on the Drupal root.
+     *
+     * We now set various contexts that we determined and confirmed to be valid.
+     * Additionally we load an optional drush.yml file in the site directory.
+     */
+    public function bootstrapDrupalSite(BootstrapManager $manager)
+    {
+        $this->bootstrapDoDrupalSite($manager);
     }
 }

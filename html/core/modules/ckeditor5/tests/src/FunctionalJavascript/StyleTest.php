@@ -10,7 +10,7 @@ use Drupal\ckeditor5\Plugin\Editor\CKEditor5;
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\ckeditor5\Traits\CKEditor5TestTrait;
-use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * @coversDefaultClass \Drupal\ckeditor5\Plugin\CKEditor5Plugin\Style
@@ -109,8 +109,8 @@ JS;
 
     // The CKEditor 5 module should refuse to allow styles on non-HTML5 tags.
     $assert_session->waitForElement('css', '[role=alert][data-drupal-message-type="error"]:contains("A style can only be specified for an HTML 5 tag. <drupal-media> is not an HTML5 tag.")');
-    // The vertical tab for "Style" settings should not be marked up as the cause
-    // of the error, but only the "Styles" text area in the vertical tab.
+    // The vertical tab for "Style" settings should not be marked up as the
+    // cause of the error, but only the "Styles" text area in the vertical tab.
     $assert_session->elementNotExists('css', '.vertical-tabs__pane[data-ckeditor5-plugin-id="ckeditor5_style"][aria-invalid="true"]');
     $assert_session->elementExists('css', '.vertical-tabs__pane[data-ckeditor5-plugin-id="ckeditor5_style"] textarea[data-drupal-selector="edit-editor-settings-plugins-ckeditor5-style-styles"][aria-invalid="true"]');
 
@@ -245,7 +245,7 @@ JS;
       ],
     ])->save();
     $this->assertSame([], array_map(
-      function (ConstraintViolation $v) {
+      function (ConstraintViolationInterface $v) {
         return (string) $v->getMessage();
       },
       iterator_to_array(CKEditor5::validatePair(
@@ -658,7 +658,7 @@ JS;
     // 6. the `reliable` class has been added to the `<a>`
     // 7. The `deep-dive` class has been added to the `<div>`
     // 8. The `caution` class has been added to the `<caption>`
-    $this->assertSame('<h2 class="red-heading">Upgrades</h2><p>Drupal has historically been difficult to upgrade from one major version to the next.</p><p class="highlighted interesting">This changed with Drupal 8.</p><blockquote class="famous"><p>Updating from Drupal 8\'s latest version to Drupal 9.0.0 should be as easy as updating between minor versions of Drupal 8.</p></blockquote><p>— <a class="reliable" href="https://dri.es/making-drupal-upgrades-easy-forever">Dries</a></p><div class="deep-dive"><ul class="items"><li>Update Drupal core using Composer</li><li>Update Drupal core manually</li><li>Update Drupal core using Drush</li></ul><ol class="steps"><li>Back up your files and database</li><li>Put your site into maintenance mode</li><li>Update the code and apply changes</li><li>Deactivate maintenance mode</li></ol><table class="data-analysis"><caption class="caution">Drupal upgrades are now easy, with a few caveats.</caption><tbody><tr><td>First</td><td>Second</td></tr><tr><td>Data value 1</td><td>Data value 2</td></tr></tbody></table></div>', $this->getEditorDataAsHtmlString());
+    $this->assertSame('<h2 class="red-heading">Upgrades</h2><p>Drupal has historically been difficult to upgrade from one major version to the next.</p><p class="highlighted interesting">This changed with Drupal 8.</p><blockquote class="famous"><p>Updating from Drupal 8\'s latest version to Drupal 9.0.0 should be as easy as updating between minor versions of Drupal 8.</p></blockquote><p>— <a class="reliable" href="https://dri.es/making-drupal-upgrades-easy-forever">Dries</a></p><div class="deep-dive"><ul class="items"><li>Update Drupal core using Composer</li><li>Update Drupal core manually</li><li>Update Drupal core using Drush</li></ul><ol class="steps"><li>Back up your files and database</li><li>Put your site into maintenance mode</li><li>Update the code and apply changes</li><li>Deactivate maintenance mode</li></ol><table class="table data-analysis"><caption class="caution">Drupal upgrades are now easy, with a few caveats.</caption><tbody><tr><td>First</td><td>Second</td></tr><tr><td>Data value 1</td><td>Data value 2</td></tr></tbody></table></div>', $this->getEditorDataAsHtmlString());
   }
 
 }

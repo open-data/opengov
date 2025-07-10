@@ -33,7 +33,7 @@ class ShouldCallParentMethodsRule implements Rule
 			return [];
 		}
 
-		if (!$scope->getClassReflection()->isSubclassOf(TestCase::class)) {
+		if (!$scope->getClassReflection()->is(TestCase::class)) {
 			return [];
 		}
 
@@ -56,7 +56,7 @@ class ShouldCallParentMethodsRule implements Rule
 		if (!$hasParentCall) {
 			return [
 				RuleErrorBuilder::message(
-					sprintf('Missing call to parent::%s() method.', $methodName)
+					sprintf('Missing call to parent::%s() method.', $methodName),
 				)->identifier('phpunit.callParent')->build(),
 			];
 		}

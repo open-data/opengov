@@ -43,7 +43,8 @@ class ConfigExportTest extends WebDriverTestBase {
       'administer block content',
     ]));
 
-    // Create test blocks, so we know what the titles will be to check their order.
+    // Create test blocks, so we know what the titles will be to check their
+    // order.
     foreach ([1, 2, 3, 4] as $num) {
       $block_name = $this->blockNamePrefix . $num;
       $new_block = $this->createBlockContent($block_name);
@@ -59,10 +60,11 @@ class ConfigExportTest extends WebDriverTestBase {
   /**
    * Creates test blocks.
    *
-   * @param $title
+   * @param string $title
    *   Title of the block.
    *
    * @return \Drupal\block_content\Entity\BlockContent
+   *   The created block content entity.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
@@ -108,7 +110,8 @@ class ConfigExportTest extends WebDriverTestBase {
     $this->assertSession()->fieldValueEquals('export', '');
 
     // Check that the 'Configuration name' list is sorted alphabetically by ID,
-    // which always begins with our prefix, and not the label, which is randomized.
+    // which always begins with our prefix, and not the label, which is
+    // randomized.
     $page->selectFieldOption('config_type', 'Block');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $options = $page->findField('config_name')->findAll('css', 'option');

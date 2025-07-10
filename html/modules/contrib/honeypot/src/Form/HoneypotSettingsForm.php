@@ -3,8 +3,8 @@
 namespace Drupal\honeypot\Form;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Returns responses for Honeypot module routes.
+ * Configures Honeypot settings for this site.
  */
 class HoneypotSettingsForm extends ConfigFormBase {
 
@@ -40,32 +40,24 @@ class HoneypotSettingsForm extends ConfigFormBase {
   protected $entityTypeBundleInfo;
 
   /**
-   * A cache backend interface.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected $cache;
-
-  /**
-   * Constructs a settings controller.
+   * Constructs a HoneypotSettings form.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   The typed config manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The entity type bundle info service.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
-   *   The cache backend interface.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, CacheBackendInterface $cache_backend) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+    parent::__construct($config_factory, $typedConfigManager);
     $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
-    $this->cache = $cache_backend;
   }
 
   /**
@@ -74,10 +66,10 @@ class HoneypotSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('module_handler'),
       $container->get('entity_type.manager'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('cache.default')
+      $container->get('entity_type.bundle.info')
     );
   }
 
@@ -131,7 +123,7 @@ class HoneypotSettingsForm extends ConfigFormBase {
     $form['configuration']['time_limit'] = [
       '#type' => 'number',
       '#title' => $this->t('Honeypot time limit'),
-      '#description' => $this->t('Minimum time required before form should be considered entered by a human instead of a bot. Set to 0 to disable.'),
+      '#description' => $this->t('Minimum time required before a form should be considered entered by a human instead of a bot. Set to 0 to disable.'),
       '#default_value' => $honeypot_config->get('time_limit'),
       '#required' => TRUE,
       '#min' => 0,
@@ -143,7 +135,7 @@ class HoneypotSettingsForm extends ConfigFormBase {
     $form['configuration']['expire'] = [
       '#type' => 'number',
       '#title' => $this->t('Honeypot expire'),
-      '#description' => $this->t("Entries in the {honeypot_user} table that are older than the value of 'expire' will be deleted when cron is run."),
+      '#description' => $this->t("Entries in the {honeypot_user} table that are older than 'expire' seconds will be deleted when cron is run."),
       '#default_value' => $honeypot_config->get('expire'),
       '#required' => TRUE,
       '#min' => 0,
@@ -257,12 +249,12 @@ class HoneypotSettingsForm extends ConfigFormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     // Make sure Honeypot element name only contains A-Z, 0-9.
     if (!preg_match("/^[-_a-zA-Z0-9]+$/", $form_state->getValue('element_name'))) {
-      $form_state->setErrorByName('element_name', $this->t("The element name cannot contain spaces or other special characters."));
+      $form_state->setErrorByName('element_name', $this->t('The element name cannot contain spaces or other special characters.'));
     }
 
     // Make sure Honeypot element name starts with a letter.
     if (!preg_match("/^[a-zA-Z].+$/", $form_state->getValue('element_name'))) {
-      $form_state->setErrorByName('element_name', $this->t("The element name must start with a letter."));
+      $form_state->setErrorByName('element_name', $this->t('The element name must start with a letter.'));
     }
 
     // Make sure Honeypot element name isn't one of the reserved names.
@@ -272,7 +264,7 @@ class HoneypotSettingsForm extends ConfigFormBase {
       'website',
     ];
     if (in_array($form_state->getValue('element_name'), $reserved_element_names)) {
-      $form_state->setErrorByName('element_name', $this->t("The element name cannot match one of the common Drupal form field names (e.g. @names).", ['@names' => implode(', ', $reserved_element_names)]));
+      $form_state->setErrorByName('element_name', $this->t('The element name cannot match one of the common Drupal form field names (e.g. @names).', ['@names' => implode(', ', $reserved_element_names)]));
     }
   }
 
@@ -291,12 +283,7 @@ class HoneypotSettingsForm extends ConfigFormBase {
     }
 
     // Save the honeypot forms from $form_state into a 'form_settings' array.
-    $config->set('form_settings', $form_state->getValue('form_settings'));
-
-    $config->save();
-
-    // Clear the honeypot protected forms cache.
-    $this->cache->delete('honeypot_protected_forms');
+    $config->set('form_settings', $form_state->getValue('form_settings'))->save();
 
     parent::submitForm($form, $form_state);
   }

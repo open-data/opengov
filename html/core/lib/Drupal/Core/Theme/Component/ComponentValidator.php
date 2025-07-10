@@ -81,6 +81,28 @@ class ComponentValidator {
     if (($schema['properties'] ?? NULL) === []) {
       $schema['properties'] = new \stdClass();
     }
+
+    // Ensure that all property types are strings. For example, a null value
+    // will not automatically convert to 'null', which will lead to a PHP error
+    // that is hard to trace back to the property.
+    $non_string_props = [];
+    \array_walk($prop_names, function (string $prop) use (&$non_string_props, $schema) {
+      $type = $schema['properties'][$prop]['type'];
+      $types = !\is_array($type) ? [$type] : $type;
+      $non_string_types = \array_filter($types, static fn (mixed $type) => !\is_string($type));
+      if ($non_string_types) {
+        $non_string_props[] = $prop;
+      }
+    });
+
+    if ($non_string_props) {
+      throw new InvalidComponentException(\sprintf(
+        'The component "%s" uses non-string types for properties: %s.',
+        $definition['id'],
+        \implode(', ', $non_string_props),
+      ));
+    }
+
     $classes_per_prop = $this->getClassProps($schema);
     $missing_class_errors = [];
     foreach ($classes_per_prop as $prop_name => $class_types) {
@@ -117,7 +139,7 @@ class ComponentValidator {
       ...$message_parts,
       ...$missing_class_errors,
     ];
-    $message = implode("/n", $message_parts);
+    $message = implode("\n", $message_parts);
     // Throw the exception with the error message.
     throw new InvalidComponentException($message);
   }
@@ -177,7 +199,9 @@ class ComponentValidator {
     $errors = array_filter(
       $this->validator->getErrors(),
       function (array $error) use ($context): bool {
-        if (($error['constraint'] ?? '') !== 'type') {
+        // Support 5.0 ($error['constraint']) and 6.0
+        // ($error['constraint']['name']) at the same time.
+        if (($error['constraint']['name'] ?? $error['constraint'] ?? '') !== 'type') {
           return TRUE;
         }
         return !Element::isRenderArray($context[$error['property']] ?? NULL);
@@ -187,7 +211,7 @@ class ComponentValidator {
       return TRUE;
     }
     $message_parts = array_map(
-      static function (array $error): string {
+      static function (array $error) use ($component_id, $context): string {
         // We check the error message instead of values and definitions here
         // because it's hard to access both given the possible complexity of a
         // schema. Since this is a small non critical DX improvement error
@@ -196,11 +220,17 @@ class ComponentValidator {
           $error['message'] .= '. This may be because the property is empty instead of having data present. If possible fix the source data, use the |default() twig filter, or update the schema to allow multiple types.';
         }
 
-        return sprintf("[%s] %s", $error['property'], $error['message']);
+        // If the property value has been set, print it out for easier
+        // debugging.
+        if (isset($context[$error['property']]) && \is_scalar($context[$error['property']])) {
+          $error['message'] .= \sprintf('. The provided value is: "%s"', $context[$error['property']]);
+        }
+
+        return sprintf('[%s/%s] %s.', $component_id, $error['property'], $error['message']);
       },
       $errors
     );
-    $message = implode("/n", $message_parts);
+    $message = implode("\n", $message_parts);
     throw new InvalidComponentException($message);
   }
 
@@ -255,7 +285,7 @@ class ComponentValidator {
     }
     $props_schema = $this->nullifyClassPropsSchema($props_schema, $classes_per_prop);
     if (!empty($error_messages)) {
-      $message = implode("/n", $error_messages);
+      $message = implode("\n", $error_messages);
       throw new InvalidComponentException($message);
     }
     return [$props_schema, $props_raw];

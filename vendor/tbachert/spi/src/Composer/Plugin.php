@@ -56,13 +56,14 @@ final class Plugin implements PluginInterface, EventSubscriberInterface {
     }
 
     public function preAutoloadDump(Event $event): void {
+        // ClassLoader creation based on EventDispatcher::getScriptListeners()
         $package = $event->getComposer()->getPackage();
         $packages = $event->getComposer()->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         $packageMap = $event->getComposer()->getAutoloadGenerator()->buildPackageMap($event->getComposer()->getInstallationManager(), $package, $packages);
         $map = $event->getComposer()->getAutoloadGenerator()->parseAutoloads($packageMap, $package);
-        $loader = $event->getComposer()->getAutoloadGenerator()->createLoader($map, $event->getComposer()->getConfig()->get('vendor-dir'));
-        $loader->register();
+        $loader = $event->getComposer()->getAutoloadGenerator()->createLoader($map);
 
+        $loader->register();
         try {
             $this->dumpGeneratedServiceProviderData($event);
         } finally {

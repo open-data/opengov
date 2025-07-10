@@ -35,6 +35,11 @@ class PaginationAJAXTest extends WebDriverTestBase {
    */
   public static $testViews = ['test_content_ajax'];
 
+  /**
+   * The test user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
   protected $user;
 
   /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drush\Commands;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteProcess\ProcessManagerAwareInterface;
@@ -13,19 +14,17 @@ use Drush\Config\ConfigAwareTrait;
 use Drush\Drush;
 use Drush\Exec\ExecTrait;
 use Drush\Log\DrushLoggerManager;
+use Drush\SiteAlias\ProcessManager;
 use Drush\Style\DrushStyle;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Path;
 
 abstract class DrushCommands implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface, ProcessManagerAwareInterface
@@ -37,6 +36,7 @@ abstract class DrushCommands implements IOAwareInterface, LoggerAwareInterface, 
     use IO {
         io as roboIo;
     }
+    use ConfiguresPrompts;
 
     // This is more readable.
     const REQ = InputOption::VALUE_REQUIRED;
@@ -57,31 +57,23 @@ abstract class DrushCommands implements IOAwareInterface, LoggerAwareInterface, 
     /**
      * Override Robo's IO function with our custom style.
      */
-    protected function io(): SymfonyStyle
+    protected function io(): DrushStyle
     {
+        // @phpstan-ignore booleanNot.alwaysFalse
         if (!$this->io) {
             // Specify our own Style class when needed.
             $this->io = new DrushStyle($this->input(), $this->output());
         }
+        assert($this->io instanceof DrushStyle);
         return $this->io;
-    }
-
-    /**
-     * Sets a logger, if none is available yet.
-     */
-    #[Deprecated('Use logger() in Drush 13+')]
-    public function setLoggerIfEmpty(LoggerInterface $logger): void
-    {
-        if ($this->logger === null) {
-            $this->setLogger($logger);
-        }
     }
 
     /**
      * Returns a logger object.
      */
-    protected function logger(): ?DrushLoggerManager
+    public function logger(): ?DrushLoggerManager
     {
+        assert(is_null($this->logger) || $this->logger instanceof DrushLoggerManager, 'Instead of using replacing Drush\'s logger, use $this->add() on DrushLoggerManager to add a custom logger. See https://github.com/drush-ops/drush/pull/5022');
         return $this->logger;
     }
 
@@ -120,6 +112,16 @@ abstract class DrushCommands implements IOAwareInterface, LoggerAwareInterface, 
     }
 
     /**
+     * Configure Laravel prompts package.
+     */
+    #[CLI\Hook(type: HookManager::INITIALIZE, target: '*')]
+    public function initHook($input, AnnotationData $annotationData)
+    {
+
+        $this->configurePrompts($input);
+    }
+
+    /**
      * Print the contents of a file. The path comes from the @topic annotation.
      *
      * @param CommandData $commandData
@@ -141,5 +143,13 @@ abstract class DrushCommands implements IOAwareInterface, LoggerAwareInterface, 
         $stack = HandlerStack::create();
         $stack->push(Middleware::log($this->logger(), new MessageFormatter(Drush::debug() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)));
         return $stack;
+    }
+
+    /**
+     * This method overrides the trait in order to provide a more specific return type.
+     */
+    public function processManager(): ProcessManager
+    {
+        return $this->processManager;
     }
 }

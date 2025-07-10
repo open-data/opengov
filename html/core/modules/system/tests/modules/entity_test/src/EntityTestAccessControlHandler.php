@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\entity_test;
 
 use Drupal\Core\Access\AccessResult;
@@ -98,6 +100,16 @@ class EntityTestAccessControlHandler extends EntityAccessControlHandler {
       'administer entity_test_with_bundle content',
       'create ' . $entity_bundle . ' entity_test_with_bundle entities',
     ], 'OR');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildCreateAccessCid(array $context, ?string $entity_bundle): string {
+    $cid = parent::buildCreateAccessCid([], $entity_bundle);
+    $cid .= isset($context['context_var1']) ? ":{$context['context_var1']}" : '';
+    $cid .= isset($context['context_var2']) ? ":{$context['context_var2']}" : '';
+    return $cid;
   }
 
 }
