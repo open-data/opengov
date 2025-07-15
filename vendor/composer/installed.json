@@ -565,17 +565,17 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.8.9",
-            "version_normalized": "2.8.9.0",
+            "version": "2.8.10",
+            "version_normalized": "2.8.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d"
+                "reference": "53834f587d7ab2527eb237459d7b94d1fb9d4c5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d",
-                "reference": "b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d",
+                "url": "https://api.github.com/repos/composer/composer/zipball/53834f587d7ab2527eb237459d7b94d1fb9d4c5a",
+                "reference": "53834f587d7ab2527eb237459d7b94d1fb9d4c5a",
                 "shasum": ""
             },
             "require": {
@@ -614,7 +614,7 @@
                 "ext-zip": "Enabling the zip extension allows you to unzip archives",
                 "ext-zlib": "Allow gzip compression of HTTP requests"
             },
-            "time": "2025-05-13T12:01:37+00:00",
+            "time": "2025-07-10T17:08:33+00:00",
             "bin": [
                 "bin/composer"
             ],
@@ -662,7 +662,7 @@
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
                 "security": "https://github.com/composer/composer/security/policy",
-                "source": "https://github.com/composer/composer/tree/2.8.9"
+                "source": "https://github.com/composer/composer/tree/2.8.10"
             },
             "funding": [
                 {
@@ -7474,12 +7474,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/open-data/gcweb_bootstrap.git",
-                "reference": "14f0970fc28f4c385bdc85c147114707c19b0dbb"
+                "reference": "cc8c999706278ac4dfb48b004ba9c0ca35030c7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/open-data/gcweb_bootstrap/zipball/14f0970fc28f4c385bdc85c147114707c19b0dbb",
-                "reference": "14f0970fc28f4c385bdc85c147114707c19b0dbb",
+                "url": "https://api.github.com/repos/open-data/gcweb_bootstrap/zipball/cc8c999706278ac4dfb48b004ba9c0ca35030c7f",
+                "reference": "cc8c999706278ac4dfb48b004ba9c0ca35030c7f",
                 "shasum": ""
             },
             "require": {
@@ -7487,10 +7487,10 @@
                 "cweagans/composer-patches": "^1.7.0",
                 "drupal/bootstrap": "5.0.1",
                 "drupal/core": "^8 || ^9 || ^10 || ^11",
-                "wet-boew/theme-gcweb": "15.0.0",
-                "wet-boew/wet-boew": "v4.0.79"
+                "wet-boew/theme-gcweb": "16.2.0",
+                "wet-boew/wet-boew": "v4.0.85"
             },
-            "time": "2025-07-02T17:47:15+00:00",
+            "time": "2025-07-15T14:58:01+00:00",
             "default-branch": true,
             "type": "drupal-theme",
             "extra": {
@@ -7541,12 +7541,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/open-data/og.git",
-                "reference": "350395509dc91be96e09957beddc2d50455fc23f"
+                "reference": "37f6709be401fc33a4a458df6a1b8fd7e6950b13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/open-data/og/zipball/350395509dc91be96e09957beddc2d50455fc23f",
-                "reference": "350395509dc91be96e09957beddc2d50455fc23f",
+                "url": "https://api.github.com/repos/open-data/og/zipball/37f6709be401fc33a4a458df6a1b8fd7e6950b13",
+                "reference": "37f6709be401fc33a4a458df6a1b8fd7e6950b13",
                 "shasum": ""
             },
             "require": {
@@ -7591,7 +7591,7 @@
             "require-dev": {
                 "drupal/core-dev": "^11.2"
             },
-            "time": "2025-07-09T17:06:35+00:00",
+            "time": "2025-07-15T14:58:43+00:00",
             "type": "drupal-profile",
             "extra": {
                 "patches": {
@@ -8880,17 +8880,17 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.1.0",
-            "version_normalized": "2.1.0.0",
+            "version": "2.2.0",
+            "version_normalized": "2.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68"
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
                 "shasum": ""
             },
             "require": {
@@ -8907,7 +8907,7 @@
                 "phpunit/phpunit": "^9.6",
                 "symfony/process": "^5.2"
             },
-            "time": "2025-02-19T13:28:12+00:00",
+            "time": "2025-07-13T07:04:09+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -8924,7 +8924,7 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.2.0"
             },
             "install-path": "../phpstan/phpdoc-parser"
         },
@@ -9447,17 +9447,17 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.26",
-            "version_normalized": "11.5.26.0",
+            "version": "11.5.27",
+            "version_normalized": "11.5.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4ad8fe263a0b55b54a8028c38a18e3c5bef312e0"
+                "reference": "446d43867314781df7e9adf79c3ec7464956fd8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4ad8fe263a0b55b54a8028c38a18e3c5bef312e0",
-                "reference": "4ad8fe263a0b55b54a8028c38a18e3c5bef312e0",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/446d43867314781df7e9adf79c3ec7464956fd8f",
+                "reference": "446d43867314781df7e9adf79c3ec7464956fd8f",
                 "shasum": ""
             },
             "require": {
@@ -9467,7 +9467,7 @@
                 "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
-                "myclabs/deep-copy": "^1.13.1",
+                "myclabs/deep-copy": "^1.13.3",
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.2",
@@ -9491,7 +9491,7 @@
             "suggest": {
                 "ext-soap": "To be able to generate mocks based on WSDL files"
             },
-            "time": "2025-07-04T05:58:21+00:00",
+            "time": "2025-07-11T04:10:06+00:00",
             "bin": [
                 "phpunit"
             ],
@@ -9531,7 +9531,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.26"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.27"
             },
             "funding": [
                 {
@@ -15555,16 +15555,16 @@
         },
         {
             "name": "wet-boew/theme-gcweb",
-            "version": "v15.0.0",
-            "version_normalized": "15.0.0.0",
+            "version": "v16.2.0",
+            "version_normalized": "16.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wet-boew/themes-cdn.git",
-                "reference": "v15.0.0-gcweb"
+                "reference": "v16.2.0-gcweb"
             },
             "dist": {
                 "type": "tar",
-                "url": "https://github.com/wet-boew/themes-cdn/archive/v15.0.0-gcweb.tar.gz"
+                "url": "https://github.com/wet-boew/themes-cdn/archive/v16.2.0-gcweb.tar.gz"
             },
             "type": "drupal-library",
             "installation-source": "dist",
@@ -15572,16 +15572,16 @@
         },
         {
             "name": "wet-boew/wet-boew",
-            "version": "v4.0.79",
-            "version_normalized": "4.0.79.0",
+            "version": "v4.0.85",
+            "version_normalized": "4.0.85.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wet-boew/wet-boew-cdn.git",
-                "reference": "v4.0.79"
+                "reference": "v4.0.85"
             },
             "dist": {
                 "type": "tar",
-                "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.79.tar.gz"
+                "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.85.tar.gz"
             },
             "type": "drupal-library",
             "installation-source": "dist",

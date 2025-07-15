@@ -726,6 +726,7 @@ return array(
     'PHPUnit\\Runner\\ResultCache\\NullResultCache' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/NullResultCache.php',
     'PHPUnit\\Runner\\ResultCache\\ResultCache' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/ResultCache.php',
     'PHPUnit\\Runner\\ResultCache\\ResultCacheHandler' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/ResultCacheHandler.php',
+    'PHPUnit\\Runner\\ResultCache\\ResultCacheId' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/ResultCacheId.php',
     'PHPUnit\\Runner\\ResultCache\\Subscriber' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/Subscriber/Subscriber.php',
     'PHPUnit\\Runner\\ResultCache\\TestConsideredRiskySubscriber' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/Subscriber/TestConsideredRiskySubscriber.php',
     'PHPUnit\\Runner\\ResultCache\\TestErroredSubscriber' => $vendorDir . '/phpunit/phpunit/src/Runner/ResultCache/Subscriber/TestErroredSubscriber.php',
