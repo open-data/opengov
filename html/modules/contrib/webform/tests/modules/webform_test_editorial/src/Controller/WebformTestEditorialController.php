@@ -368,6 +368,7 @@ class WebformTestEditorialController extends ControllerBase implements Container
    *   A renderable array containing webform entity scheme.
    */
   public function drush() {
+    // @phpstan-ignore-next-line
     $this->moduleHandler()->loadInclude('webform', 'inc', 'drush/webform.drush');
 
     $build = [];
@@ -382,6 +383,7 @@ class WebformTestEditorialController extends ControllerBase implements Container
       ['data' => $this->t('Value'), 'width' => '70%'],
     ];
     $build = [];
+    // @phpstan-ignore-next-line
     $commands = webform_drush_command();
     foreach ($commands as $command_name => $command) {
       $build[$command_name] = [];

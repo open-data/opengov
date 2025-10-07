@@ -34,6 +34,10 @@ function captcha_set_form_id_setting($form_id, $captcha_type) {
     $captcha_point = new CaptchaPoint([
       'formId' => $form_id,
       'captchaType' => $captcha_type,
+      // @see https://www.drupal.org/project/drupal/issues/3302838
+      // On config pre-save drupal tries to query same uuid, and deprecation
+      // is generated. So we prefill the uuid for now.
+      'uuid' => \Drupal::service('uuid')->generate(),
     ], 'captcha_point');
   }
   $captcha_point->enable();

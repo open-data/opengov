@@ -59,7 +59,6 @@ The installation of this module is like other Drupal modules.
 ## RECOMMENDED MODULES
 
 - Third party libraries (`/admin/help/webform`)
-- Add-on contrib modules (`/admin/structure/webform/addons`)
 
 
 ## CONFIGURATION

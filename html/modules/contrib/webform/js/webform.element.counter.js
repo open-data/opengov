@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   // @see https://github.com/ractoon/jQuery-Text-Counter#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.counter = Drupal.webform.counter || {};
@@ -16,7 +15,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformCounter = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.textcounter) {
         return;
       }
@@ -48,6 +47,11 @@
         }
 
         options = $.extend(options, Drupal.webform.counter.options);
+
+        // Allow custom options.
+        if ($(this).attr('data-options')) {
+          options = $.extend(true, options, JSON.parse($(this).attr('data-options')));
+        }
 
         $(this).textcounter(options);
       });

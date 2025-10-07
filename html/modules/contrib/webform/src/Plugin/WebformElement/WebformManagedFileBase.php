@@ -36,11 +36,11 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 abstract class WebformManagedFileBase extends WebformElementBase implements WebformElementAttachmentInterface, WebformElementEntityReferenceInterface, WebformElementFileDownloadAccessInterface {
 
   /**
-   * List of blacklisted mime types that must be downloaded.
+   * List of mime types that must be downloaded.
    *
    * @var array
    */
-  protected static $blacklistedMimeTypes = [
+  protected static $downloadMimeTypes = [
     'application/pdf',
     'application/xml',
     'image/svg+xml',
@@ -295,7 +295,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     // @see \Drupal\webform\Plugin\WebformElementBase::preRenderFixFlexboxWrapper
     $request_params = \Drupal::request()->request->all();
     if (\Drupal::request()->request->get('_drupal_ajax')
-      && (!empty($request_params['files']) || !empty($request_params[$element['#webform_key']]))) {
+      && (!empty($request_params['files']) || (isset($element['#webform_key']) && !empty($request_params[$element['#webform_key']])))) {
       $element['#webform_wrapper'] = FALSE;
     }
 
@@ -353,7 +353,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
       default:
         $theme = str_replace('webform_', 'webform_element_', $this->getPluginId());
-        if (strpos($theme, 'webform_') !== 0) {
+        if (!str_starts_with($theme, 'webform_')) {
           $theme = 'webform_element_' . $theme;
         }
         return [
@@ -800,7 +800,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         // Don't allow anonymous temporary files to be previewed.
         // @see template_preprocess_file_link().
         // @see webform_preprocess_file_link().
-        if ($file->isTemporary() && $file->getOwner()->isAnonymous() && strpos($file->getFileUri(), 'private://') === 0) {
+        if ($file->isTemporary() && $file->getOwner()->isAnonymous() && str_starts_with($file->getFileUri(), 'private://')) {
           continue;
         }
 
@@ -945,8 +945,11 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     // If has access and total file size exceeds file limit then display error.
     if (Element::isVisibleElement($element) && $total_file_size > $file_limit) {
+      $file_limit_message = $webform_submission->getWebform()->getSetting('form_file_limit_message')
+        ?: \Drupal::config('webform.settings')->get('settings.default_form_file_limit_message')
+        ?: '';
       $t_args = ['%quota' => ByteSizeMarkup::create($file_limit)];
-      $message = t("This form's file upload quota of %quota has been exceeded. Please remove some files.", $t_args);
+      $message = t($file_limit_message, $t_args);
       $form_state->setError($element, $message);
     }
   }
@@ -974,8 +977,8 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $form['file']['file_message'] = [
         '#type' => 'webform_message',
         '#message_message' => '<strong>' . $this->t('Saving of results is disabled.') . '</strong> ' .
-          $this->t('Uploaded files will be temporarily stored on the server and referenced in the database for %interval.', ['%interval' => $temporary_interval]) . ' ' .
-          $this->t('Uploaded files should be attached to an email and/or remote posted to an external server.'),
+        $this->t('Uploaded files will be temporarily stored on the server and referenced in the database for %interval.', ['%interval' => $temporary_interval]) . ' ' .
+        $this->t('Uploaded files should be attached to an email and/or remote posted to an external server.'),
         '#message_type' => 'warning',
         '#access' => TRUE,
       ];
@@ -995,7 +998,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         '#type' => 'webform_message',
         '#message_type' => 'warning',
         '#message_message' => $this->t('Public files upload destination is dangerous for webforms that are available to anonymous and/or untrusted users.') . ' ' .
-          $this->t('For more information see: <a href="https://www.drupal.org/psa-2016-003">DRUPAL-PSA-2016-003</a>'),
+        $this->t('For more information see: <a href="https://www.drupal.org/psa-2016-003">DRUPAL-PSA-2016-003</a>'),
         '#access' => TRUE,
         '#states' => [
           'visible' => [
@@ -1037,8 +1040,8 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       '#type' => 'select',
       '#title' => $this->t('File upload preview (Authenticated users only)'),
       '#description' => $this->t('Select how the uploaded file previewed.') . '<br/><br/>' .
-          $this->t('Allowing anonymous users to preview files is dangerous.') . '<br/>' .
-          $this->t('For more information see: <a href="https://www.drupal.org/psa-2016-003">DRUPAL-PSA-2016-003</a>'),
+      $this->t('Allowing anonymous users to preview files is dangerous.') . '<br/>' .
+      $this->t('For more information see: <a href="https://www.drupal.org/psa-2016-003">DRUPAL-PSA-2016-003</a>'),
       '#options' => WebformOptionsHelper::appendValueToText($this->getItemFormats()),
       '#empty_option' => '<' . $this->t('no preview') . '>',
     ];
@@ -1056,7 +1059,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       '#type' => 'textfield',
       '#title' => $this->t('Allowed file extensions'),
       '#description' => $this->t('Separate extensions with a space or comma and do not include the leading dot.') . '<br/><br/>' .
-        $this->t('Defaults to: %value', ['%value' => $this->getDefaultFileExtensions()]),
+      $this->t('Defaults to: %value', ['%value' => $this->getDefaultFileExtensions()]),
       '#maxlength' => 255,
     ];
     $form['file']['file_name'] = [
@@ -1387,8 +1390,8 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       // Remove other characters not removed by Transliteration.
       $illegal_characters = '/[%#&{}\<>*?\/ $!\'":@+`|=]/';
       $filename_fallback = preg_replace($illegal_characters, '', $filename_fallback);
-      // Force blacklisted files to be downloaded instead of opening in the browser.
-      if (in_array($headers['Content-Type'], static::$blacklistedMimeTypes)) {
+      // Force some files to be downloaded instead of opening in the browser.
+      if (in_array($headers['Content-Type'], static::$downloadMimeTypes)) {
         $headers['Content-Disposition'] = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, (string) $filename, $filename_fallback);
       }
       else {

@@ -4,6 +4,7 @@ namespace Drupal\facets\Processor;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Cache\UncacheableDependencyTrait;
+use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\DependencyTrait;
 use Drupal\Core\Plugin\PluginBase;
@@ -121,6 +122,29 @@ class ProcessorPluginBase extends PluginBase implements ProcessorInterface, Cach
    */
   public function getQueryType() {
     return NULL;
+  }
+
+  /**
+   * Checks access for the given entities.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface[] $entities
+   *   The entities for which to check access, passed by reference. Entities to
+   *   which the current user does not have access will be removed.
+   * @param \Drupal\facets\FacetInterface $facet
+   *   The facet for which the entities were loaded.
+   */
+  protected function checkEntitiesAccess(
+    array &$entities,
+    FacetInterface $facet,
+    EntityAccessControlHandlerInterface $access,
+  ): void {
+    foreach ($entities as $id => $entity) {
+      $access_result = $access->access($entity, 'view', return_as_object: TRUE);
+      $facet->addCacheableDependency($access_result);
+      if (!$access_result->isAllowed()) {
+        unset($entities[$id]);
+      }
+    }
   }
 
 }

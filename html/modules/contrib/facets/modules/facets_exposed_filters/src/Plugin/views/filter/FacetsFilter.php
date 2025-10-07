@@ -225,7 +225,9 @@ class FacetsFilter extends FilterPluginBase {
    * {@inheritdoc}
    */
   public function acceptExposedInput($input) {
-    return TRUE;
+    // Modules like views_dependent_filters alter the exposed option to ignore the filter when hidden.
+    // We need to check for this.
+    return $this->isExposed();
   }
 
   /**
@@ -546,6 +548,10 @@ class FacetsFilter extends FilterPluginBase {
    * to retrieve the active filters from the request ourself.
    */
   private function getActiveFacetValues() {
+    // Reset button in ajax request. We probably want a better way to detect if this was clicked.
+    if(isset($_GET["reset"])) {
+      return [];
+    }
     $exposed = $this->view->getExposedInput();
     if (!isset($exposed[$this->options["expose"]["identifier"]])) {
       return [];
@@ -571,6 +577,7 @@ class FacetsFilter extends FilterPluginBase {
     foreach ($options["facet"]["processors"] as $processor_id => $processor_data) {
       if ($processor_data["status"] == 1) {
         $processor_configs[$processor_id] = [
+          'processor_id' => $processor_id,
           'settings' => $processor_data["settings"] ?? [],
         ];
       }
@@ -578,6 +585,7 @@ class FacetsFilter extends FilterPluginBase {
     foreach ($options["facet_sort_processors"] as $processor_id => $processor_data) {
       if ($processor_data["status"] == 1) {
         $processor_configs[$processor_id] = [
+          'processor_id' => $processor_id,
           'settings' => $processor_data["settings"] ?? [],
         ];
       }

@@ -21,11 +21,8 @@
     "node": ">=6"
   },
   "dependencies": {},
-  "version": "6.4.2",
+  "version": "7.0.1",
   "name": "@fortawesome/fontawesome-common-types",
   "license": "MIT",
-  "types": "./index.d.ts",
-  "scripts": {
-    "postinstall": "node attribution.js"
-  }
+  "types": "./index.d.ts"
 }

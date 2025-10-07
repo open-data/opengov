@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal) {
-
   Drupal.webform = Drupal.webform || {};
   // Allow scrollTopOffset to be custom defined or based on whether there is a
   // floating toolbar.

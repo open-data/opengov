@@ -96,13 +96,13 @@ class WebformImageFile extends WebformManagedFileBase {
     $value = $this->getValue($element, $webform_submission, $options);
     $file = $this->getFile($element, $value, $options);
     $format = $this->getItemFormat($element);
-    if (strpos($format, ':') === FALSE) {
+    if (!str_contains($format, ':')) {
       return parent::formatHtmlItem($element, $webform_submission, $options);
     }
     else {
       [$style_name, $format] = explode(':', $format);
       $theme = str_replace('webform_', 'webform_element_', $this->getPluginId());
-      if (strpos($theme, 'webform_') !== 0) {
+      if (!str_starts_with($theme, 'webform_')) {
         $theme = 'webform_element_' . $theme;
       }
       return [

@@ -169,15 +169,10 @@ class WebformLikert extends WebformElementBase {
         ];
 
       case 'average':
-        $avg = '';
         $filtered = array_filter($value);
-        if (count($filtered)) {
-          $avg = round(array_sum($filtered) / count($filtered), 3);
-        }
-        return [
-          '#type' => 'markup',
-          '#markup' => $avg,
-        ];
+        return ($filtered)
+          ? round(array_sum($filtered) / count($filtered), 2)
+          : '';
 
       default:
       case 'value':
@@ -221,6 +216,12 @@ class WebformLikert extends WebformElementBase {
           $list[] = "$question_key: $answer_value";
         }
         return implode(PHP_EOL, $list);
+
+      case 'average':
+        $filtered = array_filter($value);
+        return ($filtered)
+          ? round(array_sum($filtered) / count($filtered), 2)
+          : '';
 
       default:
       case 'value':

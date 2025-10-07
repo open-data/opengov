@@ -185,7 +185,7 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
    * @return array
    *   Gtm settings.
    */
-  public function getGtmSettings(string $gtmid = NULL): array {
+  public function getGtmSettings(?string $gtmid = NULL): array {
     // Choose first gtmID if none was supplied.
     $gtmid = $gtmid ?? $this->getGtmId();
 

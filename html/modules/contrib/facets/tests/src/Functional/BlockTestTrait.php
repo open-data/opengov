@@ -17,7 +17,7 @@ trait BlockTestTrait {
   protected $blocks;
 
   /**
-   * Add a facet trough the UI.
+   * Add a facet through the UI.
    *
    * @param string $name
    *   The facet name.

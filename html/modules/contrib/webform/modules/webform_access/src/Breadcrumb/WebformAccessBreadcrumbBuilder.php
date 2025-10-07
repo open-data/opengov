@@ -44,7 +44,7 @@ class WebformAccessBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $cacheable_metadata?->addCacheContexts(['route']);
     $route_name = $route_match->getRouteName();
     // All routes must begin or contain 'webform_access'.
-    if (strpos($route_name, 'webform_access') === FALSE) {
+    if (!str_contains($route_name, 'webform_access')) {
       return FALSE;
     }
 
@@ -54,14 +54,14 @@ class WebformAccessBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     $path = Url::fromRouteMatch($route_match)->toString();
 
-    if (strpos($path, 'admin/structure/webform/access/') === FALSE) {
+    if (!str_contains($path, 'admin/structure/webform/access/')) {
       return FALSE;
     }
 
-    if (strpos($path, 'admin/structure/webform/access/group/manage/') !== FALSE) {
+    if (str_contains($path, 'admin/structure/webform/access/group/manage/')) {
       $this->type = 'webform_access_group';
     }
-    elseif (strpos($path, 'admin/structure/webform/access/type/manage/') !== FALSE) {
+    elseif (str_contains($path, 'admin/structure/webform/access/type/manage/')) {
       $this->type = 'webform_access_type';
     }
     else {

@@ -1,6 +1,6 @@
 # @fortawesome/fontawesome-svg-core - SVG with JavaScript version
 
-> "I came here to chew bubblegum and install Font Awesome 6 - and I'm all out of bubblegum"
+> "I came here to chew bubblegum and install Font Awesome 7 - and I'm all out of bubblegum"
 
 [![npm](https://img.shields.io/npm/v/@fortawesome/fontawesome-svg-core.svg?style=flat-square)](https://www.npmjs.com/package/@fortawesome/fontawesome-svg-core)
 
@@ -18,9 +18,9 @@ $ yarn add @fortawesome/fontawesome-svg-core
 
 ## Documentation
 
-Get started [here](https://fontawesome.com/how-to-use/on-the-web/setup/getting-started). Continue your journey [here](https://fontawesome.com/how-to-use/on-the-web/advanced).
+Get started [here](https://docs.fontawesome.com/web/setup/get-started). Continue your journey [here](https://docs.fontawesome.com/web/setup/packages).
 
-Or go straight to the [API documentation](https://fontawesome.com/how-to-use/with-the-api).
+Or go straight to the [API documentation](https://docs.fontawesome.com/apis/javascript/get-started).
 
 ## Issues and support
 

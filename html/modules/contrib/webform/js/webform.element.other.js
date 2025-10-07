@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Toggle other input (text) field.
    *
@@ -71,7 +70,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformSelectOther = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-select-other', '.js-webform-select-other', context)).each(function () {
         var $element = $(this);
 
@@ -99,7 +98,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformCheckboxesOther = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-checkboxes-other', '.js-webform-checkboxes-other', context)).each(function () {
         var $element = $(this);
         var $checkbox = $element.find('input[value="_other_"]');
@@ -120,7 +119,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformRadiosOther = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-radios-other', '.js-webform-radios-other', context)).each(function () {
         var $element = $(this);
 
@@ -142,7 +141,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformButtonsOther = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-buttons-other', '.js-webform-buttons-other', context)).each(function () {
         var $element = $(this);
 

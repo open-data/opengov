@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal) {
-
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.cards = Drupal.webform.cards || {};
   // Autoforward (defaults to 1/4 second delay).
@@ -16,7 +15,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformCards = {
-    attach: function (context) {
+    attach(context) {
       // Determine if the form is the context or it is within the context.
       var $forms = $(context).is('form.webform-submission-form')
         ? $(context)

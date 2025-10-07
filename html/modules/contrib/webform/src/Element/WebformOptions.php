@@ -90,7 +90,7 @@ class WebformOptions extends FormElementBase {
         '#default_value' => WebformYaml::encode($element['#default_value']),
         '#placeholder' => t('Enter custom options…'),
         '#description' => t('Key-value pairs MUST be specified as "safe_key: \'Some readable options\'". Use of only alphanumeric characters and underscores is recommended in keys. One option per line.') . '<br /><br />' .
-          t('Option groups can be created by using just the group name followed by indented group options.'),
+        t('Option groups can be created by using just the group name followed by indented group options.'),
       ];
       return $element;
     }

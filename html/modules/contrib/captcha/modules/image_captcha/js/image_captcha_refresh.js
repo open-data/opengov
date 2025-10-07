@@ -41,7 +41,7 @@
           },
           'json'
         );
-        return FALSE;
+        return false;
       });
     }
   };

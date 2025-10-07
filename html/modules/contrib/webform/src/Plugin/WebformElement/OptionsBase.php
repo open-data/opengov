@@ -86,7 +86,7 @@ abstract class OptionsBase extends WebformElementBase {
    */
   public function isMultiline(array $element) {
     $items_format = $this->getItemsFormat($element);
-    if (strpos($items_format, 'checklist:') === 0) {
+    if (str_starts_with($items_format, 'checklist:')) {
       return TRUE;
     }
     else {
@@ -164,32 +164,16 @@ abstract class OptionsBase extends WebformElementBase {
       $has_description = (!empty($element['#description'])) ? TRUE : FALSE;
       if ($is_description_display && $has_description) {
         $description = WebformElementHelper::convertToString($element['#description']);
-        switch ($element['#description_display']) {
-          case 'before':
-            $element += ['#field_prefix' => ''];
-            $element['#field_prefix'] = '<div class="description">' . $description . '</div>' . $element['#field_prefix'];
-            unset($element['#description']);
-            unset($element['#description_display']);
-            break;
-
-          case 'tooltip':
-            $element += ['#field_suffix' => ''];
-            $element['#field_suffix'] .= '<div class="description visually-hidden">' . $description . '</div>';
-            // @see \Drupal\Core\Render\Element\CompositeFormElementTrait
-            // @see \Drupal\webform\Plugin\WebformElementBase::prepare
-            $element['#attributes']['class'][] = 'js-webform-tooltip-element';
-            $element['#attributes']['class'][] = 'webform-tooltip-element';
-            $element['#attached']['library'][] = 'webform/webform.tooltip';
-            unset($element['#description']);
-            unset($element['#description_display']);
-            break;
-
-          case 'invisible':
-            $element += ['#field_suffix' => ''];
-            $element['#field_suffix'] .= '<div class="description visually-hidden">' . $description . '</div>';
-            unset($element['#description']);
-            unset($element['#description_display']);
-            break;
+        if ($element['#description_display'] === 'tooltip') {
+          $element += ['#field_suffix' => ''];
+          $element['#field_suffix'] .= '<div class="description visually-hidden">' . $description . '</div>';
+          // @see \Drupal\Core\Render\Element\CompositeFormElementTrait
+          // @see \Drupal\webform\Plugin\WebformElementBase::prepare
+          $element['#attributes']['class'][] = 'js-webform-tooltip-element';
+          $element['#attributes']['class'][] = 'webform-tooltip-element';
+          $element['#attached']['library'][] = 'webform/webform.tooltip';
+          unset($element['#description']);
+          unset($element['#description_display']);
         }
       }
     }
@@ -459,7 +443,7 @@ abstract class OptionsBase extends WebformElementBase {
    */
   protected function formatHtmlItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $format = $this->getItemsFormat($element);
-    if (strpos($format, 'checklist:') === 0) {
+    if (str_starts_with($format, 'checklist:')) {
       // Get checked/unchecked icons.
       [, $checked_type] = explode(':', $format);
       switch ($checked_type) {
@@ -513,7 +497,7 @@ abstract class OptionsBase extends WebformElementBase {
    */
   protected function formatTextItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $format = $this->getItemsFormat($element);
-    if (strpos($format, 'checklist:') === 0) {
+    if (str_starts_with($format, 'checklist:')) {
       // Get checked/unchecked icons.
       [, $checked_type] = explode(':', $format);
       switch ($checked_type) {
@@ -615,11 +599,11 @@ abstract class OptionsBase extends WebformElementBase {
     // Build format options with help.
     $options_format_options = [
       'compact' => $this->t('Compact, with the option values delimited by commas in one column.') .
-        WebformOptionsHelper::DESCRIPTION_DELIMITER .
-        $this->t('Compact options are more suitable for importing data into other systems.'),
+      WebformOptionsHelper::DESCRIPTION_DELIMITER .
+      $this->t('Compact options are more suitable for importing data into other systems.'),
       'separate' => $this->t('Separate, with each possible option value in its own column.') .
-        WebformOptionsHelper::DESCRIPTION_DELIMITER .
-        $this->t('Separate options are more suitable for building reports, graphs, and statistics in a spreadsheet application. Ranking will be included for sortable option elements.'),
+      WebformOptionsHelper::DESCRIPTION_DELIMITER .
+      $this->t('Separate options are more suitable for building reports, graphs, and statistics in a spreadsheet application. Ranking will be included for sortable option elements.'),
     ];
     $form['options'] = [
       '#type' => 'details',
@@ -697,6 +681,10 @@ abstract class OptionsBase extends WebformElementBase {
       }
       // Separate multiple values (i.e. options).
       foreach ($element_options as $option_value => $option_text) {
+        // The option value must be cast to a string because PHP automatically casts incremental numbers
+        // in an array to integers. The option value is stored via a webform submission as a string.
+        // @see https://www.php.net/manual/en/language.types.array.php#language.types.array.syntax
+        $option_value = (string) $option_value;
         if (is_array($value) && isset($value[$option_value])) {
           unset($value[$option_value]);
           $record[] = ($deltas) ? ($deltas[$option_value] + 1) : 'X';
@@ -778,7 +766,7 @@ abstract class OptionsBase extends WebformElementBase {
       return [$title => $selectors];
     }
     else {
-      $multiple = ($this->hasMultipleValues($element) && strpos($plugin_id, 'select') !== FALSE) ? '[]' : '';
+      $multiple = ($this->hasMultipleValues($element) && str_contains($plugin_id, 'select')) ? '[]' : '';
       return [":input[name=\"$name$multiple\"]" => $title];
     }
   }
@@ -800,7 +788,7 @@ abstract class OptionsBase extends WebformElementBase {
       return [":input[name=\"{$name}[$other_type]$multiple\"]" => $options];
     }
     else {
-      $multiple = ($this->hasMultipleValues($element) && strpos($plugin_id, 'select') !== FALSE) ? '[]' : '';
+      $multiple = ($this->hasMultipleValues($element) && str_contains($plugin_id, 'select')) ? '[]' : '';
       return [":input[name=\"$name$multiple\"]" => $options];
     }
   }
@@ -843,7 +831,7 @@ abstract class OptionsBase extends WebformElementBase {
 
         if ($this->hasMultipleValues($element)) {
           // Return array of valid #options.
-          return array_intersect($value, array_keys($options));
+          return array_intersect($value ?? [], array_keys($options));
         }
         else {
           // Return valid #option.
@@ -1101,20 +1089,20 @@ abstract class OptionsBase extends WebformElementBase {
       '#type' => 'details',
       '#title' => $this->t('Options (custom) properties'),
       '#access' => $this->hasProperty('options__properties')
-        && $this->currentUser->hasPermission('edit webform source'),
+      && $this->currentUser->hasPermission('edit webform source'),
     ];
     $form['options_properties']['options__properties'] = [
       '#type' => 'webform_codemirror',
       '#mode' => 'yaml',
       '#title' => $this->t('Options properties'),
       '#description' => $this->t("Custom options properties must include the 'Option value' followed by option (element) properties prepended with a hash (#) character.") .
-        "<pre>option_value:
+      "<pre>option_value:
   '#wrapper_attributes':
     class:
       - disabled
   '#disabled': true</pre>" .
-        '<br /><br />' .
-        $this->t('These properties and callbacks are not allowed: @properties', ['@properties' => WebformArrayHelper::toString(WebformArrayHelper::addPrefix(WebformElementHelper::$ignoredProperties))]),
+      '<br /><br />' .
+      $this->t('These properties and callbacks are not allowed: @properties', ['@properties' => WebformArrayHelper::toString(WebformArrayHelper::addPrefix(WebformElementHelper::$ignoredProperties))]),
     ];
 
     return $form;

@@ -135,7 +135,7 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
 
     $used_by = [];
     foreach ($this->usedByCompositeElements as $key => $elements) {
-      if (strpos($options_id, $key) === 0) {
+      if (str_starts_with($options_id, $key)) {
         $used_by = array_merge($used_by, $elements);
       }
     }

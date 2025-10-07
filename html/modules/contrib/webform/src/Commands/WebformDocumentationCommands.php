@@ -108,7 +108,6 @@ class WebformDocumentationCommands extends WebformCommandsBase {
     // Generate docs from WebformHelpManager.
     $help = [
       'videos' => $this->helpManager->buildVideos(TRUE),
-      'addons' => $this->helpManager->buildAddOns(TRUE),
       'libraries' => $this->helpManager->buildLibraries(TRUE),
       'comparison' => $this->helpManager->buildComparison(TRUE),
     ];

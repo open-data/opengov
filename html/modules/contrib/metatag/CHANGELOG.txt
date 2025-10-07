@@ -1,3 +1,51 @@
+Metatag 2.2.0, 2025-09-23
+-------------------------
+#3458724 by damienmckenna, rachel_norfolk, pacproduct, petr illek: Add support
+  for fediverse:creator.
+#3535155 by feyp, damienmckenna: Add SVG icon meta tag.
+#3541817 by damienmckenna: Replace annotation plugins with attribute plugins,
+  require core 10.3+.
+#3272202 by anybody, damienmckenna, grevil: Add <none> placeholder to clear /
+  unset inherited value.
+#3545780 by damienmckenna: Optionally add suffix after meta tags are trimmed.
+#3545784 by damienmckenna: Rework MetaTagCustomTag to extend MetaNameBase.
+#3336142 by damienmckenna, pooja_sharma, sidharth_soman, jvbrian, schillerm,
+  admirlju: List the total number of plugins on the reports page.
+#3488276 by monaw, naveenvalecha, gillesbailleux, damienmckenna, eleonel:
+  Custom Meta tags: Support multiple attributes.
+
+
+Metatag 2.1.2, 2025-09-04
+-------------------------
+#3531026 by wengerk, damienmckenna: V2UpdatesTest::doSelectionTest() must be
+  compatible with parent UpdatePathTestBase::doSelectionTest.
+#3541868 by DamienMcKenna: Fix styleint test failures.
+#3541896 by damienmckenna: Field API changed in 11.2, broke
+  MetatagFieldTestBase::testFieldCanBeAdded().
+#3332769 by damienmckenna: Rework random string usage to be safer, fixes erratic
+  Views test failure.
+#3529741 by damienmckenna, jchatard: Fixed UTF-8 character handling in meta tag
+  tidy().
+#3543538 by damienmckenna: Remove redundant MetatagTokenStatusTest.
+
+
+Metatag 2.1.1, 2025-05-29
+-------------------------
+#3515603 by claudiu.cristea, damienmckenna: PHP 8.4 support.
+#3518526 by sleitner, damienmckenna: Resolve access check errors.
+#3503253 by joegraduate, damienmckenna, qaiser iqbal: TypeError: uasort():
+  Argument #1 ($array) must be of type array, null given in uasort() (line 285
+  of modules\metatag\src\MetatagManager.php).
+#3490807 by ptmkenny, damienmckenna, nickdickinsonwilde: PHP 8.4 deprecations.
+#3499128 by project update bot, damienmckenna: Automated Drupal 11
+  compatibility fixes in V2UpdatesTest.
+#3520695 by damienmckenna: Move functions from metatag.tokens.inc to
+  metatag.module.
+#3504986 by andresalvarez, damienmckenna, ggh: Coding standard fixes.
+#3484792 by ivnish, johnjw59, damienmckenna: Update Page Manager integration
+  for latest version.
+
+
 Metatag 2.1.0, 2024-11-07
 -------------------------
 #2563651 by damienmckenna, alison, bob.hinrichs, benjifisher: Migration for

@@ -197,23 +197,6 @@ table.webform-states-table
 }
 
 /*****************************************************************************   */
-/* Form */
-/*****************************************************************************   */
-
-/**
- * Fix checkbox via dialog/off-canvas tray.
- *
- * @see claro/css/src/components/form--checkbox-radio.css
- */
-.ui-dialog .form-type--boolean .form-boolean {
-  position: inherit;
-  inset-block-start: inherit;
-  float: none; /* LTR */
-  margin-inline-start: inherit;
-  transform: none;
-}
-
-/*****************************************************************************   */
 /* Filter */
 /*****************************************************************************   */
 
@@ -273,19 +256,6 @@ div.webform-form-filter input.webform-form-filter-text {
  */
 .container-inline div.claro-autocomplete__message[hidden] {
   display: none;
-}
-
-/**
- * Add-ons.
- *
- * @see /admin/structure/webform/addons
- */
-.webform-addons .admin-item__link {
-  display: block;
-}
-
-.webform-addons .claro-details__wrapper {
-  margin: 0;
 }
 
 /**

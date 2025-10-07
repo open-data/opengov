@@ -332,7 +332,7 @@ class Ruleset
         }//end foreach
 
         if (count($this->deprecatedSniffs) > 0) {
-            echo PHP_EOL.'* Sniffs marked with an asterix are deprecated.'.PHP_EOL;
+            echo PHP_EOL.'* Sniffs marked with an asterisk are deprecated.'.PHP_EOL;
         }
 
     }//end explain()
@@ -1215,7 +1215,7 @@ class Ruleset
                                 }
 
                                 $value = (string) $element['value'];
-                                if (isset($element['key']) === true) {
+                                if (isset($element['key']) === true && trim($element['key']) !== '') {
                                     $key          = (string) $element['key'];
                                     $values[$key] = $value;
                                     $printValue  .= $key.'=>'.$value.',';

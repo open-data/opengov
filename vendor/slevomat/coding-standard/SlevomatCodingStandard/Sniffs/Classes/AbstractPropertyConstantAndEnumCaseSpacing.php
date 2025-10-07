@@ -10,6 +10,7 @@ use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
 use function assert;
 use function in_array;
+use function max;
 use function str_repeat;
 use const T_ATTRIBUTE;
 use const T_COMMENT;
@@ -36,6 +37,10 @@ abstract class AbstractPropertyConstantAndEnumCaseSpacing implements Sniff
 
 	public int $maxLinesCountBeforeWithoutComment = 1;
 
+	public ?int $minLinesCountBeforeMultiline = null;
+
+	public ?int $maxLinesCountBeforeMultiline = null;
+
 	abstract protected function isNextMemberValid(File $phpcsFile, int $pointer): bool;
 
 	abstract protected function addError(File $phpcsFile, int $pointer, int $min, int $max, int $found): bool;
@@ -50,6 +55,8 @@ abstract class AbstractPropertyConstantAndEnumCaseSpacing implements Sniff
 		$this->maxLinesCountBeforeWithComment = SniffSettingsHelper::normalizeInteger($this->maxLinesCountBeforeWithComment);
 		$this->minLinesCountBeforeWithoutComment = SniffSettingsHelper::normalizeInteger($this->minLinesCountBeforeWithoutComment);
 		$this->maxLinesCountBeforeWithoutComment = SniffSettingsHelper::normalizeInteger($this->maxLinesCountBeforeWithoutComment);
+		$this->minLinesCountBeforeMultiline = SniffSettingsHelper::normalizeNullableInteger($this->minLinesCountBeforeMultiline);
+		$this->maxLinesCountBeforeMultiline = SniffSettingsHelper::normalizeNullableInteger($this->maxLinesCountBeforeMultiline);
 
 		$tokens = $phpcsFile->getTokens();
 
@@ -89,6 +96,23 @@ abstract class AbstractPropertyConstantAndEnumCaseSpacing implements Sniff
 			$maxExpectedLines = $this->maxLinesCountBeforeWithoutComment;
 		}
 
+		if (
+			$this->minLinesCountBeforeMultiline !== null
+			&& !$this instanceof EnumCaseSpacingSniff
+			&& $tokens[$pointer]['line'] !== $tokens[$endPointer]['line']
+		) {
+			$minExpectedLines = max($minExpectedLines, $this->minLinesCountBeforeMultiline);
+			$maxExpectedLines = max($minExpectedLines, $maxExpectedLines);
+		}
+
+		if (
+			$this->maxLinesCountBeforeMultiline !== null
+			&& !$this instanceof EnumCaseSpacingSniff
+			&& $tokens[$pointer]['line'] !== $tokens[$endPointer]['line']
+		) {
+			$maxExpectedLines = max($minExpectedLines, $this->maxLinesCountBeforeMultiline);
+		}
+
 		if ($linesBetween >= $minExpectedLines && $linesBetween <= $maxExpectedLines) {
 			return $firstOnLinePointer;
 		}
@@ -115,10 +139,10 @@ abstract class AbstractPropertyConstantAndEnumCaseSpacing implements Sniff
 			FixerHelper::removeBetween($phpcsFile, $lastPointerOnLine, $firstPointerOnNextLine);
 
 			$phpcsFile->fixer->endChangeset();
-		} else {
+		} elseif ($linesBetween < $minExpectedLines) {
 			$phpcsFile->fixer->beginChangeset();
 
-			for ($i = 0; $i < $minExpectedLines; $i++) {
+			for ($i = 0; $i < $minExpectedLines - $linesBetween; $i++) {
 				$phpcsFile->fixer->addNewlineBefore($firstOnLinePointer);
 			}
 

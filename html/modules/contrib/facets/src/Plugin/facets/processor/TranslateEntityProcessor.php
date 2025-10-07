@@ -113,6 +113,8 @@ class TranslateEntityProcessor extends ProcessorPluginBase implements BuildProce
     $entities = $this->entityTypeManager
       ->getStorage($entity_type)
       ->loadMultiple($ids);
+    $access = $this->entityTypeManager->getAccessControlHandler($entity_type);
+    $this->checkEntitiesAccess($entities, $facet, $access);
 
     // Loop over all results.
     foreach ($results as $i => $result) {

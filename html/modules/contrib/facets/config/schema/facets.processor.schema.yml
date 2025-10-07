@@ -1,8 +1,21 @@
-plugin.plugin_configuration.facets_processor.*:
-  type: mapping
-
 plugin.plugin_configuration.facets_hierarchy.*:
   type: mapping
+
+plugin.plugin_configuration.facets_processor.url_processor_handler:
+  type: mapping
+  label: 'URL handler'
+
+plugin.plugin_configuration.facets_processor.hierarchy_processor:
+  type: mapping
+  label: 'Build hierarchy tree'
+
+plugin.plugin_configuration.facets_processor.hide_inactive_siblings_processor:
+  type: mapping
+  label: 'Hide inactive siblings'
+
+plugin.plugin_configuration.facets_processor.hide_non_narrowing_result_processor:
+  type: mapping
+  label: 'Hide non-narrowing results'
 
 plugin.plugin_configuration.facets_processor.count_widget_widget_order:
   type: mapping

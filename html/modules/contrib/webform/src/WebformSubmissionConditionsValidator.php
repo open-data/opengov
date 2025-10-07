@@ -114,7 +114,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         [$state, $negate] = $this->processState($original_state);
 
         // If hide/show we need to make sure that validation is not triggered.
-        if (strpos($state, 'visible') === 0) {
+        if (str_starts_with($state, 'visible')) {
           $element['#after_build'][] = [get_class($this), 'elementAfterBuild'];
         }
 
@@ -128,7 +128,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         if ($all_targets_visible) {
           // Add .js-webform-states-hidden to element's that are not visible when
           // the form is rendered.
-          if (strpos($state, 'visible') === 0
+          if (str_starts_with($state, 'visible')
             && !$this->validateConditions($conditions, $webform_submission)) {
             $this->addStatesHiddenToElement($element);
           }
@@ -543,7 +543,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       $result = ($negate) ? !$result : $result;
 
       // Apply result to element state.
-      if (strpos($state, 'visible') === 0 && $result === FALSE) {
+      if (str_starts_with($state, 'visible') && $result === FALSE) {
         $visible = FALSE;
       }
     }
@@ -711,7 +711,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     // If no element is found try checking file uploads which use
     // :input[name="files[ELEMENT_KEY].
     // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::getElementSelectorOptions
-    if (!$element && strpos($selector, ':input[name="files[') !== FALSE) {
+    if (!$element && str_contains($selector, ':input[name="files[')) {
       $element_key = static::getInputNameAsArray($input_name, 1);
       $element = $webform_submission->getWebform()->getElement($element_key);
     }
@@ -854,7 +854,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
         $greater = NULL;
         $less = NULL;
-        if (strpos($trigger_value, ':') === FALSE) {
+        if (!str_contains($trigger_value, ':')) {
           $greater = $trigger_value;
         }
         else {
@@ -890,7 +890,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
     // Set negate.
     $negate = FALSE;
-    if (strpos($state, '!') === 0) {
+    if (str_starts_with($state, '!')) {
       $negate = TRUE;
       $state = ltrim($state, '!');
     }

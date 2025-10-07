@@ -101,7 +101,7 @@ class AttributesOrderSniff implements Sniff
 			$actualOrder = [];
 
 			foreach ($attributesGroups as $attributesGroupNo => $attributesGroup) {
-				$attributeName = $this->normalizeAttributeName($attributesGroup[0]->getName());
+				$attributeName = $this->normalizeAttributeName($attributesGroup[0]->getFullyQualifiedName());
 
 				foreach ($this->order as $orderPosition => $attributeNameOnPosition) {
 					if (

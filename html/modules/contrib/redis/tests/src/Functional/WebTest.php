@@ -4,6 +4,7 @@ namespace Drupal\Tests\redis\Functional;
 
 use Drupal\Component\Utility\OpCodeCache;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Field\FieldTypePluginManagerInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\cron_queue_test\Plugin\QueueWorker\CronQueueTestException;
 use Drupal\Tests\BrowserTestBase;
@@ -162,9 +163,12 @@ class WebTest extends BrowserTestBase {
     $assert->elementTextContains('css', '.messages--status', 'Filter');
     $assert->checkboxChecked('edit-modules-field-ui-enable');
 
+    \Drupal::service(FieldTypePluginManagerInterface::class)->clearCachedDefinitions();
+
     // Create a node type with a field.
     $edit = [
       'name' => $this->randomString(),
+      'options[promote]' => '1',
       'type' => $node_type = mb_strtolower($this->randomMachineName()),
     ];
     $this->drupalGet('admin/structure/types/add');
@@ -175,7 +179,6 @@ class WebTest extends BrowserTestBase {
     // Create a node, check display, edit, verify that it has been updated.
     $edit = [
       'title[0][value]' => $this->randomMachineName(),
-      'body[0][value]' => $this->randomMachineName(),
       'field_' . $field_name . '[0][value]' => $this->randomMachineName(),
     ];
     $this->drupalGet('node/add/' . $node_type);
@@ -189,7 +192,6 @@ class WebTest extends BrowserTestBase {
     $this->drupalLogin($admin_user);
     $this->drupalGet('node');
     $this->clickLink($edit['title[0][value]']);
-    $this->assertSession()->responseContains($edit['body[0][value]']);
     $this->clickLink(t('Edit'));
     $update = [
       'title[0][value]' => $this->randomMachineName(),
@@ -202,7 +204,6 @@ class WebTest extends BrowserTestBase {
     $this->drupalLogout();
     $this->drupalGet('node');
     $this->clickLink($update['title[0][value]']);
-    $this->assertSession()->responseContains($edit['body[0][value]']);
 
     // Manually add a queue item and process it, to test the queue factory.
     // Get the queue to test the normal Exception.

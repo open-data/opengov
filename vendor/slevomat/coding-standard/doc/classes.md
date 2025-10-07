@@ -113,6 +113,8 @@ Sniff provides the following settings:
 * `maxLinesCountBeforeWithComment`: maximum number of lines before constant with a documentation comment or attribute
 * `minLinesCountBeforeWithoutComment`: minimum number of lines before constant without a documentation comment or attribute
 * `maxLinesCountBeforeWithoutComment`: maximum number of lines before constant without a documentation comment or attribute
+* `minLinesCountBeforeMultiline` (default: `null`): minimum number of lines before multiline constant
+* `maxLinesCountBeforeMultiline` (default: `null`): maximum number of lines before multiline constant
 
 #### SlevomatCodingStandard.Classes.DisallowConstructorPropertyPromotion
 
@@ -216,6 +218,8 @@ Sniff provides the following settings:
 * `maxLinesCountBeforeWithComment`: maximum number of lines before property with a documentation comment or attribute
 * `minLinesCountBeforeWithoutComment`: minimum number of lines before property without a documentation comment or attribute
 * `maxLinesCountBeforeWithoutComment`: maximum number of lines before property without a documentation comment or attribute
+* `minLinesCountBeforeMultiline` (default: `null`): minimum number of lines before multiline property
+* `maxLinesCountBeforeMultiline` (default: `null`): maximum number of lines before multiline property
 
 #### SlevomatCodingStandard.Classes.RequireAbstractOrFinal 🔧
 
@@ -241,6 +245,8 @@ Sniff provides the following settings:
 * `includedMethodPatterns`: allows to configure which methods are included in sniff detection. This is an array of regular expressions (PCRE) with delimiters. You should not use this with `excludedMethodPatterns`, as it will not work properly.
 
 * `excludedMethodPatterns`: allows to configure which methods are excluded from sniff detection. This is an array of regular expressions (PCRE) with delimiters. You should not use this with `includedMethodPatterns`, as it will not work properly.
+
+* `withPromotedProperties`: always require multiline signatures for methods with promoted properties.
 
 #### SlevomatCodingStandard.Classes.RequireSelfReference 🔧
 

@@ -110,7 +110,7 @@ class WebformEmailConfirm extends FormElementBase {
     $element['mail_2'] = $element_shared_properties;
     $element['mail_2']['#title'] = t('Confirm email');
     foreach ($element as $key => $value) {
-      if (strpos($key, '#confirm__') === 0) {
+      if (str_starts_with($key, '#confirm__')) {
         $element['mail_2'][str_replace('#confirm__', '#', $key)] = $value;
       }
     }

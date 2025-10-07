@@ -4,14 +4,13 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Enhance HTML5 color element.
    *
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformColor = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-color', '.form-color:not(.form-color-output)', context)).each(function () {
         var $element = $(this);
         // Display color input's output w/ visually-hidden label to

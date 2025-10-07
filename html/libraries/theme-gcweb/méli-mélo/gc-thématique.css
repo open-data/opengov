@@ -2,7 +2,7 @@
 /*!
  * @title Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * v15.0.0 - 2024-05-01
+ * v17.1.1 - 2025-07-24
  *
  */
 /* Thematic red */
@@ -134,6 +134,54 @@ h1.gc-thickline.canadaday::after {
 
 
 
+.choose-canada-banner {
+	background-image: url("https://canada.ca/content/dam/pch/images/campaigns/choose-canada/Banner1920x315.jpg");
+}
+
+.choose-canada-banner .well {
+	background-image: linear-gradient(to right, #8C0D13, #BB1119);
+	border: 0;
+	border-radius: 0;
+	color: #fff;
+	margin-bottom: 0;
+	padding: 15px;
+	position: relative;
+}
+
+.choose-canada-banner .well::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 100%;
+	bottom: 0;
+	width: 9999px;
+	background-image: linear-gradient(to right, #BB1119, #8C0D13);
+}
+
+.choose-canada-banner .well h1#wb-cont {
+	border-bottom-color: #fff;
+	border-image-source: linear-gradient(to right, #fff 71px, transparent 71px);
+	margin-top: 10px;
+}
+
+.choose-canada-card {
+	border-radius: 18px;
+	box-shadow: 0px 3px 6px #00000029;
+	margin-bottom: 1.5em !important;
+	overflow: hidden;
+	position: relative;
+}
+
+.choose-canada-card .card-body {
+	padding: 20px;
+}
+
+.choose-canada-card .card-title {
+	font-size: 1.2em;
+	margin-bottom: .75em;
+	margin-top: 0 !important;
+}
+
 /* Thematic purple */
 .btn-empathy.btn-primary,
 .empathy.wb-steps.quiz .btn-primary {
@@ -175,6 +223,13 @@ h1#wb-cont.empathy {
     border-bottom: 0.18em solid #5C2790;
     border-image: linear-gradient(to right, #5C2790 71px, transparent 71px);
     border-image-slice: 1;
+	border-left-width: 0;
+	border-right-width: 0;
+	border-top-width: 0;
+}
+/* Thematic text color */
+.text-empathy {
+	color: #5C2790;
 }
 
 /*  Thematic Steps Quiz */
@@ -191,7 +246,7 @@ h1#wb-cont.empathy {
     color: #DED0F1;
 }
 
-/* Webkit Browsers - Chome, Opera and Safari */
+/* Webkit Browsers - Chrome, Opera and Safari */
 .empathy.wb-steps.quiz progress::-webkit-progress-bar {
     background-color: #777;
 }
@@ -216,6 +271,56 @@ h1#wb-cont.empathy {
 .empathy.provisional.wb-steps.quiz .wb-tggle-fildst > legend.wb-steps-active {
     color: #5c2790;;
 
+}
+
+/* Thematic Journey Labs homepage layout */
+
+.empathy.cards {
+	padding: 20px;
+	box-shadow: 0px 2px 3px 0px #cccccc;
+	border-radius: 10px;
+}
+
+.empathy.services-and-information .empathy.cards:hover {
+    background-color: #6c3c9b;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Added to specifically target the link*/
+.empathy.services-and-information .empathy.cards:hover a {
+    color: #fff;
+}
+
+.empathy.quiz-content {
+	background-color: #6c3c9b;
+	color: #fff;
+}
+
+@media screen and (min-width: 992px) {
+	.empathy.quiz-img {
+	width: 100%;
+        }
+}
+
+/* checklist.html specific css */
+@media screen {
+	.empathy.cards details summary {
+	border: 0;
+	list-style-position: outside;
+	margin-left: 0px;
+	padding-left: 0px;
+	}
+	.empathy.cards details[open] {
+	border: 0;
+	}
+}
+
+@media print {
+	details[open] > summary::marker {
+	content: "\2B1C\0020";
+	display: none;
+	}
 }
 
 /*** Thematic blue ***/

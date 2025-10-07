@@ -77,8 +77,15 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $assert_session->responseContains('<img class="webform-image-file" alt="image_file_jpg.jpg" title="image_file_jpg.jpg" src="' . $this->getAbsoluteUrl('/system/files/webform/test_element_media_file/_sid_/image_file_jpg.jpg') . '" />');
 
     // Check image file link to modal.
+    // Drupal 11.2 have avif support.
+    // @see https://www.drupal.org/node/3511540
     $assert_session->responseContains('/system/files/webform/test_element_media_file/_sid_/image_file_jpg_modal.jpg" class="js-webform-image-file-modal webform-image-file-modal">');
-    $assert_session->responseContains('/system/files/styles/thumbnail/private/webform/test_element_media_file/_sid_/image_file_jpg_modal.jpg.webp?itok=');
+    if (version_compare(\Drupal::VERSION, '11', '<')) {
+      $assert_session->responseContains('/system/files/styles/thumbnail/private/webform/test_element_media_file/_sid_/image_file_jpg_modal.jpg.webp?itok=');
+    }
+    else {
+      $assert_session->responseContains('/system/files/styles/thumbnail/private/webform/test_element_media_file/_sid_/image_file_jpg_modal.jpg.avif?itok=');
+    }
 
     // Check video file preview.
     $assert_session->responseContains('<source src="' . $this->getAbsoluteUrl('/system/files/webform/test_element_media_file/_sid_/video_file_mp4.mp4') . '" type="video/mp4">');

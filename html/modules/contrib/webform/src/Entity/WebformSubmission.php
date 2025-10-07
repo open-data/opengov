@@ -542,6 +542,13 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
   /**
    * {@inheritdoc}
    */
+  public function setWebform(WebformInterface $webform) {
+    static::$webform = $webform;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSourceEntity($translate = FALSE) {
     $entity_type = $this->entity_type->value ?? NULL;
     $entity_id = $this->entity_id->value ?? NULL;

@@ -101,7 +101,6 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
     $assert_session->pageTextNotContains('CKEditor: Image library ');
     $assert_session->pageTextNotContains('CKEditor: Link library ');
     $assert_session->pageTextNotContains('Code Mirror library ');
-    $assert_session->pageTextNotContains('jQuery: iCheck library ');
     $assert_session->pageTextNotContains('jQuery: Input Mask library ');
     $assert_session->pageTextNotContains('jQuery: Select2 library ');
     $assert_session->pageTextNotContains('jQuery: Choices library ');

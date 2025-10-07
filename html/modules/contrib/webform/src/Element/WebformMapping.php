@@ -90,7 +90,7 @@ class WebformMapping extends FormElementBase {
 
     // Get base #destination__* properties.
     foreach ($element as $element_key => $element_value) {
-      if (strpos($element_key, '#destination__') === 0 && !in_array($element_key, ['#destination__title'])) {
+      if (str_starts_with($element_key, '#destination__') && !in_array($element_key, ['#destination__title'])) {
         $destination_element_base[str_replace('#destination__', '#', $element_key)] = $element_value;
       }
     }

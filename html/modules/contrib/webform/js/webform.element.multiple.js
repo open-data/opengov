@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Move show weight to after the table.
    *

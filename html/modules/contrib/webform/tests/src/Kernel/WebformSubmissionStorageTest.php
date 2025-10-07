@@ -82,6 +82,9 @@ class WebformSubmissionStorageTest extends KernelTestBase {
         ]);
         $webform_submission->in_draft = $definition[0];
         $webform_submission->setCreatedTime($definition[1] ? ($request_time - ($purge_days + 1) * $days_to_seconds) : $request_time);
+        if (!$definition[0]) {
+          $webform_submission->setCompletedTime($definition[1] ? ($request_time - ($purge_days + 1) * $days_to_seconds) : $request_time);
+        }
         $webform_submission->save();
       }
     }

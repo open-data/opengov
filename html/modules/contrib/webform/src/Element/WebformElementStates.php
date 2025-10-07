@@ -510,7 +510,7 @@ class WebformElementStates extends FormElementBase {
         ],
       ],
     ];
-    $row['condition']['pattern'] = [
+    $row['condition']['between'] = [
       '#type' => 'container',
       'description' => ['#markup' => t('Enter a number range (1:100)')],
       '#states' => [

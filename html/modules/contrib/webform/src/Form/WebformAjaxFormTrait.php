@@ -364,7 +364,7 @@ trait WebformAjaxFormTrait {
     // Always check the ?destination which is used by the off-canvas/system tray.
     if ($this->getRequest()->get('destination')) {
       $destination = $this->getRedirectDestination()->get();
-      return (strpos($destination, $destination) === 0) ? $destination : base_path() . $destination;
+      return str_starts_with($destination, $destination) ? $destination : base_path() . $destination;
     }
 
     // ISSUE:
