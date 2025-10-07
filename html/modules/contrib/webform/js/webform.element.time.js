@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   // @see https://github.com/jonthornton/jquery-timepicker#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.timePicker = Drupal.webform.timePicker || {};
@@ -24,7 +23,7 @@
         return;
       }
 
-      $(once('webformTimePicker', 'input[data-webform-time-format]', context)).each(function () {
+      $(once('webformTimePicker', 'input[type="text"][data-webform-time-format]', context)).each(function () {
         var $input = $(this);
         var options = {};
         options.timeFormat = $input.data('webformTimeFormat');
@@ -54,6 +53,11 @@
         $input.attr('step', 'any');
 
         options = $.extend(options, Drupal.webform.timePicker.options);
+
+        // Allow custom options.
+        if ($input.attr('data-options')) {
+          options = $.extend(true, options, JSON.parse($input.attr('data-options')));
+        }
 
         $input.timepicker(options);
       });

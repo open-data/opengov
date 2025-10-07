@@ -13,11 +13,45 @@ use Drupal\webform\Plugin\WebformElement\ManagedFile;
  * Implements hook_requirements().
  */
 function webform_requirements($phase) {
-  if ($phase !== 'runtime') {
-    return [];
+  $requirements = [];
+
+  // Below requirement are for update.php (update) and the Status Report (runtime).
+  if (in_array($phase, ['update', 'runtime'])) {
+
+    /* ************************************************************************ */
+    // Deprecated modules.
+    /* ************************************************************************ */
+
+    /** @var \Drupal\Core\Extension\ModuleExtensionList $module_extension_list */
+    $module_extension_list = \Drupal::service('extension.list.module');
+    $modules = \Drupal::configFactory()->get('core.extension')->get('module');
+    $deprecated_modules = [
+      'webform_icheck',
+      'webform_location_geocomplete',
+      'webform_location_places',
+      'webform_shortcuts',
+      'webform_toggles',
+    ];
+    $is_deprecated_module = function ($extension_name) use ($module_extension_list, $deprecated_modules) {
+      return !$module_extension_list->exists($extension_name) && in_array($extension_name, $deprecated_modules);
+    };
+    $deprecated = array_filter(array_keys($modules), $is_deprecated_module);
+    if (!empty($deprecated)) {
+      $requirements['webform_deprecated'] = [
+        'title' => t('Webform deprecated modules'),
+        'value' => t('The following webform sub-modules have been deprecated: @module_list. Please download the <a href=":url">Webform Deprecated</a> project.', [
+          '@module_list' => implode(', ', $deprecated),
+          ':url' => 'https://www.drupal.org/project/webform_deprecated',
+        ]),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
   }
 
-  $requirements = [];
+  // All the remain requirements are for the Status Report (runtime).
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
 
   /* ************************************************************************ */
   // Experimental modules.
@@ -58,18 +92,16 @@ function webform_requirements($phase) {
       '@module' => $mail_module_name,
       '@plugin_id' => $mail_plugin_id,
     ];
-    if ($mail_plugin_definition) {
-      $t_args += [
-        '@plugin_label' => $mail_plugin_definition['label'],
-        '@plugin_description' => $mail_plugin_definition['description'],
-      ];
-    }
     $requirements['webform_email'] = [
       'title' => t('Webform: HTML email support'),
       'value' => ($mail_module_name) ? t('Provided by the @module module.', $t_args) : t('Provided by the @plugin_id mail plugin.', $t_args),
-      'description' => $mail_plugin_definition ? new FormattableMarkup('@plugin_label: @plugin_description', $t_args) : '',
       'severity' => REQUIREMENT_OK,
     ];
+    if ($mail_plugin_definition) {
+      $requirements['webform_email']['description'] = (!empty($mail_plugin_definition['description']))
+        ? new FormattableMarkup('@plugin_label: @plugin_description', ['@plugin_label' => $mail_plugin_definition['label'], '@plugin_description' => $mail_plugin_definition['description']])
+        : $mail_plugin_definition['label'];
+    }
   }
   else {
     $requirements['webform_email'] = [
@@ -170,9 +202,36 @@ function webform_requirements($phase) {
       '#suffix' => '</dl>',
     ];
 
-    /** @var \Drupal\webform\WebformAddonsManagerInterface $addons_manager */
-    $addons_manager = \Drupal::service('webform.addons_manager');
-    $projects = $addons_manager->getProjects('spam');
+    $projects = [];
+
+    // Spam: Antibot.
+    $projects['antibot'] = [
+      'title' => t('Antibot'),
+      'description' => t('Prevent forms from being submitted without JavaScript enabled.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/antibot'),
+    ];
+
+    // Spam: CAPTCHA.
+    $projects['captcha'] = [
+      'title' => t('CAPTCHA'),
+      'description' => t('Provides CAPTCHA for adding challenges to arbitrary forms.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/captcha'),
+    ];
+
+    // Spam: reCAPTCHA.
+    $projects['recaptcha'] = [
+      'title' => t('reCAPTCHA'),
+      'description' => t('Uses the Google <a href=":href">reCAPTCHA</a> web service to improve the CAPTCHA system.', [':href' => 'https://www.google.com/recaptcha/about/']),
+      'url' => Url::fromUri('https://www.drupal.org/project/recaptcha'),
+    ];
+
+    // Spam: Honeypot.
+    $projects['honeypot'] = [
+      'title' => t('Honeypot'),
+      'description' => t('Mitigates spam form submissions using the honeypot method.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/honeypot'),
+    ];
+
     foreach ($projects as $project_name => $project) {
       $available_projects[$project_name] = [
         'title' => [

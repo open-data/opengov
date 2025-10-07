@@ -30,4 +30,20 @@ class ChainedFastWithRedisCacheTest extends RedisCacheTest {
     return $backend;
   }
 
+  /**
+   * Tests setPermTtl()
+   */
+  public function testExpirationOffset(): void {
+    $this->markTestSkipped('Can not test redis expiration behavior through chained fast backend.');
+  }
+
+
+  /**
+   * Tests setPermTtl()
+   */
+  public function testSetPermTtl(): void {
+    // Skipped, can't be tested through the chained fast backend.
+    $this->markTestSkipped('Can not access getPermTtl() through chained fast backend.');
+  }
+
 }

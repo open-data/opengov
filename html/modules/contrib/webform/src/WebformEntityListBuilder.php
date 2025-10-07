@@ -173,7 +173,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
     $build['table']['#attributes']['class'][] = 'webform-forms';
 
     // Bulk operations.
-    if ($this->bulkOperations && $this->currentUser->hasPermission('administer webform')) {
+    if ($this->bulkOperations && ($this->currentUser->hasPermission('administer webform') || $this->currentUser->hasPermission('administer webform overview'))) {
       $build['table'] = \Drupal::formBuilder()->getForm('\Drupal\webform\Form\WebformEntityBulkForm', $build['table']);
     }
 
@@ -231,7 +231,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
    */
   protected function buildInfo() {
     // Display info.
-    if ($this->currentUser->hasPermission('administer webform') && ($total = $this->getTotal($this->keys, $this->category, $this->state))) {
+    if (($this->currentUser->hasPermission('administer webform') || $this->currentUser->hasPermission('administer webform overview')) && ($total = $this->getTotal($this->keys, $this->category, $this->state))) {
       return [
         '#markup' => $this->formatPlural($total, '@count webform', '@count webforms'),
         '#prefix' => '<div>',
@@ -672,8 +672,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
    * Is the current user a webform administrator.
    *
    * @return bool
-   *   TRUE if the current user has 'administer webform' or 'edit any webform'
-   *   permission.
+   *   TRUE if the current user has 'administer webform' or 'edit any webform' permission.
    */
   protected function isAdmin() {
     $account = $this->currentUser;

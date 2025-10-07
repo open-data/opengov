@@ -52,6 +52,24 @@ class WebformElementAddressTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<div class="description"><div id="edit-address-advanced--wrapper--description" data-drupal-field-elements="description" class="webform-element-description">This is a description</div>');
 
     /* ********************************************************************** */
+    // Validation.
+    /* ********************************************************************** */
+
+    // Check single address validation.
+    $edit = [
+      'address[postal_code]' => 'not-valid',
+    ];
+    $this->postSubmission($webform, $edit);
+    $assert_session->responseContains('Zip code field is not in the right format.');
+
+    // Check multiple addresses validation.
+    $edit = [
+      'address_multiple[items][0][_item_][postal_code]' => 'not-valid',
+    ];
+    $this->postSubmission($webform, $edit);
+    $assert_session->responseContains('Zip code field is not in the right format.');
+
+    /* ********************************************************************** */
     // Processing.
     /* ********************************************************************** */
 

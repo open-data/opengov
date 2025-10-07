@@ -159,8 +159,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
     else {
       $response = new CacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
       return $response
-        ->addCacheableDependency($webform)
-        ->addCacheableDependency($this->config('webform.settings'));
+        ->addCacheableDependency($webform);
     }
   }
 
@@ -187,8 +186,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
     else {
       $response = new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
       return $response
-        ->addCacheableDependency($webform)
-        ->addCacheableDependency($this->config('webform.settings'));
+        ->addCacheableDependency($webform);
     }
   }
 

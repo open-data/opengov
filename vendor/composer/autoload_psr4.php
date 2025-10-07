@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'phpowermove\\docblock\\' => array($vendorDir . '/phpowermove/docblock/src'),
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
     'phootwork\\lang\\' => array($vendorDir . '/phootwork/lang'),
     'phootwork\\collection\\' => array($vendorDir . '/phootwork/collection'),
     'mglaman\\PHPStanDrupal\\' => array($vendorDir . '/mglaman/phpstan-drupal/src'),
@@ -92,6 +92,7 @@ return array(
     'Nevay\\SPI\\' => array($vendorDir . '/tbachert/spi/src'),
     'Micheh\\PhpCodeSniffer\\' => array($vendorDir . '/micheh/phpcs-gitlab/src'),
     'Masterminds\\' => array($vendorDir . '/masterminds/html5/src'),
+    'MabeEnum\\' => array($vendorDir . '/marc-mabe/php-enum/src'),
     'League\\Csv\\' => array($vendorDir . '/league/csv/src'),
     'League\\Container\\' => array($vendorDir . '/league/container/src'),
     'Laminas\\Stdlib\\' => array($vendorDir . '/laminas/laminas-stdlib/src'),

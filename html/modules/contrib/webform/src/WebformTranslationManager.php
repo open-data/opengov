@@ -98,7 +98,7 @@ class WebformTranslationManager implements WebformTranslationManagerInterface {
     }
 
     // Don't initialize translation on webform UI routes.
-    if (strpos($route_name, 'entity.webform_ui.') === 0) {
+    if (str_starts_with($route_name, 'entity.webform_ui.')) {
       return TRUE;
     }
 

@@ -87,7 +87,7 @@ interface WebformEntityReferenceManagerInterface {
    *   A fieldable content entity.
    *
    * @return array
-   *   An array of webform fields associate with an entity.
+   *   An array of webform fields associated with an entity.
    */
   public function getFieldNames(?EntityInterface $entity = NULL);
 

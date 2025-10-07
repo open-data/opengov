@@ -110,22 +110,22 @@ class WebformTranslationConfigManager implements WebformTranslationConfigManager
       if ($config_name === 'webform.settings') {
         $this->alterConfigSettingsForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'block.block.') === 0) {
+      elseif (str_starts_with($config_name, 'block.block.')) {
         $this->alterConfigBlockForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'field.field.') === 0) {
+      elseif (str_starts_with($config_name, 'field.field.')) {
         $this->alterConfigFieldForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'webform.webform_options.') === 0) {
+      elseif (str_starts_with($config_name, 'webform.webform_options.')) {
         $this->alterConfigOptionsForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'webform_options_custom.webform_options_custom.') === 0) {
+      elseif (str_starts_with($config_name, 'webform_options_custom.webform_options_custom.')) {
         $this->alterConfigOptionsCustomForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'webform_image_select.webform_image_select_images.') === 0) {
+      elseif (str_starts_with($config_name, 'webform_image_select.webform_image_select_images.')) {
         $this->alterConfigImageSelectForm($config_name, $config_element);
       }
-      elseif (strpos($config_name, 'webform.webform.') === 0) {
+      elseif (str_starts_with($config_name, 'webform.webform.')) {
         $this->alterConfigWebformForm($config_name, $config_element, $form, $form_state);
       }
     }

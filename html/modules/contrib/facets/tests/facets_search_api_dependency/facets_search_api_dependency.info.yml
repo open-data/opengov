@@ -9,7 +9,7 @@ dependencies:
   - drupal:views
 core_version_requirement: ^10.1 || ^11
 
-# Information added by Drupal.org packaging script on 2025-01-03
-version: '3.0.0'
+# Information added by Drupal.org packaging script on 2025-08-26
+version: '3.0.1'
 project: 'facets'
-datestamp: 1735915200
+datestamp: 1756225245

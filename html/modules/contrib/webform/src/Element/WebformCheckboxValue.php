@@ -82,7 +82,7 @@ class WebformCheckboxValue extends FormElementBase {
 
     // Pass '#value__*' properties to the value element.
     foreach ($element as $key => $value) {
-      if (strpos($key, '#value__') === 0) {
+      if (str_starts_with($key, '#value__')) {
         $value_key = str_replace('#value__', '#', $key);
         $element['value'][$value_key] = $value;
       }

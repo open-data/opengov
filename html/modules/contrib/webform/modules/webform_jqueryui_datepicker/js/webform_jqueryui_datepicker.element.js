@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal) {
-
   // @see http://api.jqueryui.com/datepicker/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.datePicker = Drupal.webform.datePicker || {};
@@ -88,6 +87,11 @@
             var day = date.getDay().toString();
             return [(days.indexOf(day) !== -1) ? true : false];
           };
+        }
+
+        // Allow custom options.
+        if ($input.attr('data-options')) {
+          options = $.extend(true, options, JSON.parse($input.attr('data-options')));
         }
 
         // Disable autocomplete.

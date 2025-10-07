@@ -103,6 +103,13 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     // Add date callback.
     $element['#date_date_callbacks'][] = [DateTime::class, 'dateCallback'];
 
+    // Set date format to 'none' if the date element is set to 'none'.
+    // @see \Drupal\Core\Datetime\Element\Datetime::valueCallback
+    if (isset($element['#date_date_element'])
+      && $element['#date_date_element'] === 'none') {
+      $element['#date_date_format'] = 'none';
+    }
+
     /* Time */
 
     // Set time format.
@@ -243,9 +250,9 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#type' => 'textfield',
       '#title' => $this->t('Date year range'),
       '#description' => $this->t("A description of the range of years to allow, like '1900:2050', '-3:+3' or '2000:+3', where the first value describes the earliest year and the second the latest year in the range.") . ' ' .
-        $this->t('A year in either position means that specific year.') . ' ' .
-        $this->t('A +/- value describes a dynamic value that is that many years earlier or later than the current year at the time the webform is displayed.') . ' ' .
-        $this->t('Use min/max validation to define a more specific date range.'),
+      $this->t('A year in either position means that specific year.') . ' ' .
+      $this->t('A +/- value describes a dynamic value that is that many years earlier or later than the current year at the time the webform is displayed.') . ' ' .
+      $this->t('Use min/max validation to define a more specific date range.'),
       '#states' => [
         'invisible' => [
           ':input[name="properties[date_date_element]"]' => ['value' => 'none'],

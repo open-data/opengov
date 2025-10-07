@@ -34,6 +34,7 @@ class WebformUiElementDuplicateForm extends WebformUiElementFormBase {
 
     $t_args = ['@title' => WebformElementHelper::getAdminTitle($element_initialized)];
     $form['#title'] = $this->t('Duplicate @title element', $t_args);
+    $form['#attached']['library'][] = 'webform/webform.admin.machine-name';
 
     $this->action = $this->t('created');
     return parent::buildForm($form, $form_state, $webform, NULL, $element_initialized['#webform_parent_key']);

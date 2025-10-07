@@ -37,6 +37,7 @@ class Date extends DateBase {
       'placeholder' => '',
       'step' => '',
       'size' => '',
+      'autocomplete' => 'on',
     ] + parent::defineDefaultProperties();
     return $properties;
   }

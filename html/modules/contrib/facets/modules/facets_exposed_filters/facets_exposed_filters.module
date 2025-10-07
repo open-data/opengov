@@ -40,7 +40,7 @@ function facets_exposed_filters_views_data_alter(array &$data) {
  */
 function facets_exposed_filters_search_api_query_alter(QueryInterface $query) {
   $view = $query->getOption('search_api_view');
-  if (!$view || (!$view->exposed_widgets && !$view->display_handler->getOption('exposed_block'))) {
+  if (!$view || (!$view->exposed_widgets && isset($view->display_handler) && !$view->display_handler->getOption('exposed_block'))) {
     return;
   }
 

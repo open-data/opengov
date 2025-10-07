@@ -54,8 +54,16 @@ class HTMLConverter
      * @param array<string> $header_record An optional array of headers outputted using the `<thead>` and `<th>` elements
      * @param array<string> $footer_record An optional array of footers outputted using the `<tfoot>` and `<th>` elements
      */
-    public function convert(iterable $records, array $header_record = [], array $footer_record = []): string
+    public function convert(iterable|TabularData|TabularDataProvider $records, array $header_record = [], array $footer_record = []): string
     {
+        if ($records instanceof TabularDataProvider) {
+            $records = $records->getTabularData();
+        }
+
+        if ($records instanceof TabularData) {
+            $records = $records->getRecords();
+        }
+
         if (null !== $this->formatter) {
             $records = MapIterator::fromIterable($records, $this->formatter);
         }
@@ -90,7 +98,7 @@ class HTMLConverter
                 if ('' !== $this->column_attr) {
                     $td->setAttribute($this->column_attr, (string) $field_name);
                 }
-                $td->appendChild($document->createTextNode($field_value));
+                $td->appendChild($document->createTextNode((string) $field_value));
                 $tr->appendChild($td);
             }
 
@@ -120,7 +128,7 @@ class HTMLConverter
         foreach ($record as $field_value) {
             $th = $document->createElement('th');
             $th->setAttribute('scope', 'col');
-            $th->appendChild($document->createTextNode($field_value));
+            $th->appendChild($document->createTextNode((string) $field_value));
             $tr->appendChild($th);
         }
 

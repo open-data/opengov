@@ -224,7 +224,7 @@ function template_preprocess_webform_submission_navigation(array &$variables) {
   $route_parameters = \Drupal::routeMatch()->getRawParameters()->all();
   $source_entity = $request_handler->getCurrentSourceEntity('webform_submission');
 
-  if (strpos(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission') !== FALSE) {
+  if (str_contains(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission')) {
     $account = \Drupal::currentUser();
     $options = ['in_draft' => FALSE];
   }
@@ -373,7 +373,7 @@ function template_preprocess_webform_submission_information(array &$variables) {
       $base_route_name = 'webform.user.submission.delete';
       $route_options = ['query' => \Drupal::destination()->getAsArray()];
     }
-    elseif (strpos(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission') !== FALSE
+    elseif (str_contains(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission')
       || !$webform->access('submission_view_any')) {
       $base_route_name = 'webform.user.submission.delete';
     }
@@ -1039,7 +1039,7 @@ function template_preprocess_webform_element_image_file(array &$variables) {
     ];
 
     // For the Results table always display the file name as a tooltip.
-    if (strpos(\Drupal::routeMatch()->getRouteName(), 'webform.results_submissions') !== FALSE) {
+    if (str_contains(\Drupal::routeMatch()->getRouteName(), 'webform.results_submissions')) {
       $variables['attached']['library'][] = 'webform/webform.tooltip';
       $variables['image']['#attributes']['class'][] = 'js-webform-tooltip-link';
     }

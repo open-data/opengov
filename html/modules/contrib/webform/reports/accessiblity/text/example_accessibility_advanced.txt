@@ -26,4 +26,3 @@ Results for URL: http://localhost/wf/webform/example_accessibility_advanced
    └── <a role="button" href="#terms">terms of service</a>
 
 4 Errors
-

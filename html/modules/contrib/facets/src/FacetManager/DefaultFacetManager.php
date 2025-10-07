@@ -433,6 +433,9 @@ class DefaultFacetManager {
       $empty_behavior = $built_facet->getEmptyBehavior();
       switch ($empty_behavior['behavior'] ?? '') {
         case 'text':
+          // @codingStandardsIgnoreStart
+          $text = $this->t($empty_behavior['text'] ?? '');
+          // @codingStandardsIgnoreEnd
           return [
             [
               0 => $build,
@@ -442,9 +445,9 @@ class DefaultFacetManager {
                 'class' => ['facet-empty'],
               ],
               'empty_text' => [
-                // @codingStandardsIgnoreStart
-                '#markup' => $this->t($empty_behavior['text']),
-                // @codingStandardsIgnoreEnd
+                '#type' => 'processed_text',
+                '#text' => $text,
+                '#format' => $empty_behavior['text_format'] ?? 'plain_text',
               ],
             ],
           ];

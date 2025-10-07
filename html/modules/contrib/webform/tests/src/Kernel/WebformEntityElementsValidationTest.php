@@ -254,7 +254,7 @@ card:
       foreach ($methods as $method => $returnValue) {
         $webform->expects($this->any())
           ->method($method)
-          ->will($this->returnValue($returnValue));
+          ->willReturn($returnValue);
       }
 
       $messages = $this->validator->validate($webform);

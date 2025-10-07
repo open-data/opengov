@@ -208,7 +208,7 @@ class WebformMessageManager implements WebformMessageManagerInterface {
 
       // Set max-age to 0 if settings message contains any [token] values.
       $setting_message = $this->getSetting($key);
-      if ($setting_message && strpos($setting_message, '[') !== FALSE) {
+      if ($setting_message && str_contains($setting_message, '[')) {
         $message['#cache']['max-age'] = 0;
       }
 

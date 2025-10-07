@@ -398,8 +398,10 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
     // Fast forward CSV file to offset.
     $index = 0;
     while ($index < $offset && !feof($handle)) {
-      fgets($handle);
-      $index++;
+      $line = fgetcsv($handle);
+      if (!empty($line) && !is_null(array_pop($line))) {
+        $index++;
+      }
     }
 
     // Collect import stats.
@@ -609,7 +611,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
 
       // Check if record name is a composite element which is
       // delimited using '__'.
-      if (strpos($name, '__') === FALSE) {
+      if (!str_contains($name, '__')) {
         continue;
       }
 

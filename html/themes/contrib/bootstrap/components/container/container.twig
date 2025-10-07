@@ -1,9 +1,10 @@
 {% set classes = full_width ? 'full-width' : container ? 'container' : '' %}
 
-{% set style = background_image ? 'background-image:url("' ~ background_image ~ '");' : '' %}
-{% set style = background_color ? style ~ 'background-color:' ~ background_color ~ '");' : style %}
+{% set style = background_image ? 'background-image:url("' ~ background_image ~ '");background-size: cover;' : '' %}
+{% set style = background_color ? style ~ 'background-color:' ~ background_color ~ ';' : style %}
+{% set html_tag = html_tag ?? 'section' %}
 
-<section {{ attributes.addClass(classes).setAttribute('style', style) }}>
+<{{html_tag}} {{ attributes.addClass(classes).setAttribute('style', style) }}>
   {% if full_width and container %}
     <div class="container">
   {% endif %}
@@ -11,4 +12,4 @@
   {% if full_width and container %}
     </div>
   {% endif %}
-</section>
+</{{html_tag}}>

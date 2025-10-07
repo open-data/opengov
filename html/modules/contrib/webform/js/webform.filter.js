@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, debounce, once) {
-
   /**
    * Filters the webform element list by a text input search string.
    *

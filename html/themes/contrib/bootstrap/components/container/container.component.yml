@@ -16,6 +16,10 @@ props:
       type: Drupal\Core\Template\Attribute
       title: Attributes
       description: Wrapper attributes.
+    html_tag:
+      type: string
+      title: HTML Tag
+      default: section
     background_image:
       type: string
       title: Background Image

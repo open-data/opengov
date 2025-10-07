@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   var tooltipDefaultOptions = {
     delay: 100
   };
@@ -24,7 +23,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformTooltipElement = {
-    attach: function (context) {
+    attach(context) {
       if (!window.tippy) {
         return;
       }
@@ -61,7 +60,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformTooltipLink = {
-    attach: function (context) {
+    attach(context) {
       if (!window.tippy) {
         return;
       }

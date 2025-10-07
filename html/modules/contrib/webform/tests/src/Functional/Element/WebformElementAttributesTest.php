@@ -32,6 +32,13 @@ class WebformElementAttributesTest extends WebformElementBrowserTestBase {
     // Check one, two, four, and five are merged in class text field.
     $assert_session->fieldValueEquals('webform_element_attributes_no_classes[class]', 'one two four five');
 
+    /* Validation */
+
+    $this->drupalGet('/webform/test_element_attributes');
+    $this->submitForm(['webform_element_attributes[attributes]' => "'not: valid"], 'Submit');
+    $assert_session->responseContains('<em class="placeholder">webform_element_attributes custom attributes (YAML)</em> is not valid.');
+    $assert_session->responseContains('<ul><li>Malformed inline YAML string at line 1 (near &quot;&#039;not: valid&quot;).</li></ul>');
+
     /* Submit */
 
     // Check default value handling.

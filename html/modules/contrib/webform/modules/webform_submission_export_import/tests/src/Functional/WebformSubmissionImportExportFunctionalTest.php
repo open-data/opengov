@@ -86,6 +86,11 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
       $expected_values = $original_submission->toArray(TRUE);
       $updated_submission = $this->loadSubmissionByProperty('uuid', $original_submission->uuid());
       $actual_values = $updated_submission->toArray(TRUE);
+      // Ignore the changed property.
+      unset(
+        $expected_values['changed'],
+        $actual_values['changed']
+      );
       $this->assertEquals($expected_values, $actual_values);
     }
 

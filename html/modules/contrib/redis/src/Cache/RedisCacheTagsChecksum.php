@@ -3,15 +3,23 @@
 namespace Drupal\redis\Cache;
 
 use Drupal\Core\Cache\CacheTagsChecksumInterface;
+use Drupal\Core\Cache\CacheTagsChecksumPreloadInterface;
 use Drupal\Core\Cache\CacheTagsChecksumTrait;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\redis\ClientFactory;
 use Drupal\redis\RedisPrefixTrait;
 
+// BC for Drupal 11.1 and earlier.
+interface RedisCacheTagsChecksumPreloadInterface {}
+if (!interface_exists(CacheTagsChecksumPreloadInterface::class)) {
+  // @phpstan-ignore-next-line
+  class_alias(RedisCacheTagsChecksumPreloadInterface::class, CacheTagsChecksumPreloadInterface::class);
+}
+
 /**
  * Cache tags invalidations checksum implementation that uses redis.
  */
-class RedisCacheTagsChecksum implements CacheTagsChecksumInterface, CacheTagsInvalidatorInterface {
+class RedisCacheTagsChecksum implements CacheTagsChecksumInterface, CacheTagsInvalidatorInterface, CacheTagsChecksumPreloadInterface {
 
   use RedisPrefixTrait;
   use CacheTagsChecksumTrait;

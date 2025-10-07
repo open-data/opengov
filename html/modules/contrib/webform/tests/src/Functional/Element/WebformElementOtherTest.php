@@ -39,7 +39,13 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
 
     // Check advanced select_other w/ custom label.
     $assert_session->responseContains('<span class="fieldset-legend js-form-required form-required">Select other advanced</span>');
-    $assert_session->responseContains('<select data-webform-required-error="This is a custom required error message." data-drupal-selector="edit-select-other-advanced-select" id="edit-select-other-advanced-select" name="select_other_advanced[select]" class="form-select required" required="required" aria-required="true">');
+    if (version_compare(\Drupal::VERSION, '11', '<')) {
+      $assert_session->responseContains('<select data-webform-required-error="This is a custom required error message." data-drupal-selector="edit-select-other-advanced-select" id="edit-select-other-advanced-select" name="select_other_advanced[select]" class="form-select required" required="required" aria-required="true">');
+    }
+    else {
+      $assert_session->responseContains('<select data-webform-required-error="This is a custom required error message." data-drupal-selector="edit-select-other-advanced-select" id="edit-select-other-advanced-select" name="select_other_advanced[select]" class="form-select required" required="required">');
+    }
+
     $assert_session->responseMatches('#<option value="_other_"\s+selected="selected">Is there another option you wish to enter\?</option>#');
     $assert_session->responseContains('<label for="edit-select-other-advanced-other">Other</label>');
     $assert_session->responseContains('<input data-webform-required-error="This is a custom required error message." data-counter-type="character" data-counter-minimum="4" data-counter-maximum="10" class="js-webform-counter webform-counter form-text" minlength="4" data-drupal-selector="edit-select-other-advanced-other" aria-describedby="edit-select-other-advanced-other--description" type="text" id="edit-select-other-advanced-other" name="select_other_advanced[other]" value="Four" size="20" maxlength="10" placeholder="What is this other option" />');
@@ -94,7 +100,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     /* ********************************************************************** */
 
     // Check form_item wrapper type.
-    $assert_session->responseContains('<div class="js-webform-select-other webform-select-other js-form-item form-item form-type-webform-select-other js-form-type-webform-select-other form-item-wrapper-other-form-element js-form-item-wrapper-other-form-element" id="edit-wrapper-other-form-element">');
+    $assert_session->responseContains('<div class="js-webform-select-other webform-select-other js-webform-type-webform-select-other webform-type-webform-select-other js-form-item form-item form-type-webform-select-other js-form-type-webform-select-other form-item-wrapper-other-form-element js-form-item-wrapper-other-form-element" id="edit-wrapper-other-form-element">');
     // Check container wrapper type.
     $assert_session->responseContains('<div data-drupal-selector="edit-wrapper-other-container" class="js-webform-select-other webform-select-other webform-select-other--wrapper fieldgroup form-composite js-form-wrapper form-wrapper" id="edit-wrapper-other-container">');
   }

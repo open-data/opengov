@@ -309,7 +309,7 @@ class WebformOptionsCustom extends FormElementBase implements WebformOptionsCust
     if ($element['#value_attributes']) {
       $value_attributes = preg_split('/\s*,\s*/', trim($element['#value_attributes']));
       foreach ($value_attributes as $value_attribute) {
-        if (strpos($element['#template'], $value_attribute) !== FALSE) {
+        if (str_contains($element['#template'], $value_attribute)) {
           $value_attribute_name = $value_attribute;
           break;
         }
@@ -319,7 +319,7 @@ class WebformOptionsCustom extends FormElementBase implements WebformOptionsCust
     if ($element['#text_attributes']) {
       $text_attributes = preg_split('/\s*,\s*/', trim($element['#text_attributes']));
       foreach ($text_attributes as $text_attribute) {
-        if (strpos($element['#template'], $text_attribute) !== FALSE) {
+        if (str_contains($element['#template'], $text_attribute)) {
           $text_attribute_name = $text_attribute;
           break;
         }

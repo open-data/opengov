@@ -114,8 +114,6 @@ class CurlService implements CurlServiceInterface
             CURLE_GOT_NOTHING !== ($errno = curl_errno($curl)) &&
             $error = curl_error($curl)
         ) {
-            curl_close($curl);
-
             $e = new CurlExecException(
                 sprintf(
                     "Curl error thrown for http %s to %s%s\n\n%s",
@@ -131,8 +129,6 @@ class CurlService implements CurlServiceInterface
 
             throw $e;
         }
-
-        curl_close($curl);
 
         return array($rawResult, $info);
     }

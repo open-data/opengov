@@ -147,7 +147,7 @@ class WebformUtilityCommands extends WebformCommandsBase {
       }
 
       // Tidy elements.
-      if (strpos($file->filename, 'webform.webform.') === 0 && isset($data['elements'])) {
+      if (str_starts_with($file->filename, 'webform.webform.') && isset($data['elements'])) {
         try {
           $elements = WebformYaml::tidy($data['elements']);
           $data['elements'] = $elements;

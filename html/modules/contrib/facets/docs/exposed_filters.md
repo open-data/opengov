@@ -21,6 +21,7 @@ Not changed since Facets 2, you still need to:
 
 New since Facets 2:
 
+  * Enable the submodule "Facets Exposed Filters"
   * Create a view based on the search index.
   * Save the view. (If you do not save it first, the facet settings are not available).
   * Add a 'filter criteria' of your field, which has 'Facets' as category. If you did not save the view first, you will now see a warning that you need to save the view before you can edit the facet settings.

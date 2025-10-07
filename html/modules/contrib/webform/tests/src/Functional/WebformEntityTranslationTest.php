@@ -451,4 +451,53 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     $assert_session->responseContains('<label for="edit-select-options">Select (options)</label>');
   }
 
+  /**
+   * Tests email translation.
+   */
+  public function testEmailsTranslate() {
+    // Check that the email is sent in Spanish (es).
+    $this->drupalGet('/es/webform/test_translation');
+    $edit = ['textfield' => 'Spanish Submission'];
+    $this->submitForm($edit, 'Enviar mensaje');
+    $email = $this->getLastEmail();
+    $this->assertStringContainsString('
+*Campo de texto*
+Spanish Submission
+*Computado (token)*
+Site name: Drupal',
+      $email['body']
+    );
+    $this->assertStringContainsString('Formulario de envío de: ', $email['subject']);
+
+    // Switch the email confirmation to be in English (en).
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_translation');
+    /** @var \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler $email_handler */
+    $email_handler = $webform->getHandler('email_confirmation');
+    $email_handler->setSetting('langcode', 'en');
+    $webform->save();
+
+    // Check that the email is sent in English (en).
+    $this->drupalGet('/es/webform/test_translation');
+    $edit = ['textfield' => 'Spanish Submission'];
+    $this->submitForm($edit, 'Enviar mensaje');
+    $email = $this->getLastEmail();
+    $this->assertStringNotContainsString('
+*Campo de texto*
+Spanish Submission
+*Computado (token)*
+Site name: Drupal',
+      $email['body']
+    );
+    $this->assertStringNotContainsString('Formulario de envío de: ', $email['subject']);
+    $this->assertStringContainsString('
+*Text field*
+Spanish Submission
+*Computed (token)*
+Site name: Drupal',
+      $email['body']
+    );
+    $this->assertStringContainsString('Webform submission from: Test: Translations', $email['subject']);
+  }
+
 }

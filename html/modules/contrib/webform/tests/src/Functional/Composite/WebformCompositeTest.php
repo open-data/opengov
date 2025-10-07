@@ -39,11 +39,21 @@ class WebformCompositeTest extends WebformBrowserTestBase {
     $assert_session->responseContains('<fieldset data-drupal-selector="edit-contact-basic" id="edit-contact-basic--wrapper" class="webform-contact--wrapper fieldgroup form-composite webform-composite-hidden-title required js-webform-type-webform-contact webform-type-webform-contact js-form-item form-item js-form-wrapper form-wrapper">');
     $assert_session->responseContains('<span class="visually-hidden fieldset-legend js-form-required form-required">Contact basic</span>');
     $assert_session->responseContains('<label for="edit-contact-basic-name" class="js-form-required form-required">Name</label>');
-    $assert_session->responseContains('<input data-drupal-selector="edit-contact-basic-name" type="text" id="edit-contact-basic-name" name="contact_basic[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    if (version_compare(\Drupal::VERSION, '11', '<')) {
+      $assert_session->responseContains('<input data-drupal-selector="edit-contact-basic-name" type="text" id="edit-contact-basic-name" name="contact_basic[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    }
+    else {
+      $assert_session->responseContains('<input data-drupal-selector="edit-contact-basic-name" type="text" id="edit-contact-basic-name" name="contact_basic[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" />');
+    }
 
     // Check custom name title, description, and required.
     $assert_session->responseContains('<label for="edit-contact-advanced-name" class="js-form-required form-required">Custom contact name</label>');
-    $assert_session->responseContains('<input data-drupal-selector="edit-contact-advanced-name" aria-describedby="edit-contact-advanced-name--description" type="text" id="edit-contact-advanced-name" name="contact_advanced[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    if (version_compare(\Drupal::VERSION, '11', '<')) {
+      $assert_session->responseContains('<input data-drupal-selector="edit-contact-advanced-name" aria-describedby="edit-contact-advanced-name--description" type="text" id="edit-contact-advanced-name" name="contact_advanced[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    }
+    else {
+      $assert_session->responseContains('<input data-drupal-selector="edit-contact-advanced-name" aria-describedby="edit-contact-advanced-name--description" type="text" id="edit-contact-advanced-name" name="contact_advanced[name]" value="John Smith" size="60" maxlength="255" class="form-text required" required="required" />');
+    }
     $assert_session->responseContains('Custom contact name description');
 
     // Check custom state type and not required.

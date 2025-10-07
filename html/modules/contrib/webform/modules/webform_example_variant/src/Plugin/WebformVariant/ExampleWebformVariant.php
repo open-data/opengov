@@ -34,7 +34,7 @@ class ExampleWebformVariant extends WebformVariantBase {
    */
   public function isApplicable(WebformInterface $webform) {
     // Only allow variant to be applicable to webform_example_variant_ webforms.
-    return (strpos($webform->id(), 'webform_example_variant_') === 0);
+    return (str_starts_with($webform->id(), 'webform_example_variant_'));
   }
 
   /**

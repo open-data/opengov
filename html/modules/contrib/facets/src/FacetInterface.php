@@ -18,7 +18,7 @@ interface FacetInterface extends ConfigEntityInterface {
    *   (optional) The facet widget plugin configuration. If missed, the default
    *   plugin configuration will be filled.
    */
-  public function setWidget($id, array $configuration = NULL);
+  public function setWidget($id, ?array $configuration = NULL);
 
   /**
    * Returns the facet widget definition.
@@ -47,7 +47,7 @@ interface FacetInterface extends ConfigEntityInterface {
    *   (optional) The facet hierarchy plugin configuration. When empty, the
    *   default plugin configuration will be used.
    */
-  public function setHierarchy($id, array $configuration = NULL);
+  public function setHierarchy($id, ?array $configuration = NULL);
 
   /**
    * Returns the facet hierarchy definition.
