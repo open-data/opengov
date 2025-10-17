@@ -51,3 +51,11 @@ facet.widget.config.range_slider:
     step:
       type: float
       label: 'Step'
+
+plugin.plugin_configuration.facets_processor.slider:
+  type: mapping
+  label: 'Slider'
+
+plugin.plugin_configuration.facets_processor.range_slider:
+  type: mapping
+  label: 'Range slider'

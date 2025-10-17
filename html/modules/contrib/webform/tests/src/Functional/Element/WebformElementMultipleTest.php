@@ -170,7 +170,7 @@ webform_multiple_custom_attributes: {  }");
     $assert_session->responseContains('<table class="custom-table responsive-enabled" data-drupal-selector="edit-webform-multiple-custom-attributes-items" id="edit-webform-multiple-custom-attributes-items" data-striping="1">');
     $assert_session->responseContains('<th class="custom-label webform_multiple_custom_attributes-table--textfield webform-multiple-table--textfield">textfield</th>');
     $assert_session->responseContains('<label class="custom-label visually-hidden"');
-    $assert_session->responseContains('<div class="custom-wrapper js-form-item form-item');
+    $assert_session->responseContains('<div class="custom-wrapper js-webform-type-textfield webform-type-textfield js-form-item form-item form-type-textfield js-form-type-textfield form-item-webform-multiple-custom-attributes-items-0-textfield js-form-item-webform-multiple-custom-attributes-items-0-textfield form-no-label">');
     $assert_session->responseContains('<input class="custom-element form-text"');
 
     /* ********************************************************************** */

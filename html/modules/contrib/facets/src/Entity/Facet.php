@@ -372,7 +372,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
-  public function setWidget($id, array $configuration = NULL) {
+  public function setWidget($id, ?array $configuration = NULL) {
     if ($configuration === NULL) {
       $instance = $this->getWidgetManager()->createInstance($id);
       // Get the default configuration for this plugin.
@@ -410,7 +410,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
-  public function setHierarchy($id, array $configuration = NULL) {
+  public function setHierarchy($id, ?array $configuration = NULL) {
     if ($configuration === NULL) {
       $instance = $this->getHierarchyManager()->createInstance($id);
       // Get the default configuration for this plugin.

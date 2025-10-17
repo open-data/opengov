@@ -30,6 +30,7 @@ class WebformElementDateListTest extends WebformElementBrowserTestBase {
     // Check posted submission values.
     $this->postSubmission($webform);
     $assert_session->responseContains("datelist_default: '2009-08-18T16:00:00+1000'
+datelist_date_part_title_display: '2009-08-18T16:00:00+1000'
 datelist_no_abbreviate: '2009-08-18T16:00:00+1000'
 datelist_text_parts: '2009-08-18T16:00:00+1000'
 datelist_datetime: '2009-08-18T16:00:00+1000'
@@ -46,6 +47,10 @@ datelist_custom_composite:
   - datelist: '2009-08-18T16:00:00+1000'");
 
     $this->drupalGet('/webform/test_element_datelist');
+
+    // Check date part title display.
+    $assert_session->responseContains('<label for="edit-datelist-default-year" class="visually-hidden">datelist_default: Year</label>');
+    $assert_session->responseContains('<label for="edit-datelist-date-part-title-display-year">datelist_date_part_title_display: Year</label>');
 
     // Check datelist label has not for attributes.
     $assert_session->responseContains('<label>datelist_default</label>');

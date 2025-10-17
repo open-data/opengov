@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal) {
-
   $(document).on('state:required', function (e) {
     if (e.trigger && e.target && e.target.id) {
       var $element = $('#' + e.target.id);

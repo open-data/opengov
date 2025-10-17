@@ -190,11 +190,11 @@ wb.i18nDict = {
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
 
 	/* Twitter embedded timeline */
-	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
-	"twitter-end-notice": "End of @%username%’s Twitter timeline",
-	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
-	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
-	"twitter-timeline-title": "Twitter timeline",
+	"twitter-start-notice": "Start of @%username%’s X timeline",
+	"twitter-end-notice": "End of @%username%’s X timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s X timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s X timeline",
+	"twitter-timeline-title": "X timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",
@@ -248,7 +248,20 @@ wb.i18nDict = {
 
 	/* Filter */
 	"fltr-lbl": "Filter<span class=\"wb-inv\"> content: results appear below as you type.</span>",
-	"fltr-info": "Showing <span data-nbitem></span> filtered from <span data-total></span> total entries"
+	"fltr-info": "Showing <span data-nbitem></span> filtered from <span data-total></span> total entries",
+
+	/* Data scrub */
+	"pii-header": "Remove Personal information",
+	"pii-intro": "Some information in your form is identified as personal information and it will be replaced as follows:",
+	"pii-view-more": "What is considered personal information?",
+	"pii-view-more-info": "<p>The following types of information are considered personal information:</p><ul><li>email address</li><li>telephone number</li><li>postal code</li><li>passport number</li><li>business number</li><li>social insurance number (SIN)</li></ul>",
+	"pii-yes-btn": "Remove personal information and submit",
+	"pii-cancel-btn": "Go back and edit fields",
+	"redacted": "redacted",
+
+	/* Steps form */
+	"rel-preposition": " of ",
+	"progress-label": "Questionnaire progress:"
 };
 
 } )( wb );

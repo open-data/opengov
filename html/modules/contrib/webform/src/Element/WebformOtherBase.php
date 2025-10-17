@@ -129,7 +129,7 @@ abstract class WebformOtherBase extends FormElementBase {
     // Build other textfield.
     $element += ['other' => []];
     foreach ($element as $key => $value) {
-      if (strpos($key, '#other__') === 0) {
+      if (str_starts_with($key, '#other__')) {
         $other_key = str_replace('#other__', '#', $key);
         if (!isset($element['other'][$other_key])) {
           $element['other'][$other_key] = $value;

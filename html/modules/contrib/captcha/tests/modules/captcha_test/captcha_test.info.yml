@@ -6,7 +6,7 @@ hidden: true
 dependencies:
   - captcha:captcha
 
-# Information added by Drupal.org packaging script on 2024-11-22
-version: '2.0.7'
+# Information added by Drupal.org packaging script on 2025-07-28
+version: '2.0.9'
 project: 'captcha'
-datestamp: 1732250193
+datestamp: 1753701291

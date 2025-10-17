@@ -205,7 +205,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     // Check each selected menu, in turn, until a menu or taxonomy match found:
     // then cache its state for building & caching in build() and exit.
-    $menus = $this->config->get('menu_breadcrumb_menus');
+    $menus = $this->getMenus();
     uasort($menus, function ($a, $b) {
       return SortArray::sortByWeightElement($a, $b);
     });
@@ -435,6 +435,16 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       $links[] = Link::fromTextAndUrl($title,
         Url::fromRouteMatch($route_match));
     }
+  }
+
+  /**
+   * Retrieve menus from configuration.
+   *
+   * @return array
+   *   Configuration menus.
+   */
+  protected function getMenus(): array {
+    return $this->config->get('menu_breadcrumb_menus') ?: [];
   }
 
   /**

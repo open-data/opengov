@@ -42,6 +42,7 @@ variables:
   ORCA_SUT_NAME: "drupal/google_tag"
   DRUPAL_PROJECT_PATH: "modules/contrib"
   CORE_PREVIOUS_PHP_MIN: 8.1
+  OPT_IN_TEST_MAX_PHP: 1
 
 phpcs:
   allow_failure: true

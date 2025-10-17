@@ -90,6 +90,7 @@ trait WebformEntityStorageTrait {
       @trigger_error("$class_name::$name is deprecated in Webform 6.x and is removed from Webform 7.x Use \$this->entityTypeManager->getStorage('$entity_type') instead", E_USER_DEPRECATED);
       return $this->entityTypeManager->getStorage($entity_type);
     }
+    return NULL;
   }
 
   /**

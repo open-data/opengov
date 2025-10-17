@@ -2,13 +2,14 @@ name: 'Webform Node Translation test'
 type: module
 description: 'Support module for webform node translation testing.'
 package: Testing
+container_rebuild_required: true
 dependencies:
   - 'webform:webform'
   - 'webform:webform_node'
   - 'webform:webform_test_translation'
   - 'drupal:content_translation'
 
-# Information added by Drupal.org packaging script on 2025-03-21
-version: '6.3.0-beta2'
+# Information added by Drupal.org packaging script on 2025-09-22
+version: '6.3.0-beta5'
 project: 'webform'
-datestamp: 1742581873
+datestamp: 1758581732

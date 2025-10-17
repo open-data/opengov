@@ -23,6 +23,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class OverrideWebformVariant extends WebformVariantBase {
 
   /**
+   * Webform properties that can be overwritten.
+   *
+   * @var string[]
+   */
+  const OVERRIDE_PROPERTIES = [
+    'title',
+    'open',
+    'close',
+    'css',
+    'javascript',
+  ];
+
+  /**
    * The current user.
    *
    * @var \Drupal\Core\Session\AccountInterface
@@ -50,6 +63,7 @@ class OverrideWebformVariant extends WebformVariantBase {
    */
   public function defaultConfiguration() {
     return [
+      'properties' => [],
       'settings' => [],
       'elements' => '',
       'handlers' => [],
@@ -62,11 +76,32 @@ class OverrideWebformVariant extends WebformVariantBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $webform = $this->getWebform();
+
     $form['overrides'] = [
       '#type' => 'details',
       '#title' => $this->t('Overrides'),
       '#open' => TRUE,
       '#access' => $this->currentUser->hasPermission('edit webform source'),
+    ];
+
+    // Properties.
+    $default_properties = [];
+    foreach (static::OVERRIDE_PROPERTIES as $property) {
+      $default_properties[$property] = $webform->get($property);
+    }
+    $form['overrides']['properties'] = [
+      '#type' => 'webform_codemirror',
+      '#mode' => 'yaml',
+      '#title' => $this->t('Properties (YAML)'),
+      '#description' => $this->t('Enter the properties name and value as YAML.'),
+      '#more_title' => $this->t('Default settings'),
+      '#more' => [
+        '#theme' => 'webform_codemirror',
+        '#type' => 'yaml',
+        '#code' => WebformYaml::encode($default_properties),
+      ],
+      '#parents' => ['settings', 'properties'],
+      '#default_value' => $this->configuration['properties'],
     ];
 
     // Settings.
@@ -190,6 +225,13 @@ class OverrideWebformVariant extends WebformVariantBase {
    */
   public function applyVariant() {
     $webform = $this->getWebform();
+
+    // Override properties.
+    if ($this->configuration['properties']) {
+      foreach ($this->configuration['properties'] as $property_name => $property_value) {
+        $webform->set($property_name, $property_value);
+      }
+    }
 
     // Override settings.
     if ($this->configuration['settings']) {

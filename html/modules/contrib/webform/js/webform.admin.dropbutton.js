@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   // Make sure that dropButton behavior exists.
   if (!Drupal.behaviors.dropButton) {
     return;

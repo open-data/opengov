@@ -22,11 +22,11 @@
   },
   "require": {
     "php": ">=8.0",
-    "drupal/core": "^9.4 || ^10 || ^11",
+    "drupal/core": "^10.3 || ^11",
     "drupal/token": "^1.0"
   },
   "require-dev": {
-    "drupal/forum": "*",
+    "drupal/forum": "1.x-dev",
     "drupal/hal": "^1 || ^2 || ^9",
     "drupal/page_manager": "^4.0",
     "drupal/redirect": "^1.0",

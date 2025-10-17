@@ -204,7 +204,7 @@ abstract class WebformComputedBase extends FormElementBase implements WebformCom
    * Determine if the current request is using Ajax.
    */
   protected static function isAjax() {
-    // return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
+    // Return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
     //
     // ISSUE:
     // For nodes with computed elements there is a duplicate
@@ -213,7 +213,7 @@ abstract class WebformComputedBase extends FormElementBase implements WebformCom
     // WORKAROUND:
     // See if _wrapper_format=drupal_ajax is being appended to the query string.
     $querystring = \Drupal::request()->getQueryString();
-    return (strpos($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax') !== FALSE);
+    return str_contains($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax');
   }
 
   /**

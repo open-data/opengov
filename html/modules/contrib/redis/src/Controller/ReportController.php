@@ -2,13 +2,14 @@
 
 namespace Drupal\redis\Controller;
 
-use Drupal\Core\StringTranslation\ByteSizeMarkup;
-use Predis\Client;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\redis\ClientFactory;
 use Drupal\redis\RedisPrefixTrait;
+use Predis\Client;
 use Predis\Collection\Iterator\Keyspace;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -24,7 +25,7 @@ class ReportController extends ControllerBase {
   /**
    * The redis client.
    *
-   * @var \Redis|\Relay\Relay|\Predis\Client|false
+   * @var \Redis|\Relay\Relay|\Predis\Client|\RedisCluster|false
    */
   protected $redis;
 
@@ -73,15 +74,21 @@ class ReportController extends ControllerBase {
       '#requirements' => [],
     ];
 
+    if (version_compare(\Drupal::VERSION, '11.2', '>=')) {
+      $build['report']['#attached'] = [
+        'library' => [
+          'system/status.report',
+        ],
+      ];
+    }
+
     if ($this->redis === FALSE) {
 
-      $build['report']['#requirements'] = [
-        'client' => [
+      $build['report']['#requirements']['client'] = [
           'title' => 'Redis',
           'value' => t('Not connected.'),
           'severity_status' => 'error',
           'description' => t('No Redis client connected. Verify cache settings.'),
-        ],
       ];
 
       return $build;
@@ -89,7 +96,7 @@ class ReportController extends ControllerBase {
 
     $start = microtime(TRUE);
 
-    $info = $this->redis->info();
+    $info = $this->info();
 
     $prefix_length = strlen($this->getPrefix()) + 1;
 
@@ -169,21 +176,19 @@ class ReportController extends ControllerBase {
     }
 
     $end = microtime(TRUE);
-    /** @var array|false $memory_config */
-    $memory_config = $this->redis->config('get', 'maxmemory*');
-    // Redis default for maxmemory is 0 for "unlimited" (ie system limit).
-    if (!empty($memory_config['maxmemory'])) {
+
+    if (!empty($info['maxmemory'])) {
       $memory_value = $this->t('@used_memory / @max_memory (@used_percentage%), maxmemory policy: @policy', [
         '@used_memory' => $info['used_memory_human'] ?? $info['Memory']['used_memory_human'],
-        '@max_memory' => static::formatSize($memory_config['maxmemory']),
-        '@used_percentage' => (int) (($info['used_memory'] ?? $info['Memory']['used_memory']) / $memory_config['maxmemory'] * 100),
-        '@policy' => $memory_config['maxmemory-policy'],
+        '@max_memory' => static::formatSize($info['maxmemory']),
+        '@used_percentage' => (int) ($info['used_memory'] / $info['maxmemory'] * 100),
+        '@policy' => $info['maxmemory_policy'] ?? '',
       ]);
     }
     else {
       $memory_value = $this->t('@used_memory / unlimited, maxmemory policy: @policy', [
-        '@used_memory' => $info['used_memory_human'] ?? $info['Memory']['used_memory_human'],
-        '@policy' => $memory_config['maxmemory-policy'] ?? '',
+        '@used_memory' => $info['used_memory_human'],
+        '@policy' => $info['maxmemory_policy'] ?? '',
       ]);
     }
 
@@ -194,15 +199,19 @@ class ReportController extends ControllerBase {
       ],
       'version' => [
         'title' => $this->t('Version'),
-        'value' => $info['redis_version'] ?? $info['Server']['redis_version'],
+        'value' => $info['valkey_version'] ? 'Valkey ' . $info['valkey_version'] : $info['redis_version'],
       ],
+      'mode' => $info['redis_mode'] ? [
+        'title' => $this->t('Mode'),
+        'value' => $info['redis_mode'] ? Unicode::ucfirst($info['redis_mode']) : '',
+      ] : NULL,
       'clients' => [
         'title' => $this->t('Connected clients'),
-        'value' => $info['connected_clients'] ?? $info['Clients']['connected_clients'],
+        'value' => $info['connected_clients'],
       ],
       'dbsize' => [
         'title' => $this->t('Keys'),
-        'value' => $this->redis->dbSize(),
+        'value' => $info['db_size'],
       ],
       'memory' => [
         'title' => $this->t('Memory'),
@@ -210,18 +219,18 @@ class ReportController extends ControllerBase {
       ],
       'uptime' => [
         'title' => $this->t('Uptime'),
-        'value' => $this->dateFormatter->formatInterval($info['uptime_in_seconds'] ?? $info['Server']['uptime_in_seconds']),
+        'value' => $this->dateFormatter->formatInterval($info['uptime_in_seconds']),
       ],
       'read_write' => [
         'title' => $this->t('Read/Write'),
-        'value' => $this->t('@read read (@percent_read%), @write written (@percent_write%), @commands commands in @connections connections.', [
-          '@read' => static::formatSize($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']),
-          '@percent_read' => round(100 / (($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']) + ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])) * ($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes'])),
-          '@write' => static::formatSize($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes']),
-          '@percent_write' => round(100 / (($info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes']) + ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])) * ($info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'])),
-          '@commands' => $info['total_commands_processed'] ?? $info['Stats']['total_commands_processed'],
-          '@connections' => $info['total_connections_received'] ?? $info['Stats']['total_connections_received'],
-        ]),
+        'value' => isset($info['total_net_output_bytes']) ? $this->t('@read read (@percent_read%), @write written (@percent_write%), @commands commands in @connections connections.', [
+          '@read' => static::formatSize($info['total_net_output_bytes']),
+          '@percent_read' => round(100 / ($info['total_net_output_bytes'] + $info['total_net_input_bytes']) * ($info['total_net_output_bytes'])),
+          '@write' => static::formatSize($info['total_net_input_bytes']),
+          '@percent_write' => round(100 / ($info['total_net_output_bytes'] + $info['total_net_input_bytes']) * ($info['total_net_input_bytes'])),
+          '@commands' => $info['total_commands_processed'],
+          '@connections' => $info['total_connections_received'],
+        ]) : $this->t('These metrics are not available, please check your Redis server configuration.'),
       ],
       'per_bin' => [
         'title' => $this->t('Keys per cache bin'),
@@ -246,23 +255,48 @@ class ReportController extends ControllerBase {
       ],
       'time_spent' => [
         'title' => $this->t('Time spent'),
-        'value' => ['#markup' => $this->t('@count keys in @time seconds.', ['@count' => $i, '@time' => round(($end - $start), 4)])],
+        'value' => [
+          '#markup' => $this->t('@count keys in @time seconds.', [
+            '@count' => $i,
+            '@time' => round(($end - $start), 4),
+          ]),
+        ],
       ],
     ];
 
+    $requirements = array_filter($requirements);
+
     // Warnings/hints.
-    if (!empty($memory_config['maxmemory-policy']) && $memory_config['maxmemory-policy'] == 'noeviction') {
-      $redis_url = Url::fromUri('https://redis.io/topics/lru-cache', [
+    if ($info['maxmemory_policy'] == 'noeviction') {
+      $eviction_url = Url::fromUri('https://valkey.io/topics/lru-cache', [
         'fragment' => 'eviction-policies',
         'attributes' => [
           'target' => '_blank',
         ],
       ]);
       $requirements['memory']['severity_status'] = 'warning';
-      $requirements['memory']['description'] = $this->t('It is recommended to configure the maxmemory policy to e.g. volatile-lru, see <a href=":documentation_url">Redis documentation</a>.', [
-        ':documentation_url' => $redis_url->toString(),
+      $requirements['memory']['description'] = $this->t('It is recommended to configure the maxmemory policy to e.g. volatile-lru, see <a href=":documentation_url">eviction documentation</a>.', [
+        ':documentation_url' => $eviction_url->toString(),
       ]);
     }
+    elseif (str_starts_with($info['maxmemory_policy'], 'allkeys')) {
+      $readme_url = Url::fromUri('https://project.pages.drupalcode.org/redis/', [
+        'attributes' => [
+          'target' => '_blank',
+        ],
+      ]);
+      $eviction_url = Url::fromUri('https://valkey.io/topics/lru-cache', [
+        'fragment' => 'eviction-policies',
+        'attributes' => [
+          'target' => '_blank',
+        ],
+      ]);
+      $requirements['memory']['description'] = $this->t('Using an allkeys eviction policy may drop cache tag checksums or other persistent data, consider using a volatile eviction policy, see <a href=":readme_url">the module documentation</a> and <a href=":documentation_url">eviction documentation</a>.', [
+        ':documentation_url' => $eviction_url->toString(),
+        ':readme_url' => $readme_url->toString(),
+      ]);
+    }
+
     if (count($cache_tags) == 0) {
       $requirements['cache_tag_totals']['severity'] = REQUIREMENT_WARNING;
       $requirements['cache_tag_totals']['description'] = $this->t('No cache tags found, make sure that the redis cache tag checksum service is used. See example.services.yml on root of this module.');
@@ -318,9 +352,64 @@ class ReportController extends ControllerBase {
         yield from $keys;
       }
     }
+    elseif ($this->redis instanceof \RedisCluster) {
+      $master = current($this->redis->_masters());
+      while ($keys = $this->redis->scan($it, $master, $this->getPrefix() . '*', $count)) {
+        yield from $keys;
+      }
+    }
     elseif ($this->redis instanceof Client) {
       yield from new Keyspace($this->redis, $match, $count);
     }
+  }
+
+  /**
+   * Wrapper to get various statistical information from Redis.
+   *
+   * @return array
+   *   Redis info.
+   */
+  protected function info() {
+    $normalized_info = [];
+    if ($this->redis instanceof \RedisCluster) {
+      $master = current($this->redis->_masters());
+      $info = $this->redis->info($master);
+    }
+    else {
+      $info = $this->redis->info();
+    }
+
+    $normalized_info['redis_version'] = $info['redis_version'] ?? $info['Server']['redis_version'];
+    $normalized_info['valkey_version'] = $info['valkey_version'] ?? NULL;
+    $normalized_info['redis_mode'] = $info['redis_mode'] ?? $info['Server']['redis_mode'] ?? NULL;
+    $normalized_info['connected_clients'] = $info['connected_clients'] ?? $info['Clients']['connected_clients'];
+    if ($this->redis instanceof \RedisCluster) {
+      $master = current($this->redis->_masters());
+      $normalized_info['db_size'] = $this->redis->dbSize($master);
+    }
+    else {
+      $normalized_info['db_size'] = $this->redis->dbSize();
+    }
+    $normalized_info['used_memory'] = $info['used_memory'] ?? $info['Memory']['used_memory'];
+    $normalized_info['used_memory_human'] = $info['used_memory_human'] ?? $info['Memory']['used_memory_human'];
+
+    if (empty($info['maxmemory_policy'])) {
+      $memory_config = $this->redis->config('get', 'maxmemory*');
+      $normalized_info['maxmemory_policy'] = $memory_config['maxmemory-policy'];
+      $normalized_info['maxmemory'] = $memory_config['maxmemory'];
+    }
+    else {
+      $normalized_info['maxmemory_policy'] = $info['maxmemory_policy'];
+      $normalized_info['maxmemory'] = $info['maxmemory'];
+    }
+
+    $normalized_info['uptime_in_seconds'] = $info['uptime_in_seconds'] ?? $info['Server']['uptime_in_seconds'] ?? NULL;
+    $normalized_info['total_net_output_bytes'] = $info['total_net_output_bytes'] ?? $info['Stats']['total_net_output_bytes'] ?? NULL;
+    $normalized_info['total_net_input_bytes'] = $info['total_net_input_bytes'] ?? $info['Stats']['total_net_input_bytes'] ?? NULL;
+    $normalized_info['total_commands_processed'] = $info['total_commands_processed'] ?? $info['Stats']['total_commands_processed'] ?? NULL;
+    $normalized_info['total_connections_received'] = $info['total_connections_received'] ?? $info['Stats']['total_connections_received'] ?? NULL;
+
+    return $normalized_info;
   }
 
   /**

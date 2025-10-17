@@ -5,6 +5,9 @@
  * Post-update functions for the Facets module.
  */
 
+use Drupal\Core\Config\Entity\ConfigEntityUpdater;
+use Drupal\views\ViewEntityInterface;
+
 /**
  * Add the hierarchy processor to facets that have the hierarchy enabled.
  */
@@ -31,4 +34,35 @@ function facets_post_update_8001_add_hierarchy_processor() {
       }
     }
   }
+}
+
+/**
+ * Add missing "processor_id" to existing views with exposed facets.
+ */
+function facets_post_update_add_processor_id_to_views(&$sandbox): void {
+  \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'view', function (ViewEntityInterface $view): bool {
+    $displays = $view->get('display');
+    $changed = FALSE;
+    /** @var \Drupal\views\Plugin\views\display\DisplayPluginInterface $display */
+    foreach ($displays as &$display) {
+      if (!empty($display['display_options']['filters'])) {
+        foreach ($display['display_options']['filters'] as &$handler) {
+          if (is_array($handler) && array_key_exists('facet', $handler)) {
+            $changed = TRUE;
+            foreach ($handler['facet']['processor_configs'] as $processor_id => &$processor_config) {
+              $processor_config['processor_id'] = $processor_id;
+            }
+            unset($processor_config);
+          }
+        }
+        unset($handler);
+      }
+    }
+
+    if ($changed) {
+      $view->set('display', $displays);
+    }
+
+    return $changed;
+  });
 }

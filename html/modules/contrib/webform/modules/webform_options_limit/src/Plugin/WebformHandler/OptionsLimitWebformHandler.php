@@ -18,6 +18,7 @@ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform_options_custom\Plugin\WebformOptionsCustomInterface;
 use Drupal\webform_options_limit\Plugin\WebformOptionsLimitHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -287,8 +288,8 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       '#type' => 'textfield',
       '#title' => $this->t('Limit reached message'),
       '#description' => $this->t('This message will be displayed when all limits are reached.')
-        . '<br/><br/>'
-        . $this->t('Leave blank to hide this message.'),
+      . '<br/><br/>'
+      . $this->t('Leave blank to hide this message.'),
       '#default_value' => $this->configuration['limit_reached_message'],
     ];
     $form['limit_settings']['limit_source_entity'] = [
@@ -354,32 +355,32 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       '#type' => 'textfield',
       '#title' => $this->t('Multiple remaining message'),
       '#description' => $this->t('This message is displayed when the remaining submission is greater than one.')
-        . '<br/><br/>'
-        . $this->t('Leave blank to hide this message.'),
+      . '<br/><br/>'
+      . $this->t('Leave blank to hide this message.'),
       '#default_value' => $this->configuration['option_multiple_message'],
     ];
     $form['option_settings']['option_message']['option_single_message'] = [
       '#type' => 'textfield',
       '#title' => $this->t('One remaining message'),
       '#description' => $this->t('This message is displayed when there is only one remaining submission available.')
-        . '<br/><br/>'
-        . $this->t('Leave blank to hide this message.'),
+      . '<br/><br/>'
+      . $this->t('Leave blank to hide this message.'),
       '#default_value' => $this->configuration['option_single_message'],
     ];
     $form['option_settings']['option_message']['option_none_message'] = [
       '#type' => 'textfield',
       '#title' => $this->t('None remaining message'),
       '#description' => $this->t('This message is displayed when there are remaining submissions allows.')
-        . '<br/><br/>'
-        . $this->t('Leave blank to hide this message.'),
+      . '<br/><br/>'
+      . $this->t('Leave blank to hide this message.'),
       '#default_value' => $this->configuration['option_none_message'],
     ];
     $form['option_settings']['option_message']['option_unlimited_message'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Unlimited message'),
       '#description' => $this->t('This message is displayed when there are not submissions limits.')
-        . '<br/><br/>'
-        . $this->t('Leave blank to hide this message.'),
+      . '<br/><br/>'
+      . $this->t('Leave blank to hide this message.'),
       '#default_value' => $this->configuration['option_unlimited_message'],
     ];
     $form['option_settings']['option_error_message'] = [
@@ -1145,6 +1146,11 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
     if ($webform_element instanceof WebformElementEntityOptionsInterface) {
       $this->setOptions($element);
     }
+    elseif ($webform_element instanceof WebformOptionsCustomInterface) {
+      $webform_element = $this->getWebformElement();
+      $webform_element->initialize($element);
+      $webform_element->prepare($element);
+    }
 
     return ($element) ? OptGroup::flattenOptions($element['#options']) : [];
   }
@@ -1413,6 +1419,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
 
     switch ($message_display) {
       case WebformOptionsLimitHandlerInterface::MESSAGE_DISPLAY_LABEL:
+      default:
         $t_args = ['@label' => $label, '@message' => $message];
         return $this->t('@label @message', $t_args);
 

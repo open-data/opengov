@@ -3,6 +3,9 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use CommerceGuys\Addressing\AddressFormat\FieldOverride;
+use CommerceGuys\Addressing\AddressFormat\FieldOverrides;
+use CommerceGuys\Addressing\Address as AddressExternal;
+use Drupal\address\Plugin\Validation\Constraint\AddressFormatConstraint;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -13,6 +16,7 @@ use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\Validation;
 
 /**
  * Provides a 'address' element.
@@ -465,6 +469,72 @@ class Address extends WebformCompositeBase {
       $value = array_values($value);
       $form_state->setValueForElement($element, $value ?: NULL);
     }
+
+    // Validate address element values using the address module's field item validation.
+    // @see https://www.drupal.org/project/address/issues/2888152
+    if (empty($element['#multiple'])) {
+      $violations = static::validateAddressUsingValidator($element, $value);
+      foreach ($violations as $violation) {
+        $property = $violation->getPropertyPath();
+        if (isset($element[$property])) {
+          $form_state->setError($element[$property], $violation->getMessage());
+        }
+      }
+    }
+    else {
+      foreach ($value as $index => $item) {
+        $violations = static::validateAddressUsingValidator($element, $item);
+        foreach ($violations as $violation) {
+          $property = $violation->getPropertyPath();
+          if (isset($element[$index][$property])) {
+            $form_state->setError($element[$index][$property], $violation->getMessage());
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Validates an address using a Symfony Validator and an AddressFormatConstraint.
+   *
+   * @param array $element
+   *   The form element definition, including metadata and field overrides.
+   * @param array $value
+   *   The address value array, containing address details such as country code,
+   *   administrative area, and other address components.
+   *
+   * @return \Symfony\Component\Validator\ConstraintViolationListInterface
+   *   A list of constraint violations, if validation fails. Returns an empty
+   *   list if the address is valid.
+   */
+  protected static function validateAddressUsingValidator(array $element, array $value) {
+    // Initialize the Symfony Validator.
+    $validator = Validation::createValidator();
+
+    // Create your Address object implementing AddressInterface.
+    $address = new AddressExternal(
+      countryCode: $value['country_code'] ?? '',
+      administrativeArea: $value['administrative_area'] ?? '',
+      locality: $value['locality'] ?? '',
+      dependentLocality: $value['dependent_locality'] ?? '',
+      postalCode: $value['postal_code'] ?? '',
+      sortingCode: $value['sorting_code'] ?? '',
+      addressLine1: $value['address_line1'] ?? '',
+      addressLine2: $value['address_line2'] ?? '',
+      addressLine3: $value['address_line3'] ?? '',
+      organization: $value['organization'] ?? '',
+      givenName: $value['given_name'] ?? '',
+      additionalName: $value['additional_name'] ?? '',
+      familyName: $value['family_name'] ?? '',
+      locale: $value['langcode'] ?? '',
+    );
+
+    // Create the AddressFormatConstraint.
+    $constraint = new AddressFormatConstraint();
+    $constraint->fieldOverrides = new FieldOverrides($element['#field_overrides'] ?? []);
+
+    // Validate the Address object.
+    return $validator->validate($address, $constraint);
   }
 
 }

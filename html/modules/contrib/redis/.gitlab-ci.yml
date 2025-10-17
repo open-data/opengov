@@ -39,6 +39,7 @@ variables:
   REDIS_INTERFACE: PhpRedis
   OPT_IN_TEST_PREVIOUS_MINOR: 1
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  OPT_IN_TEST_NEXT_MINOR: 1
   # Concurrency can not be enabled as environment variables are not passed
   # through
   _PHPUNIT_CONCURRENT: 0
@@ -50,17 +51,46 @@ variables:
   before_script:
     - composer require --dev predis/predis --no-update
 
+# For now, use Predis by default as this avoids issues with packages.
 .phpunit-base:
+  variables:
+    REDIS_INTERFACE: Predis
+  before_script:
+    - *setup-extension
+  services:
+    - !reference [ .with-database ]
+    - !reference [ .with-chrome ]
+    - name: redis:7
+      alias: redis
+      command: ["redis-server", "--maxmemory-policy", "allkeys-lru", "--maxmemory", "100M"]
+
+phpunit:
   parallel:
     matrix:
       - REDIS_INTERFACE:
           - PhpRedis
           - Predis
           - Relay
-  before_script:
-    - *setup-extension
+
+phpunit (previous minor):
+  extends: .phpunit-base
+
+phpunit (previous major):
+  extends: .phpunit-base
+
+phpunit (next minor):
+  extends: .phpunit-base
+
+phpunit (valkey):
+  extends: phpunit
   services:
     - !reference [ .with-database ]
     - !reference [ .with-chrome ]
-    - name: redis:6
-      command: ["redis-server", "--maxmemory-policy", "allkeys-lru", "--maxmemory", "100M"]
+    - name: valkey/valkey:8
+      alias: redis
+      command: [ "valkey-server", "--maxmemory-policy", "allkeys-lru", "--maxmemory", "100M" ]
+
+pages:
+  before_script:
+    - mkdir docs
+    - mv *.md docs

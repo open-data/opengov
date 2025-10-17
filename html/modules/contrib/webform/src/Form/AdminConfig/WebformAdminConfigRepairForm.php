@@ -52,10 +52,10 @@ class WebformAdminConfigRepairForm extends ConfirmFormBase {
         '#type' => 'webform_message',
         '#message_type' => 'warning',
         '#message_message' => $this->t('Repair and remove older Webform configuration files.') . '<br/>' .
-          '<strong>' . $this->t('This action cannot be undone.') . '</strong>',
+        '<strong>' . $this->t('This action cannot be undone.') . '</strong>',
       ],
       'title' => [
-          '#markup' => $this->t('This action will…'),
+        '#markup' => $this->t('This action will…'),
       ],
       'list' => [
         '#theme' => 'item_list',

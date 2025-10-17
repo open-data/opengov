@@ -280,7 +280,8 @@ class Application extends BaseApplication
                     if ($this->has($command->getName())) {
                         $io->writeError('<warning>Plugin command '.$command->getName().' ('.get_class($command).') would override a Composer command and has been skipped</warning>');
                     } else {
-                        $this->add($command);
+                        // Compatibility layer for symfony/console <7.4
+                        method_exists($this, 'addCommand') ? $this->addCommand($command) : $this->add($command);
                     }
                 }
             } catch (NoSslException $e) {
@@ -380,7 +381,9 @@ class Application extends BaseApplication
 
                                 $aliases = $composer['scripts-aliases'][$script] ?? [];
 
-                                $this->add(new Command\ScriptAliasCommand($script, $description, $aliases));
+                                $scriptAlias = new Command\ScriptAliasCommand($script, $description, $aliases);
+                                // Compatibility layer for symfony/console <7.4
+                                method_exists($this, 'addCommand') ? $this->addCommand($scriptAlias) : $this->add($scriptAlias);
                             }
                         }
                     }
@@ -441,7 +444,7 @@ class Application extends BaseApplication
             // as http error codes are all beyond the 255 range of permitted exit codes
             if ($e instanceof TransportException) {
                 $reflProp = new \ReflectionProperty($e, 'code');
-                $reflProp->setAccessible(true);
+                (\PHP_VERSION_ID < 80100) and $reflProp->setAccessible(true);
                 $reflProp->setValue($e, Installer::ERROR_TRANSPORT_EXCEPTION);
             }
 
@@ -501,6 +504,9 @@ class Application extends BaseApplication
             $avastDetect = glob('C:\Program Files\Avast*');
             if (is_array($avastDetect) && count($avastDetect) !== 0) {
                 $io->writeError('<error>The following exception indicates a possible issue with the Avast Firewall</error>', true, IOInterface::QUIET);
+                $io->writeError('<error>Check https://getcomposer.org/local-issuer for details</error>', true, IOInterface::QUIET);
+            } else {
+                $io->writeError('<error>The following exception indicates a possible issue with a Firewall/Antivirus</error>', true, IOInterface::QUIET);
                 $io->writeError('<error>Check https://getcomposer.org/local-issuer for details</error>', true, IOInterface::QUIET);
             }
         }

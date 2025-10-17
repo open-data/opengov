@@ -351,7 +351,7 @@ class Deprecation
             }
         }
 
-        throw new \RuntimeException(sprintf('No vendors found for path "%s".', $path));
+        throw new \RuntimeException(\sprintf('No vendors found for path "%s".', $path));
     }
 
     /**
@@ -437,7 +437,9 @@ class Deprecation
     {
         $exception = new \Exception($this->message);
         $reflection = new \ReflectionProperty($exception, 'trace');
-        $reflection->setAccessible(true);
+        if (\PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
         $reflection->setValue($exception, $this->trace);
 
         return ($this->originatesFromAnObject() ? 'deprecation triggered by '.$this->originatingClass().'::'.$this->originatingMethod().":\n" : '')

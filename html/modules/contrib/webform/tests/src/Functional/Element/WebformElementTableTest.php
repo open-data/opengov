@@ -46,7 +46,7 @@ class WebformElementTableTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<table class="js-form-wrapper responsive-enabled" data-drupal-selector="edit-table" id="edit-table" data-striping="1">');
     $assert_session->responseMatches('#<th>First Name</th>\s+<th>Last Name</th>\s+<th>Gender</th>#');
     $assert_session->responseContains('<tr data-drupal-selector="edit-table-1">');
-    $assert_session->responseContains('<td><div class="js-form-item form-item form-type-textfield js-form-type-textfield form-item-table__1__first-name js-form-item-table__1__first-name form-no-label">');
+    $assert_session->responseContains('<td><div class="js-webform-type-textfield webform-type-textfield js-form-item form-item form-type-textfield js-form-type-textfield form-item-table__1__first-name js-form-item-table__1__first-name form-no-label">');
     $assert_session->responseContains('<input data-drupal-selector="edit-table-1-first-name" type="text" id="edit-table-1-first-name" name="table__1__first_name" value="John" size="20" maxlength="255" class="form-text" />');
 
     // Check webform table basic rendering.

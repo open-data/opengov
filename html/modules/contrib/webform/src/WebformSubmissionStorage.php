@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+use Drupal\Core\Entity\TranslatableInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\Utility\Error;
@@ -96,6 +98,13 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
   protected $elementManager;
 
   /**
+   * Route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected RouteMatchInterface $routeMatch;
+
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
@@ -109,6 +118,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
     $instance->entityTypeRepository = $container->get('entity_type.repository');
     $instance->accessRulesManager = $container->get('webform.access_rules_manager');
     $instance->elementManager = $container->get('plugin.manager.webform.element');
+    $instance->routeMatch = $container->get('current_route_match');
     return $instance;
   }
 
@@ -283,6 +293,12 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
     $options += [
       'in_draft' => FALSE,
     ];
+
+    // If the source entity is new, it can't have previous submission.
+    // This allows new webform nodes to be previewed.
+    if ($source_entity && $source_entity->isNew()) {
+      return 0;
+    }
 
     $query = $this->getQuery();
     $query->accessCheck(FALSE);
@@ -1193,11 +1209,14 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
     // Log deleted.
     foreach ($entities as $entity) {
       $webform = $entity->getWebform();
-      $this->loggerFactory->get('webform')
-        ->notice('Deleted @form: Submission #@id.', [
-          '@id' => $entity->id(),
-          '@form' => ($webform) ? $webform->label() : '[' . $this->t('Webform', [], ['context' => 'form']) . ']',
-        ]);
+      // Do not log the deleted webform submissions on batch.
+      if ($this->routeMatch->getRouteName() !== 'system.batch_page.json') {
+        $this->loggerFactory->get('webform')
+          ->notice('Deleted @form: Submission #@id.', [
+            '@id' => $entity->id(),
+            '@form' => ($webform) ? $webform->label() : '[' . $this->t('Webform', [], ['context' => 'form']) . ']',
+          ]);
+      }
     }
 
     return $return;
@@ -1252,17 +1271,38 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
         // actually need to query the entire dataset of webform submissions, we
         // are disabling access check.
         $query->accessCheck(FALSE);
-        $query->condition('created', $this->time->getRequestTime() - ($webform->getSetting('purge_days') * $days_to_seconds), '<');
+
         $query->condition('webform_id', $webform->id());
+
+        $purge_timestamp = $this->time->getRequestTime() - ($webform->getSetting('purge_days') * $days_to_seconds);
         switch ($webform->getSetting('purge')) {
           case WebformSubmissionStorageInterface::PURGE_DRAFT:
             $query->condition('in_draft', 1);
+            $query->condition('created', $purge_timestamp, '<');
             break;
 
           case WebformSubmissionStorageInterface::PURGE_COMPLETED:
             $query->condition('in_draft', 0);
+            $query->condition('completed', $purge_timestamp, '<');
+            break;
+
+          default:
+            $query->condition(
+              $query->orConditionGroup()
+                ->condition(
+                  $query->andConditionGroup()
+                    ->condition('in_draft', 1)
+                    ->condition('created', $purge_timestamp, '<')
+                )
+                ->condition(
+                  $query->andConditionGroup()
+                    ->condition('in_draft', 0)
+                    ->condition('completed', $purge_timestamp, '<')
+                )
+            );
             break;
         }
+
         $query->range(0, $remaining);
         $sids = array_values($query->execute());
         if (empty($sids)) {

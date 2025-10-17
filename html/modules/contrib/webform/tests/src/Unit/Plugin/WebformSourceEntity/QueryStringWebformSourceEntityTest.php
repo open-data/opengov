@@ -98,12 +98,10 @@ class QueryStringWebformSourceEntityTest extends UnitTestCase {
     // Mock request stack.
     $request_stack = $this->createMock(RequestStack::class);
     $request_stack->method('getCurrentRequest')
-      ->will($this->returnValue(
-        new Request([
-          'source_entity_type' => $options['request_query_source_entity_type'],
-          'source_entity_id' => $options['source_entity_id'],
-        ])
-      ));
+      ->willReturn(new Request([
+        'source_entity_type' => $options['request_query_source_entity_type'],
+        'source_entity_id' => $options['source_entity_id'],
+      ]));
 
     // Move entity reference manager.
     $webform_entity_reference_manager = $this->createMock(WebformEntityReferenceManagerInterface::class);

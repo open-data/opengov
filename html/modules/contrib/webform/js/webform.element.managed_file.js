@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Track file uploads and display confirm dialog when an file upload is in progress.
    *

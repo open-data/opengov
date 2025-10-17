@@ -37,42 +37,41 @@ class Tokens implements \IteratorAggregate, PositionAware
 
     private function createGenerator(): Generator
     {
-        $regex = '/
-            [{}\[\],:]
-            #| true|false|null
-            #| [\deE.+-]+
-            #| (t|tr|tru|f|fa|fal|fals|n|nu|nul)$
-            | [^\xEF\xBB\xBF\s{}\[\],:]+    # todo make matching logic positive as in comments above and solve 2 failing tests
-        /x';
+        $regex = '/ [{}\[\],:] | [^\xEF\xBB\xBF\s{}\[\],:]+ /x';
 
         $inString = 0;
         $carry = '';
 
         foreach ($this->jsonChunks as $jsonChunk) {
-            $chunkItems = explode('"', $carry.$jsonChunk);
+            $chunkBlocks = explode('"', $carry.$jsonChunk);
             $carry = '';
 
-            $chunkItemsLastSafeIndex = count($chunkItems) - 2;
+            $chunkItemsLastSafeIndex = count($chunkBlocks) - 2;
             for ($i = 0; $i <= $chunkItemsLastSafeIndex; ++$i) {
                 if ($inString) {
-                    if ($this->stringIsEscaping($chunkItems[$i])) {
-                        $carry .= $chunkItems[$i].'"';
+                    if ($this->stringIsEscaping($chunkBlocks[$i])) {
+                        $carry .= $chunkBlocks[$i].'"';
                     } else {
-                        yield '"'.$carry.$chunkItems[$i].'"';
+                        yield "\"$carry$chunkBlocks[$i]\"";
                         $carry = '';
                         $inString = 0;
                     }
                 } else {
-                    preg_match_all($regex, $chunkItems[$i], $matches);
-                    yield from $matches[0];
+                    $chunkBlock = trim($chunkBlocks[$i]);
+                    if (strlen($chunkBlock) == 1) {
+                        yield $chunkBlock;
+                    } else {
+                        preg_match_all($regex, $chunkBlock, $matches);
+                        yield from $matches[0];
+                    }
                     $inString = 1;
                 }
             }
 
             if ($inString) {
-                $carry .= $chunkItems[$i];
+                $carry .= $chunkBlocks[$i];
             } else {
-                preg_match_all($regex, $chunkItems[$i], $matches);
+                preg_match_all($regex, $chunkBlocks[$i], $matches);
                 $carry = array_pop($matches[0]);
                 yield from $matches[0];
             }

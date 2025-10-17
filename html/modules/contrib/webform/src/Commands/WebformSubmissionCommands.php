@@ -118,7 +118,7 @@ class WebformSubmissionCommands extends WebformCommandsBase {
    *
    * @command webform:export
    *
-   * @option exporter The type of export. (delimited, table, yaml, or json)
+   * @option exporter The type of export (i.e., delimited, table, yaml, or json). View all available exporters via /admin/reports/webform-plugins/exporters.
    * @option delimiter Delimiter between columns (defaults to site-wide setting). This option may need to be wrapped in quotes. i.e. --delimiter="\t".
    * @option multiple-delimiter Delimiter between an element with multiple values (defaults to site-wide setting).
    * @option file-name File name used to export submission and uploaded filed. You may use tokens.

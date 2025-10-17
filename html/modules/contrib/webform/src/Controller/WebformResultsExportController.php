@@ -319,6 +319,7 @@ class WebformResultsExportController extends ControllerBase implements Container
     $submission_exporter->setExporter($export_options);
 
     if (!$success) {
+      $filename = '';
       $file_path = $submission_exporter->getExportFilePath();
       @unlink($file_path);
       $archive_path = $submission_exporter->getArchiveFilePath();
@@ -334,12 +335,12 @@ class WebformResultsExportController extends ControllerBase implements Container
         $submission_exporter->writeExportToArchive();
         $filename = $submission_exporter->getArchiveFileName();
       }
-
-      /** @var \Drupal\webform\WebformRequestInterface $request_handler */
-      $request_handler = \Drupal::service('webform.request');
-      $redirect_url = $request_handler->getUrl($webform, $source_entity, 'webform.results_export', ['query' => ['filename' => $filename], 'absolute' => TRUE]);
-      return new RedirectResponse($redirect_url->toString());
     }
+
+    /** @var \Drupal\webform\WebformRequestInterface $request_handler */
+    $request_handler = \Drupal::service('webform.request');
+    $redirect_url = $request_handler->getUrl($webform, $source_entity, 'webform.results_export', ['query' => ['filename' => $filename], 'absolute' => TRUE]);
+    return new RedirectResponse($redirect_url->toString());
   }
 
 }

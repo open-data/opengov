@@ -98,7 +98,7 @@ class Range extends NumericBase {
 
       // Copy custom output properties to output element.
       foreach ($element as $key => $value) {
-        if (strpos($key, '#output__') === 0) {
+        if (str_starts_with($key, '#output__')) {
           $output_key = str_replace('#output__', '#', $key);
           $output[$output_key] = $value;
         }

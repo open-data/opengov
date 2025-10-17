@@ -394,15 +394,4 @@ class TextFormat extends WebformElementBase {
     _webform_delete_file_usage($uuids, $webform_submission->getEntityTypeId(), $webform_submission->id(), 0);
   }
 
-  /**
-   * Check if composite element exists.
-   *
-   * @return bool
-   *   TRUE if composite element exists.
-   */
-  public function hasCompositeElement(array $element, $key) {
-    $elements = $this->getCompositeElements();
-    return (isset($elements[$key])) ? TRUE : FALSE;
-  }
-
 }

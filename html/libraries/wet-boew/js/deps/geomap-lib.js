@@ -254,7 +254,7 @@ var componentName = "wb-geomap",
 	MapLayer = function( map, options ) {
 
 		var _this = this,
-			visibilytyCallBackArr = [];
+			visibilityCallBackArr = [];
 
 		this.map = map;
 		this.settings = options;
@@ -271,7 +271,7 @@ var componentName = "wb-geomap",
 					this.id + "' class='geomap-table-wrapper' style='display:none;'></div></div></div>" );
 		}
 
-		// Make isVisibile Reactive
+		// Make isVisible Reactive
 		Object.defineProperty( _this, "isVisible", {
 			get: function get() {
 				return _this.visibilityState;
@@ -280,7 +280,7 @@ var componentName = "wb-geomap",
 				_this.visibilityState = newVal;
 
 				// Notify
-				visibilytyCallBackArr.forEach( function( signalHandler ) {
+				visibilityCallBackArr.forEach( function( signalHandler ) {
 
 					return signalHandler( newVal );
 				} );
@@ -294,7 +294,7 @@ var componentName = "wb-geomap",
 
 		// Allow the properties to be observed
 		this.observeVisibility = function( callback ) {
-			visibilytyCallBackArr.push( callback );
+			visibilityCallBackArr.push( callback );
 		};
 
 		this.observeVisibility( function( vis ) {
@@ -336,7 +336,7 @@ var componentName = "wb-geomap",
 		this.target = $( "#" + map.id + ".wb-geomap" ).find( ".wb-geomap-legend" );
 		this.target.attr( "id", "geomap-legend-" + map.id );
 
-		// remove the placehoders
+		// remove the placeholders
 		this.target.empty();
 
 		return this;
@@ -497,41 +497,44 @@ var componentName = "wb-geomap",
 
 				if ( operators[ ruleFilter ]( feature.attributes[ rule.field ], rule.value ) ) {
 					switch ( featureType ) {
-					case "Polygon" || "MultiPolygon":
-						return getPolygonStyle( {
-							fill: new ol.style.Fill( { color: fillColor } ),
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
-					case "Point" || "MultiPoint":
-						if ( graphicName ) {
-							return getSymbolStyle( {
-								symbol: graphicName,
-								fill: new ol.style.Fill( { color: fillColor } ),
-								stroke: new ol.style.Stroke( { color: strokeColor, lineDash: strokeDash } ),
-								radius: radius
-							} );
-						} else if ( externalGraphic ) {
-							return getIconStyle( {
-								src: externalGraphic,
-								opacity: opacity,
-								size: [ graphicWidth, graphicHeight ]
-							} );
-						} else {
-							return getPointStyle( {
-								radius: radius,
+						case "Polygon":
+						case "MultiPolygon":
+							return getPolygonStyle( {
 								fill: new ol.style.Fill( { color: fillColor } ),
 								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
 							} );
-						}
-					case "LineString" || "MultiLineString":
-						return getLineStyle( {
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
-					default:
-						return getPolygonStyle( {
-							fill: new ol.style.Fill( { color: fillColor } ),
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
+						case "Point":
+						case "MultiPoint":
+							if ( graphicName ) {
+								return getSymbolStyle( {
+									symbol: graphicName,
+									fill: new ol.style.Fill( { color: fillColor } ),
+									stroke: new ol.style.Stroke( { color: strokeColor, lineDash: strokeDash } ),
+									radius: radius
+								} );
+							} else if ( externalGraphic ) {
+								return getIconStyle( {
+									src: externalGraphic,
+									opacity: opacity,
+									size: [ graphicWidth, graphicHeight ]
+								} );
+							} else {
+								return getPointStyle( {
+									radius: radius,
+									fill: new ol.style.Fill( { color: fillColor } ),
+									stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+								} );
+							}
+						case "LineString":
+						case "MultiLineString":
+							return getLineStyle( {
+								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+							} );
+						default:
+							return getPolygonStyle( {
+								fill: new ol.style.Fill( { color: fillColor } ),
+								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+							} );
 					}
 
 				}
@@ -613,48 +616,51 @@ var componentName = "wb-geomap",
 				graphicWidth = objStyle.graphicWidth ? objStyle.graphicWidth : 25;
 
 				switch ( featureType ) {
-				case "Polygon" || "MultiPolygon":
-					if ( feature.attributes && feature.attributes[ field ] === obj ) {
-						return getPolygonStyle( {
-							fill: new ol.style.Fill( { color: fillColor } ),
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
-					}
-					break;
-				case "Point" || "MultiPoint":
-					if ( externalGraphic ) {
+					case "Polygon":
+					case "MultiPolygon":
 						if ( feature.attributes && feature.attributes[ field ] === obj ) {
-							return getIconStyle( {
-								src: externalGraphic,
-								opacity: opacity,
-								size: [ graphicWidth, graphicHeight ]
-							} );
-						}
-					} else {
-						if ( feature.attributes && feature.attributes[ field ] === obj ) {
-							return getPointStyle( {
-								radius: radius,
+							return getPolygonStyle( {
 								fill: new ol.style.Fill( { color: fillColor } ),
 								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
 							} );
 						}
-					}
-					break;
-				case "LineString" || "MultiLineString":
-					if ( feature.attributes && feature.attributes[ field ] === obj ) {
-						return getLineStyle( {
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
-					}
-					break;
-				default:
-					if ( feature.attributes && feature.attributes[ field ] === obj ) {
-						return getPolygonStyle( {
-							fill: new ol.style.Fill( { color: fillColor } ),
-							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-						} );
-					}
-					break;
+						break;
+					case "Point":
+					case "MultiPoint":
+						if ( externalGraphic ) {
+							if ( feature.attributes && feature.attributes[ field ] === obj ) {
+								return getIconStyle( {
+									src: externalGraphic,
+									opacity: opacity,
+									size: [ graphicWidth, graphicHeight ]
+								} );
+							}
+						} else {
+							if ( feature.attributes && feature.attributes[ field ] === obj ) {
+								return getPointStyle( {
+									radius: radius,
+									fill: new ol.style.Fill( { color: fillColor } ),
+									stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+								} );
+							}
+						}
+						break;
+					case "LineString":
+					case "MultiLineString":
+						if ( feature.attributes && feature.attributes[ field ] === obj ) {
+							return getLineStyle( {
+								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+							} );
+						}
+						break;
+					default:
+						if ( feature.attributes && feature.attributes[ field ] === obj ) {
+							return getPolygonStyle( {
+								fill: new ol.style.Fill( { color: fillColor } ),
+								stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+							} );
+						}
+						break;
 				}
 
 			}
@@ -674,36 +680,39 @@ var componentName = "wb-geomap",
 			graphicWidth = style.graphicWidth ? style.graphicWidth : 25;
 
 			switch ( featureType ) {
-			case "Polygon" || "MultiPolygon":
-				return getPolygonStyle( {
-					fill: new ol.style.Fill( { color: fillColor } ),
-					stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-				} );
-			case "Point" || "MultiPoint":
-				if ( externalGraphic ) {
-					return getIconStyle( {
-						src: externalGraphic,
-						opacity: opacity,
-						size: [ graphicWidth, graphicHeight ]
-					} );
-				} else {
-					return getPointStyle( {
-						radius: radius,
+				case "Polygon":
+				case "MultiPolygon":
+					return getPolygonStyle( {
 						fill: new ol.style.Fill( { color: fillColor } ),
 						stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
 					} );
-				}
+				case "Point":
+				case "MultiPoint":
+					if ( externalGraphic ) {
+						return getIconStyle( {
+							src: externalGraphic,
+							opacity: opacity,
+							size: [ graphicWidth, graphicHeight ]
+						} );
+					} else {
+						return getPointStyle( {
+							radius: radius,
+							fill: new ol.style.Fill( { color: fillColor } ),
+							stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+						} );
+					}
 
-			case "LineString" || "MultiLineString":
-				return getLineStyle( {
-					stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-				} );
+				case "LineString":
+				case "MultiLineString":
+					return getLineStyle( {
+						stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+					} );
 
-			default:
-				return getPolygonStyle( {
-					fill: new ol.style.Fill( { color: fillColor } ),
-					stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
-				} );
+				default:
+					return getPolygonStyle( {
+						fill: new ol.style.Fill( { color: fillColor } ),
+						stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+					} );
 			}
 
 		};
@@ -826,7 +835,7 @@ var componentName = "wb-geomap",
 		} ) ];
 	},
 
-	// Convert a hexidecimal color string to 0..255 R,G,B for backwards compatibility
+	// Convert a hexadecimal color string to 0..255 R,G,B for backwards compatibility
 	hexToRGB = function( code, alpha ) {
 
 		var hex = ( code + "" ).trim(),
@@ -1012,7 +1021,7 @@ var componentName = "wb-geomap",
 		map.once( "postrender", function() {
 
 			// v4.0.x transition function to support static map.
-			// The following makes assumption the geometry only inlude a point and it is WKT format
+			// The following makes assumption the geometry only include a point and it is WKT format
 			// The following should be removed in WET 5
 			map.getLayer = function( strSelector ) {
 
@@ -1046,7 +1055,7 @@ var componentName = "wb-geomap",
 			wb.ready( $( "#" + geomap.id ), componentName, [ map ] );
 		} );
 
-		// Everytime the map view is changed, fire the updated event
+		// Every time the map view is changed, fire the updated event
 		map.on( "moveend", function() {
 			$( geomap.id ).trigger( "wb-updated" + selector, [ geomap.map ] );
 		} );
@@ -1328,7 +1337,7 @@ var componentName = "wb-geomap",
 	//
 	// Param:
 	// - geomap = geomap Object
-	// - extext = array with 4 point ( West, South, East, North)
+	// - extent = array with 4 point ( West, South, East, North)
 	// - dontAddFeat = boolean (default:false) if true, no delimiter box would be added to the map
 	//
 	drawAOI = function( geomap, extent, dontAddFeat ) {
@@ -1491,7 +1500,7 @@ var componentName = "wb-geomap",
 		$( "#wb-geomap-geocode-search-" + geomap.id ).attr( "aria-haspopup", "true" );
 		$( "#wb-geomap-geocode-search-" + geomap.id ).attr( "aria-autocomplete", "list" );
 		$( "#wb-geomap-geocode-search-" + geomap.id ).attr( "aria-owns", "wb-geomap-geoloc-al-" + geomap.id );
-		$( "#wb-geomap-geocode-search-" + geomap.id ).attr( "aria-activedescendent", "" );
+		$( "#wb-geomap-geocode-search-" + geomap.id ).attr( "aria-activedescendant", "" );
 
 		width = parseFloat( $( ".geomap-geoloc" ).parent().width() );
 		x = width > 768 ? .6 : .8;
@@ -1579,7 +1588,7 @@ var componentName = "wb-geomap",
 			autolist.innerHTML = "";
 			autolist.setAttribute( "aria-hidden", "true" );
 			input.setAttribute( "aria-expanded", "false" );
-			input.setAttribute( "aria-activedescendent", "" );
+			input.setAttribute( "aria-activedescendant", "" );
 		}
 
 		/**
@@ -1653,18 +1662,18 @@ var componentName = "wb-geomap",
 								which = event.which;
 
 							switch ( eventType ) {
-							case "keydown":
-								if ( !( event.ctrlKey || event.metaKey ) ) {
-									return keyboardHandlerAutolist( which, link );
-								}
-								break;
-							case "click":
+								case "keydown":
+									if ( !( event.ctrlKey || event.metaKey ) ) {
+										return keyboardHandlerAutolist( which, link );
+									}
+									break;
+								case "click":
 
-								// Ignore middle/right mouse buttons
-								if ( !which || which === 1 ) {
-									return clickHandlerAutolist( link );
-								}
-								break;
+									// Ignore middle/right mouse buttons
+									if ( !which || which === 1 ) {
+										return clickHandlerAutolist( link );
+									}
+									break;
 							}
 
 						} );
@@ -1715,7 +1724,7 @@ var componentName = "wb-geomap",
 					}
 
 				// Up / down arrow
-				} else if ( ( which === 38 || which === 40 ) && input.getAttribute( "aria-activedescendent" ) === "" ) {
+				} else if ( ( which === 38 || which === 40 ) && input.getAttribute( "aria-activedescendant" ) === "" ) {
 
 					if ( autolistHidden ) {
 						showOptions( input );
@@ -1729,7 +1738,7 @@ var componentName = "wb-geomap",
 
 					dest = options[ ( which === 38 ? options.length - 1 : 0 ) ];
 
-					input.setAttribute( "aria-activedescendent", dest.parentNode.getAttribute( "id" ) );
+					input.setAttribute( "aria-activedescendant", dest.parentNode.getAttribute( "id" ) );
 
 					// Assign focus to dest
 					$( dest ).trigger( setFocusEvent );
@@ -1850,7 +1859,7 @@ var componentName = "wb-geomap",
 					}
 					dest = dest.getElementsByTagName( "a" )[ 0 ];
 
-					input.setAttribute( "aria-activedescendent", dest.parentNode.getAttribute( "id" ) );
+					input.setAttribute( "aria-activedescendant", dest.parentNode.getAttribute( "id" ) );
 					$( dest ).trigger( setFocusEvent );
 
 					return false;
@@ -2160,7 +2169,7 @@ $document.on( "focusin focusout mouseover mouseout", ".wb-geomap-map", function(
 		geomap = getMapById( target.getAttribute( "data-map" ) ),
 		mouseWheelZoom = getMapInteraction( geomap.map, ol.interaction.MouseWheelZoom );
 
-	// disable mouseWheelZoom so that page scrolling isn't interupted
+	// disable mouseWheelZoom so that page scrolling isn't interrupted
 	if ( geomap.settings.useMapControls ) {
 		mouseWheelZoom.setActive( false );
 	}
@@ -2244,7 +2253,7 @@ Geomap.prototype.addBasemap = function() {
 
 			// Backwards compatibility with OL2 configurations
 			// TODO: test with known configurations
-			if ( $.isArray( basemap.url ) ) {
+			if ( Array.isArray( basemap.url ) ) {
 				$.each( basemap.url, function( index, url ) {
 					urls.push( url.replace( /\${/g, "{" ) );
 				} );
@@ -2377,11 +2386,16 @@ MapLayer.prototype.addToLegend = function() {
 			i18nText.toggleLayer + "</legend></fieldset>" ).appendTo( legendDiv );
 	}
 
-	checked = this.isVisibile ? "checked='checked'" : "";
+	checked = this.isVisible ? "checked='checked'" : "";
 
 	$ul = legendDiv.find( "ul.geomap-lgnd" );
 	if ( $ul.length === 0 ) {
 		$ul = $( "<ul class='list-unstyled geomap-lgnd'></ul>" ).appendTo( $fieldset );
+	}
+
+	// display labels over 2 columns if "two-cols-legend" class is present
+	if ( $ul.closest( ".wb-geomap" ).hasClass( "two-cols-legend" ) ) {
+		$ul.addClass( "colcount-md-2" );
 	}
 
 	$chkBox = $( "<input type='checkbox' id='cb_" + this.id +
@@ -2426,7 +2440,7 @@ MapLayer.prototype.addToLegend = function() {
 };
 
 /**
- * Add tabluar data
+ * Add tabular data
  */
 Geomap.prototype.addTabularData = function() {
 
@@ -3459,18 +3473,18 @@ MapLegend.prototype.symbolize = function( mapLayer ) {
 						title = filter.name;
 					} else {
 						switch ( filter ) {
-						case "EQUAL_TO":
-							title = rule.field + " = " + rule.value[ 0 ];
-							break;
-						case "GREATER_THAN":
-							title = rule.field + " > " + rule.value[ 0 ];
-							break;
-						case "LESS_THAN":
-							title = rule.field + " < " + rule.value[ 0 ];
-							break;
-						case "BETWEEN":
-							title = rule.field + " " + rule.value[ 0 ] + " - " + rule.value[ 1 ];
-							break;
+							case "EQUAL_TO":
+								title = rule.field + " = " + rule.value[ 0 ];
+								break;
+							case "GREATER_THAN":
+								title = rule.field + " > " + rule.value[ 0 ];
+								break;
+							case "LESS_THAN":
+								title = rule.field + " < " + rule.value[ 0 ];
+								break;
+							case "BETWEEN":
+								title = rule.field + " " + rule.value[ 0 ] + " - " + rule.value[ 1 ];
+								break;
 						}
 					}
 				} else if ( rule && rule.name ) {
@@ -3586,78 +3600,81 @@ MapLegend.prototype.getSymbol = function( id, feature, symbolizer ) {
 		pseudoFeature, rendererMap, source, style;
 
 	switch ( featureType ) {
-	case "Polygon" || "MultiPolygon":
-		pseudoFeature = new ol.Feature( {
-			geometry: new ol.geom.Polygon( [ [ [ -10, -7 ], [ 10, -7 ],
-				[ 10, 7 ], [ -10, 7 ] ] ] )
-		} );
-		style = getPolygonStyle( {
-			fill: new ol.style.Fill( {
-				color: fillColor
-			} ),
-			stroke: new ol.style.Stroke( {
-				color: strokeColor,
-				width: strokeWidth,
-				lineDash: strokeDash
-			} )
-		} );
-		pseudoFeature.setStyle( style );
-		break;
-	case "Point" || "MultiPoint":
-		pseudoFeature = new ol.Feature( {
-			geometry: new ol.geom.Point( [ 0, 0 ] )
-		} );
-		if ( graphicName ) {
-			style = getSymbolStyle( {
-				symbol: graphicName,
-				fill: new ol.style.Fill( { color: fillColor } ),
-				stroke: new ol.style.Stroke( { color: strokeColor, lineDash: strokeDash } ),
-				radius: radius
+		case "Polygon":
+		case "MultiPolygon":
+			pseudoFeature = new ol.Feature( {
+				geometry: new ol.geom.Polygon( [ [ [ -10, -7 ], [ 10, -7 ],
+					[ 10, 7 ], [ -10, 7 ] ] ] )
 			} );
-		} else if ( externalGraphic ) {
-			style = getIconStyle( {
-				src: externalGraphic,
-				opacity: opacity,
-				size: [ graphicWidth, graphicHeight ]
+			style = getPolygonStyle( {
+				fill: new ol.style.Fill( {
+					color: fillColor
+				} ),
+				stroke: new ol.style.Stroke( {
+					color: strokeColor,
+					width: strokeWidth,
+					lineDash: strokeDash
+				} )
 			} );
-		} else {
-			style = getPointStyle( {
-				radius: radius,
-				fill: new ol.style.Fill( { color: fillColor } ),
-				stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+			pseudoFeature.setStyle( style );
+			break;
+		case "Point":
+		case "MultiPoint":
+			pseudoFeature = new ol.Feature( {
+				geometry: new ol.geom.Point( [ 0, 0 ] )
 			} );
-		}
-		pseudoFeature.setStyle( style );
-		break;
-	case "LineString" || "MultiLineString":
-		pseudoFeature = new ol.Feature( {
-			geometry: new ol.geom.LineString( [ [ -9, -4 ], [ -4, 4 ], [ 4, -4 ], [ 9, 4 ] ] )
-		} );
-		style = getLineStyle( {
-			stroke: new ol.style.Stroke( {
-				color: strokeColor,
-				width: strokeWidth,
-				lineDash: strokeDash
-			} )
-		} );
-		pseudoFeature.setStyle( style );
-		break;
-	default:
-		pseudoFeature = new ol.Feature( {
-			geometry: new ol.geom.Polygon( [ [ [ -10, -7 ], [ 10, -7 ], [ 10, 7 ], [ -10, 7 ] ] ] )
-		} );
-		style = getPolygonStyle( {
-			fill: new ol.style.Fill( {
-				color: fillColor
-			} ),
-			stroke: new ol.style.Stroke( {
-				color: strokeColor,
-				width: strokeWidth,
-				lineDash: strokeDash
-			} )
-		} );
-		pseudoFeature.setStyle( style );
-		break;
+			if ( graphicName ) {
+				style = getSymbolStyle( {
+					symbol: graphicName,
+					fill: new ol.style.Fill( { color: fillColor } ),
+					stroke: new ol.style.Stroke( { color: strokeColor, lineDash: strokeDash } ),
+					radius: radius
+				} );
+			} else if ( externalGraphic ) {
+				style = getIconStyle( {
+					src: externalGraphic,
+					opacity: opacity,
+					size: [ graphicWidth, graphicHeight ]
+				} );
+			} else {
+				style = getPointStyle( {
+					radius: radius,
+					fill: new ol.style.Fill( { color: fillColor } ),
+					stroke: new ol.style.Stroke( { color: strokeColor, width: strokeWidth, lineDash: strokeDash } )
+				} );
+			}
+			pseudoFeature.setStyle( style );
+			break;
+		case "LineString":
+		case "MultiLineString":
+			pseudoFeature = new ol.Feature( {
+				geometry: new ol.geom.LineString( [ [ -9, -4 ], [ -4, 4 ], [ 4, -4 ], [ 9, 4 ] ] )
+			} );
+			style = getLineStyle( {
+				stroke: new ol.style.Stroke( {
+					color: strokeColor,
+					width: strokeWidth,
+					lineDash: strokeDash
+				} )
+			} );
+			pseudoFeature.setStyle( style );
+			break;
+		default:
+			pseudoFeature = new ol.Feature( {
+				geometry: new ol.geom.Polygon( [ [ [ -10, -7 ], [ 10, -7 ], [ 10, 7 ], [ -10, 7 ] ] ] )
+			} );
+			style = getPolygonStyle( {
+				fill: new ol.style.Fill( {
+					color: fillColor
+				} ),
+				stroke: new ol.style.Stroke( {
+					color: strokeColor,
+					width: strokeWidth,
+					lineDash: strokeDash
+				} )
+			} );
+			pseudoFeature.setStyle( style );
+			break;
 	}
 
 	// create a map for the symbol

@@ -534,8 +534,8 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
    * @see \Drupal\webform\Entity\Webform::getSubmissionForm()
    */
   protected function validatePages() {
-    if (strpos($this->elementsRaw, "'#type': webform_card") !== FALSE
-      && strpos($this->elementsRaw, "'#type': webform_wizard_page") !== FALSE) {
+    if (str_contains($this->elementsRaw, "'#type': webform_card")
+      && str_contains($this->elementsRaw, "'#type': webform_wizard_page")) {
       return [$this->t('Pages and cards cannot be used in the same webform. Please remove or convert the pages/cards to the same element type.')];
     }
     else {

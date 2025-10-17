@@ -297,7 +297,6 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
    * {@inheritdoc}
    */
   public function getGroupedDefinitions(?array $definitions = NULL, $label_key = 'label') {
-    /** @var \Drupal\Core\Plugin\CategorizingPluginManagerTrait|\Drupal\Component\Plugin\PluginManagerInterface $this */
     $definitions = $this->getSortedDefinitions($definitions ?? $this->getDefinitions(), $label_key);
 
     // Organize grouped definition with basic and advanced first and other last.
