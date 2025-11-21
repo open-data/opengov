@@ -81,7 +81,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
       '#mode' => 'yaml',
       '#title' => $this->t('Elements (YAML)'),
       '#description' => $this->t('Enter a <a href=":form_api_href">Form API (FAPI)</a> and/or a <a href=":render_api_href">Render Array</a> as <a href=":yaml_href">YAML</a>.', $t_args) . '<br /><br />' .
-        '<em>' . $this->t('Please note that comments are not supported and will be removed.') . '</em>',
+      '<em>' . $this->t('Please note that comments are not supported and will be removed.') . '</em>',
       '#default_value' => $this->getElementsWithoutWebformTypePrefix($webform->get('elements')),
       '#required' => TRUE,
       '#element_validate' => ['::validateElementsYaml'],
@@ -149,7 +149,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = $this->getEntity();
 
-    $webform->save();
+    $status = $webform->save();
 
     $context = [
       '@label' => $webform->label(),
@@ -158,6 +158,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
     $t_args = ['%label' => $webform->label()];
     $this->logger('webform')->notice('Webform @label elements saved.', $context);
     $this->messenger()->addStatus($this->t('Webform %label elements saved.', $t_args));
+    return $status;
   }
 
   /* ************************************************************************ */
@@ -187,7 +188,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
    *   A form element.
    */
   protected function removeWebformTypePrefixRecursive(array &$element) {
-    if (isset($element['#type']) && strpos($element['#type'], 'webform_') === 0 && $this->elementManager->hasDefinition($element['#type'])) {
+    if (isset($element['#type']) && str_starts_with($element['#type'], 'webform_') && $this->elementManager->hasDefinition($element['#type'])) {
       $type = str_replace('webform_', '', $element['#type']);
       if (!$this->elementInfo->hasDefinition($type) && !$this->elementManager->hasDefinition($type)) {
         $element['#type'] = $type;

@@ -12,7 +12,7 @@ test_dependencies:
   - drupal:views
   - drupal:rest
 
-# Information added by Drupal.org packaging script on 2025-01-03
-version: '3.0.0'
+# Information added by Drupal.org packaging script on 2025-10-17
+version: '3.0.2'
 project: 'facets'
-datestamp: 1735915200
+datestamp: 1760700683

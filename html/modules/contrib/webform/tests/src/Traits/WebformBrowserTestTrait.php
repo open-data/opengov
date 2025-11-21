@@ -162,13 +162,13 @@ trait WebformBrowserTestTrait {
     }
     else {
       $config_name = 'webform.webform.' . $id;
-      if (strpos($id, 'test_') === 0) {
+      if (str_starts_with($id, 'test_')) {
         $config_directory = __DIR__ . '/../../modules/webform_test/config/install';
       }
-      elseif (strpos($id, 'example_') === 0) {
+      elseif (str_starts_with($id, 'example_')) {
         $config_directory = __DIR__ . '/../../../modules/webform_examples/config/install';
       }
-      elseif (strpos($id, 'template_') === 0) {
+      elseif (str_starts_with($id, 'template_')) {
         $config_directory = __DIR__ . '/../../../modules/webform_templates/config/install';
       }
       else {

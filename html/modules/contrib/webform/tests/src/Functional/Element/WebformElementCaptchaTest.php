@@ -32,7 +32,7 @@ class WebformElementCaptchaTest extends WebformElementBrowserTestBase {
     $this->drupalGet('/webform/test_element_captcha');
 
     // Check default title and description.
-    $assert_session->responseContains('<label for="edit-captcha-response" class="js-form-required form-required">Math question</label>');
+    $this->assertSession()->elementExists('xpath', '//label[@for = "edit-captcha-response"][@class = "js-form-required form-required"][contains(text(), "Math question")]');
     $assert_session->responseContains('Solve this simple math problem and enter the result. E.g. for 1+3, enter 4.');
 
     // Check CAPTCHA element custom title and description.

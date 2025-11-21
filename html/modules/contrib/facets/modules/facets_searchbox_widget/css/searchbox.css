@@ -7,7 +7,9 @@
 }
 
 .facets-widget-searchbox_links .facet-item--expanded .facets-widget-searchbox,
-.facets-widget-searchbox_links .facet-item--expanded .facets-widget-searchbox-no-result {
+.facets-widget-searchbox_links
+  .facet-item--expanded
+  .facets-widget-searchbox-no-result {
   display: none;
 }
 

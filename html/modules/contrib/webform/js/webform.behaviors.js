@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal) {
-
   // Trigger Drupal's attaching of behaviors after the page is
   // completely loaded.
   // @see https://stackoverflow.com/questions/37838430/detect-if-page-is-load-from-back-button

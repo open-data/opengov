@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   // @see https://atomiks.github.io/tippyjs/v5/all-props/
   // @see https://atomiks.github.io/tippyjs/v6/all-props/
   Drupal.webform = Drupal.webform || {};
@@ -17,7 +16,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformElementHelpIcon = {
-    attach: function (context) {
+    attach(context) {
       if (!window.tippy) {
         return;
       }
@@ -63,7 +62,10 @@
           delay: 100,
           allowHTML: true,
           interactive: true,
-          plugins: [hideOnEsc]
+          plugins: [hideOnEsc],
+          aria: {
+            expanded: null
+          }
         }, Drupal.webform.elementHelpIcon.options);
 
         tippy(this, options);

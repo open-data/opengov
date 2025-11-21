@@ -38,8 +38,11 @@ if (!InstallerKernel::installationAttempted() && extension_loaded('redis')) {
   // Customize the prefix, a reliable but long fallback is used if not defined.
   // $settings['cache_prefix'] = 'prefix';
 
+  // Respect specific TTL with an offset see README.md for more information.
+  $settings['redis_ttl_offset'] = 3600;
+
   // Additional optimizations, see README.md
-  // $settings['redis_invalidate_all_as_delete'] = TRUE;
+  $settings['redis_invalidate_all_as_delete'] = TRUE;
 
   // Apply changes to the container configuration to better leverage Redis.
   // This includes using Redis for the lock and flood control systems, as well

@@ -129,7 +129,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
    * {@inheritdoc}
    */
   public function getDateFormat() {
-    return ($this->getDateType() === 'datetime') ? 'Y-m-d H:i:s' : 'Y-m-d';
+    return ($this->getDateType() === 'datetime') ? 'c' : 'Y-m-d';
   }
 
   /**

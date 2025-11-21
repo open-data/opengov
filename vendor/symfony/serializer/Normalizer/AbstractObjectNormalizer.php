@@ -611,6 +611,8 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
                 if (!$isUnionType && !$isNullable) {
                     throw $e;
                 }
+
+                $expectedTypes[LegacyType::BUILTIN_TYPE_OBJECT === $builtinType && $class ? $class : $builtinType] = true;
             } catch (ExtraAttributesException $e) {
                 if (!$isUnionType && !$isNullable) {
                     throw $e;
@@ -901,6 +903,8 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
                 if (!$type instanceof UnionType) {
                     throw $e;
                 }
+
+                $expectedTypes[TypeIdentifier::OBJECT === $typeIdentifier && $class ? $class : $typeIdentifier->value] = true;
             } catch (ExtraAttributesException $e) {
                 if (!$type instanceof UnionType) {
                     throw $e;
@@ -1206,6 +1210,10 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
 
         if (null === $type = $data[$mapping->getTypeProperty()] ?? $mapping->getDefaultType()) {
             throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('Type property "%s" not found for the abstract object "%s".', $mapping->getTypeProperty(), $class), null, ['string'], isset($context['deserialization_path']) ? $context['deserialization_path'].'.'.$mapping->getTypeProperty() : $mapping->getTypeProperty(), false);
+        }
+
+        if (!\is_string($type) && (!\is_object($type) || !method_exists($type, '__toString'))) {
+            throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('The type property "%s" for the abstract object "%s" must be a string or a stringable object.', $mapping->getTypeProperty(), $class), $type, ['string'], isset($context['deserialization_path']) ? $context['deserialization_path'].'.'.$mapping->getTypeProperty() : $mapping->getTypeProperty(), false);
         }
 
         if (null === $mappedClass = $mapping->getClassForType($type)) {

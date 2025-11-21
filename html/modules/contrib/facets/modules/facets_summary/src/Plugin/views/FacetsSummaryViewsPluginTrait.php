@@ -37,7 +37,7 @@ trait FacetsSummaryViewsPluginTrait {
       '#options' => $options,
       '#type' => 'radios',
       '#required' => TRUE,
-      '#default_value' => isset($this->options['facet_summary']) ? $this->options['facet_summary'] : [],
+      '#default_value' => $this->options['facet_summary'] ?? [],
     ];
 
     $form['label_display'] = [

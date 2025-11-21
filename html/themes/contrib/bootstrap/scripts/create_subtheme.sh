@@ -21,7 +21,7 @@ cp -r subthemes/bootstrap_subtheme ../../custom/$CUSTOM_BOOTSTRAP
 cd ../../custom/$CUSTOM_BOOTSTRAP
 for file in *bootstrap_subtheme.*; do mv $file ${file//bootstrap_subtheme/$CUSTOM_BOOTSTRAP}; done
 for file in config/*/*bootstrap_subtheme*.*; do mv $file ${file//bootstrap_subtheme/$CUSTOM_BOOTSTRAP}; done
-mv $CUSTOM_BOOTSTRAP.theme
+mv $CUSTOM_BOOTSTRAP.theme ${file//bootstrap_subtheme/$CUSTOM_BOOTSTRAP}
 if [[ "$OSTYPE" == "darwin"* ]]; then
   grep -Rl bootstrap_subtheme .|xargs sed -i '' -e "s/bootstrap_subtheme/$CUSTOM_BOOTSTRAP/"
 else

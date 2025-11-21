@@ -1,3 +1,72 @@
+/**
+ * @title WET-BOEW Math equation grid
+ * @overview An accessible, printable and understandable pattern for simple math equations.
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @Christopher-O
+ */
+( function( $, window, wb ) {
+"use strict";
+
+var componentName = "wb-math-grid",
+	selector = "." + componentName,
+	initEvent = "wb-init" + selector,
+	$document = wb.doc,
+
+	init = function( event ) {
+		var elm = wb.init( event, componentName, selector ),
+			$elm;
+		if ( elm ) {
+			$elm = $( elm );
+
+			// Validate equal column count
+			const $rows = $elm.find( ".mg-row" );
+			if ( $rows.length === 0 ) {
+				return;
+			}
+			const counts = [];
+			$rows.each( function( rowIndex ) {
+				const count = $( this ).find( ".mg-cell" ).length;
+				counts.push( {
+					count,
+					row: rowIndex + 1
+				} );
+			} );
+			const firstObject = counts[ 0 ];
+			const firstValue = firstObject.count;
+			const allMatch = counts.every( obj => obj.count === firstValue );
+
+			if ( !allMatch ) {
+				console.error( "Grid layout error for" + elm.id + " - inconsistent cell counts detected:\n" +
+					counts.map( r => `→ Row: ${ r.row }, Cell count: ${ r.count }` ).join( "\n" ) );
+				$( this ).addClass( "bg-danger" );
+			} else {
+
+				// Function to add in aria and roles for accessibility
+				const attrData = $( this ).attr( "data-wb-math-grid" );
+				const srPause = attrData ? JSON.parse( attrData )?.srPause : undefined;
+				const $cells = $( this ).find( ".mg-cell" );
+
+				srPause === true ?
+					$( this ).attr( "role", "presentation" ) :
+					$cells.attr( "role", "none" );
+				$cells.each( function() {
+					const content = $( this ).text(  ).replace( /[\u202F\u00A0]/g, "" ).trim(  );
+					if ( content === "" ) {
+						$( this ).attr( "aria-hidden", "true" );
+					}
+				} );
+			}
+			wb.ready( $elm, componentName );
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+wb.add( selector );
+} )( jQuery, window, wb );
+
+
 /********************************************************************************************
  *
  *           Program: Wet-Boew Plugin that will add Column Totals to the Table's <tfoot> element
@@ -8,14 +77,14 @@
  *
  *
  *      Version  History: 1.1.1
- *                        Implement Wet-Boew Team recomendations Post Pull Request
+ *                        Implement Wet-Boew Team recommendations Post Pull Request
  *                          1. Suggestion: create a separate documentation page for all the options instead of having them in the JS file
  *                          2. Please add an implementation plan item: "Produce accessibility conformance report"
  *                          3. I don't see a working example for the following option: wb-col-cur-thousand.
  *
  *      Version  History: 1.1.0
- *                        Implement Wet-Boew Team recomendations
- *                          1. Remove <strong> formatting on Totals in favor of css
+ *                        Implement Wet-Boew Team recommendations
+ *                          1. Remove <strong> formatting on Totals in favour of css
  *                          2. Change Init Event to a single function instead
  *                          3. French Translation of Examples Page
  *
@@ -26,17 +95,17 @@
  *                        Fix for wb-col-mailto not Working
  *
  *      Version  History: 1.0.2
- *                        Small Fix that has to do with Assigning values to unintialized Variables
+ *                        Small Fix that has to do with Assigning values to uninitialized Variables
  *
  *                        1.0.1
- *                        Small Fix that has to do with Assigning values to unintialized Variables
+ *                        Small Fix that has to do with Assigning values to uninitialized Variables
  *
  *                        1.0.0
  *                        Initial Release
  *
  *          Sample Usage: add class wb-tables-utility to your wb-tables <table element to enable the plugin
  *                        and using the data-wb-tables columnDefs option add class wb-col-sum to the column(s)
- *                        you want totals to appear donp't forget to add a blank <tfoot> section
+ *                        you want totals to appear don't forget to add a blank <tfoot> section
  *
  *   <table class="wb-tables table table-striped table-hover table-condensed small wb-tables-utility" id="t2" data-wb-tables='{ "ajax":"data/ytt-table-2.json", "columns": [
  *                        { "data": "SupplierEN" },
@@ -48,17 +117,17 @@
  *                      { "className": "wb-col-sum wb-col-money text-right", "targets": [2] }],
  *                       "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ]}'>
  *
- *            Paramaters: filteredsum     Total of Filtered Results Only or All if nothing was filtered
+ *            Parameters: filteredsum     Total of Filtered Results Only or All if nothing was filtered
  *                        Default Value:  true
  *
- *                           wb-col-sum   Class added to the columnDefs option of data-wb-tables to let the plugin know that this column needs to be totaled
+ *                           wb-col-sum   Class added to the columnDefs option of data-wb-tables to let the plugin know that this column needs to be totalled
  *
  *    Formatting Options: wb-col-money    Turns raw numbers such as 123987.10 to Localized Money $123,987.10 (en) 123 987,10 $ (fr)
  *
  *                       wb-col-mailto    Scan for email addresses in column and add the <a href="mailto:" around it
  *                          mailto-col    Legacy Value for wb-col-mailto
  *
- *                 wb-col-cur-thousand    Format number with Thousands Seperator and force 2 decimals
+ *                 wb-col-cur-thousand    Format number with Thousands Separator and force 2 decimals
  *                    cur-thousand-col    Legacy Value for wb-col-cur-thousand
  *
  *                          wb-col-url    Process url's in column and turn them into clickable <a href="http...."
@@ -172,7 +241,7 @@
             data[key.toLowerCase().trim()] = settings[key];
         }
 
-        /** Message Overiden by User are replaced in the i18n global variable */
+        /** Message Overridden by User are replaced in the i18n global variable */
         if (data && data.pluginlabels)
         {
             Object.keys(data.pluginlabels[0]).forEach(key =>
@@ -296,16 +365,16 @@
                 });
             }
         };
-        /** set a flag that we where able to intialize wb-tables with our footerCallback */
+        /** set a flag that we where able to initialize wb-tables with our footerCallback */
         window["wb-tables"][componentName] = true;
     }
 
     /********************************************************************************************
      *
-     * Add Classes to Datatable Columns to force column Specific Formating
+     * Add Classes to Datatable Columns to force column Specific Formatting
      *
      *       wb-col-mailto: Scan for email addresses in column and add the <a href="mailto:" around it
-     * wb-col-cur-thousand: Format number with Thousands Seperator and force 2 decimals
+     * wb-col-cur-thousand: Format number with Thousands Separator and force 2 decimals
      *          wb-col-url: process url's from -url column into <a href="http...."
      *        wb-col-money: formats money with $ and localization
      *
@@ -323,7 +392,7 @@
 
         var dataSrc = 'data';
 
-        /* Check if a dataSrc paramater was passed to load something different than data [] */
+        /* Check if a dataSrc parameter was passed to load something different than data [] */
         if (typeof (oTable.settings().init().ajax['dataSrc']) !== "undefined")
         {
             dataSrc = oTable.settings().init().ajax['dataSrc'];
@@ -388,12 +457,12 @@
         });
 
         /**
-         * Loop over JSON data array and format Columns that are affeted by Classes
+         * Loop over JSON data array and format Columns that are affected by Classes
          */
 
         for (var i = 0, ien = oRow.length; i < ien; i++)
         {
-            /** Process Currency with Thousands Seperator [ wb-col-money ] and include a $*/
+            /** Process Currency with Thousands Separator [ wb-col-money ] and include a $*/
             moneyFormat.forEach(function (column)
             {
                 var justDidgits = oRow[i][column].replace(/[\s,]/g, '');
@@ -415,7 +484,7 @@
                 }
             });
 
-            /** Process Numbers with Thousands Seperator [ wb-col-cur-thousand ] */
+            /** Process Numbers with Thousands Separator [ wb-col-cur-thousand ] */
             curThousandColTarget.forEach(function (column)
             {
                 var justDidgits = oRow[i][column].replace(/[\s,]/g, '');
@@ -428,7 +497,7 @@
                 });
             });
 
-            /** Process columns with Email addreses [ wb-col-mailto ] */
+            /** Process columns with Email addresses [ wb-col-mailto ] */
             mailtoColumnTarget.forEach(function (column)
             {
                 var celldata = oRow[i][column];

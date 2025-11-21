@@ -208,9 +208,8 @@ function captcha_form_alter(array &$form, FormStateInterface $form_state, $form_
         ];
 
         // Get placement in form and insert in form.
-        if ($captcha_placement = _captcha_get_captcha_placement($form_id, $form)) {
-          $captchaService->insertCaptchaElement($form, $captcha_placement, $captcha_element);
-        }
+        $captcha_placement = _captcha_get_captcha_placement($form_id, $form);
+        $captchaService->insertCaptchaElement($form, $captcha_placement, $captcha_element);
       }
     }
   }
@@ -273,9 +272,8 @@ function captcha_form_alter(array &$form, FormStateInterface $form_state, $form_
       }
 
       // Get placement in form and insert in form.
-      if ($captcha_placement = _captcha_get_captcha_placement($form_id, $form)) {
-        $captchaService->insertCaptchaElement($form, $captcha_placement, $captcha_element);
-      };
+      $captcha_placement = _captcha_get_captcha_placement($form_id, $form);
+      $captchaService->insertCaptchaElement($form, $captcha_placement, $captcha_element);
     }
     // If the user has the "skip Captcha" permission, but the
     // administration_mode is not enabled, simply do nothing and therefore
@@ -667,9 +665,8 @@ function captcha_captcha($op, $captcha_type = '') {
         // or string overrides.
         $result['form']['captcha_response'] = [
           '#type' => 'textfield',
-          '#title' => t('Math question'),
+          '#title' => t('Math question (@x + @y =)', ['@x' => $x, '@y' => $y]),
           '#description' => t('Solve this simple math problem and enter the result. E.g. for 1+3, enter 4.'),
-          '#field_prefix' => t('@x + @y =', ['@x' => $x, '@y' => $y]),
           '#size' => 4,
           '#maxlength' => 2,
           '#required' => TRUE,

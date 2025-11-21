@@ -105,9 +105,16 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
     // If selection handler include auto_create when need to also set it for
     // the $element.
     // @see \Drupal\Core\Entity\Element\EntityAutocomplete::validateEntityAutocomplete
-    if (!empty($element['#selection_settings']['auto_create'])
-      && !empty($element['#selection_settings']['auto_create_bundle'])) {
-      $element['#autocreate']['bundle'] = $element['#selection_settings']['auto_create_bundle'];
+    // @see \Drupal\Core\Field\Plugin\Field\FieldWidget\EntityReferenceAutocompleteWidget::formElement
+    if (!empty($element['#selection_settings']['auto_create'])) {
+      if (count($element['#selection_settings']['target_bundles']) == 1) {
+        // When there is only one target bundle, use it.
+        $element['#autocreate']['bundle'] = reset($element['#selection_settings']['target_bundles']);
+      }
+      elseif (!empty($element['#selection_settings']['auto_create_bundle'])) {
+        // Otherwise, we must use the auto_create_bundle value, if provided.
+        $element['#autocreate']['bundle'] = $element['#selection_settings']['auto_create_bundle'];
+      }
     }
   }
 

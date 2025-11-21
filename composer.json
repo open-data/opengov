@@ -14,16 +14,16 @@
             "type"    : "package",
             "package" : {
                 "name"    : "wet-boew/wet-boew",
-                "version" : "v4.0.85",
+                "version" : "v4.0.89",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.85.tar.gz",
+                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.89.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/wet-boew-cdn.git",
                     "type"      : "git",
-                    "reference" : "v4.0.85"
+                    "reference" : "v4.0.89"
                 }
             }
         },
@@ -31,16 +31,16 @@
             "type"    : "package",
             "package" : {
                 "name"    : "wet-boew/theme-gcweb",
-                "version" : "v16.2.0",
+                "version" : "v17.1.1",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v16.2.0-gcweb.tar.gz",
+                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v17.1.1-gcweb.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/themes-cdn.git",
                     "type"      : "git",
-                    "reference" : "v16.2.0-gcweb"
+                    "reference" : "v17.1.1-gcweb"
                 }
             }
         }

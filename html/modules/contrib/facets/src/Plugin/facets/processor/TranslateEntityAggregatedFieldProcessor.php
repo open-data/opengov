@@ -151,9 +151,12 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
           if ($field_storage instanceof FieldStorageDefinitionInterface) {
             if ($field !== 'type') {
               // Load all indexed entities of this type.
+              $entity_type_id = $field_storage->getSettings()['target_type'];
               $entities = $this->entityTypeManager
-                ->getStorage($field_storage->getSettings()['target_type'])
+                ->getStorage($entity_type_id)
                 ->loadMultiple($ids);
+              $access = $this->entityTypeManager->getAccessControlHandler($entity_type_id);
+              $this->checkEntitiesAccess($entities, $facet, $access);
 
               // Loop over all results.
               foreach ($results as $i => $result) {

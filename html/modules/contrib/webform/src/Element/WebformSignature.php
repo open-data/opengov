@@ -110,7 +110,7 @@ class WebformSignature extends FormElementBase {
     }
 
     // Make sure the signature is a png.
-    if (strpos($value, 'data:image/png;base64,') !== 0) {
+    if (!str_starts_with($value, 'data:image/png;base64,')) {
       return FALSE;
     }
 

@@ -2,12 +2,14 @@
 
 /**
  * @file
+ * Contains facets_exposed_filters.module.
  */
 
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Plugin\views\query\SearchApiQuery;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\views\Plugin\Block\ViewsExposedFilterBlock;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -40,7 +42,7 @@ function facets_exposed_filters_views_data_alter(array &$data) {
  */
 function facets_exposed_filters_search_api_query_alter(QueryInterface $query) {
   $view = $query->getOption('search_api_view');
-  if (!$view || (!$view->exposed_widgets && !$view->display_handler->getOption('exposed_block'))) {
+  if (!$view || (!$view->exposed_widgets && isset($view->display_handler) && !$view->display_handler->getOption('exposed_block'))) {
     return;
   }
 
@@ -53,11 +55,12 @@ function facets_exposed_filters_search_api_query_alter(QueryInterface $query) {
 
       $query_search_api_facets_options[$field_identifier] = [
         'field' => $field_identifier,
-        'limit' => 0,
+        'limit' => $filter->options["facet"]["hard_limit"] ?? 0,
         'operator' => $filter->options["facet"]["query_operator"],
         'min_count' => $filter->options["facet"]["min_count"],
         'missing' => FALSE,
-        'query_type' => 'search_api_string', // TODO: investigate if this property (query_type) is used.
+        // @todo Investigate if this property (query_type) is used.
+        'query_type' => 'search_api_string',
       ];
     }
   }
@@ -81,8 +84,7 @@ function facets_exposed_filters_remove_validation($element, $form) {
  * Implements hook_views_post_execute().
  */
 function facets_exposed_filters_views_post_execute(ViewExecutable $view) {
-
-  // No need to alter if no exposed widgets are present and we are not using exposed block.
+  // Skip if no exposed widgets are present and we are not using exposed block.
   if (!$view->exposed_widgets && !$view->display_handler->getOption('exposed_block')) {
     return;
   }
@@ -96,8 +98,8 @@ function facets_exposed_filters_views_post_execute(ViewExecutable $view) {
   $search_api_facets = $search_api_results->getExtraData('search_api_facets');
   $view->facets_query_post_execute = TRUE;
 
-  // If we have facet results, attach them. If no results are returned, we still need to rerender, as there can still be
-  // active filters (without results).
+  // If we have facet results, attach them. If no results are returned, we still
+  // need to rerender, as there can still be active filters (without results).
   if ($search_api_facets) {
     // Attach facet results to views, so we can use them in FacetsFilter.
     foreach ($view->filter as $search_api_id => $filter) {
@@ -168,9 +170,9 @@ function facets_exposed_filters_get_processed_facet($view_id, $display_id, $filt
  * Implements hook_block_build_alter().
  */
 function facets_exposed_filters_block_build_alter(array &$build, BlockPluginInterface $block) {
-  // Exposed filter blocks can be placed on any page. We need to ensure that the view is executed when the block is
-  // rendered and has Facet filters.
-  if($block instanceof \Drupal\views\Plugin\Block\ViewsExposedFilterBlock) {
+  // Exposed filter blocks can be placed on any page. We need to ensure that the
+  // view is executed when the block is rendered and has Facet filters.
+  if ($block instanceof ViewsExposedFilterBlock) {
     $view = $block->getViewExecutable();
     $view->initHandlers();
     foreach ($view->filter as $filter) {
@@ -178,7 +180,7 @@ function facets_exposed_filters_block_build_alter(array &$build, BlockPluginInte
         $filter_id = $filter->options["id"];
         $display = $view->current_display;
         $processed_facet = facets_exposed_filters_get_processed_facet($view->id(), $display, $filter_id);
-        if(!$processed_facet) {
+        if (!$processed_facet) {
           // The facet has not been processed.
           $view->execute($display);
         }

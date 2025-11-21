@@ -13,12 +13,11 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 // cspell:ignore imageresize imageupload
 
 /**
- * @coversDefaultClass \Drupal\ckeditor5\Plugin\CKEditor5Plugin\Image
- * @group ckeditor5
- * @group #slow
+ * Provides a base class for testing CKEditor 5 image embedding and uploads.
+ *
  * @internal
  */
-class ImageTestTestBase extends ImageTestBase {
+abstract class ImageTestTestBase extends ImageTestBase {
 
   /**
    * The sample image File entity to embed.

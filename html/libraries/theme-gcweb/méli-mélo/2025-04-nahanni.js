@@ -208,40 +208,40 @@ wb.add( selector );
 
 // Fetch page language and set variables accordingly
 let relpreposition = " of ",
-progressLabel = "Questionnaire progress:";
+	progressLabel = "Questionnaire progress:";
 
 // Define French progress label
 if ( wb.lang === "fr" ) {
 	relpreposition = " de ";
 	progressLabel = "Progression du questionnaire : ";
-
 }
 
-
 //Detect the enhancement of the quiz
-var quizSelector = ".provisional.wb-steps.quiz",
-	instances = document.querySelectorAll( quizSelector );
+var quizSelector = ".provisional.wb-steps.quiz";
 
-//How many quiz instances in the page
-instances.forEach ( ( instance ) => {
-	let $instance = $( instance );
+//Initialize all instances
+var init = function( e ) {
+	let $instance = $( e.currentTarget );
 
 	// Calculate number of questions
-	let numQuestion = $( "fieldset", $instance ).length;
+	let numQuestion = $( ".steps-wrapper", $instance ).length;
 
 	// Addition to UI (Ex: progress bar)
-	( "form", $instance ).prepend( "<label><span class='wb-inv'>" + progressLabel + "</span><progress class='progressBar' max='" + numQuestion + "'></progress><p class='progressText' role='status'></p></label>" );
+	if ( !$.contains( $instance, "progress" ) ) {
+		$( "form", $instance ).prepend( "<label class='full-width'><span class='wb-inv'>" + progressLabel + "</span><progress class='progressBar' max='" + numQuestion + "'></progress><p class='progressText' role='status'></p></label>" );
+	}
 
-});
+	hideOtherSteps( e );
+};
 
 var hideOtherSteps = function( e ) {
+
 	// Get wb-steps component
 	let steps,
-	currentElement = e.currentTarget;
+		currentElement = e.currentTarget;
 
 	if ( currentElement.classList.contains( "quiz" ) && currentElement.classList.contains( "wb-steps" ) ) {
 		steps = currentElement;
-
 	} else {
 		steps = $( currentElement ).parentsUntil( quizSelector ).parent().get( 0 );
 	}
@@ -254,7 +254,7 @@ var hideOtherSteps = function( e ) {
 
 	// Find the steps form context and validate it is a quiz
 	let currentTabId = $( "legend.wb-steps-active:first-child", steps ).parents().prevAll( ".steps-wrapper" ).length + 1;
-	
+
 	// Get progress bar
 	let $progressBar = $( ".progressBar", steps );
 
@@ -265,9 +265,9 @@ var hideOtherSteps = function( e ) {
 	$( "p.progressText", steps ).text( currentTabId + relpreposition + numQuestion );
 
 	// Update progress bar
-  	$progressBar.val( currentTabId );
+	$progressBar.val( currentTabId );
 
-  	// Hide other steps that are not active
+	// Hide other steps that are not active
 	$( ".steps-wrapper", steps ).removeClass( "hidden" );
 	$( ".steps-wrapper:has( div.hidden )", steps ).addClass( "hidden" );
 
@@ -276,7 +276,7 @@ var hideOtherSteps = function( e ) {
 $( document ).on( "click", quizSelector + " .steps-wrapper div.buttons > :button", hideOtherSteps );
 
 //Init
-$( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
+$( quizSelector ).on( "wb-ready.wb-steps", init );
 
 } )( jQuery, document );
 
@@ -290,14 +290,14 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
  *
  *
  *      Version  History: 1.1.1
- *                        Implement Wet-Boew Team recomendations Post Pull Request
+ *                        Implement Wet-Boew Team recommendations Post Pull Request
  *                          1. Suggestion: create a separate documentation page for all the options instead of having them in the JS file
  *                          2. Please add an implementation plan item: "Produce accessibility conformance report"
  *                          3. I don't see a working example for the following option: wb-col-cur-thousand.
  *
  *      Version  History: 1.1.0
- *                        Implement Wet-Boew Team recomendations
- *                          1. Remove <strong> formatting on Totals in favor of css
+ *                        Implement Wet-Boew Team recommendations
+ *                          1. Remove <strong> formatting on Totals in favour of css
  *                          2. Change Init Event to a single function instead
  *                          3. French Translation of Examples Page
  *
@@ -308,17 +308,17 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
  *                        Fix for wb-col-mailto not Working
  *
  *      Version  History: 1.0.2
- *                        Small Fix that has to do with Assigning values to unintialized Variables
+ *                        Small Fix that has to do with Assigning values to uninitialized Variables
  *
  *                        1.0.1
- *                        Small Fix that has to do with Assigning values to unintialized Variables
+ *                        Small Fix that has to do with Assigning values to uninitialized Variables
  *
  *                        1.0.0
  *                        Initial Release
  *
  *          Sample Usage: add class wb-tables-utility to your wb-tables <table element to enable the plugin
  *                        and using the data-wb-tables columnDefs option add class wb-col-sum to the column(s)
- *                        you want totals to appear donp't forget to add a blank <tfoot> section
+ *                        you want totals to appear don't forget to add a blank <tfoot> section
  *
  *   <table class="wb-tables table table-striped table-hover table-condensed small wb-tables-utility" id="t2" data-wb-tables='{ "ajax":"data/ytt-table-2.json", "columns": [
  *                        { "data": "SupplierEN" },
@@ -330,17 +330,17 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
  *                      { "className": "wb-col-sum wb-col-money text-right", "targets": [2] }],
  *                       "lengthMenu": [ [5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"] ]}'>
  *
- *            Paramaters: filteredsum     Total of Filtered Results Only or All if nothing was filtered
+ *            Parameters: filteredsum     Total of Filtered Results Only or All if nothing was filtered
  *                        Default Value:  true
  *
- *                           wb-col-sum   Class added to the columnDefs option of data-wb-tables to let the plugin know that this column needs to be totaled
+ *                           wb-col-sum   Class added to the columnDefs option of data-wb-tables to let the plugin know that this column needs to be totalled
  *
  *    Formatting Options: wb-col-money    Turns raw numbers such as 123987.10 to Localized Money $123,987.10 (en) 123 987,10 $ (fr)
  *
  *                       wb-col-mailto    Scan for email addresses in column and add the <a href="mailto:" around it
  *                          mailto-col    Legacy Value for wb-col-mailto
  *
- *                 wb-col-cur-thousand    Format number with Thousands Seperator and force 2 decimals
+ *                 wb-col-cur-thousand    Format number with Thousands Separator and force 2 decimals
  *                    cur-thousand-col    Legacy Value for wb-col-cur-thousand
  *
  *                          wb-col-url    Process url's in column and turn them into clickable <a href="http...."
@@ -454,7 +454,7 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
             data[key.toLowerCase().trim()] = settings[key];
         }
 
-        /** Message Overiden by User are replaced in the i18n global variable */
+        /** Message Overridden by User are replaced in the i18n global variable */
         if (data && data.pluginlabels)
         {
             Object.keys(data.pluginlabels[0]).forEach(key =>
@@ -578,16 +578,16 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
                 });
             }
         };
-        /** set a flag that we where able to intialize wb-tables with our footerCallback */
+        /** set a flag that we where able to initialize wb-tables with our footerCallback */
         window["wb-tables"][componentName] = true;
     }
 
     /********************************************************************************************
      *
-     * Add Classes to Datatable Columns to force column Specific Formating
+     * Add Classes to Datatable Columns to force column Specific Formatting
      *
      *       wb-col-mailto: Scan for email addresses in column and add the <a href="mailto:" around it
-     * wb-col-cur-thousand: Format number with Thousands Seperator and force 2 decimals
+     * wb-col-cur-thousand: Format number with Thousands Separator and force 2 decimals
      *          wb-col-url: process url's from -url column into <a href="http...."
      *        wb-col-money: formats money with $ and localization
      *
@@ -605,7 +605,7 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
 
         var dataSrc = 'data';
 
-        /* Check if a dataSrc paramater was passed to load something different than data [] */
+        /* Check if a dataSrc parameter was passed to load something different than data [] */
         if (typeof (oTable.settings().init().ajax['dataSrc']) !== "undefined")
         {
             dataSrc = oTable.settings().init().ajax['dataSrc'];
@@ -670,12 +670,12 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
         });
 
         /**
-         * Loop over JSON data array and format Columns that are affeted by Classes
+         * Loop over JSON data array and format Columns that are affected by Classes
          */
 
         for (var i = 0, ien = oRow.length; i < ien; i++)
         {
-            /** Process Currency with Thousands Seperator [ wb-col-money ] and include a $*/
+            /** Process Currency with Thousands Separator [ wb-col-money ] and include a $*/
             moneyFormat.forEach(function (column)
             {
                 var justDidgits = oRow[i][column].replace(/[\s,]/g, '');
@@ -697,7 +697,7 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
                 }
             });
 
-            /** Process Numbers with Thousands Seperator [ wb-col-cur-thousand ] */
+            /** Process Numbers with Thousands Separator [ wb-col-cur-thousand ] */
             curThousandColTarget.forEach(function (column)
             {
                 var justDidgits = oRow[i][column].replace(/[\s,]/g, '');
@@ -710,7 +710,7 @@ $( quizSelector ).on( "wb-ready.wb-steps", hideOtherSteps );
                 });
             });
 
-            /** Process columns with Email addreses [ wb-col-mailto ] */
+            /** Process columns with Email addresses [ wb-col-mailto ] */
             mailtoColumnTarget.forEach(function (column)
             {
                 var celldata = oRow[i][column];

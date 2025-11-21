@@ -6,7 +6,6 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Attaches webform off-canvas behaviors.
    *

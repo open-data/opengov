@@ -50,6 +50,7 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
       'Likert (Value)' => '<ul><li><b>Please answer question 1?:</b> 1</li><li><b>How about now answering question 2?:</b> 1</li><li><b>Finally, here is question 3?:</b> 1</li></ul>',
       'Likert (Raw value)' => '<ul><li><b>q1:</b> 1</li><li><b>q2:</b> 1</li><li><b>q3:</b> 1</li></ul>',
       'Likert (List)' => '<ul><li><b>Please answer question 1?:</b> 1</li><li><b>How about now answering question 2?:</b> 1</li><li><b>Finally, here is question 3?:</b> 1</li></ul>',
+      'Likert (Average)' => '2.67',
       'Basic address (Value)' => '10 Main Street<br />10 Main Street<br />Springfield, Alabama. 11111<br />Afghanistan<br />',
       'Basic address (Raw value)' => '<ul><li><b>address:</b> 10 Main Street</li><li><b>address_2:</b> 10 Main Street</li><li><b>city:</b> Springfield</li><li><b>state_province:</b> Alabama</li><li><b>postal_code:</b> 11111</li><li><b>country:</b> Afghanistan</li></ul><br /><br />',
       'Basic address (List)' => '<ul><li><b>Address:</b> 10 Main Street</li><li><b>Address 2:</b> 10 Main Street</li><li><b>City/Town:</b> Springfield</li><li><b>State/Province:</b> Alabama</li><li><b>ZIP/Postal Code:</b> 11111</li><li><b>Country:</b> Afghanistan</li></ul><br /><br />',
@@ -87,6 +88,8 @@ Finally, here is question 3?: 1',
 Please answer question 1?: 1
 How about now answering question 2?: 1
 Finally, here is question 3?: 1',
+      'Likert (Average):
+2.67',
       'Basic address (Value):
 10 Main Street
 10 Main Street

@@ -22,6 +22,41 @@ class CaptchaPointListBuilderTest extends UnitTestCase {
   use ProphecyTrait;
 
   /**
+   * Module handler mock.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Container mock.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $mockContainer;
+
+  /**
+   * Entity type mock.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $mockEntityType;
+
+  /**
+   * Entity storage mock.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $mockEntityStorage;
+
+  /**
+   * Captcha list builder.
+   *
+   * @var \Drupal\captcha\Entity\Controller\CaptchaPointListBuilder
+   */
+  protected $listBuilder;
+
+  /**
    * Set up.
    */
   public function setUp(): void {

@@ -452,7 +452,6 @@ class CaptchaTest extends CaptchaWebTestBase {
     $session->elementExists('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > label.form-required');
     $session->elementTextContains('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > label.form-required', 'Math question');
     // Check other elements:
-    $session->elementExists('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > span.field-prefix');
     $session->elementExists('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > input.form-text');
     $session->elementExists('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > div#edit-captcha-response--description');
     $session->elementTextContains('css', '#captcha-test-test > fieldset[data-drupal-selector="edit-math-captcha-admin-true"] > div.captcha__element > div.form-item-captcha-response > div#edit-captcha-response--description', 'Solve this simple math problem and enter the result. E.g. for 1+3, enter 4.');

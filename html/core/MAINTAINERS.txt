@@ -20,7 +20,6 @@ Product managers
 - Dries Buytaert 'dries' https://www.drupal.org/u/dries
 - Gábor Hojtsy 'Gábor Hojtsy' https://www.drupal.org/u/gábor-hojtsy
 - Lauri Timmanee 'lauriii' https://www.drupal.org/u/lauriii
-- Roy Scholten 'yoroy' https://www.drupal.org/u/yoroy
 
 User Experience (UX) managers
 - Cristina Chumillas 'ckrina' https://www.drupal.org/u/ckrina
@@ -72,10 +71,12 @@ maintainer. Current subsystem maintainers:
 
 Ajax
 - Alex Bronstein 'effulgentsia' https://www.drupal.org/u/effulgentsia
+- Shawn Duncan 'fathershawn' https://www.drupal.org/u/fathershawn
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
 
 Asset Library API
-- ?
+- Pierre Dureau 'pdureau' https://www.drupal.org/u/pdureau
+- Florent Torregrosa 'grimreaper' https://www.drupal.org/u/grimreaper
 
 Authentication and Authorization
 - ?
@@ -90,7 +91,7 @@ Base system
 - See "Framework managers" above.
 
 Basic Auth
-- Juampy Novillo Requena 'juampy' https://www.drupal.org/u/juampy
+- 'codebymikey' https://www.drupal.org/u/codebymikey
 
 Batch API
 - John Cook 'John Cook' https://www.drupal.org/u/john-cook
@@ -101,7 +102,6 @@ BigPipe
 
 Block
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
-- Ben Dougherty 'benjy' https://www.drupal.org/u/benjy
 
 Block Content
 - Adam Bramley 'acbramley' https://www.drupal.org/u/acbramley
@@ -120,14 +120,12 @@ Cache
 - Kristiaan Van den Eynde 'kristiaanvandeneynde' https://www.drupal.org/u/kristiaanvandeneynde
 
 CKEditor 5
-- Lauri Timmanee 'lauriii' https://www.drupal.org/u/lauriii
 - Wim Leers 'Wim Leers' https://www.drupal.org/u/wim-leers
 - Ben Mullins 'bnjmnm' https://www.drupal.org/u/bnjmnm
 
 Claro
 - Cristina Chumillas 'ckrina' https://www.drupal.org/u/ckrina
 - Sascha Eggenberger 'saschaeggi' https://www.drupal.org/u/saschaeggi
-- Lauri Timmanee 'lauriii' https://www.drupal.org/u/lauriii
 - Ben Mullins 'bnjmnm' https://www.drupal.org/u/bnjmnm
 
 Comment
@@ -154,7 +152,7 @@ Contact
 - Andrey Postnikov 'andypost' https://www.drupal.org/u/andypost
 
 Content Moderation
-- Sam Becker 'Sam152' https://www.drupal.org/u/sam152
+- ?
 
 Content Translation
 - ?
@@ -173,7 +171,7 @@ Database API
 - David Bekker 'daffie' https://www.drupal.org/u/daffie
 
   MySQL DB driver
-  - David Strauss 'David Strauss' https://www.drupal.org/u/david-strauss
+  - ?
 
   PostgreSQL DB driver
   - ?
@@ -189,11 +187,9 @@ Database Update API
 
 DateTime
 - Jonathan Hedstrom 'jhedstrom' https://www.drupal.org/u/jhedstrom
-- Matthew Donadio 'mpdonadio' https://www.drupal.org/u/mpdonadio
 
 DateTime Range
 - Jonathan Hedstrom 'jhedstrom' https://www.drupal.org/u/jhedstrom
-- Matthew Donadio 'mpdonadio' https://www.drupal.org/u/mpdonadio
 
 Default Content
 - Alex Pott 'alexpott' https://www.drupal.org/u/alexpott
@@ -220,10 +216,10 @@ Field API
 - Andrei Mateescu 'amateescu' https://www.drupal.org/u/amateescu
 
 Field UI
-- Yves Chedemois 'yched' https://www.drupal.org/u/yched
 - Andrei Mateescu 'amateescu' https://www.drupal.org/u/amateescu
 
 File
+- Mohit Aghera 'mohit_aghera' https://www.drupal.org/u/mohit_aghera
 - Kim Pepper 'kim.pepper' https://www.drupal.org/u/kimpepper
 
 Filter
@@ -245,7 +241,7 @@ Image
 - ?
 
 Inline Form Errors
-- Daniël Smidt 'dmsmidt' https://www.drupal.org/u/dmsmidt
+- ?
 
 Installer
 - ?
@@ -260,11 +256,10 @@ JavaScript
 JSON:API
 - Mateu Aguiló Bosch 'e0ipso' https://www.drupal.org/u/e0ipso
 - Björn Brala 'bbrala' https://www.drupal.org/u/bbrala
-- Gabe Sullice 'gabesullice' https://www.drupal.org/u/gabesullice
 - Wim Leers 'Wim Leers' https://www.drupal.org/u/wim-leers
 
 Language
-- Daniel F. Kudwien 'sun' https://www.drupal.org/u/sun
+- ?
 
 Layout Builder
 - Ted Bowman 'tedbow' https://www.drupal.org/u/tedbow
@@ -273,7 +268,7 @@ Layout Builder
 - Daniel Veza 'DanielVeza' https://www.drupal.org/u/DanielVeza
 
 Link Field
-- Weber Macedo 'Mac_Weber' https://www.drupal.org/u/mac_weber
+- David Cameron 'dcam' https://www.drupal.org/u/dcam
 
 Lock
 - ?
@@ -325,7 +320,6 @@ Node Access
 
 Olivero
 - Mike Herchel 'mherchel' https://www.drupal.org/u/mherchel
-- Putra Bonaccorsi 'proeung' https://www.drupal.org/u/proeung
 - Jen Witkowski 'jwitkowski79' https://www.drupal.org/u/jwitkowski79
 - Konstantin Shupenko 'kostyashupenko' https://www.drupal.org/u/kostyashupenko
 - Andy Blum 'andy-blum' https://www.drupal.org/u/andy-blum
@@ -370,7 +364,6 @@ REST
 Responsive Image
 - Peter Droogmans 'attiks' https://www.drupal.org/u/attiks
 - Heather Brooke Drummond 'RainbowArray' https://www.drupal.org/u/rainbowarray
-- Jelle Sebreghts 'Jelle_S' https://www.drupal.org/u/jelle_s
 
 Routing
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
@@ -380,10 +373,9 @@ Search
 
 Serialization
 - Brad Jones 'bradjones1' https://www.drupal.org/u/bradjones1
-- Damian Lee 'damiankloip' https://www.drupal.org/u/damiankloip
 
 Settings Tray
-- Ted Bowman 'tedbow' https://www.drupal.org/u/tedbow
+- ?
 
 Shortcut
 - Jibran Ijaz 'jibran' https://www.drupal.org/u/jibran
@@ -435,7 +427,6 @@ Umami demo
 - Mark Conroy 'markconroy' https://www.drupal.org/u/markconroy
 - Gareth Goodwin 'smaz' https://www.drupal.org/u/smaz
 - Keith Jay 'kjay' https://www.drupal.org/u/kjay
-- Ofer Shaal 'shaal' https://www.drupal.org/u/shaal
 - Ivan Berdinsky 'finnsky' https://www.drupal.org/u/finnsky
 
 Update Status
@@ -448,12 +439,11 @@ User
 
 Views
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
-- Damian Lee 'damiankloip' https://www.drupal.org/u/damiankloip
 - Jess Myrbo 'xjm' https://www.drupal.org/u/xjm
 - Len Swaneveld 'Lendude' https://www.drupal.org/u/lendude
 
 Workflows
-- Sam Becker 'Sam152' https://www.drupal.org/u/sam152
+- ?
 
 Workspaces
 - Andrei Mateescu 'amateescu' https://www.drupal.org/u/amateescu
@@ -467,9 +457,7 @@ proposed changes must pass. https://www.drupal.org/contribute/core/maintainers
 provides more information on their responsibilities.
 
 Accessibility
-- Rain Breaw Michaels 'rainbreaw' https://www.drupal.org/u/rainbreaw
 - Mike Gifford 'mgifford' https://www.drupal.org/u/mgifford
-- Andrew Macpherson 'andrewmacpherson' https://www.drupal.org/u/andrewmacpherson
 - Ben Mullins 'bnjmnm' https://www.drupal.org/u/bnjmnm
 
 Documentation
@@ -485,8 +473,6 @@ Testing
 
 Usability
 - Cristina Chumillas 'ckrina' https://www.drupal.org/u/ckrina
-- Roy Scholten 'yoroy' https://www.drupal.org/u/yoroy
-- Bojhan Somers 'Bojhan' https://www.drupal.org/u/bojhan
 
 
 Security team

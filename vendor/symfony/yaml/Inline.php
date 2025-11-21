@@ -243,7 +243,7 @@ class Inline
     private static function dumpHashArray(array|\ArrayObject|\stdClass $value, int $flags): string
     {
         $output = [];
-        $keyFlags = $flags &~ Yaml::DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES;
+        $keyFlags = $flags & ~Yaml::DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES;
         foreach ($value as $key => $val) {
             if (\is_int($key) && Yaml::DUMP_NUMERIC_KEY_AS_STRING & $flags) {
                 $key = (string) $key;
@@ -459,7 +459,7 @@ class Inline
             }
 
             if ('!php/const' === $key || '!php/enum' === $key) {
-                $key .= ' '.self::parseScalar($mapping, $flags, [':'], $i, false);
+                $key .= ' '.self::parseScalar($mapping, $flags, ['(?<!:):(?!:)'], $i, false);
                 $key = self::evaluateScalar($key, $flags);
             }
 
@@ -714,6 +714,10 @@ class Inline
                 switch (true) {
                     case ctype_digit($scalar):
                     case '-' === $scalar[0] && ctype_digit(substr($scalar, 1)):
+                        if ($scalar < \PHP_INT_MIN || \PHP_INT_MAX < $scalar) {
+                            return $scalar;
+                        }
+
                         $cast = (int) $scalar;
 
                         return ($scalar === (string) $cast) ? $cast : $scalar;

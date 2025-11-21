@@ -286,11 +286,11 @@ class WebformOptionsCustom extends ConfigEntityBase implements WebformOptionsCus
       return NULL;
     }
 
-    if (strpos($url, '/') === 0) {
+    if (str_starts_with($url, '/')) {
       // Map root-relative path.
       $url = $base_url . preg_replace('/^' . preg_quote(base_path(), '/') . '/', '/', $url);
     }
-    elseif (strpos($url, 'http') !== 0) {
+    elseif (!str_starts_with($url, 'http')) {
       // Map webform_option_custom/images path.
       $path = \Drupal::service('extension.list.module')->getPath('webform_options_custom') . '/images/' . $url;
       if (file_exists($path)) {
@@ -298,7 +298,7 @@ class WebformOptionsCustom extends ConfigEntityBase implements WebformOptionsCus
       }
     }
 
-    if (strpos($url, 'http') === 0) {
+    if (str_starts_with($url, 'http')) {
       return $url;
     }
 

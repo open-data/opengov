@@ -41,26 +41,26 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
       $action = $this->createMock('\Drupal\system\ActionConfigEntityInterface');
       $action->expects($this->any())
         ->method('getType')
-        ->will($this->returnValue('webform_submission'));
+        ->willReturn('webform_submission');
       $actions[$i] = $action;
     }
 
     $action = $this->createMock('\Drupal\system\ActionConfigEntityInterface');
     $action->expects($this->any())
       ->method('getType')
-      ->will($this->returnValue('user'));
+      ->willReturn('user');
     $actions[] = $action;
 
     $entity_storage = $this->createMock('Drupal\Core\Entity\EntityStorageInterface');
     $entity_storage->expects($this->any())
       ->method('loadMultiple')
-      ->will($this->returnValue($actions));
+      ->willReturn($actions);
 
     $entity_manager = $this->createMock('Drupal\Core\Entity\EntityManagerInterface');
     $entity_manager->expects($this->once())
       ->method('getStorage')
       ->with('action')
-      ->will($this->returnValue($entity_storage));
+      ->willReturn($entity_storage);
 
     $entity_repository = $this->createMock(EntityRepositoryInterface::class);
 
@@ -72,7 +72,7 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
     $views_data->expects($this->any())
       ->method('get')
       ->with('webform_submission')
-      ->will($this->returnValue(['table' => ['entity type' => 'webform_submission']]));
+      ->willReturn(['table' => ['entity type' => 'webform_submission']]);
     $container = new ContainerBuilder();
     $container->set('views.views_data', $views_data);
     $container->set('string_translation', $this->getStringTranslationStub());
@@ -82,7 +82,7 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
     $storage->expects($this->any())
       ->method('get')
       ->with('base_table')
-      ->will($this->returnValue('webform_submission'));
+      ->willReturn('webform_submission');
 
     $executable = $this->createMock('Drupal\views\ViewExecutable');
     $executable->storage = $storage;

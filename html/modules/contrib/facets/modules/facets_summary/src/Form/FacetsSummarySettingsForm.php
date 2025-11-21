@@ -249,7 +249,7 @@ class FacetsSummarySettingsForm extends EntityForm {
     // Ensure that the caching of the view display is disabled, so the search
     // correctly returns the facets.
     $facet_source = $this->facetSourcePluginManager->createInstance($facet_source_id, ['facet' => $this->getEntity()]);
-    if (isset($facet_source) && $facet_source instanceof SearchApiFacetSourceInterface) {
+    if ($facet_source instanceof SearchApiFacetSourceInterface) {
       $view = $facet_source->getViewsDisplay();
       if ($view !== NULL) {
         $view->display_handler->overrideOption('cache', ['type' => 'none']);

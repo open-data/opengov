@@ -19,8 +19,6 @@ use Deprecated;
 use function array_map;
 use function array_reduce;
 use function implode;
-use function restore_error_handler;
-use function set_error_handler;
 use function str_replace;
 
 use const STREAM_FILTER_WRITE;
@@ -117,8 +115,16 @@ class Writer extends AbstractCsv implements TabularDataWriter
      * @throws CannotInsertRecord
      * @throws Exception
      */
-    public function insertAll(iterable $records): int
+    public function insertAll(TabularDataProvider|TabularData|iterable $records): int
     {
+        if ($records instanceof TabularDataProvider) {
+            $records = $records->getTabularData();
+        }
+
+        if ($records instanceof TabularData) {
+            $records = $records->getRecords();
+        }
+
         $bytes = 0;
         foreach ($records as $record) {
             $bytes += $this->insertOne($record);
@@ -143,9 +149,8 @@ class Writer extends AbstractCsv implements TabularDataWriter
     {
         $record = array_reduce($this->formatters, fn (array $record, callable $formatter): array => $formatter($record), $record);
         $this->validateRecord($record);
-        set_error_handler(fn (int $errno, string $errstr, string $errfile, int $errline) => true);
-        $bytes = $this->insertRecord($record);
-        restore_error_handler();
+        /** @var int|false $bytes */
+        $bytes = Warning::cloak($this->insertRecord(...), $record);
         if (false === $bytes) {
             throw CannotInsertRecord::triggerOnInsertion($record);
         }

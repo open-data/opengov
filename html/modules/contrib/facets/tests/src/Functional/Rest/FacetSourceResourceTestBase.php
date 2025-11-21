@@ -72,6 +72,7 @@ abstract class FacetSourceResourceTestBase extends EntityResourceTestBase {
    */
   protected function getNormalizedPostEntity() {
     // @todo Update after https://www.drupal.org/node/2300677.
+    return [];
   }
 
 }

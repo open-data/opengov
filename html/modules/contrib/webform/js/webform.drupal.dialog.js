@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once, tabbable) {
-
   /**
    * Ensure that ckeditor has focus when displayed inside of jquery-ui dialog widget
    *

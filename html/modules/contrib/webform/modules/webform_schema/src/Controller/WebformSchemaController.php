@@ -70,9 +70,11 @@ class WebformSchemaController extends ControllerBase implements ContainerInjecti
       foreach ($elements as $element) {
         $element['options_text'] = implode($multiple_delimiter, $element['options_text']);
         $element['options_value'] = implode($multiple_delimiter, $element['options_value']);
-        $element['notes'] = trim(MailFormatHelper::htmlToText(
-          $this->renderer->renderInIsolation($element['notes'])
-        ));
+        $element['notes'] = (!empty($element['notes']))
+          ? trim(MailFormatHelper::htmlToText(
+              $this->renderer->renderInIsolation($element['notes'])
+            ))
+          : '';
         fputcsv($handle, $element, escape: '\\');
       }
 

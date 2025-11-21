@@ -202,7 +202,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         $this->extensions[$extension->getAlias()] = $extension;
 
         if (false !== $extension->getNamespace()) {
-            $this->extensionsByNs[$extension->getNamespace()] = $extension;
+            $this->extensionsByNs[$extension->getNamespace() ?? ''] = $extension;
         }
     }
 
@@ -273,46 +273,58 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         if ($resource instanceof DirectoryResource && $this->inVendors($resource->getResource())) {
             return $this;
         }
-        if ($resource instanceof ClassExistenceResource) {
-            $class = $resource->getResource();
+        if (!$resource instanceof ClassExistenceResource) {
+            $this->resources[(string) $resource] = $resource;
 
-            $inVendor = false;
-            foreach (spl_autoload_functions() as $autoloader) {
-                if (!\is_array($autoloader)) {
+            return $this;
+        }
+
+        $class = $resource->getResource();
+
+        if (!(new ClassExistenceResource($class, false))->isFresh(1)) {
+            if (!$this->inVendors((new \ReflectionClass($class))->getFileName())) {
+                $this->resources[$class] = $resource;
+            }
+
+            return $this;
+        }
+
+        $inVendor = true;
+        foreach (spl_autoload_functions() as $autoloader) {
+            if (!\is_array($autoloader)) {
+                $inVendor = false;
+                break;
+            }
+
+            if ($autoloader[0] instanceof DebugClassLoader) {
+                $autoloader = $autoloader[0]->getClassLoader();
+            }
+
+            if (!\is_array($autoloader) || !$autoloader[0] instanceof ClassLoader) {
+                $inVendor = false;
+                break;
+            }
+
+            foreach ($autoloader[0]->getPrefixesPsr4() as $prefix => $dirs) {
+                if (!str_starts_with($class, $prefix)) {
                     continue;
                 }
 
-                if ($autoloader[0] instanceof DebugClassLoader) {
-                    $autoloader = $autoloader[0]->getClassLoader();
-                }
-
-                if (!\is_array($autoloader) || !$autoloader[0] instanceof ClassLoader || !$autoloader[0]->findFile(__CLASS__)) {
-                    continue;
-                }
-
-                foreach ($autoloader[0]->getPrefixesPsr4() as $prefix => $dirs) {
-                    if ('' === $prefix || !str_starts_with($class, $prefix)) {
+                foreach ($dirs as $dir) {
+                    if (!$dir = realpath($dir)) {
                         continue;
                     }
 
-                    foreach ($dirs as $dir) {
-                        if (!$dir = realpath($dir)) {
-                            continue;
-                        }
-
-                        if (!$inVendor = $this->inVendors($dir)) {
-                            break 3;
-                        }
+                    if (!$inVendor = $this->inVendors($dir)) {
+                        break 3;
                     }
                 }
             }
-
-            if ($inVendor) {
-                return $this;
-            }
         }
 
-        $this->resources[(string) $resource] = $resource;
+        if (!$inVendor) {
+            $this->resources[$class] = $resource;
+        }
 
         return $this;
     }
@@ -823,7 +835,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         if ($bag instanceof EnvPlaceholderParameterBag) {
             if ($resolveEnvPlaceholders) {
-                $this->parameterBag = new ParameterBag($this->resolveEnvPlaceholders($bag->all(), true));
+                $this->parameterBag = new ParameterBag($this->resolveEnvPlaceholders($this->escapeParameters($bag->all()), true));
             }
 
             $this->envPlaceholders = $bag->getEnvPlaceholders();
@@ -1174,7 +1186,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             if (!$definition->isDeprecated() && \is_array($factory) && \is_string($factory[0])) {
                 $r = new \ReflectionClass($factory[0]);
 
-                if (0 < strpos($r->getDocComment(), "\n * @deprecated ")) {
+                if (0 < strpos($r->getDocComment() ?: '', "\n * @deprecated ")) {
                     trigger_deprecation('', '', 'The "%s" service relies on the deprecated "%s" factory class. It should either be deprecated or its factory upgraded.', $id, $r->name);
                 }
             }
@@ -1191,7 +1203,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
                 $service = $r->getConstructor() ? $r->newInstanceArgs($arguments) : $r->newInstance();
             }
 
-            if (!$definition->isDeprecated() && 0 < strpos($r->getDocComment(), "\n * @deprecated ")) {
+            if (!$definition->isDeprecated() && 0 < strpos($r->getDocComment() ?: '', "\n * @deprecated ")) {
                 trigger_deprecation('', '', 'The "%s" service relies on the deprecated "%s" class. It should either be deprecated or its implementation upgraded.', $id, $r->name);
             }
         }
@@ -1500,8 +1512,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         $autoconfiguredAttributes = [];
         foreach ($this->autoconfiguredAttributes as $attribute => $configurators) {
-            if (count($configurators) > 1) {
-                throw new LogicException(\sprintf('The "%s" attribute has %d configurators. Use "getAttributeAutoconfigurators()" to get all of them.', $attribute, count($configurators)));
+            if (\count($configurators) > 1) {
+                throw new LogicException(\sprintf('The "%s" attribute has %d configurators. Use "getAttributeAutoconfigurators()" to get all of them.', $attribute, \count($configurators)));
             }
 
             $autoconfiguredAttributes[$attribute] = $configurators[0];
@@ -1828,5 +1840,19 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         }
 
         return $this->pathsInVendor[$path] = false;
+    }
+
+    private function escapeParameters(array $parameters): array
+    {
+        $params = [];
+        foreach ($parameters as $k => $v) {
+            $params[$k] = match (true) {
+                \is_array($v) => $this->escapeParameters($v),
+                \is_string($v) => str_replace('%', '%%', $v),
+                default => $v,
+            };
+        }
+
+        return $params;
     }
 }

@@ -38,7 +38,7 @@
         "phpstan/phpstan-deprecation-rules": "^1.2.1",
         "phpstan/phpstan-phpunit": "^1.4.2",
         "phpstan/phpstan-strict-rules": "^1.6.2",
-        "phpunit/phpunit": "^10.5.16 || ^11.5.22",
+        "phpunit/phpunit": "^10.5.16 || ^11.5.22 || ^12.3.6",
         "symfony/var-dumper": "^6.4.8 || ^7.3.0"
     },
     "autoload": {
@@ -49,9 +49,10 @@
     },
     "scripts": {
         "benchmark": "phpbench run src --report=default",
-        "phpcs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix -vvv --diff --dry-run --allow-risky=yes --ansi",
+        "phpcs": "php-cs-fixer fix -vvv --diff --dry-run --allow-risky=yes --ansi",
         "phpcs:fix": "php-cs-fixer fix -vvv --allow-risky=yes --ansi",
         "phpstan": "phpstan analyse -c phpstan.neon --ansi --memory-limit=256M",
+        "phpstan-build": "phpstan analyse -c phpstan-build.neon --ansi --memory-limit=256M",
         "phpunit": "XDEBUG_MODE=coverage phpunit --coverage-text",
         "phpunit:min": "phpunit --no-coverage",
         "test": [

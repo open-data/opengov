@@ -30,12 +30,12 @@ class WebformMessageManagerTest extends UnitTestCase {
     // Mock webform.
     $webform = $this->createMock(WebformInterface::class);
     $webform->method('getSettings')
-      ->will($this->returnCallback(function () {
+      ->willReturnCallback(function () {
         return [
           WebformMessageManagerInterface::DRAFT_PENDING_SINGLE => '{single}',
           WebformMessageManagerInterface::DRAFT_PENDING_MULTIPLE => '[none]',
         ];
-      }));
+      });
 
     // Mock url.
     $url = $this->createMock('\Drupal\Core\Url');
@@ -85,9 +85,9 @@ class WebformMessageManagerTest extends UnitTestCase {
     // Mock webform token manager.
     $token_manager = $this->createMock(WebformTokenManagerInterface::class);
     $token_manager->method('replace')
-      ->will($this->returnCallback(function ($text) {
+      ->willReturnCallback(function ($text) {
         return $text;
-      }));
+      });
 
     // Mock Drupal's container.
     $container = new ContainerBuilder();

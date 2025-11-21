@@ -1,8 +1,21 @@
-plugin.plugin_configuration.facets_processor.*:
-  type: mapping
-
 plugin.plugin_configuration.facets_hierarchy.*:
   type: mapping
+
+plugin.plugin_configuration.facets_processor.url_processor_handler:
+  type: mapping
+  label: 'URL handler'
+
+plugin.plugin_configuration.facets_processor.hierarchy_processor:
+  type: mapping
+  label: 'Build hierarchy tree'
+
+plugin.plugin_configuration.facets_processor.hide_inactive_siblings_processor:
+  type: mapping
+  label: 'Hide inactive siblings'
+
+plugin.plugin_configuration.facets_processor.hide_non_narrowing_result_processor:
+  type: mapping
+  label: 'Hide non-narrowing results'
 
 plugin.plugin_configuration.facets_processor.count_widget_widget_order:
   type: mapping
@@ -185,3 +198,27 @@ plugin.plugin_configuration.facets_processor.replace:
     replacements:
       type: text
       label: 'Replacement values'
+
+plugin.plugin_configuration.facets_processor.hide_active_items_processor:
+  type: mapping
+  label: 'Hide active items'
+
+plugin.plugin_configuration.facets_processor.hide_1_result_facet:
+  type: mapping
+  label: 'Hide facet with 1 result'
+
+plugin.plugin_configuration.facets_processor.list_item:
+  type: mapping
+  label: 'List item label'
+
+plugin.plugin_configuration.facets_processor.show_only_deepest_level_items_processor:
+  type: mapping
+  label: 'Show only deepest item levels'
+
+plugin.plugin_configuration.facets_processor.translate_entity_aggregated_fields:
+  type: mapping
+  label: 'Transform entity ID in aggregated field to label'
+
+plugin.plugin_configuration.facets_processor.uid_to_username_callback:
+  type: mapping
+  label: 'Transform UID to user name'

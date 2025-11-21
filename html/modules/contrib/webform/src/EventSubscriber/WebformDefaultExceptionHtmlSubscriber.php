@@ -135,13 +135,13 @@ class WebformDefaultExceptionHtmlSubscriber extends DefaultExceptionHtmlSubscrib
   public function on403RedirectPrivateFileAccess(ExceptionEvent $event) {
     $path = $event->getRequest()->getPathInfo();
     // Make sure the user is trying to access a private webform file upload.
-    if (strpos($path, '/system/files/webform/') !== 0) {
+    if (!str_starts_with($path, '/system/files/webform/')) {
       return;
     }
 
     // Make private webform file upload is not a temporary file.
     // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::postSave
-    if (strpos($path, '/_sid_/') !== FALSE) {
+    if (str_contains($path, '/_sid_/')) {
       return;
     }
 

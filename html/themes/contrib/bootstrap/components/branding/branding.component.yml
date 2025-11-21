@@ -5,7 +5,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Branding
 
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
 
 # Use this key to organize components together.
 group: Navigation
@@ -29,9 +29,9 @@ props:
       type: string
       title: Branding url
       format: iri-reference
-
-slots:
-  site_name:
-    type: string
-  site_slogan:
-    type: string
+    site_name:
+      type: string
+      title: Site name
+    site_slogan:
+      type: string
+      title: Site slogan

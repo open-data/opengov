@@ -144,34 +144,34 @@ interface WebformScheduledEmailManagerInterface {
   /* ************************************************************************ */
 
   /**
-   * Get scheduled email date type (date or datetime).
+   * Get the configured date type ("date" or "datetime").
    *
    * @return string
-   *   Scheduled email date type (date or datetime).
+   *   The configured date type ("date" or "datetime").
    */
   public function getDateType();
 
   /**
-   * Get scheduled email date label (date or date/time).
+   * Get the configured date type label ("date" or "date/time").
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup|string
-   *   Scheduled email date label (date or date/time).
+   *   The configured date type label ("date" or "date/time").
    */
   public function getDateTypeLabel();
 
   /**
-   * Get scheduled email date format (Y-m-d or Y-m-d H:i:s).
+   * Get the date format ("Y-m-d" or "c").
    *
    * @return string
-   *   Scheduled email date format (Y-m-d or Y-m-d H:i:s).
+   *   The date format ("Y-m-d" or "c").
    */
   public function getDateFormat();
 
   /**
-   * Get scheduled email date format label (YYYY-DD-MM or YYYY-DD-MM HH:MM:SS).
+   * Get the date format label ("YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS").
    *
    * @return string
-   *   Scheduled email date format label (YYYY-DD-MM or YYYY-DD-MM HH:MM:SS).
+   *   The date format label ("YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS").
    */
   public function getDateFormatLabel();
 
@@ -210,8 +210,10 @@ interface WebformScheduledEmailManagerInterface {
    *   A webform handler id.
    *
    * @return string|bool
-   *   A send date using ISO date (YYYY-MM-DD) or datetime
-   *   format (YYYY-MM-DD HH:MM:SS) or FALSE if the send date is invalid.
+   *   The webform submission's formatted send date string or FALSE if the
+   *   send date is invalid.
+   *
+   * @see \Drupal\webform_scheduled_email\WebformScheduledEmailManagerInterface::getDateFormat()
    */
   public function getSendDate(WebformSubmissionInterface $webform_submission, $handler_id);
 

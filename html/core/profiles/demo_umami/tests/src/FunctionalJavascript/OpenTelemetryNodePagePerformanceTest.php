@@ -43,6 +43,8 @@ class OpenTelemetryNodePagePerformanceTest extends PerformanceTestBase {
     // a non-deterministic test since they happen in parallel and therefore post
     // response tasks run in different orders each time.
     $this->drupalGet('node/1');
+    // Allow time for image style and aggregate requests to finish.
+    sleep(1);
     $this->drupalGet('node/1');
     $this->clearCaches();
     $performance_data = $this->collectPerformanceData(function () {
@@ -230,7 +232,7 @@ class OpenTelemetryNodePagePerformanceTest extends PerformanceTestBase {
       'SELECT "t".* FROM "node_revision__field_summary" "t" WHERE ("revision_id" IN ("75")) AND ("deleted" = 0) AND ("langcode" IN ("en", "es", "und", "zxx")) ORDER BY "delta" ASC',
       'SELECT "t".* FROM "node_revision__field_tags" "t" WHERE ("revision_id" IN ("75")) AND ("deleted" = 0) AND ("langcode" IN ("en", "es", "und", "zxx")) ORDER BY "delta" ASC',
       'SELECT "t".* FROM "node_revision__layout_builder__layout" "t" WHERE ("revision_id" IN ("75")) AND ("deleted" = 0) AND ("langcode" IN ("en", "es", "und", "zxx")) ORDER BY "delta" ASC',
-      'SELECT "base_table"."vid" AS "vid", "base_table"."nid" AS "nid" FROM "node_revision" "base_table" LEFT OUTER JOIN "node_revision" "base_table_2" ON "base_table"."nid" = "base_table_2"."nid" AND "base_table"."vid" < "base_table_2"."vid" INNER JOIN "node_field_data" "node_field_data" ON "node_field_data"."nid" = "base_table"."nid" WHERE ("base_table_2"."nid" IS NULL) AND ("node_field_data"."nid" = "1")',
+      'SELECT "base_table"."vid" AS "vid", "base_table"."nid" AS "nid" FROM "node_revision" "base_table" INNER JOIN (SELECT "subquery_base_table"."nid" AS "nid", MAX(subquery_base_table.vid) AS "maximum_revision_id" FROM "node_revision" "subquery_base_table" WHERE "nid" = "1" GROUP BY "subquery_base_table"."nid") "sq_base_table" ON base_table.nid = sq_base_table.nid AND base_table.vid = sq_base_table.maximum_revision_id INNER JOIN "node_field_data" "node_field_data" ON "node_field_data"."nid" = "base_table"."nid" WHERE "node_field_data"."nid" = "1"',
       'SELECT "revision"."vid" AS "vid", "revision"."langcode" AS "langcode", "revision"."revision_uid" AS "revision_uid", "revision"."revision_timestamp" AS "revision_timestamp", "revision"."revision_log" AS "revision_log", "revision"."revision_default" AS "revision_default", "base"."nid" AS "nid", "base"."type" AS "type", "base"."uuid" AS "uuid", CASE "base"."vid" WHEN "revision"."vid" THEN 1 ELSE 0 END AS "isDefaultRevision" FROM "node" "base" INNER JOIN "node_revision" "revision" ON "revision"."nid" = "base"."nid" AND "revision"."vid" IN (75)',
       'SELECT "revision".* FROM "node_field_revision" "revision" WHERE ("revision"."vid" IN (75)) AND ("revision"."vid" IN ("75")) ORDER BY "revision"."vid" ASC',
       'SELECT "t".* FROM "node_revision__field_cooking_time" "t" WHERE ("revision_id" IN ("75")) AND ("deleted" = 0) AND ("langcode" IN ("en", "es", "und", "zxx")) ORDER BY "delta" ASC',

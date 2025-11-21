@@ -27,17 +27,24 @@ class AssertEqualsIsDiscouragedRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!AssertRuleHelper::isMethodOrStaticCallOnAssert($node, $scope)) {
+		if (!$node instanceof Node\Expr\MethodCall && ! $node instanceof Node\Expr\StaticCall) {
 			return [];
 		}
-
 		if (count($node->getArgs()) < 2) {
 			return [];
 		}
+		if ($node->isFirstClassCallable()) {
+			return [];
+		}
+
 		if (
 			!$node->name instanceof Node\Identifier
 			|| !in_array(strtolower($node->name->name), ['assertequals', 'assertnotequals'], true)
 		) {
+			return [];
+		}
+
+		if (!AssertRuleHelper::isMethodOrStaticCallOnAssert($node, $scope)) {
 			return [];
 		}
 
@@ -56,14 +63,21 @@ class AssertEqualsIsDiscouragedRule implements Rule
 			&& ($leftType->isSuperTypeOf($rightType)->yes())
 			&& ($rightType->isSuperTypeOf($leftType)->yes())
 		) {
+			$correctName = strtolower($node->name->name) === 'assertnotequals' ? 'assertNotSame' : 'assertSame';
 			return [
 				RuleErrorBuilder::message(
 					sprintf(
 						'You should use %s() instead of %s(), because both values are scalars of the same type',
-						strtolower($node->name->name) === 'assertnotequals' ? 'assertNotSame' : 'assertSame',
+						$correctName,
 						$node->name->name,
 					),
-				)->identifier('phpunit.assertEquals')->build(),
+				)->identifier('phpunit.assertEquals')
+					->fixNode($node, static function (CallLike $node) use ($correctName) {
+						$node->name = new Node\Identifier($correctName);
+
+						return $node;
+					})
+					->build(),
 			];
 		}
 

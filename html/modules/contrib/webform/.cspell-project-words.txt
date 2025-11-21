@@ -77,7 +77,6 @@ palantirnet
 Pardot
 phpcompatibility
 placedog
-formta
 phplint
 Presolve
 previewtitle
@@ -173,8 +172,10 @@ testprintengine
 texto
 Tfor
 Timepicker
+titlecase
 togglelink
 Traducción
+TRANSLIT
 Unarchives
 unflag
 unflagged
@@ -189,3 +190,10 @@ wfdcu
 wfdr
 wfro
 wfsec
+whitelist
+whitelisted
+computado
+enviar
+envío
+formulario
+mensaje

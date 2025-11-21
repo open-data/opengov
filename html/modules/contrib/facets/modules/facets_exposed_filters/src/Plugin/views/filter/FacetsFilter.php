@@ -11,7 +11,6 @@ use Drupal\facets\FacetInterface;
 use Drupal\facets\Hierarchy\HierarchyPluginBase;
 use Drupal\facets\Processor\ProcessorInterface;
 use Drupal\facets\Processor\SortProcessorInterface;
-use Drupal\facets\Result\Result;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 
 /**
@@ -26,11 +25,15 @@ class FacetsFilter extends FilterPluginBase {
   /**
    * {@inheritdoc}
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $no_operator = FALSE;
 
   /**
-   * Will be filled with the facet results after the query is executed.
+   * Stores the facet results after the query is executed.
+   *
+   * @var \Drupal\facets\Result\ResultInterface[]
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $facet_results = [];
 
   /**
@@ -47,6 +50,7 @@ class FacetsFilter extends FilterPluginBase {
     $options['facet']['contains']['show_numbers'] = ['default' => FALSE];
     $options['facet']['contains']['min_count'] = ['default' => 1];
     $options['facet']['contains']['query_operator'] = ['default' => 'or'];
+    $options['facet']['contains']['hard_limit'] = ['default' => 0];
     return $options;
   }
 
@@ -103,7 +107,7 @@ class FacetsFilter extends FilterPluginBase {
       return $form;
     }
 
-    // Retrieve the processed facet if we already done this in the current request.
+    // Retrieve the processed facet if already handled in the current request.
     $processed_facet = facets_exposed_filters_get_processed_facet($this->view->id(), $this->view->current_display, $this->options["id"]);
 
     // Empty facet results, return empty form.
@@ -134,8 +138,8 @@ class FacetsFilter extends FilterPluginBase {
       );
       $query_type_plugin->build();
 
-      // When no results are available, we do not need to process the facet or render the form item.
-      if(!$facet->getResults()) {
+      // Skip facet processing and form rendering if there are no results.
+      if (!$facet->getResults()) {
         return;
       }
 
@@ -151,7 +155,7 @@ class FacetsFilter extends FilterPluginBase {
         $facet->setResults($processor->build($facet, $facet->getResults()));
       }
 
-      // Trigger sort stage and sort the actual results with the sort processors.
+      // Allow processors to sort the results.
       $active_sort_processors = [];
       foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_SORT) as $processor) {
         $active_sort_processors[] = $processor;
@@ -161,7 +165,8 @@ class FacetsFilter extends FilterPluginBase {
       }
       $facet->setActiveItems(array_values($active_facet_values));
 
-      // Store the processed facet so we can access it later (e.g. in an exposed form rendered as a block).
+      // Store the processed facet so we can access it later (e.g. in an exposed
+      // form rendered as a block).
       facets_exposed_filters_get_processed_facet($this->view->id(), $this->view->current_display, $this->options["id"], $facet);
     }
 
@@ -225,7 +230,9 @@ class FacetsFilter extends FilterPluginBase {
    * {@inheritdoc}
    */
   public function acceptExposedInput($input) {
-    return TRUE;
+    // Modules like views_dependent_filters alter the exposed option to ignore the filter when hidden.
+    // We need to check for this.
+    return $this->isExposed();
   }
 
   /**
@@ -383,6 +390,13 @@ class FacetsFilter extends FilterPluginBase {
       '#default_value' => $facet->getQueryOperator(),
     ];
 
+    $form['facet']['hard_limit'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Hard limit'),
+      '#default_value' => $facet->getHardLimit(),
+      '#description' => $this->t('Display no more than this number of facet items.<br>*Note: Some search backends will use 0 as "no limit", and some still apply a default limit when hard limit is set to 0. If this affects you, set this to an appropriately-high value or a value that indicates "no limit" to your search backend'),
+    ];
+
     $hierarchy = $facet->getHierarchy();
     $options = array_map(function (HierarchyPluginBase $plugin) {
       return $plugin->getPluginDefinition()['label'];
@@ -524,6 +538,7 @@ class FacetsFilter extends FilterPluginBase {
       'widget' => '<nowidget>',
       'facet_type' => 'facets_exposed_filter',
     ]);
+    $facet->setHardLimit($this->options["facet"]["hard_limit"] ?? 0);
     if ($facet->getUseHierarchy()) {
       $facet->setHierarchy($this->options["facet"]["hierarchy"], []);
     }
@@ -546,6 +561,11 @@ class FacetsFilter extends FilterPluginBase {
    * to retrieve the active filters from the request ourself.
    */
   private function getActiveFacetValues() {
+    // Reset button in ajax request. We probably want a better way to detect if
+    // this was clicked.
+    if (isset($_GET["reset"])) {
+      return [];
+    }
     $exposed = $this->view->getExposedInput();
     if (!isset($exposed[$this->options["expose"]["identifier"]])) {
       return [];
@@ -571,6 +591,7 @@ class FacetsFilter extends FilterPluginBase {
     foreach ($options["facet"]["processors"] as $processor_id => $processor_data) {
       if ($processor_data["status"] == 1) {
         $processor_configs[$processor_id] = [
+          'processor_id' => $processor_id,
           'settings' => $processor_data["settings"] ?? [],
         ];
       }
@@ -578,6 +599,7 @@ class FacetsFilter extends FilterPluginBase {
     foreach ($options["facet_sort_processors"] as $processor_id => $processor_data) {
       if ($processor_data["status"] == 1) {
         $processor_configs[$processor_id] = [
+          'processor_id' => $processor_id,
           'settings' => $processor_data["settings"] ?? [],
         ];
       }

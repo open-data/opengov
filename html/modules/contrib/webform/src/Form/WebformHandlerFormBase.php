@@ -100,7 +100,9 @@ abstract class WebformHandlerFormBase extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ?WebformInterface $webform = NULL, $webform_handler = NULL) {
     $this->webform = $webform;
     try {
-      $this->webformHandler = $this->prepareWebformHandler($webform_handler);
+      if (method_exists($this, 'prepareWebformHandler')) {
+        $this->webformHandler = $this->prepareWebformHandler($webform_handler);
+      }
     }
     catch (PluginNotFoundException $e) {
       throw new NotFoundHttpException("Invalid handler id: '$webform_handler'.");

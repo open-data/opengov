@@ -159,4 +159,36 @@ class WebformArrayHelperTest extends UnitTestCase {
     $this->assertEquals(WebformArrayHelper::removePrefix(['@test' => 'test'], '@'), ['test' => 'test']);
   }
 
+  /**
+   * Tests array equal with WebformArrayHelper::equal().
+   *
+   * @param array $a
+   *   First array.
+   * @param array $b
+   *   Second array.
+   * @param string $expected
+   *   The expected result from calling the function.
+   *
+   * @see WebformArrayHelper::equal()
+   *
+   * @dataProvider providerEqual
+   */
+  public function testEqual(array $a, array $b, $expected) {
+    $result = WebformArrayHelper::equal($a, $b);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
+   * Data provider for testEqual().
+   *
+   * @see testEqual()
+   */
+  public static function providerEqual() {
+    $tests[] = [[], [], TRUE];
+    $tests[] = [['A', 'B'], ['A', 'B'], TRUE];
+    $tests[] = [['B', 'A'], ['A', 'B'], TRUE];
+    $tests[] = [['A', 'B', 'C'], ['A', 'B'], FALSE];
+    return $tests;
+  }
+
 }

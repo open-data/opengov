@@ -237,7 +237,7 @@ function _webform_update_webform_handler_settings() {
   $definitions = $handler_manager->getDefinitions();
   $default_handler_settings = [];
   foreach ($definitions as $plugin_id => $definition) {
-    if (strpos($definition['provider'], 'webform_test_') === 0 || in_array($definition['provider'], ['webform', 'webform_scheduled_email'])) {
+    if (str_starts_with($definition['provider'], 'webform_test_') || in_array($definition['provider'], ['webform', 'webform_scheduled_email'])) {
       $default_handler_settings[$plugin_id] = $handler_manager->createInstance($plugin_id)->defaultConfiguration();
     }
   }
@@ -398,7 +398,7 @@ function _webform_update_string_replace($search, $replace) {
   // Update 'webform.settings' configuration.
   $settings_config = \Drupal::configFactory()->getEditable('webform.settings');
   $yaml = Yaml::encode($settings_config->getRawData());
-  if (strpos($yaml, $search) !== FALSE) {
+  if (str_contains($yaml, $search)) {
     $yaml = str_replace($search, $replace, $yaml);
     $settings_config->setData(Yaml::decode($yaml));
     $settings_config->save();
@@ -408,7 +408,7 @@ function _webform_update_string_replace($search, $replace) {
   foreach ($config_factory->listAll('webform.webform.') as $webform_config_name) {
     $webform_config = $config_factory->getEditable($webform_config_name);
     $yaml = Yaml::encode($webform_config->getRawData());
-    if (strpos($yaml, $search) !== FALSE) {
+    if (str_contains($yaml, $search)) {
       $yaml = str_replace($search, $replace, $yaml);
       $webform_config->setData(Yaml::decode($yaml));
       $webform_config->save();

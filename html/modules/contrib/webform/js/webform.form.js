@@ -4,7 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
   /**
    * Remove single submit event listener.
    *
@@ -37,7 +36,7 @@
    *   not by pressing Enter.
    */
   Drupal.behaviors.webformDisableAutoSubmit = {
-    attach: function (context) {
+    attach(context) {
       // Not using context so that inputs loaded via Ajax will have autosubmit
       // disabled.
       // @see http://stackoverflow.com/questions/11235622/jquery-disable-form-submit-on-enter
@@ -63,7 +62,7 @@
    * @see http://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message
    **/
   Drupal.behaviors.webformRequiredError = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-required-error', $(context).find(':input[data-webform-required-error], :input[data-webform-pattern-error]')))
         .on('invalid', function () {
           this.setCustomValidity('');

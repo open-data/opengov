@@ -1,37 +1,27 @@
 const { createMacro, MacroError } = require('babel-plugin-macros')
 const { addNamed } = require('@babel/helper-module-imports')
+const {
+  FAFamilyIds,
+  FAFamilyClassicId,
+  FAFamilyDuotoneId
+} = require('@fortawesome-internal-tools/fontawesome-icons/canonical')
+const { FALegacyStyleIds } = require('@fortawesome-internal-tools/fontawesome-icons/legacy')
 
 module.exports = createMacro(importer, {
   configName: 'fontawesome-svg-core'
 })
 
-const styles = [
-  'solid',
-  'regular',
-  'light',
-  'thin',
-  'duotone',
-  'brands'
-]
+const styles = FALegacyStyleIds
 
-const macroNames = [
-  ...styles,
-  'icon'
-]
+const macroNames = [...styles, 'icon']
 
-const families = [
-  'classic',
-  'duotone',
-  'sharp'
-]
+const families = FAFamilyIds.map((family) => family.toLowerCase())
 
-function importer ({references, state, babel, source, config}) {
-  const license = (config !== undefined ? config.license : 'free')
+function importer({ references, state, babel, source, config }) {
+  const license = config !== undefined ? config.license : 'free'
 
   if (!['free', 'pro'].includes(license)) {
-    throw new Error(
-      "config license must be either 'free' or 'pro'"
-    )
+    throw new Error("config license must be either 'free' or 'pro'")
   }
 
   Object.keys(references).forEach((key) => {
@@ -46,12 +36,12 @@ function importer ({references, state, babel, source, config}) {
   })
 }
 
-function replace ({ macroName, license, references, state, babel, source }) {
+function replace({ macroName, license, references, state, babel }) {
   references.forEach((nodePath) => {
-    const {iconName, style, family} = resolveReplacement({ nodePath, babel, state, macroName })
+    const { iconName, style, family } = resolveReplacement({ nodePath, babel, state, macroName })
 
     const name = `fa${capitalize(camelCase(iconName))}`
-    const importFrom = getImport({family, style, license, name})
+    const importFrom = getImport({ family, style, license, name })
 
     const importName = addNamed(nodePath, name, importFrom)
 
@@ -59,7 +49,7 @@ function replace ({ macroName, license, references, state, babel, source }) {
   })
 }
 
-function getImport ({family, style, license, name}) {
+function getImport({ family, style, license, name }) {
   if (family) {
     return `@fortawesome/${family.toLowerCase()}-${style}-svg-icons/${name}`
   } else if (style === 'brands') {
@@ -69,8 +59,8 @@ function getImport ({family, style, license, name}) {
   }
 }
 
-function resolveReplacement ({ nodePath, babel, state, macroName }) {
-  if('icon' === macroName) {
+function resolveReplacement({ nodePath, babel, state, macroName }) {
+  if ('icon' === macroName) {
     return resolveReplacementIcon({ nodePath, babel, state, macroName })
   } else {
     return resolveReplacementLegacyStyle({ nodePath, babel, state, macroName })
@@ -78,7 +68,7 @@ function resolveReplacement ({ nodePath, babel, state, macroName }) {
 }
 
 // The macros corresonding to legacy style names: solid(), regular(), light(), thin(), duotone(), brands().
-function resolveReplacementLegacyStyle({ nodePath, babel, state, macroName }) {
+function resolveReplacementLegacyStyle({ nodePath, babel, macroName }) {
   const { types: t } = babel
   const { parentPath } = nodePath
 
@@ -105,8 +95,7 @@ function resolveReplacementLegacyStyle({ nodePath, babel, state, macroName }) {
     }
 
     if (
-      (parentPath.node.arguments.length === 1 ||
-      parentPath.node.arguments.length === 2) &&
+      (parentPath.node.arguments.length === 1 || parentPath.node.arguments.length === 2) &&
       t.isStringLiteral(parentPath.node.arguments[0]) &&
       nodePath.parentPath.node.arguments[0].value.startsWith('fa-')
     ) {
@@ -116,19 +105,17 @@ function resolveReplacementLegacyStyle({ nodePath, babel, state, macroName }) {
       )
     }
 
-    if ((parentPath.node.arguments.length === 1 ||
-        parentPath.node.arguments.length === 2) &&
-        !t.isStringLiteral(parentPath.node.arguments[0])) {
+    if (
+      (parentPath.node.arguments.length === 1 || parentPath.node.arguments.length === 2) &&
+      !t.isStringLiteral(parentPath.node.arguments[0])
+    ) {
       throw parentPath.buildCodeFrameError(
         'Only string literals are supported when referencing icons (use a string here instead)',
         MacroError
       )
     }
   } else {
-    throw parentPath.buildCodeFrameError(
-      'Pass the icon name you would like to import as an argument.',
-      MacroError
-    )
+    throw parentPath.buildCodeFrameError('Pass the icon name you would like to import as an argument.', MacroError)
   }
 
   return {
@@ -139,7 +126,7 @@ function resolveReplacementLegacyStyle({ nodePath, babel, state, macroName }) {
 }
 
 // The icon() macro.
-function resolveReplacementIcon ({ nodePath, babel, state, macroName }) {
+function resolveReplacementIcon({ nodePath, babel, macroName }) {
   const { types: t } = babel
   const { parentPath } = nodePath
 
@@ -159,20 +146,21 @@ function resolveReplacementIcon ({ nodePath, babel, state, macroName }) {
 
   if (!t.isObjectExpression(parentPath.node.arguments[0])) {
     throw parentPath.buildCodeFrameError(
-      'Only object expressions are supported when referencing icons with this macro, like this: { name: \'star\' }',
+      "Only object expressions are supported when referencing icons with this macro, like this: { name: 'star' }",
       MacroError
     )
   }
 
-  const properties = (parentPath.node.arguments[0].properties || [])
+  const properties = parentPath.node.arguments[0].properties || []
 
   const namePropIndex = properties.findIndex((prop) => 'name' === prop.key.name)
 
-  const name = namePropIndex >= 0
-    ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[namePropIndex])
-    : undefined
+  const name =
+    namePropIndex >= 0
+      ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[namePropIndex])
+      : undefined
 
-  if(!name) {
+  if (!name) {
     throw parentPath.buildCodeFrameError(
       'The object argument to the icon() macro must have a name property',
       MacroError
@@ -181,11 +169,12 @@ function resolveReplacementIcon ({ nodePath, babel, state, macroName }) {
 
   const stylePropIndex = properties.findIndex((prop) => 'style' === prop.key.name)
 
-  let style = stylePropIndex >= 0
-    ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[stylePropIndex])
-    : undefined
+  let style =
+    stylePropIndex >= 0
+      ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[stylePropIndex])
+      : undefined
 
-  if(style && !styles.includes(style)) {
+  if (style && !styles.includes(style)) {
     throw parentPath.buildCodeFrameError(
       `Invalid style name: ${style}. It must be one of the following: ${styles.join(', ')}`,
       MacroError
@@ -194,53 +183,51 @@ function resolveReplacementIcon ({ nodePath, babel, state, macroName }) {
 
   const familyPropIndex = properties.findIndex((prop) => 'family' === prop.key.name)
 
-  let family = familyPropIndex >= 0
-    ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[familyPropIndex])
-    : undefined
+  let family =
+    familyPropIndex >= 0
+      ? getStringLiteralPropertyValue(t, parentPath, parentPath.node.arguments[0].properties[familyPropIndex])
+      : undefined
 
-  if(family && !families.includes(family)) {
+  if (family && !families.includes(family)) {
     throw parentPath.buildCodeFrameError(
       `Invalid family name: ${family}. It must be one of the following: ${families.join(', ')}`,
       MacroError
     )
   }
 
-  if('duotone' === style && family && 'classic' !== family) {
+  if (FAFamilyDuotoneId === style && family && FAFamilyClassicId !== family) {
     throw parentPath.buildCodeFrameError(
       `duotone cannot be used as a style name with any family other than classic`,
       MacroError
     )
   }
 
-  if('brands' === style && family && 'classic' !== family) {
+  if ('brands' === style && family && FAFamilyClassicId !== family) {
     throw parentPath.buildCodeFrameError(
       `brands cannot be used as a style name with any family other than classic`,
       MacroError
     )
   }
 
-  if(family && !style) {
-    throw parentPath.buildCodeFrameError(
-      `When a family is specified, a style must also be specified`,
-      MacroError
-    )
+  if (family && !style) {
+    throw parentPath.buildCodeFrameError(`When a family is specified, a style must also be specified`, MacroError)
   }
 
-  if('duotone' === style || 'duotone' === family) {
+  if (FAFamilyDuotoneId === style || FAFamilyDuotoneId === family) {
     family = undefined
-    style = 'duotone'
+    style = FAFamilyDuotoneId
   }
 
-  if('brands' === style) {
+  if ('brands' === style) {
     family = undefined
   }
 
   // defaults
-  if(!style) {
+  if (!style) {
     style = 'solid'
   }
 
-  if('classic' === family) {
+  if (FAFamilyClassicId === family) {
     family = undefined
   }
 
@@ -252,19 +239,19 @@ function resolveReplacementIcon ({ nodePath, babel, state, macroName }) {
 }
 
 function getStringLiteralPropertyValue(t, parentPath, property) {
-  if(!('object' === typeof t && 'function' === typeof t.isStringLiteral)) {
-    throw Error("ERROR: invalid babel-types arg. This is probably a programming error in import.macro")
+  if (!('object' === typeof t && 'function' === typeof t.isStringLiteral)) {
+    throw Error('ERROR: invalid babel-types arg. This is probably a programming error in import.macro')
   }
 
-  if(!('object' === typeof property && 'object' === typeof property.value && 'object' == typeof property.key)) {
-    throw Error("ERROR: invalid babel property arg. This is probably a programming error in import.macro")
+  if (!('object' === typeof property && 'object' === typeof property.value && 'object' == typeof property.key)) {
+    throw Error('ERROR: invalid babel property arg. This is probably a programming error in import.macro')
   }
 
-  if(!('object' === typeof parentPath && 'function' === typeof parentPath.buildCodeFrameError)) {
-    throw Error("ERROR: invalid babel parentPath arg. This is probably a programming error in import.macro")
+  if (!('object' === typeof parentPath && 'function' === typeof parentPath.buildCodeFrameError)) {
+    throw Error('ERROR: invalid babel parentPath arg. This is probably a programming error in import.macro')
   }
 
-  if(!t.isStringLiteral(property.value)) {
+  if (!t.isStringLiteral(property.value)) {
     throw parentPath.buildCodeFrameError(
       `Only string literals are supported for the ${property.key.name} property (use a string here instead)`,
       MacroError
@@ -274,18 +261,15 @@ function getStringLiteralPropertyValue(t, parentPath, property) {
   return property.value.value
 }
 
-function capitalize (str) {
+function capitalize(str) {
   return str[0].toUpperCase() + str.slice(1)
 }
 
-function camelCase (str) {
+function camelCase(str) {
   return str
     .split('-')
     .map((s, index) => {
-      return (
-        (index === 0 ? s[0].toLowerCase() : s[0].toUpperCase()) +
-        s.slice(1).toLowerCase()
-      )
+      return (index === 0 ? s[0].toLowerCase() : s[0].toUpperCase()) + s.slice(1).toLowerCase()
     })
     .join('')
 }

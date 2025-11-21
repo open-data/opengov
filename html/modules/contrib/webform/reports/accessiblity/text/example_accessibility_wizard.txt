@@ -51,4 +51,3 @@ Results for URL: http://localhost/wf/webform/example_accessibility_wizard
    └── <span class="progress-title" data-webform-progress-link=""> <span class="visua...</span>
 
 9 Errors
-

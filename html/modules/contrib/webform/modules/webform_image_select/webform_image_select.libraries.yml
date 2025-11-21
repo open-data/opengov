@@ -3,7 +3,7 @@ webform_image_select.element:
     component:
       css/webform_image_select.element.css: {}
   js:
-    js/webform_image_select.element.js: {}
+    js/webform_image_select.element.js: { weight: -1 }
   dependencies:
     - core/drupal
     - core/jquery

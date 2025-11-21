@@ -325,7 +325,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
       '#type' => 'webform_message',
       '#message_type' => 'warning',
       '#message_message' => $this->t('Are you sure you want to import @submissions?', $t_args) . '<br/>' .
-        '<strong>' . $this->t('This action cannot be undone.') . '</strong>',
+      '<strong>' . $this->t('This action cannot be undone.') . '</strong>',
     ];
 
     // Details.
@@ -455,6 +455,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
    */
   public function getQuestion() {
     // Do not alter the form's title.
+    return '';
   }
 
   /**

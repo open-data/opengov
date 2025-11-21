@@ -17,7 +17,6 @@ if (!jQuery.trim) {
 }
 
 (function ($, Drupal, once) {
-
   // @see https://select2.github.io/options.html
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.select2 = Drupal.webform.select2 || {};
@@ -31,7 +30,7 @@ if (!jQuery.trim) {
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformSelect2 = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.select2) {
         return;
       }
@@ -55,14 +54,9 @@ if (!jQuery.trim) {
           if ($select.data('limit')) {
             options.maximumSelectionLength = $select.data('limit');
           }
-
-          // Remove required attribute from IE11 which breaks
-          // HTML5 clientside validation.
-          // @see https://github.com/select2/select2/issues/5114
-          if (window.navigator.userAgent.indexOf('Trident/') !== -1
-            && $select.attr('multiple')
-            && $select.attr('required')) {
-            $select.removeAttr('required');
+          // Allow custom options.
+          if ($select.attr('data-options')) {
+            options = $.extend(true, options, JSON.parse($input.attr('data-options')));
           }
 
           $select.select2(options);

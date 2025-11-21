@@ -38,6 +38,9 @@
   {%- endif %}
   -->
 {%- endif %}
+{% if facet.widget.type == 'checkbox' %}
+  {% set item_classes = 'js-form-item js-form-type-checkbox checkbox form-check' %}
+{% endif %}
 <div class="facets-widget- {{- facet.widget.type -}} ">
   {% if facet.widget.type %}
     {%- set attributes = attributes.addClass('item-list__' ~ facet.widget.type) %}
@@ -50,7 +53,7 @@
     {%- if items -%}
       <{{ list_type }}{{ attributes }}>
         {%- for item in items -%}
-          <li{{ item.attributes }}>{{ item.value }}</li>
+          <li{{ item.attributes.addClass(item_classes) }}>{{ item.value }}</li>
         {%- endfor -%}
       </{{ list_type }}>
     {%- else -%}

@@ -1,5 +1,6 @@
-Redis clients
-====================
+# Drupal Redis documentation
+
+## Redis clients
 
 This package provides support for three different Redis clients.
 
@@ -15,8 +16,7 @@ it explicitly, use
 Each supported client has its own README client specific installation and
 configuration options.
 
-Common cache configuration
-===================
+## Common configuration
 
 See settings.redis.example.php for a quick start and recommended configuration.
 
@@ -87,59 +87,13 @@ needs to be configured for that.
       ],
     ];
 
-Additional cache optimizations
-===================
-
-These settings allow to further optimize caching but are not be fully compatible
-with the expected behavior of cache backends or have other tradeoffs.
-
-Treat invalidateAll() the same as deleteAll() to avoid two different checks for
-each bin.
-
-    $settings['redis_invalidate_all_as_delete'] = TRUE;
-
-Core may deprecate invalidateAll() in the future, this is essentially the same
-as https://www.drupal.org/project/drupal/issues/3498947.
-
-Additional configuration and features.
-===============
-
-Lock Backend
-------------
-
-See the provided example.services.yml file on how to override the lock services.
-
-Queue Backend
-------------------------------------
-
-This module provides reliable and non-reliable queue implementations. Depending
-on which is to be use you need to choose "queue.redis" or "queue.redis_reliable"
-as a service name.
-
-When you have configured basic information (host, library, ... - see Quick setup)
-add this to your settings.php file:
-
-    # Use for all queues unless otherwise specified for a specific queue.
-    $settings['queue_default'] = 'queue.redis';
-
-    # Or if you want to use reliable queue implementation.
-    $settings['queue_default'] = 'queue.redis_reliable';
-
-    # Use this to only use Redis for a specific queue (aggregator_feeds in this case).
-    $settings['queue_service_aggregator_feeds'] = 'queue.redis';
-
-    # Or if you want to use reliable queue implementation.
-    $settings['queue_service_aggregator_feeds'] = 'queue.redis_reliable';
-
-Use persistent connections
---------------------------
+## Use persistent connections
 
 This mode needs the following setting:
 
     $settings['redis.connection']['persistent'] = TRUE;
 
-Using a specific database
--------------------------
+## Using a specific database
 
 Per default, Redis ships the database "0". All default connections will be use
 this one if nothing is specified.
@@ -149,8 +103,7 @@ use one in particular, just add to your settings.php file:
 
     $settings['redis.connection']['base']      = 12;
 
-Connection to a password protected instance
--------------------------------------------
+## Connection to a password protected instance
 
 If you are using a password protected instance, specify the password this way:
 
@@ -158,14 +111,13 @@ If you are using a password protected instance, specify the password this way:
 
 Depending on the backend, using a wrong auth will behave differently:
 
- - Predis will throw an exception and make Drupal fail during early boostrap.
+- Predis will throw an exception and make Drupal fail during early boostrap.
 
- - PhpRedis will make Redis calls silent and creates some PHP warnings, thus
-   Drupal will behave as if it was running with a null cache backend (no cache
-   at all).
+- PhpRedis will make Redis calls silent and creates some PHP warnings, thus
+  Drupal will behave as if it was running with a null cache backend (no cache
+  at all).
 
-Prefixing site cache entries (avoiding sites name collision)
-------------------------------------------------------------
+## Prefixing site cache entries (avoiding sites name collision)
 
 If you need to differentiate multiple sites using the same Redis instance and
 database, you will need to specify a prefix for your site cache entries.
@@ -205,120 +157,124 @@ Here is a complex sample:
     // Set another prefix for 'cache_menu' bin.
     $settings['cache_prefix']['cache_menu'] = 'menumysite_';
 
-Note that if you don't specify the default behavior, the Redis module will
-attempt to use the HTTP_HOST variable in order to provide a multisite safe
-default behavior. Notice that this is not failsafe, in such environment you
-are strongly advised to set at least an explicit default prefix.
+If no prefix is set explicitly set, it will fall back to the behavior that is
+used for the APCU prefix, which is reasonably safe but quite long. Setting a
+explicit prefix is recommended.
 
-Note that this last notice is Redis only specific, because per default Redis
-server will not namespace data, thus sharing an instance for multiple sites
-will create conflicts. This is not true for every contributed backends.
+## Redis memory management
 
-Flush mode
-----------
+Redis is typically configured with a max memory size that it is allowed to use.
 
-@todo: Update for Drupal 8
+What happens when that is full depends on the eviction policy. By default, Redis
+will no longer accept new items. which is almost never the desired behavior when
+using Redis as a Drupal cache backend, as caches tend to grow continuously.
 
-Redis allows to set a time-to-live at the key level, which frees us from
-handling the garbage collection at clear() calls; Unfortunately Drupal never
-explicitly clears single cached pages or blocks. If you didn't configure the
-"cache_lifetime" core variable, its value is "0" which means that temporary
-items never expire: in this specific case, we need to adopt a different
-behavior than letting Redis handling the TTL by itself; This is why we have
-three different implementations of the flush algorithm you can use:
+The other policies are split in two groups and affect either all keys or only
+volatile ones, which are defined by having an expiration/TTL set.
 
- * 0: Never flush temporary: leave Redis handling the TTL; This mode is
-   not compatible for the "page" and "block" bins but is the default for
-   all others.
+The redis cache backend will always set an expiration on all cache items, with
+the exception of cache taq invalidations as well as queue and other similar
+backend implementations. It is therefore safe and recommended
+to use a volatile policy to avoid evicting cache tag invalidations or queue
+items.
 
- * 1: Keep a copy of temporary items identifiers in a SET and flush them
-   accordingly to spec (DatabaseCache default backend mimic behavior):
-   this is the default for "page" and "block" bin if you don't change the
-   configuration.
+A good policy for typical scenarios is volatile-lfu, but sites may want to do
+their own testing and research on this. Sites with a large amount of items with
+shorter TTL or optimized permanent TTLs for certain bins may benefit from using
+volatile-ttl, but only if those items aren't also very frequently used.
 
- * 2: Flush everything including permanent or valid items on clear() calls:
-   this behavior mimics the pre-1.0 releases of this module. Use it only
-   if you experience backward compatibility problems on a production
-   environment - at the cost of potential performance issues; All other
-   users should ignore this parameter.
+It is recommend to store data that must be persisted like queue items in a
+separate redis instance.
 
-You can configure a default flush mode which will override the sensible
-provided defaults by setting the 'redis_flush_mode' variable.
+See https://valkey.io/topics/lru-cache/ for a detailed explanation.
 
-  // For example this is the safer mode.
-  $conf['redis_flush_mode'] = 1;
-
-But you may also want to change the behavior for only a few bins.
-
-  // This will put mode 0 on "bootstrap" bin.
-  $conf['redis_flush_mode_cache_bootstrap'] = 0;
-
-  // And mode 2 to "page" bin.
-  $conf['redis_flush_mode_cache_page'] = 2;
-
-Note that you must prefix your bins with "cache" as the Drupal 7 bin naming
-convention requires it.
-
-Keep in mind that defaults will provide the best balance between performance
-and safety for most sites; Non-advanced users should ever change them.
-
-Default lifetime for permanent items
-------------------------------------
-
-@todo: Update for Drupal 8
-
-Redis when reaching its maximum memory limit will stop writing data in its
-storage engine: this is a feature that avoid the Redis server crashing when
-there is no memory left on the machine.
-
-As a workaround, Redis can be configured as an LRU cache for both volatile or
-permanent items, which means it can behave like Memcache; Problem is that if
-you use Redis as a permanent storage for other business matters than this
-module you cannot possibly configure it to drop permanent items, or you'll
-lose data.
-
-This workaround allows you to explicit set a very long or configured default
-lifetime for CACHE_PERMANENT items (that would normally be permanent) which
-will mark them as being volatile in Redis storage engine: this then allows you
-to configure an LRU behavior for volatile keys without engaging the permanent
-business stuff in a dangerous LRU mechanism; Cache items even if permanent will
-be dropped when unused using this.
+## Expiration of cache items
 
 Per default the TTL for permanent items will set to safe-enough value which is
 one year; No matter how Redis will be configured default configuration or lazy
 admin will inherit from a safe module behavior with zero-conf.
 
-For adventurous people, you can manage the TTL on a per bin basis and change
-the default one:
+The default TTL can be customized for specific bins.
 
-    // Make CACHE_PERMANENT items being permanent once again
-    // 0 is a special value usable for all bins to explicitly tell the
-    // cache items will not be volatile in Redis.
-    $conf['redis_perm_ttl'] = 0;
-
-    // Make them being volatile with a default lifetime of 1 year.
-    $conf['redis_perm_ttl'] = "1 year";
-
-    // You can override on a per-bin basis;
-    // For example make cached field values live only 3 months:
-    $conf['redis_perm_ttl_cache_field'] = "3 months";
+    // Set max TTL for cached pages to 3 days.
+    $settings['redis_perm_ttl_page'] = '3 days';
 
     // But you can also put a timestamp in there; In this case the
-    // value must be a STRICTLY TYPED integer:
-    $conf['redis_perm_ttl_cache_field'] = 2592000; // 30 days.
+    // value must be a typed integer:
+    $settings['redis_perm_ttl_page'] = 2592000; // 30 days.
 
 Time interval string will be parsed using DateInterval::createFromDateString
 please refer to its documentation:
 
     http://www.php.net/manual/en/dateinterval.createfromdatestring.php
 
-Last but not least please be aware that this setting affects the
-CACHE_PERMANENT ONLY; All other use cases (CACHE_TEMPORARY or user set TTL
-on single cache entries) will continue to behave as documented in Drupal core
-cache backend documentation.
+By default, the default TTL will always be used over the expiration set for the
+item. The specific expiration is instead stored and verified when reading
+the cache item.
 
-Testing
-=======
+This is done to respect the expectation that expired cache items can still be
+returned when explicitly requested.
+
+It is possible to set a TTL offset as a compromise between supporting the
+ability to return expired items for a certain amount of time but also guide
+Redis to clear item items that have been expired.
+
+Using this setting and a value of 0, Redis will get the real TTL for a key and
+might evict keys by TTL according to its configuration.
+
+    // Expired items can still be explicitly requested for up to
+    // one hour.
+    $settings['redis_ttl_offset'] = 3600;
+
+    // It is also possible to set the offset to 0, which disables the ability
+    // to fetch expired items. This is not recommended.
+    $settings['redis_ttl_offset'] = 0;
+
+Note: This behavior is off by default for BC, a default offset might be set in a
+future release.
+
+## Cache optimizations
+
+These settings allow to further optimize caching but are not be fully compatible
+with the expected behavior of cache backends or have other tradeoffs.
+
+Treat invalidateAll() the same as deleteAll() to avoid two different checks for
+each bin.
+
+    $settings['redis_invalidate_all_as_delete'] = TRUE;
+
+Core has deprecated invalidateAll() in
+https://www.drupal.org/project/drupal/issues/3498947. This setting will be
+removed in the future when Drupal 12.0 is required.
+
+## Additional backends
+
+### Lock Backend
+
+See the provided example.services.yml file on how to override the lock services.
+
+### Queue Backend
+
+This module provides reliable and non-reliable queue implementations. Depending
+on which is to be use you need to choose "queue.redis" or "queue.redis_reliable"
+as a service name.
+
+When you have configured basic information (host, library, ... - see Quick setup)
+add this to your settings.php file:
+
+    # Use for all queues unless otherwise specified for a specific queue.
+    $settings['queue_default'] = 'queue.redis';
+
+    # Or if you want to use reliable queue implementation.
+    $settings['queue_default'] = 'queue.redis_reliable';
+
+    # Use this to only use Redis for a specific queue (aggregator_feeds in this case).
+    $settings['queue_service_aggregator_feeds'] = 'queue.redis';
+
+    # Or if you want to use reliable queue implementation.
+    $settings['queue_service_aggregator_feeds'] = 'queue.redis_reliable';
+
+## Testing
 
 The tests respect the following two environment variables to customize the redis
 host and used interface.
