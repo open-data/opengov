@@ -39,7 +39,11 @@ class UnroutedUrlAssembler implements UnroutedUrlAssemblerInterface {
    * @param string[] $filter_protocols
    *   (optional) An array of protocols allowed for URL generation.
    */
-  public function __construct(RequestStack $request_stack, OutboundPathProcessorInterface $path_processor, array $filter_protocols = ['http', 'https']) {
+  public function __construct(
+    RequestStack $request_stack,
+    OutboundPathProcessorInterface $path_processor,
+    array $filter_protocols = ['http', 'https'],
+  ) {
     UrlHelper::setAllowedProtocols($filter_protocols);
     $this->requestStack = $request_stack;
     $this->pathProcessor = $path_processor;
@@ -69,6 +73,10 @@ class UnroutedUrlAssembler implements UnroutedUrlAssemblerInterface {
    * {@inheritdoc}
    */
   protected function buildExternalUrl($uri, array $options = [], $collect_bubbleable_metadata = FALSE) {
+    // Early return so external URLs are not altered unnecessarily.
+    if (empty($options['query']) && empty($options['fragment']) && !isset($options['https'])) {
+      return $collect_bubbleable_metadata ? (new GeneratedUrl())->setGeneratedUrl($uri) : $uri;
+    }
     $this->addOptionDefaults($options);
     // Split off the query & fragment.
     $parsed = UrlHelper::parse($uri);

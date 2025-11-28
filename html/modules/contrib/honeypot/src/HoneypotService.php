@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\honeypot;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Utility\Crypt;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\KeyValueStore\KeyValueExpirableFactory;
+use Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -26,144 +27,65 @@ class HoneypotService implements HoneypotServiceInterface {
   use StringTranslationTrait;
 
   /**
-   * Drupal account object.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $account;
-
-  /**
-   * The module_handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * Drupal configuration object factory service.
+   * The honeypot config.
    *
    * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $config;
 
   /**
-   * Drupal key value factory store factory.
+   * The key-value store.
    *
    * @var \Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface
    */
   protected $keyValue;
 
   /**
-   * KillSwitch policy object.
-   *
-   * @var \Drupal\Core\PageCache\ResponsePolicy\KillSwitch
-   */
-  protected $killSwitch;
-
-  /**
-   * The database connection to use.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected $connection;
-
-  /**
-   * The Honeypot logger channel factory.
-   *
-   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
-   */
-  protected $loggerFactory;
-
-  /**
-   * The datetime.time service.
-   *
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
-  protected $timeService;
-
-  /**
-   * A cache backend interface.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected $cacheBackend;
-
-  /**
-   * The request stack service.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
-
-  /**
    * HoneypotService constructor.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $account
    *   Drupal account object.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module_handler service.
-   * @param \Drupal\Core\Config\ConfigFactory $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Drupal configuration object factory service.
-   * @param \Drupal\Core\KeyValueStore\KeyValueExpirableFactory $key_value
+   * @param \Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface $key_value
    *   Drupal key value factory store factory.
-   * @param \Drupal\Core\PageCache\ResponsePolicy\KillSwitch $kill_switch
+   * @param \Drupal\Core\PageCache\ResponsePolicy\KillSwitch $killSwitch
    *   KillSwitch policy object.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
-   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerFactory
    *   The logger.factory service.
-   * @param \Drupal\Component\Datetime\TimeInterface $time_service
+   * @param \Drupal\Component\Datetime\TimeInterface $timeService
    *   The datetime.time service.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
-   *   The cache backend interface.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   The request stack service.
    */
-  public function __construct(AccountProxyInterface $account, ModuleHandlerInterface $module_handler, ConfigFactory $config_factory, KeyValueExpirableFactory $key_value, KillSwitch $kill_switch, Connection $connection, LoggerChannelFactoryInterface $logger_factory, TimeInterface $time_service, TranslationInterface $string_translation, CacheBackendInterface $cache_backend, RequestStack $request_stack) {
-    $this->account = $account;
-    $this->moduleHandler = $module_handler;
+  public function __construct(
+    protected AccountProxyInterface $account,
+    protected ModuleHandlerInterface $moduleHandler,
+    ConfigFactoryInterface $config_factory,
+    KeyValueExpirableFactoryInterface $key_value,
+    protected KillSwitch $killSwitch,
+    protected Connection $connection,
+    protected LoggerChannelFactoryInterface $loggerFactory,
+    protected TimeInterface $timeService,
+    TranslationInterface $string_translation,
+    protected RequestStack $requestStack,
+  ) {
     $this->config = $config_factory->get('honeypot.settings');
     $this->keyValue = $key_value->get('honeypot_time_restriction');
-    $this->killSwitch = $kill_switch;
-    $this->connection = $connection;
-    $this->loggerFactory = $logger_factory;
-    $this->timeService = $time_service;
     $this->stringTranslation = $string_translation;
-    $this->cacheBackend = $cache_backend;
-    $this->requestStack = $request_stack;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getProtectedForms(): array {
-    $forms = &drupal_static(__METHOD__);
-
-    // If the data isn't already in memory, get from cache or look it up fresh.
-    if (!isset($forms)) {
-      if ($cache = $this->cacheBackend->get('honeypot_protected_forms')) {
-        $forms = $cache->data;
-      }
-      else {
-        $forms = [];
-        $form_settings = $this->config->get('form_settings');
-        if (!empty($form_settings)) {
-          // Add each form that's enabled to the $forms array.
-          foreach ($form_settings as $form_id => $enabled) {
-            if ($enabled) {
-              $forms[] = $form_id;
-            }
-          }
-        }
-
-        // Save the cached data.
-        $this->cacheBackend->set('honeypot_protected_forms', $forms);
-      }
-    }
-
-    return $forms;
+    return array_keys(array_filter($this->config->get('form_settings')));
   }
 
   /**
@@ -191,7 +113,7 @@ class HoneypotService implements HoneypotServiceInterface {
       $number = $query->countQuery()->execute()->fetchField();
 
       // Don't add more time than the expiration window.
-      $honeypot_time_limit = (int) min($honeypot_time_limit + exp($number) - 1, $expire_time);
+      $honeypot_time_limit = (int) min($honeypot_time_limit + exp((float) $number) - 1, $expire_time);
       // @todo Only accepts two args.
       $additions = $this->moduleHandler->invokeAll('honeypot_time_limit', [
         $honeypot_time_limit,
@@ -223,6 +145,16 @@ class HoneypotService implements HoneypotServiceInterface {
       // Get the element name (default is generic 'url').
       $honeypot_element = $this->config->get('element_name');
 
+      // If this is a Webform form, ensure the honeypot element has
+      // a unique name in the 'elements' array.
+      if (!empty($form['#webform_id'])) {
+        if (!empty($form['elements'])) {
+          while (array_key_exists($honeypot_element, $form['elements'])) {
+            $honeypot_element .= '_';
+          }
+        }
+      }
+
       // Build the honeypot element.
       $honeypot_class = $honeypot_element . '-textfield';
       $form[$honeypot_element] = [
@@ -251,8 +183,8 @@ class HoneypotService implements HoneypotServiceInterface {
     // Set the time restriction for this form (if it's not disabled).
     if (in_array('time_restriction', $options) && $this->config->get('time_limit') != 0) {
       // Set the current time in a hidden value to be checked later.
-      $input = $form_state->getUserInput();
-      if (empty($input['honeypot_time'])) {
+      $input = $form_state->getValues();
+      if (empty($input['honeypot_time']) || !$this->validateHoneypotTimeIdentifier($input['honeypot_time'])) {
         $identifier = Crypt::randomBytesBase64();
         $this->keyValue->setWithExpire($identifier, $this->timeService->getCurrentTime(), 3600 * 24);
       }
@@ -329,21 +261,56 @@ class HoneypotService implements HoneypotServiceInterface {
       return;
     }
 
+    $form_values = $form_state->getValues();
+
     // Get the time value.
     $identifier = $form_state->getValue('honeypot_time', FALSE);
-    $honeypot_time = $this->keyValue->get($identifier, 0);
+    if ($this->validateHoneypotTimeIdentifier($identifier)) {
+      $honeypot_time = $this->keyValue->get($identifier, 0);
+    }
+    else {
+      $honeypot_time = $identifier = FALSE;
+      unset($form_values['honeypot_time']);
+    }
 
     // Get the honeypot_time_limit.
-    $time_limit = $this->getTimeLimit($form_state->getValues());
+    $time_limit = $this->getTimeLimit($form_values);
 
     // Make sure current time - (time_limit + form time value) is greater
     // than 0. If not, throw an error.
     if (!$honeypot_time || $this->timeService->getRequestTime() < ($honeypot_time + $time_limit)) {
       $this->log($form_state->getValue('form_id'), 'honeypot_time');
       $time_limit = $this->getTimeLimit();
-      $this->keyValue->setWithExpire($identifier, $this->timeService->getRequestTime(), 3600 * 24);
+      if ($identifier) {
+        $this->keyValue->setWithExpire($identifier, $this->timeService->getRequestTime(), 3600 * 24);
+      }
       $form_state->setErrorByName('', $this->t('There was a problem with your form submission. Please wait @limit seconds and try again.', ['@limit' => $time_limit]));
     }
+  }
+
+  /**
+   * Validate the honeypot_time parameter received from a form submission.
+   *
+   * This validation function checks two things:
+   * - The length of the parameter must be no greater than 128 characters.
+   * - The parameter must contain only ASCII characters.
+   *
+   * @param string $identifier
+   *   Form input.
+   *
+   * @return bool
+   *   Whether the parameter passed validation.
+   */
+  protected function validateHoneypotTimeIdentifier(string $identifier) {
+    // The identifier cannot be longer than 128 characters.
+    if (strlen($identifier) > 128) {
+      return FALSE;
+    }
+    // Only ASCII characters are allowed by the key/value schema.
+    if (!mb_check_encoding($identifier, 'ASCII')) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
   /**

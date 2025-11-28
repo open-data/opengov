@@ -10,51 +10,29 @@ use Drupal\Component\Render\FormattableMarkup;
 trait TestHelperTrait {
 
   /**
-   * Passes if a facet with the specified label is found and is a link.
-   *
-   * @see \Drupal\simpletest\AssertContentTrait::assertLink
+   * Asserts that a facet with the specified label is found and is a link.
    */
-  protected function assertFacetLabel($label, $index = 0, $message = '') {
+  protected function assertFacetLabel(string $label, mixed $index = 0, ?string $message = ''): void {
     $links = $this->findFacetLink($label);
-
-    $message = ($message ? $message : strtr('Link with label %label found.', ['%label' => $label]));
-    return $this->assertArrayHasKey($index, $links, $message);
+    $message = ($message ?: strtr('Link with label %label found.', ['%label' => $label]));
+    $this->assertArrayHasKey($index, $links, $message);
   }
 
   /**
-   * Check if a facet is active by providing a label for it.
-   *
-   * We'll check by activeness by seeing that there's a span with (-) in the
-   * same link as the label.
-   *
-   * @param string $label
-   *   The label of a facet that should be active.
-   *
-   * @return bool
-   *   Returns true when the facet is found and is active.
+   * Asserts that a facet with the given label is active.
    */
-  protected function checkFacetIsActive($label) {
+  protected function checkFacetIsActive(string $label): void {
     $links = $this->findFacetLink($label);
-    return $this->assertArrayHasKey(0, $links);
+    $this->assertArrayHasKey(0, $links);
   }
 
   /**
-   * Check if a facet is not active by providing a label for it.
-   *
-   * We'll check by activeness by seeing that there's no span with (-) in the
-   * same link as the label.
-   *
-   * @param string $label
-   *   The label of a facet that should be active.
-   *
-   * @return bool
-   *   Returns true when the facet is found and is active.
+   * Asserts that a facet with the given label is not active.
    */
-  protected function checkFacetIsNotActive($label) {
-    $label = (string) $label;
+  protected function checkFacetIsNotActive(string $label): void {
     $label = strip_tags($label);
     $links = $this->xpath('//a/span[1][normalize-space(text())=:label]', [':label' => $label]);
-    return $this->assertArrayHasKey(0, $links);
+    $this->assertArrayHasKey(0, $links);
   }
 
   /**

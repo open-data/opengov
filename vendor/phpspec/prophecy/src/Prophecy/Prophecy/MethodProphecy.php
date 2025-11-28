@@ -12,6 +12,7 @@
 namespace Prophecy\Prophecy;
 
 use Prophecy\Argument;
+use Prophecy\Exception\Doubler\ClassMirrorException;
 use Prophecy\Exception\Prediction\PredictionException;
 use Prophecy\Prophet;
 use Prophecy\Promise;
@@ -80,8 +81,8 @@ class MethodProphecy
         $reflectedMethod = new \ReflectionMethod($double, $methodName);
         if ($reflectedMethod->isFinal()) {
             throw new MethodProphecyException(sprintf(
-                "Can not add prophecy for a method `%s::%s()`\n".
-                "as it is a final method.",
+                "Can not add prophecy for a method `%s::%s()`\n"
+                ."as it is a final method.",
                 get_class($double),
                 $methodName
             ), $this);
@@ -179,7 +180,12 @@ class MethodProphecy
                         }
 
                         $prophet = new Prophet();
-                        return $prophet->prophesize($defaultType)->reveal();
+
+                        try {
+                            return $prophet->prophesize($defaultType)->reveal();
+                        } catch (ClassMirrorException $e) {
+                            throw new MethodProphecyException(\sprintf('Cannot create a return value for the method. Configure an explicit return value instead.'), $method, $e);
+                        }
                 }
             });
         }
@@ -202,8 +208,8 @@ class MethodProphecy
 
         if (!$arguments instanceof Argument\ArgumentsWildcard) {
             throw new InvalidArgumentException(sprintf(
-                "Either an array or an instance of ArgumentsWildcard expected as\n".
-                'a `MethodProphecy::withArguments()` argument, but got %s.',
+                "Either an array or an instance of ArgumentsWildcard expected as\n"
+                .'a `MethodProphecy::withArguments()` argument, but got %s.',
                 gettype($arguments)
             ));
         }

@@ -116,7 +116,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
   public function testHierarchicalFacet() {
     // Verify that the link to the index processors settings page is available.
     $this->drupalGet($this->facetEditPage);
-    $this->clickLink('Search api index processor configuration');
+    $this->clickLink('Search API index processor configuration');
     $this->assertSession()->statusCodeEquals(200);
 
     // Enable hierarchical facets and translation of entity ids to its names for

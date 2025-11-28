@@ -19,6 +19,10 @@ abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterf
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    if (!isset($this->configuration['query'], $this->configuration['facet'])) {
+      throw new \InvalidArgumentException('Missing required query or facet configuration');
+    }
+
     $this->query = $this->configuration['query'];
     $this->facet = $this->configuration['facet'];
     $this->results = !empty($this->configuration['results']) ? $this->configuration['results'] : [];

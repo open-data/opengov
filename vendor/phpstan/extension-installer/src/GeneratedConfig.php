@@ -21,7 +21,7 @@ final class GeneratedConfig
         0 => 'phpstan/rules.neon',
       ),
     ),
-    'version' => '2.8.12',
+    'version' => '2.9.2',
     'phpstanVersionConstraint' => NULL,
   ),
   'composer/pcre' => 
@@ -50,8 +50,8 @@ final class GeneratedConfig
         1 => 'rules.neon',
       ),
     ),
-    'version' => '1.3.9',
-    'phpstanVersionConstraint' => '>=1.12.0.0-dev, <2.0.0.0-dev',
+    'version' => '2.0.10',
+    'phpstanVersionConstraint' => '>=2.1.0.0-dev, <3.0.0.0-dev',
   ),
   'phpstan/phpstan-deprecation-rules' => 
   array (
@@ -64,8 +64,8 @@ final class GeneratedConfig
         0 => 'rules.neon',
       ),
     ),
-    'version' => '1.2.1',
-    'phpstanVersionConstraint' => '>=1.12.0.0-dev, <2.0.0.0-dev',
+    'version' => '2.0.3',
+    'phpstanVersionConstraint' => '>=2.1.15.0-dev, <3.0.0.0-dev',
   ),
   'phpstan/phpstan-phpunit' => 
   array (
@@ -79,8 +79,8 @@ final class GeneratedConfig
         1 => 'rules.neon',
       ),
     ),
-    'version' => '1.4.2',
-    'phpstanVersionConstraint' => '>=1.12.0.0-dev, <2.0.0.0-dev',
+    'version' => '2.0.8',
+    'phpstanVersionConstraint' => '>=2.1.32.0-dev, <3.0.0.0-dev',
   ),
 );
 
@@ -88,7 +88,7 @@ final class GeneratedConfig
 );
 
 	/** @var string|null */
-	public const PHPSTAN_VERSION_CONSTRAINT = '>=1.12.0.0-dev, <2.0.0.0-dev';
+	public const PHPSTAN_VERSION_CONSTRAINT = '>=2.1.32.0-dev, <3.0.0.0-dev';
 
 	private function __construct()
 	{

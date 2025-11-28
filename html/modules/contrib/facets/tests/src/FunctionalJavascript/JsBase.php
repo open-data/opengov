@@ -151,10 +151,12 @@ abstract class JsBase extends WebDriverTestBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createFacet($id, $field = 'type', $widget_type = 'links', array $widget_settings = [
-    'show_numbers' => TRUE,
-    'soft_limit' => 0,
-  ]) {
+  protected function createFacet(
+    $id,
+    $field = 'type',
+    $widget_type = 'links',
+    array $widget_settings = ['show_numbers' => TRUE, 'soft_limit' => 0],
+  ) {
     $facet_storage = \Drupal::entityTypeManager()->getStorage('facets_facet');
     // Create and save a facet with a checkbox widget.
     $facet_storage->create([

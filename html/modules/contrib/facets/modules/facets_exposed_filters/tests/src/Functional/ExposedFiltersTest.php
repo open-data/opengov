@@ -40,7 +40,6 @@ class ExposedFiltersTest extends FacetsTestBase {
    * Tests slider widget.
    */
   public function testExposedFilters() {
-
     // Test non-filtered page.
     $this->drupalGet('test-facets-exposed-filters');
     $this->assertSession()->pageTextContains('Keywords');
@@ -48,18 +47,18 @@ class ExposedFiltersTest extends FacetsTestBase {
     $this->assertSession()->pageTextContains('strawberry');
 
     // Test filtered page.
-    $this->drupalGet('test-facets-exposed-filters',['query' => ['keywords[]' => 'apple']] );
+    $this->drupalGet('test-facets-exposed-filters', ['query' => ['keywords[]' => 'apple']]);
     $this->assertSession()->pageTextContains('Keywords');
     $this->assertSession()->pageTextNotContains('entity:entity_test_mulrev_changed/3:en');
     $this->assertSession()->pageTextContains('strawberry');
 
-    // Test if facet in keywords disappears when non-matching category is selected.
-    $this->drupalGet('test-facets-exposed-filters',['query' => ['category[]' => 'item_category']] );
+    // Test if facet item disappears when non-matching category is selected.
+    $this->drupalGet('test-facets-exposed-filters', ['query' => ['category[]' => 'item_category']]);
     $this->assertSession()->pageTextContains('Keywords');
     $this->assertSession()->pageTextNotContains('strawberry');
 
-    // Test if facet in keywords stays when matching category is selected.
-    $this->drupalGet('test-facets-exposed-filters',['query' => ['category[]' => 'article_category']] );
+    // Test if facet item remains when matching category is selected.
+    $this->drupalGet('test-facets-exposed-filters', ['query' => ['category[]' => 'article_category']]);
     $this->assertSession()->pageTextContains('Keywords');
     $this->assertSession()->pageTextContains('strawberry');
   }

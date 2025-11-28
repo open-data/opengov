@@ -5,6 +5,7 @@
  * Contains facets.module.
  */
 
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Form\FormStateInterface;
@@ -83,9 +84,15 @@ function facets_theme($existing, $type, $theme, $path) {
  * we don't get broken facet blocks.
  */
 function facets_entity_presave(EntityInterface $entity) {
+  $original = DeprecationHelper::backwardsCompatibleCall(
+    \Drupal::VERSION,
+    '11.2',
+    fn () => $entity->getOriginal(),
+    fn () => $entity->original ?? NULL,
+  );
   // Make sure that we only react on view entities with changed displays.
-  if ($entity instanceof View && !empty($entity->original)) {
-    if ($entity->original->get('display') != $entity->get('display')) {
+  if ($entity instanceof View && $original) {
+    if ($original->get('display') != $entity->get('display')) {
 
       /** @var \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_plugin_manager */
       $facet_source_plugin_manager = \Drupal::getContainer()
@@ -94,7 +101,7 @@ function facets_entity_presave(EntityInterface $entity) {
 
       // Setup an array of sources that are deleted.
       $sources = [];
-      foreach ($entity->original->get('display') as $k => $display) {
+      foreach ($original->get('display') as $k => $display) {
         // Check if the current display is also a facet source plugin and that
         // is removed from the view. We use the double underscore here to make
         // sure that we use core convention of "plugin:derived_plugin".

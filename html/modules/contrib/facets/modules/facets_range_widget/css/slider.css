@@ -3,7 +3,7 @@
 }
 
 .facet-slider.ui-slider-float .ui-slider-tip {
+  top: -30px;
   visibility: visible;
   opacity: 1;
-  top: -30px;
 }

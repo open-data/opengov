@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Drush\Runtime;
 
-use Drush\Log\Logger;
-use Drush\Drush;
-use Symfony\Component\Console\Application;
-use League\Container\Container as DrushContainer;
-use Drush\Config\DrushConfig;
 use Composer\Semver\Semver;
+use Drush\Config\DrushConfig;
+use Drush\Drush;
 
 /**
  * Find drush.services.yml files.
@@ -46,8 +43,6 @@ class LegacyServiceFinder
      */
     protected function discoverDrushServiceProviders()
     {
-        $this->addDrushServiceProvider("_drush__sql", $this->drushConfig->get('drush.base-dir') . '/src/Drupal/Commands/sql/drush.services.yml');
-
         // Add Drush services from all modules
         $module_filenames = $this->getModuleFileNames();
         // Load each module's serviceProvider class.
@@ -70,13 +65,12 @@ class LegacyServiceFinder
     }
 
     /**
-     * @param string $module Module name
-     * @param string $dir Full path to module base dir
+     * List of discovered drush.service.yml files
      *
-     * @return string[]
-     *   List of discovered drush.service.yml files
+     * @param $module Module name
+     * @param $dir Full path to module base dir
      */
-    protected function findModuleDrushServiceProvider($module, $dir)
+    protected function findModuleDrushServiceProvider(string $module, string $dir): string|null
     {
         $services = $this->findModuleDrushServiceProviderFromComposer($dir);
         if (!$services) {
@@ -86,11 +80,10 @@ class LegacyServiceFinder
     }
 
     /**
+     * Gets one discovered drush.service.yml file
+     *
      * @param string $module Module name
      * @param string $dir Full path to module base dir
-     *
-     * @return string
-     *   One discovered drush.service.yml file
      */
     protected function findDefaultServicesFile($module, $dir)
     {
@@ -102,6 +95,8 @@ class LegacyServiceFinder
     }
 
     /**
+     * Get Drush services section from module's composer.json file
+     *
      * In composer.json, the Drush version constraints will appear
      * in the 'extra' section like so:
      *
@@ -118,11 +113,8 @@ class LegacyServiceFinder
      * is used.
      *
      * @param string $dir Full path to module base dir
-     *
-     * @return array
-     *   Drush services section from module's composer.json file
      */
-    protected function findModuleDrushServiceProviderFromComposer($dir)
+    protected function findModuleDrushServiceProviderFromComposer($dir): array|false
     {
         $composerJsonPath = "$dir/composer.json";
         if (!file_exists($composerJsonPath)) {
@@ -160,7 +152,7 @@ class LegacyServiceFinder
         }
 
         // Regardless, we still return a services file.
-        return $dir . '/' . $serviceYmlPath;
+        return $dir . '/' . ($serviceYmlPath ?? '');
     }
 
     /**

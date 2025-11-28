@@ -39,7 +39,7 @@ default_content:
     - ec10de10-a351-41e5-a258-ce8359f67578
     - eefe7709-9848-4a7f-9a78-fb5b6f179942
 
-# Information added by Drupal.org packaging script on 2025-08-26
-version: '3.0.1'
+# Information added by Drupal.org packaging script on 2025-10-17
+version: '3.0.2'
 project: 'facets'
-datestamp: 1756225245
+datestamp: 1760700683

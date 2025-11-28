@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 use function array_map;
@@ -70,7 +71,9 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
         $errors = [];
         if (!$hasCacheBackendSet) {
-            $errors[] = 'Missing cache backend declaration for performance.';
+            $errors[] = RuleErrorBuilder::message('Missing cache backend declaration for performance.')
+            ->identifier('pluginManagerSetsCacheBackend.missingCacheBackend')
+            ->build();
         }
 
         return $errors;

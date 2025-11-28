@@ -724,47 +724,6 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $this->submitForm($settings, 'Save');
   }
 
-  /**
-   * Checks if the list processor changes machine name to the display label.
-   */
-  public function testListProcessor() {
-    entity_test_create_bundle('basic', "Basic page", 'entity_test_mulrev_changed');
-    $entity_test_storage = \Drupal::entityTypeManager()
-      ->getStorage('entity_test_mulrev_changed');
-
-    // Add an entity with basic page content type.
-    $entity_test_storage->create([
-      'name' => 'AC0871108',
-      'body' => 'Eamus Catuli',
-      'type' => 'basic',
-    ])->save();
-    $this->indexItems($this->indexId);
-
-    $facet_name = "Eamus Catuli";
-    $facet_id = "eamus_catuli";
-    $editForm = 'admin/config/search/facets/' . $facet_id . '/edit';
-    $this->createFacet($facet_name, $facet_id);
-
-    // Go to the overview and check that the machine names are used as facets.
-    $this->drupalGet('search-api-test-fulltext');
-    $this->assertSession()->pageTextContains('Displaying 11 search results');
-    $this->assertFacetLabel('basic');
-
-    // Edit the facet to use the list_item processor.
-    $edit = [
-      'facet_settings[list_item][status]' => TRUE,
-    ];
-    $this->drupalGet($editForm);
-    $this->submitForm($edit, 'Save');
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->checkboxChecked('edit-facet-settings-list-item-status');
-
-    // Go back to the overview and check that now the label is being used
-    // instead.
-    $this->drupalGet('search-api-test-fulltext');
-    $this->assertSession()->pageTextContains('Displaying 11 search results');
-    $this->assertFacetLabel('Basic page');
-  }
 
   /**
    * Test pre query processor.
@@ -861,42 +820,6 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $this->assertSession()->pageTextNotContains('Transform UID to user name');
     $this->assertSession()->pageTextNotContains('Transform entity ID to label');
     $this->assertSession()->pageTextNotContains('Sort by taxonomy term weight');
-  }
-
-  /**
-   * Tests the configuration of the processors.
-   */
-  public function testProcessorConfig() {
-    $this->createFacet('Llama', 'llama');
-
-    $facet_id = 'alpaca';
-    $this->editForm = 'admin/config/search/facets/' . $facet_id . '/edit';
-    $this->createFacet('Alpaca', $facet_id);
-    $this->drupalGet($this->editForm);
-
-    $facet = Facet::load($facet_id);
-
-    /** @var \Drupal\facets\Processor\ProcessorInterface $processor */
-    foreach ($facet->getProcessors(FALSE) as $processor) {
-      // Sort processors have a different form key, so don't bother for now.
-      if ($processor instanceof SortProcessorInterface) {
-        continue;
-      }
-      // These processors are hidden by default, see also
-      // ::testHiddenProcessors.
-      $hiddenProcessors = [
-        'boolean_item',
-        'translate_entity',
-        'translate_entity_aggregated_fields',
-        'uid_to_username_callback',
-      ];
-      if (in_array($processor->getPluginId(), $hiddenProcessors)) {
-        continue;
-      }
-
-      $this->submitForm(["facet_settings[{$processor->getPluginId()}][status]" => '1'], 'Save');
-      $this->assertSession()->statusCodeEquals(200);
-    }
   }
 
   /**

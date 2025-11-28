@@ -2,8 +2,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
-	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
@@ -13,12 +11,11 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
 conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule:
+		phpstan.rules.rule: %drupal.rules.hookRules%
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
@@ -29,8 +26,12 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
 	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
+		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
 
 services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
 	-
@@ -43,3 +44,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule

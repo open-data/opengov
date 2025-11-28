@@ -103,35 +103,4 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
     $this->assertSame($definitions, $this->sut->getDefinitions());
   }
 
-  /**
-   * Tests plugin manager definitions.
-   *
-   * @dataProvider invalidDefinitions
-   */
-  public function testInvalidDefinitions($invalid_definition) {
-    $definitions = ['foo' => [$invalid_definition]];
-
-    $this->discovery->expects($this->once())
-      ->method('getDefinitions')
-      ->willReturn($definitions);
-
-    $this->expectException(PluginException::class);
-    $this->sut->getDefinitions();
-  }
-
-  /**
-   * Provides invalid definitions.
-   *
-   * @return array
-   *   An invalid data provider.
-   */
-  public static function invalidDefinitions() {
-    return [
-      'only id' => ['id' => 'owl'],
-      'only display_id' => ['display_id' => 'search_api:owl'],
-      'only label' => ['label' => 'Owl'],
-      'no label' => ['id' => 'owl', 'display_id' => 'Owl'],
-    ];
-  }
-
 }

@@ -6,50 +6,34 @@ namespace Drush\Commands\core;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\DrupalKernelInterface;
-use Drupal\Core\Extension\ExtensionList;
+use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\PhpStorage\PhpStorageFactory;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Template\TwigEnvironment;
 use Drush\Attributes as CLI;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drush\Drush;
 use Drush\Utils\StringUtils;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class TwigCommands extends DrushCommands
 {
+    use AutowireTrait;
+
     const UNUSED = 'twig:unused';
     const COMPILE = 'twig:compile';
     const DEBUG = 'twig:debug';
 
-    public function __construct(protected TwigEnvironment $twig, protected ModuleHandlerInterface $moduleHandler, private ExtensionList $extensionList, private StateInterface $state, private DrupalKernelInterface $kernel)
-    {
-    }
-
-    public static function create(ContainerInterface $container): self
-    {
-        $commandHandler = new static(
-            $container->get('twig'),
-            $container->get('module_handler'),
-            $container->get('extension.list.module'),
-            $container->get('state'),
-            $container->get('kernel'),
-        );
-
-        return $commandHandler;
-    }
-
-    public function getTwig(): TwigEnvironment
-    {
-        return $this->twig;
-    }
-
-    public function getModuleHandler(): ModuleHandlerInterface
-    {
-        return $this->moduleHandler;
+    public function __construct(
+        protected TwigEnvironment $twig,
+        protected ModuleHandlerInterface $moduleHandler,
+        private readonly ModuleExtensionList $extensionList,
+        private readonly StateInterface $state,
+        private readonly DrupalKernelInterface $kernel
+    ) {
     }
 
     /**
@@ -79,13 +63,18 @@ final class TwigCommands extends DrushCommands
         // Check to see if a compiled equivalent exists in PHPStorage
         foreach ($files as $file) {
             $relative = Path::makeRelative($file->getRealPath(), Drush::bootstrapManager()->getRoot());
-            $mainCls = $this->getTwig()->getTemplateClass($relative);
-            $key = $this->getTwig()->getCache()->generateKey($relative, $mainCls);
-            if (!$phpstorage->exists($key)) {
-                $unused[$key] = [
-                    'template' => $relative,
-                    'compiled' => $key,
-                ];
+            $mainCls = $this->twig->getTemplateClass($relative);
+            $cache = $this->twig->getCache();
+            if ($cache) {
+                $key = $cache->generateKey($relative, $mainCls);
+                if (!$phpstorage->exists($key)) {
+                    $unused[$key] = [
+                        'template' => $relative,
+                        'compiled' => $key,
+                    ];
+                }
+            } else {
+                throw new \Exception('There was a problem, please ensure your twig cache is enabled.');
             }
         }
         $this->logger()->notice(dt('Found !count unused', ['!count' => count($unused)]));
@@ -98,9 +87,10 @@ final class TwigCommands extends DrushCommands
     #[CLI\Command(name: self::COMPILE, aliases: ['twigc', 'twig-compile'])]
     public function twigCompile(): void
     {
+        $searchpaths = [];
         require_once DRUSH_DRUPAL_CORE . "/themes/engines/twig/twig.engine";
         // Scan all enabled modules and themes.
-        $modules = array_keys($this->getModuleHandler()->getModuleList());
+        $modules = array_keys($this->moduleHandler->getModuleList());
         foreach ($modules as $module) {
             $searchpaths[] = $this->extensionList->getPath($module);
         }
@@ -118,7 +108,7 @@ final class TwigCommands extends DrushCommands
         foreach ($files as $file) {
             $relative = Path::makeRelative($file->getRealPath(), Drush::bootstrapManager()->getRoot());
             // Loading the template ensures the compiled template is cached.
-            $this->getTwig()->load($relative);
+            $this->twig->load($relative);
             $this->logger()->success(dt('Compiled twig template !path', ['!path' => $relative]));
         }
     }
@@ -133,10 +123,6 @@ final class TwigCommands extends DrushCommands
     #[CLI\Version(version: '12.1')]
     public function twigDebug(string $mode): void
     {
-        // @todo Remove this condition once Drush drops support for Drupal 10.0.
-        if (version_compare(\Drupal::VERSION, '10.1.0') < 0) {
-            throw new \Exception('Twig debug command requires Drupal 10.1.0 and above.');
-        }
         $mode = match ($mode) {
             'on' => true,
             'off' => false,

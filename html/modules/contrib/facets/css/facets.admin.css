@@ -33,12 +33,12 @@
  * Facets Display page
  */
 .facets-processor-settings-sorting {
+  margin-top: -16px;
   margin-bottom: -7px;
   margin-left: 20px;
-  margin-top: -16px;
 }
 
 .facets-processor-settings-facet {
-  margin-left: 20px;
   margin-bottom: 20px;
+  margin-left: 20px;
 }

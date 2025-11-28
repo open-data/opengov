@@ -79,6 +79,7 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
    */
   public function getIndex() {
     @trigger_error('Relying on $this->index is deprecated in facets:8.x-1.5 and will be removed from facets:8.x-2.0. Instead, all subclasses should implement ::getIndex() themselves, and the blanket implementation will be removed from SearchApiBaseFacetSource. See https://www.drupal.org/node/3154173', E_USER_DEPRECATED);
+    // @phpstan-ignore property.deprecated
     return $this->index;
   }
 

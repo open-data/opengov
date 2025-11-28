@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.4', '8.4']
         dependencies:
           - lowest
           - highest
@@ -15,19 +15,19 @@ jobs:
     name: phpunit (${{ matrix.php-versions }}-${{ matrix.dependencies }})
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5.0.0
 
-      - uses: shivammathur/setup-php@2.9.0
+      - uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: none
-        if: matrix.php-versions != '7.4' || matrix.dependencies != 'highest'
+        if: matrix.php-versions != '8.4' || matrix.dependencies != 'highest'
 
-      - uses: shivammathur/setup-php@2.9.0
+      - uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: pcov
-        if: matrix.php-versions == '7.4' && matrix.dependencies == 'highest'
+        if: matrix.php-versions == '8.4' && matrix.dependencies == 'highest'
 
       - name: Setup problem matcher for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
@@ -42,22 +42,24 @@ jobs:
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit
-        if: matrix.php-versions != '7.4' || matrix.dependencies != 'highest'
+        if: matrix.php-versions != '8.4' || matrix.dependencies != 'highest'
 
       - name: Run PHPUnit with coverage
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
-        if: matrix.php-versions == '7.4' && matrix.dependencies == 'highest'
+        if: matrix.php-versions == '8.4' && matrix.dependencies == 'highest'
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.1.0
-        if: matrix.php-versions == '7.4' && matrix.dependencies == 'highest'
+        uses: codecov/codecov-action@v5.5.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: matrix.php-versions == '8.4' && matrix.dependencies == 'highest'
 
   phpcs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@2.9.0
+      - uses: actions/checkout@v5.0.0
+      - uses: shivammathur/setup-php@2.35.4
         with:
           php-version: 7.4
           coverage: none
@@ -69,12 +71,12 @@ jobs:
       - name: Run PHP Codesniffer
         run: vendor/bin/phpcs --report=checkstyle -q | cs2pr --graceful-warnings
 
-  psalm:
+  phpstan:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@2.9.0
+      - uses: actions/checkout@v5.0.0
+      - uses: shivammathur/setup-php@2.35.4
         with:
           php-version: 7.4
           coverage: none
@@ -82,5 +84,5 @@ jobs:
       - name: Install dependencies
         run: composer install
         
-      - name: Run Psalm
-        run: vendor/bin/psalm --output-format=github
+      - name: Run PHPStan
+        run: vendor/bin/phpstan

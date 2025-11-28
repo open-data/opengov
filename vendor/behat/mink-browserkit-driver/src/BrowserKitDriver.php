@@ -28,11 +28,14 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
  * Symfony BrowserKit driver.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TRequest of object
+ * @template TResponse of object
  */
 class BrowserKitDriver extends CoreDriver
 {
     /**
-     * @var AbstractBrowser
+     * @var AbstractBrowser<TRequest, TResponse>
      */
     private $client;
 
@@ -52,7 +55,8 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param string|null $baseUrl Base URL for HttpKernel clients
+     * @param AbstractBrowser<TRequest, TResponse> $client
+     * @param string|null                          $baseUrl Base URL for HttpKernel clients
      */
     public function __construct(AbstractBrowser $client, ?string $baseUrl = null)
     {
@@ -71,7 +75,7 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Returns BrowserKit browser instance.
      *
-     * @return AbstractBrowser
+     * @return AbstractBrowser<TRequest, TResponse>
      */
     public function getClient()
     {
@@ -334,9 +338,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getText(string $xpath)
     {
-        $text = $this->getFilteredCrawler($xpath)->text(null, true);
-
-        return $text;
+        return str_replace("\xc2\xa0", ' ', $this->getFilteredCrawler($xpath)->text(null, true));
     }
 
     /**
@@ -413,6 +415,10 @@ class BrowserKitDriver extends CoreDriver
         if ($field instanceof ChoiceFormField) {
             if (!\is_string($value) && $field->getType() === 'radio') {
                 throw new DriverException('Only string values can be used for a radio input.');
+            }
+
+            if (!\is_bool($value) && $field->getType() === 'checkbox') {
+                throw new DriverException('Only boolean values can be used for a checkbox input.');
             }
 
             if (\is_bool($value) && $field->getType() === 'select') {
@@ -792,8 +798,10 @@ class BrowserKitDriver extends CoreDriver
             $nodeReflection  = $fieldReflection->getProperty('node');
             $valueReflection = $fieldReflection->getProperty('value');
 
-            $nodeReflection->setAccessible(true);
-            $valueReflection->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $nodeReflection->setAccessible(true);
+                $valueReflection->setAccessible(true);
+            }
 
             $isIgnoredField = $field instanceof InputFormField &&
                 in_array($nodeReflection->getValue($field)->getAttribute('type'), array('submit', 'button', 'image'), true);

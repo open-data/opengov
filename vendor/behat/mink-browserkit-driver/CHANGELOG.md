@@ -1,3 +1,20 @@
+2.3.0 / 2025-11-22
+==================
+
+New features:
+
+* Add support for Symfony 7
+* Fix deprecations triggered on PHP 8.5
+* Improve the error handling for `setValue` for checkboxes
+
+Bug fixes:
+
+* Normalize the handling of non-breaking spaces in `getText` to match other drivers
+
+Testsuite:
+
+* Add CI jobs running on PHP 8.4 and 8.5
+
 2.2.0 / 2023-12-09
 ==================
 

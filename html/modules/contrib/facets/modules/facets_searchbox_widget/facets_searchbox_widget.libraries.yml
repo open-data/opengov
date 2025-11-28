@@ -1,5 +1,4 @@
 searchbox:
-  version: VERSION
   js:
     js/searchbox.js: { attributes: { defer: true } }
   css:

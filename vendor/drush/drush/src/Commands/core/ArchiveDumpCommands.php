@@ -304,7 +304,6 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Returns TRUE if the site is a "web" docroot site.
      *
-     * @return bool
      *
      * @throws \Exception
      */
@@ -316,7 +315,6 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Returns site's docroot name.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -334,7 +332,6 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Returns site's docroot path.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -459,9 +456,7 @@ final class ArchiveDumpCommands extends DrushCommands
     }
 
     /**
-     * Returns the path to Drupal files directory.
-     *
-     * @return string
+     * Returns the full path to Drupal files directory.
      *
      * @throws \Exception
      */
@@ -490,8 +485,6 @@ final class ArchiveDumpCommands extends DrushCommands
      *   Directory.
      * @param array $excludes
      *   The list of file exclude rules (regular expressions).
-     *
-     * @return \Traversable
      */
     private function getFileIterator(string $path, array $excludes): Traversable
     {
@@ -558,8 +551,6 @@ final class ArchiveDumpCommands extends DrushCommands
      *
      * @param array $paths
      *   The list of paths to match.
-     *
-     * @return array
      */
     private function getRegexpsForPaths(array $paths): array
     {
@@ -572,7 +563,6 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Returns docroot directory name with trailing escaped slash for a "web" docroot site for use in regular expressions, otherwise - empty string.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -584,7 +574,6 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Returns the list of regular expressions to match Drupal files paths and sites/@/settings.@.php files.
      *
-     * @return array
      *
      * @throws \Exception
      */

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Drush\Commands\help;
 
-use Drush\Boot\DrupalBootLevels;
-use Symfony\Component\Console\Application;
 use Consolidation\AnnotatedCommand\Help\HelpDocument;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Descriptor\JsonDescriptor;
 use Symfony\Component\Console\Descriptor\XmlDescriptor;
@@ -62,19 +62,22 @@ class ListCommands extends DrushCommands
             $preamble = dt('Run `drush help [command]` to view command-specific help.  Run `drush topic` to read even more documentation.');
             $this->renderListCLI($application, $namespaced, $this->output(), $preamble);
             if (!Drush::bootstrapManager()->hasBootstrapped((DrupalBootLevels::ROOT))) {
-                $this->io()->note(dt('Drupal root not found. Pass --root or a @siteAlias in order to see Drupal-specific commands.'));
+                $this->io()->note(dt('Drupal root not found. In order to see Drupal-specific commands, make sure that the `drush` you are calling is a dependency in your site\'s composer.json. The --uri option might also help.'));
             }
             return null;
         } elseif ($options['format'] == 'xml') {
-            $descriptor  = new XmlDescriptor($this->output(), []);
-            return $descriptor->describe($this->output, $application, []);
+            $descriptor = new XmlDescriptor();
+            $descriptor->describe($this->output, $application, []);
+            return null;
         } elseif ($options['format'] == 'json') {
-            $descriptor  = new JsonDescriptor($this->output(), []);
-            return $descriptor->describe($this->output, $application, []);
+            $descriptor = new JsonDescriptor();
+            $descriptor->describe($this->output, $application, []);
+            return null;
         } else {
             // No longer used. Works for XML, but gives error for JSON.
             // $dom = $this->buildDom($namespaced, $application);
             // return $dom;
+            return null;
         }
     }
 
@@ -175,7 +178,7 @@ class ListCommands extends DrushCommands
     /**
      * @param Command[] $all
      *
-     * @return Command[]
+     * @return array<string, array<Command>>
      */
     public static function categorize(array $all, string $separator = ':'): array
     {

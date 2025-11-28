@@ -14,6 +14,8 @@ use OpenTelemetry\SDK\Common\Dev\Compatibility\Util as BcUtil;
 use OpenTelemetry\SDK\Common\Exception\StackTraceFormatter;
 use OpenTelemetry\SDK\Common\Instrumentation\InstrumentationScopeInterface;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
+use OpenTelemetry\SDK\Trace\SpanSuppression\NoopSuppressionStrategy\NoopSuppression;
+use OpenTelemetry\SDK\Trace\SpanSuppression\SpanSuppression;
 use Throwable;
 
 final class Span extends API\Span implements ReadWriteSpanInterface
@@ -24,7 +26,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     private array $events = [];
     private int $totalRecordedEvents = 0;
     private StatusDataInterface $status;
-    private int $endEpochNanos = 0;
+    private ?int $endEpochNanos = null;
     private bool $hasEnded = false;
 
     /**
@@ -44,6 +46,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
         private array $links,
         private int $totalRecordedLinks,
         private readonly int $startEpochNanos,
+        private readonly SpanSuppression $spanSuppression,
     ) {
         $this->status = StatusData::unset();
     }
@@ -73,6 +76,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
         array $links,
         int $totalRecordedLinks,
         int $startEpochNanos,
+        SpanSuppression $spanSuppression = new NoopSuppression(),
     ): self {
         $span = new self(
             $name,
@@ -86,7 +90,8 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             $attributesBuilder,
             $links,
             $totalRecordedLinks,
-            $startEpochNanos !== 0 ? $startEpochNanos : Clock::getDefault()->now()
+            $startEpochNanos !== 0 ? $startEpochNanos : Clock::getDefault()->now(),
+            $spanSuppression,
         );
 
         // Call onStart here to ensure the span is fully initialized.
@@ -109,6 +114,12 @@ final class Span extends API\Span implements ReadWriteSpanInterface
         );
 
         return StackTraceFormatter::format($e);
+    }
+
+    #[\Override]
+    public function storeInContext(ContextInterface $context): ContextInterface
+    {
+        return $this->spanSuppression->suppress(parent::storeInContext($context));
     }
 
     /** @inheritDoc */
@@ -257,16 +268,20 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     #[\Override]
     public function end(?int $endEpochNanos = null): void
     {
-        if ($this->hasEnded) {
+        if ($this->endEpochNanos !== null) {
             return;
         }
 
         $this->endEpochNanos = $endEpochNanos ?? Clock::getDefault()->now();
-        $this->hasEnded = true;
+        $span = clone $this;
+        $this->hasEnded = true; // prevent further modifications to the span by async code
+        if ($this->spanProcessor instanceof ExtendedSpanProcessorInterface) {
+            $this->spanProcessor->onEnding($span);
+        }
+        $span->hasEnded = true;
 
-        $this->checkForDroppedElements();
-
-        $this->spanProcessor->onEnd($this);
+        $this->spanProcessor->onEnd($span);
+        $span->checkForDroppedElements();
     }
 
     /** @inheritDoc */
@@ -306,7 +321,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             $this->totalRecordedLinks,
             $this->totalRecordedEvents,
             $this->status,
-            $this->endEpochNanos,
+            $this->endEpochNanos ?? 0,
             $this->hasEnded
         );
     }
