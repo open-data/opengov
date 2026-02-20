@@ -50,7 +50,7 @@ interface BlockPluginInterface extends ConfigurableInterface, DependentPluginInt
    * @param bool $return_as_object
    *   (optional) Defaults to FALSE.
    *
-   * @return bool|\Drupal\Core\Access\AccessResultInterface
+   * @return ($return_as_object is true ? \Drupal\Core\Access\AccessResultInterface : bool)
    *   The access result. Returns a boolean if $return_as_object is FALSE (this
    *   is the default) and otherwise an AccessResultInterface object.
    *   When a boolean is returned, the result of AccessInterface::isAllowed() is
@@ -75,6 +75,19 @@ interface BlockPluginInterface extends ConfigurableInterface, DependentPluginInt
    * @see \Drupal\block\BlockViewBuilder
    */
   public function build();
+
+  /**
+   * Whether to render blocks in a placeholder.
+   *
+   * When blocks of this type are rendered, indicate whether they should be
+   * rendered in a placeholder or not. In general, blocks that attach libraries
+   * and/or render entities should be placeholdered to optimize various aspects
+   * of rendering performance.
+   *
+   * @return bool
+   *   Whether to placeholder blocks of this plugin type.
+   */
+  public function createPlaceholder(): bool;
 
   /**
    * Sets a particular value in the block settings.

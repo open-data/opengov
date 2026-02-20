@@ -121,6 +121,7 @@ class UnroutedUrlAssemblerTest extends UnitTestCase {
 
   /**
    * @return array
+   *   An array of test data for testAssembleWithLocalUri.
    */
   public static function providerTestAssembleWithLocalUri() {
     return [
@@ -195,12 +196,28 @@ class UnroutedUrlAssemblerTest extends UnitTestCase {
   }
 
   /**
+   * Tests external URLs are only processed if necessary.
+   *
+   * @testWith ["http://example.org", "http://example.org"]
+   *           ["http://example.org?flag", "http://example.org?flag"]
+   *           ["http://example.org?flag=", "http://example.org?flag="]
+   *           ["http://example.org?flag=", "http://example.org?flag", {"query": {"flag": ""}}]
+   *           ["http://example.org?tag=one&tag=two", "http://example.org?tag=one&tag=two"]
+   *           ["http://example.org?tag%5B0%5D=three", "http://example.org?tag=one&tag=two", {"query": {"tag": ["three"]}}]
+   */
+  public function testAssembleExternalUrls(string $expected, string $uri, array $options = []): void {
+    $this->setupRequestStack(FALSE);
+    $result = $this->unroutedUrlAssembler->assemble($uri, $options);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
    * Setups the request stack for a given subdir.
    *
    * @param bool $subdir
    *   TRUE to use a subdir.
    */
-  protected function setupRequestStack($subdir) {
+  protected function setupRequestStack($subdir): void {
     $server = [];
     if ($subdir) {
       // Setup a fake request which looks like a Drupal installed under the

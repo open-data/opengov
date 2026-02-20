@@ -12,12 +12,7 @@ namespace Drupal\KernelTests\Core\Plugin;
 class InspectionTest extends PluginTestBase {
 
   /**
-   * {@inheritdoc}
-   */
-  protected static $modules = ['node', 'user'];
-
-  /**
-   * Ensure the test plugins correctly implement getPluginId() and getPluginDefinition().
+   * Tests getPluginId() and getPluginDefinition().
    */
   public function testInspection(): void {
     foreach (['user_login'] as $id) {

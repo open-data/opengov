@@ -24,6 +24,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * to make real HTTP requests.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @template-extends AbstractBrowser<Request, Response>
  */
 class HttpBrowser extends AbstractBrowser
 {
@@ -97,7 +99,7 @@ class HttpBrowser extends AbstractBrowser
                 if ($vars = get_object_vars($v)) {
                     array_walk_recursive($vars, $caster);
                     $v = $vars;
-                } elseif (method_exists($v, '__toString')) {
+                } elseif ($v instanceof \Stringable) {
                     $v = (string) $v;
                 }
             }

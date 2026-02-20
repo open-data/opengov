@@ -119,9 +119,30 @@ class TwigTransTest extends BrowserTestBase {
     catch (SyntaxError $e) {
       $this->assertStringContainsString('{% trans %} tag cannot be empty', $e->getMessage());
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       $this->fail('{% trans %}{% endtrans %} threw an unexpected exception.');
     }
+  }
+
+  /**
+   * Testing trans with render array value.
+   */
+  public function testTransRenderArray(): void {
+    $elements = [
+      '#type' => 'inline_template',
+      '#template' => '{% trans %}This is a {{ var }}.{% endtrans %}',
+      '#context' => [
+        'var' => [
+          '#prefix' => '<strong>',
+          '#markup' => 'trans render array',
+          '#suffix' => '</strong>',
+        ],
+      ],
+    ];
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
+    $text = (string) $renderer->renderInIsolation($elements);
+    $this->assertSame('This is a <strong>trans render array</strong>.', $text);
   }
 
   /**
@@ -188,7 +209,7 @@ class TwigTransTest extends BrowserTestBase {
   /**
    * Helper function: install languages.
    */
-  protected function installLanguages() {
+  protected function installLanguages(): void {
     $file_system = \Drupal::service('file_system');
     foreach ($this->languages as $langcode => $name) {
       // Generate custom .po contents for the language.

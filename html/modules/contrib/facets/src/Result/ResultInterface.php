@@ -146,6 +146,22 @@ interface ResultInterface {
   public function getChildren();
 
   /**
+   * Sets the term weight.
+   *
+   * @param int $weight
+   *   The term weight.
+   */
+  public function setTermWeight(int $weight);
+
+  /**
+   * Returns the term weight.
+   *
+   * @return int
+   *   The term weight.
+   */
+  public function getTermWeight();
+
+  /**
    * Returns the entire set of arbitrary data.
    *
    * @return array

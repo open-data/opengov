@@ -6,7 +6,7 @@
 * Better site builder UX. Facets are created similar to other Views filters, directly in the Views UI.
 * Better performance. the actual Views query is the only query fired.
 * Multiple displays support, no need to recreate the same facets.
-NOTE: Overridden display filters are (not yet) supported.
+NOTE: Overridden display filters are not (yet) supported.
 * Widgets are handled by Better Exposed Filters. No special widgets required for Facets.
 * Facet processors are still supported.
 * Advanced setups (e.g. render a View with Facets, using Layout builder/Paragraphs) are supported out of the box.
@@ -55,15 +55,19 @@ There is no automatic upgrade path. Upgrading is not required. Facet blocks will
 Replaces the "facets_summary" module, and even allows non-facet filters in the summary.
 [Link to module](https://www.drupal.org/project/views_filters_summary)
 
-### Views ajax history
+### Views AJAX History
 Updates URLs when using AJAX in Views to make them bookmarkable.
 [Link to module](https://www.drupal.org/project/views_ajax_history)
+
+### Views Dependent Filters
+Allows you to hide/show filters depending on values of other filters.
+[Link to module](https://www.drupal.org/project/views_dependent_filters)
 
 ### Configurable views filter block
 Allows you to place filters in separate regions. Not only limited to Facets, but also supports exposed sorts, pagers and other filters.
 [Link to module](https://www.drupal.org/project/configurable_views_filter_block)
 
-### Better exposed filters
+### Better Exposed Filters
 Allows different widgets per filter (e.g. links, checkboxes, dropdown), ...
 Offers optional auto-submit and hide submit buttons.
 [Link to module](https://www.drupal.org/project/better_exposed_filters)

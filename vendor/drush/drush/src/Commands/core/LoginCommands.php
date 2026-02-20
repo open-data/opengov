@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Drush\Commands\core;
 
-use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drush\Attributes as CLI;
@@ -16,23 +15,25 @@ use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Drush\Exec\ExecTrait;
 
-#[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
-final class LoginCommands extends DrushCommands implements SiteAliasManagerAwareInterface
+#[CLI\Bootstrap(DrupalBootLevels::NONE)]
+final class LoginCommands extends DrushCommands
 {
     use AutowireTrait;
-    use SiteAliasManagerAwareTrait;
     use ExecTrait;
 
     const LOGIN = 'user:login';
 
     public function __construct(
-        private BootstrapManager $bootstrapManager
+        private readonly BootstrapManager $bootstrapManager,
+        private readonly SiteAliasManagerInterface $siteAliasManager
     ) {
         parent::__construct();
     }
 
     /**
      * Display a one time login link for user ID 1, or another user.
+     *
+     * To avoid the http://default domain in the link, set the [DRUSH_OPTIONS_URI environment variable](https://www.drush.org/13.x/using-drush-configuration/#environment-variables).
      */
     #[CLI\Command(name: self::LOGIN, aliases: ['uli', 'user-login'])]
     #[CLI\Argument(name: 'path', description: 'Optional path to redirect to after logging in.')]
@@ -49,9 +50,8 @@ final class LoginCommands extends DrushCommands implements SiteAliasManagerAware
     #[CLI\Usage(name: 'drush user:login --mail=foo@bar.com', description: 'Open browser and login as user with mail "foo@bar.com".')]
     public function login(string $path = '', $options = ['name' => null, 'uid' => null, 'mail' => null, 'browser' => true, 'redirect-port' => self::REQ])
     {
-        // Redispatch if called against a remote-host so a browser is started on the
-        // the *local* machine.
-        $aliasRecord = $this->siteAliasManager()->getSelf();
+        // Redispatch if called against a remote-host so a browser is started on the *local* machine.
+        $aliasRecord = $this->siteAliasManager->getSelf();
         if ($this->processManager()->hasTransport($aliasRecord)) {
             $process = $this->processManager()->drush($aliasRecord, self::LOGIN, [$path], Drush::redispatchOptions());
             $process->mustRun();

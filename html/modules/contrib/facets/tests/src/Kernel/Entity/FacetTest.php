@@ -147,19 +147,6 @@ class FacetTest extends KernelTestBase {
   }
 
   /**
-   * Query type with no defined facet source.
-   *
-   * @covers ::getQueryType
-   */
-  public function testGetQueryTypeWithNoFacetSource() {
-    $entity = new Facet([], 'facets_facet');
-
-    $this->expectException(Exception::class);
-    $this->expectExceptionMessage('No facet source defined for facet.');
-    $entity->getQueryType();
-  }
-
-  /**
    * Tests query operator.
    *
    * @covers ::setQueryOperator

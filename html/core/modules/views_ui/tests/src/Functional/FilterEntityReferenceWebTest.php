@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views_ui\Functional;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Tests\views_ui\Traits\FilterEntityReferenceTrait;
 
@@ -59,9 +58,8 @@ class FilterEntityReferenceWebTest extends UITestBase {
       return strnatcasecmp($a->getTitle(), $b->getTitle());
     });
     $i = 0;
-    foreach ($this->targetEntities as $id => $entity) {
-      $message = (string) new FormattableMarkup('Expected target entity label found for option :option', [':option' => $i]);
-      $this->assertEquals($options[$i]['label'], $entity->label(), $message);
+    foreach ($this->targetEntities as $entity) {
+      $this->assertEquals($options[$i]['label'], $entity->label(), "Expected target entity label found for option $i");
       $i++;
     }
 
@@ -79,8 +77,7 @@ class FilterEntityReferenceWebTest extends UITestBase {
     $options = $this->getUiOptions();
     $i = 0;
     foreach ($this->targetEntities as $entity) {
-      $message = (string) new FormattableMarkup('Expected target entity label found for option :option', [':option' => $i]);
-      $this->assertEquals($options[$i]['label'], $entity->label(), $message);
+      $this->assertEquals($options[$i]['label'], $entity->label(), "Expected target entity label found for option $i");
       $i++;
     }
 
@@ -96,10 +93,22 @@ class FilterEntityReferenceWebTest extends UITestBase {
     $options = $this->getUiOptions();
     $i = 0;
     foreach ($this->hostEntities + $this->targetEntities as $entity) {
-      $message = (string) new FormattableMarkup('Expected target entity label found for option :option', [':option' => $i]);
-      $this->assertEquals($options[$i]['label'], $entity->label(), $message);
+      $this->assertEquals($options[$i]['label'], $entity->label(), "Expected target entity label found for option $i");
       $i++;
     }
+
+    // Change Reference method to the test_entity_reference entity reference
+    // view and ensure options are updated to only contain the one view result.
+    $this->drupalGet('admin/structure/views/nojs/handler-extra/test_filter_entity_reference/default/filter/field_test_target_id');
+    $edit = [
+      'options[sub_handler]' => 'views',
+      'options[reference_views][view][view_and_display]' => 'test_entity_reference:entity_reference',
+    ];
+    $this->submitForm($edit, 'Apply');
+    $this->drupalGet('admin/structure/views/nojs/handler/test_filter_entity_reference/default/filter/field_test_target_id');
+    $options = $this->getUiOptions();
+    $this->assertCount(1, $options);
+    $this->assertEquals('Article 0', $options[0]['label']);
   }
 
   /**

@@ -108,7 +108,8 @@ class SearchApiDate extends QueryTypeRangeBase {
     $configuration['granularity'] = $granularity;
     $this->setConfiguration($configuration);
 
-    // Add unprocessed active values to the result. These are selected items that do not match the results anymore.
+    // Add unprocessed active values to the result. These are selected items
+    // that do not match the results anymore.
     $active_items = $this->facet->getActiveItems();
     foreach ($active_items as $val) {
       if (!isset($facet_results[$val])) {
@@ -267,6 +268,10 @@ class SearchApiDate extends QueryTypeRangeBase {
       return $this->calculateResultFilterAbsolute($value);
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getDisplayValue($raw_value) {
     $dateTime = new DrupalDateTime();
     switch ($this->getGranularity()) {

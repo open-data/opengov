@@ -84,7 +84,7 @@ class CallCenter
 
         // If fake/stub doesn't have method prophecy for this call - throw exception
         if (!count($matches)) {
-            $this->unexpectedCalls->attach(new Call($methodName, $arguments, null, null, $file, $line), $prophecy);
+            $this->unexpectedCalls->offsetSet(new Call($methodName, $arguments, null, null, $file, $line), $prophecy);
             $this->recordedCalls[] = new Call($methodName, $arguments, null, null, $file, $line);
 
             return null;
@@ -186,9 +186,9 @@ class CallCenter
 
         foreach (array_merge(...array_values($prophecy->getMethodProphecies())) as $methodProphecy) {
             $expected[] = sprintf(
-                "  - %s(\n".
-                "%s\n".
-                "    )",
+                "  - %s(\n"
+                ."%s\n"
+                ."    )",
                 $methodProphecy->getMethodName(),
                 implode(
                     ",\n",
@@ -202,12 +202,12 @@ class CallCenter
 
         return new UnexpectedCallException(
             sprintf(
-                "Unexpected method call on %s:\n".
-                "  - %s(\n".
-                "%s\n".
-                "    )\n".
-                "expected calls were:\n".
-                "%s",
+                "Unexpected method call on %s:\n"
+                ."  - %s(\n"
+                ."%s\n"
+                ."    )\n"
+                ."expected calls were:\n"
+                ."%s",
 
                 $classname, $methodName, $argstring, implode("\n", $expected)
             ),

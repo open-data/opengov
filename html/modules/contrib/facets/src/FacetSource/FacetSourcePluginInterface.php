@@ -51,8 +51,8 @@ interface FacetSourcePluginInterface extends PluginFormInterface, DependentPlugi
   /**
    * Returns the number of results that were found for this search.
    *
-   * @return string
-   *   The path of the facet.
+   * @return int|null
+   *   The number of results.
    */
   public function getCount();
 

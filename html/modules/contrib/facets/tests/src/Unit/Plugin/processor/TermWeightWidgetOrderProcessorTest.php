@@ -41,21 +41,21 @@ class TermWeightWidgetOrderProcessorTest extends UnitTestCase {
   /**
    * Mocked term, used for comparison.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Drupal\taxonomy\TermInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $termA;
 
   /**
    * Mocked term, used for comparison.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Drupal\taxonomy\TermInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $termB;
 
   /**
    * Mocked entity (term) storage.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Drupal\taxonomy\TermStorageInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $termStorage;
 

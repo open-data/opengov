@@ -1,6 +1,7 @@
 parameters:
 	phpunit:
 		convertUnionToIntersectionType: true
+		checkDataProviderData: %featureToggles.bleedingEdge%
 	additionalConstructors:
 		- PHPUnit\Framework\TestCase::setUp
 	earlyTerminatingMethodCalls:
@@ -12,7 +13,6 @@ parameters:
 		- stubs/Assert.stub
 		- stubs/AssertionFailedError.stub
 		- stubs/ExpectationFailedException.stub
-		- stubs/InvocationMocker.stub
 		- stubs/MockBuilder.stub
 		- stubs/MockObject.stub
 		- stubs/Stub.stub
@@ -25,6 +25,7 @@ parameters:
 parametersSchema:
 	phpunit: structure([
 		convertUnionToIntersectionType: bool()
+		checkDataProviderData: bool(),
 	])
 
 services:
@@ -43,27 +44,36 @@ services:
 		tags:
 			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
 	-
-		class: PHPStan\Type\PHPUnit\InvocationMockerDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
 		class: PHPStan\Type\PHPUnit\MockBuilderDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
-		class: PHPStan\Type\PHPUnit\MockObjectDynamicReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 	-
 		class: PHPStan\Rules\PHPUnit\CoversHelper
 	-
 		class: PHPStan\Rules\PHPUnit\AnnotationHelper
+
+	-
+		class: PHPStan\Rules\PHPUnit\TestMethodsHelper
+
+	-
+		class: PHPStan\Rules\PHPUnit\PHPUnitVersion
+		factory: @PHPStan\Rules\PHPUnit\PHPUnitVersionDetector::createPHPUnitVersion()
+	-
+		class: PHPStan\Rules\PHPUnit\PHPUnitVersionDetector
+
 	-
 		class: PHPStan\Rules\PHPUnit\DataProviderHelper
 		factory: @PHPStan\Rules\PHPUnit\DataProviderHelperFactory::create()
 	-
 		class: PHPStan\Rules\PHPUnit\DataProviderHelperFactory
+		arguments:
+			parser: @defaultAnalysisParser
+
+	-
+		class: PHPStan\Type\PHPUnit\DataProviderReturnTypeIgnoreExtension
 
 conditionalTags:
 	PHPStan\PhpDoc\PHPUnit\MockObjectTypeNodeResolverExtension:
 		phpstan.phpDoc.typeNodeResolverExtension: %phpunit.convertUnionToIntersectionType%
+	PHPStan\Type\PHPUnit\DataProviderReturnTypeIgnoreExtension:
+		phpstan.ignoreErrorExtension: %phpunit.checkDataProviderData%

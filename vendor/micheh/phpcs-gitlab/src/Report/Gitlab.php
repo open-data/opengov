@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2020, Michel Hunziker <info@michelhunziker.com>
+ * @copyright Copyright (c) 2025, Michel Hunziker <info@michelhunziker.com>
  * @license http://www.opensource.org/licenses/BSD-3-Clause The BSD-3-Clause License
  */
 
@@ -11,8 +11,12 @@ namespace Micheh\PhpCodeSniffer\Report;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Reports\Report;
+use SplFileObject;
 
+use function count;
+use function is_string;
 use function md5;
+use function preg_replace;
 use function rtrim;
 use function str_replace;
 
@@ -21,20 +25,25 @@ use const PHP_EOL;
 class Gitlab implements Report
 {
     /**
-     * @psalm-suppress ImplementedParamTypeMismatch PHP_CodeSniffer has a wrong docblock
+     * @param array{filename: string, errors: int, warnings: int, fixable: int, messages: array<mixed>} $report
      */
     public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
     {
         $hasOutput = false;
+        $violations = [];
 
         foreach ($report['messages'] as $line => $lineErrors) {
-            foreach ($lineErrors as $column => $colErrors) {
+            $lineContent = $this->getContentOfLine($phpcsFile->getFilename(), $line);
+
+            foreach ($lineErrors as $col => $colErrors) {
                 foreach ($colErrors as $error) {
-                    $issue = [
+                    $fingerprint = md5($report['filename'] . $lineContent . $error['source']);
+
+                    $violations[$fingerprint][$line . $col] = [
                         'type' => 'issue',
                         'categories' => ['Style'],
                         'check_name' => $error['source'],
-                        'fingerprint' => md5($report['filename'] . $error['message'] . $line . $column),
+                        'fingerprint' => $fingerprint,
                         'severity' => $error['type'] === 'ERROR' ? 'major' : 'minor',
                         'description' => str_replace(["\n", "\r", "\t"], ['\n', '\r', '\t'], $error['message']),
                         'location' => [
@@ -45,10 +54,19 @@ class Gitlab implements Report
                             ]
                         ],
                     ];
-
-                    echo json_encode($issue, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ',';
-                    $hasOutput = true;
                 }
+            }
+        }
+
+        foreach ($violations as $fingerprints) {
+            $hasMultiple = count($fingerprints) > 1;
+            foreach ($fingerprints as $lineColumn => $issue) {
+                if ($hasMultiple) {
+                    $issue['fingerprint'] = md5($issue['fingerprint'] . $lineColumn);
+                }
+
+                echo json_encode($issue, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ',';
+                $hasOutput = true;
             }
         }
 
@@ -67,5 +85,26 @@ class Gitlab implements Report
         $toScreen = true
     ) {
         echo '[' . rtrim($cachedData, ',') . ']' . PHP_EOL;
+    }
+
+    /**
+     * @param string $filename
+     * @param int $line
+     * @return string
+     */
+    private function getContentOfLine($filename, $line)
+    {
+        $file = new SplFileObject($filename);
+
+        if (!$file->eof()) {
+            $file->seek($line - 1);
+            $contents = $file->current();
+
+            if (is_string($contents)) {
+                return (string) preg_replace('/\s+/', '', $contents);
+            }
+        }
+
+        return '';
     }
 }

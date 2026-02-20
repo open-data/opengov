@@ -6,7 +6,6 @@ namespace Drush\Preflight;
 
 use Composer\Autoload\ClassLoader;
 use Consolidation\SiteAlias\SiteAliasManager;
-use DrupalFinder\DrupalFinder;
 use Drush\Commands\DrushCommands;
 use Drush\Config\ConfigLocator;
 use Drush\Config\DrushConfig;
@@ -15,7 +14,6 @@ use Drush\DrupalFinder\DrushDrupalFinder;
 use Drush\SiteAlias\SiteAliasFileLoader;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
@@ -81,9 +79,6 @@ class Preflight
         return $this->logger;
     }
 
-    /**
-     * @param PreflightLog $logger
-     */
     public function setLogger(PreflightLog $logger): void
     {
         $this->logger = $logger;
@@ -211,8 +206,10 @@ class Preflight
             4 => 'v4',  // Drupal 9
             5 => 'v4',  // Early Drupal 10 (Symfony 5 works with Symfony 4 classes, so we don't keep an extra copy)
             6 => 'v6',  // Drupal 10
+            7 => 'v6',  // Drupal 11
         ];
 
+        // @phpstan-ignore empty.offset
         if (empty($compatibilityMap[$symfonyMajorVersion])) {
             throw new RuntimeException("Fatal error: Drush does not work with Symfony $symfonyMajorVersion. (In theory, Composer should not allow you to get this far.)");
         }
@@ -244,7 +241,7 @@ class Preflight
      * @param $argv
      *   True if the request was successfully redispatched remotely. False if the request should proceed.
      *
-     * @return array{preflightDidRedispatch: bool, exitStatus: int}
+     * @return array{bool, int}
      */
     public function preflight($argv): array
     {
@@ -257,6 +254,11 @@ class Preflight
 
         // Now that we know the value, set debug flag.
         $this->logger()->setDebug($this->preflightArgs->get(PreflightArgs::DEBUG, false));
+
+        // Give hint if a developer might be trying to debug Drush.
+        if (extension_loaded('xdebug')) {
+            $this->logger()->log(strtr('Drush disables Xdebug by default. To override this, see !url', ['!url' => 'https://www.drush.org/latest/commands/#xdebug']));
+        }
 
         // Do legacy initialization (load static includes, define old constants, etc.)
         $this->init();
@@ -305,30 +307,6 @@ class Preflight
         $this->aliasManager->setSelf($selfSiteAlias);
         $this->configLocator->addAliasConfig($selfSiteAlias->exportConfig());
 
-        // Check to see if the alias on the command line points at
-        // a local Drupal site that is not the site at $root
-        $localAliasDrupalFinder = new DrupalFinder($this->environment()->cwd());
-        $foundAlternateRoot = $localAliasDrupalFinder->locateRoot($selfSiteAlias->localRoot());
-        if ($foundAlternateRoot) {
-            $alteredRoot = Path::canonicalize($localAliasDrupalFinder->getDrupalRoot());
-
-            // Now that we have our final Drupal root, check to see if there is
-            // a site-local Drush. If there is, we will redispatch to it.
-            // NOTE: termination handlers have not been set yet, so it is okay
-            // to exit early without taking special action.
-            [$preflightDidRedispatch, $exitStatus] = RedispatchToSiteLocal::redispatchIfSiteLocalDrush($argv, $alteredRoot, $this->environment->vendorPath(), $this->logger());
-            if ($preflightDidRedispatch) {
-                return [$preflightDidRedispatch, $exitStatus];
-            }
-
-            // If the Drupal site changed, and the alternate site does not
-            // contain its own copy of Drush, then we cannot continue.
-            if ($alteredRoot != $root) {
-                $aliasName = $this->preflightArgs->alias();
-                throw new \Exception("The alias $aliasName references a Drupal site that does not contain its own copy of Drush. Please add Drush to this site to use it.");
-            }
-        }
-
         // Remember the paths to all the files we loaded, so that we can
         // report on it from Drush status or wherever else it may be needed.
         $configFilePaths = $this->configLocator->configFilePaths();
@@ -349,8 +327,6 @@ class Preflight
      */
     protected function preferredSite()
     {
-        $projectRoot = dirname($this->environment->vendorPath());
-        // $this->drupalFinder->locateRoot($projectRoot);
         $root = $this->drupalFinder()->getDrupalRoot();
 
         // We prohibit global installs of Drush (without a Drupal site).
@@ -361,25 +337,16 @@ class Preflight
         return $root;
     }
 
-    /**
-     * Return the Drupal Finder
-     */
     public function drupalFinder(): DrushDrupalFinder
     {
         return $this->drupalFinder;
     }
 
-    /**
-     * Return the alias manager
-     */
     public function aliasManager(): SiteAliasManager
     {
         return $this->aliasManager;
     }
 
-    /**
-     * Return the environment
-     */
     public function environment(): Environment
     {
         return $this->environment;
