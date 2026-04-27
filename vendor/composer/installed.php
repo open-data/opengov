@@ -3,7 +3,7 @@
         'name' => 'opengov/opengov-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '17013a6bf582ed94a569ed2934cb60cc8eaf5028',
+        'reference' => '50ad6f6c16ef27ae37a83005796baf5611f4db3e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -313,6 +313,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'drupal/better_exposed_filters' => array(
+            'pretty_version' => '7.1.1',
+            'version' => '7.1.1.0',
+            'reference' => '7.1.1',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../html/modules/contrib/better_exposed_filters',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'drupal/bootstrap' => array(
             'pretty_version' => '5.0.2',
             'version' => '5.0.2.0',
@@ -616,6 +625,15 @@
             'reference' => '2.2.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../html/modules/contrib/metatag',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'drupal/nouislider_js' => array(
+            'pretty_version' => '15.8.1',
+            'version' => '15.8.1.0',
+            'reference' => 'b5610d5842784581e4c766cd1c3852ca0b355ed5',
+            'type' => 'drupal-library',
+            'install_path' => __DIR__ . '/../../html/libraries/nouislider',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -1107,7 +1125,7 @@
         'opengov/opengov-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '17013a6bf582ed94a569ed2934cb60cc8eaf5028',
+            'reference' => '50ad6f6c16ef27ae37a83005796baf5611f4db3e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1503,8 +1521,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '1.0.0 || 2.0.0 || 3.0.0',
+                0 => '1.0.0 || 2.0.0 || 3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache' => array(
