@@ -1,0 +1,47 @@
+.views-filters-summary .value-container {
+  margin-right: 0.5em;
+  white-space: nowrap;
+}
+
+.views-filters-summary .label {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.views-filters-summary .value {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 0 6px 0 6px;
+  border: 1px solid #8c1515;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.views-filters-summary .value-container:last-of-type {
+  margin-right: 0;
+}
+
+.views-filters-summary a.remove-filter {
+  margin-left: 4px;
+  padding: 1px 8px 0 8px;
+  vertical-align: middle;
+  color: #000;
+  border: none;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #ededed;
+  font-size: 18px;
+}
+
+.views-filters-summary a.reset {
+  margin-left: 0.5em;
+}
+
+.views-filters-summary a.remove-filter.disabled,
+.views-filters-summary a.reset.disabled {
+  cursor: default;
+  pointer-events: none;
+}

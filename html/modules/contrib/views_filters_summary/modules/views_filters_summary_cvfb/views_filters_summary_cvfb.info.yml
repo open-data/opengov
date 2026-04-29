@@ -1,0 +1,13 @@
+type: module
+name: Views Exposed Filters Summary for CVFB
+description: Views Exposed Filters Summary for Configurable Views Filters Block.
+core_version_requirement: ^10 || ^11
+package: Views
+dependencies:
+  - views_filters_summary:views_filters_summary
+  - configurable_views_filter_block:configurable_views_filter_block
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

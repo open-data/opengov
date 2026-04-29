@@ -1,0 +1,15 @@
+name: 'Views Filters Summary Test'
+type: module
+description: 'Provides test views for views_filters_summary.'
+package: Testing
+core_version_requirement: ^10 || ^11
+dependencies:
+  - views_filters_summary:views_filters_summary
+  - drupal:node
+  - drupal:taxonomy
+  - drupal:views
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

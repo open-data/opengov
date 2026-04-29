@@ -1,0 +1,12 @@
+name: 'Default content tests'
+type: module
+hidden: TRUE
+description: 'Default content tests'
+package: Testing
+dependencies:
+  - default_content:default_content
+
+# Information added by Drupal.org packaging script on 2026-01-12
+version: '2.0.0-beta1'
+project: 'default_content'
+datestamp: 1768258045

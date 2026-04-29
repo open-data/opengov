@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Add bookmarking abilities to AJAX Views.
+ */
+
+use \Drupal\views\ViewExecutable;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function views_ajax_history_help($route_name, RouteMatchInterface $arg) {
+  switch ($route_name) {
+    case 'help.page.views_ajax_history':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Enable bookmaking of AJAX views. Supports filters and paging.') . '</p>';
+
+            // Add a link to the Drupal.org project.
+      $output .= '<p>';
+      $output .= t('Visit the <a href=":project_link">Views AJAX History project pages</a> on Drupal.org for more information.',[
+        ':project_link' => 'https://www.drupal.org/project/views_ajax_history'
+        ]);
+      $output .= '</p>';
+
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function views_ajax_history_views_pre_render(ViewExecutable $view) {
+  $display_extenders_options = $view->display_handler->getOption('display_extenders');
+  if (($view->ajaxEnabled() && (isset($display_extenders_options['ajax_history']['enable_history']) && $display_extenders_options['ajax_history']['enable_history'] == TRUE)) && empty($view->is_attachment) && empty($view->live_preview)) {
+    // @TODO add option to views form for html4+html5 or html5 only
+    $view->element['#attached']['library'][] = 'views_ajax_history/history';
+    $view->element['#attached']['drupalSettings']['viewsAjaxHistory'] = ['renderPageItem' => \Drupal::service('pager.parameters')->findPage()];
+    $view->element['#cache']['contexts'][] = 'url.query_args.pagers';
+    if (isset($display_extenders_options['ajax_history']['exclude_args']) && $display_extenders_options['ajax_history']['exclude_args'] !== '') {
+      $arguments_to_exclude = preg_split('/[\n\r\s]+/', $display_extenders_options['ajax_history']['exclude_args'] ?? '');
+      // Filter empty lines and add them to drupalSettings
+      $view->element['#attached']['drupalSettings']['viewsAjaxHistory']['excludeArgs'] = array_filter($arguments_to_exclude, 'strlen');
+    }
+
+    // Save the initial exposed input on first page load
+    if (!\Drupal::request()->isXmlHttpRequest()) {
+      $exposed = $view->getExposedInput();
+      $dom_id = $view->dom_id;
+      $settings = &$view->element['#attached']['drupalSettings']['viewsAjaxHistory']['initialExposedInput']['views_dom_id:' . $dom_id];
+      foreach ($exposed as $key => $value) {
+        $settings[$key] = $value;
+      }
+    }
+  }
+}

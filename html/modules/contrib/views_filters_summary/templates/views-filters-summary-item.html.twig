@@ -1,0 +1,13 @@
+{#
+  Themes a single filter item in the Views Filters Summary block.
+
+  Available variables:
+  - item: The filter item.
+  - options: The filter related summary options.
+#}
+<span class="value-container">
+  <strong class="value">{{ item.value }}</strong>
+  {% if item.link and options.show_remove_link %}
+      {{ item.link }}
+  {% endif %}
+</span>

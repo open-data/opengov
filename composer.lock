@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a69cd1e33264b6449ff5c085f848967",
+    "content-hash": "9e3d442c9bf0f82f2cc37b631c1ab879",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2098,6 +2098,83 @@
             }
         },
         {
+            "name": "drupal/default_content",
+            "version": "2.0.0-beta1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/default_content.git",
+                "reference": "2.0.0-beta1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/default_content-2.0.0-beta1.zip",
+                "reference": "2.0.0-beta1",
+                "shasum": "c39aa30fa961854edbe318c0d43e2f3898658047"
+            },
+            "require": {
+                "drupal/core": "^9.1 || ^10 || ^11"
+            },
+            "require-dev": {
+                "drupal/hal": "^1 || ^2",
+                "drupal/paragraphs": "^1"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.0-beta1",
+                    "datestamp": "1768258043",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9 || ^10 || ^11 || ^12"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "andypost",
+                    "homepage": "https://www.drupal.org/user/118908"
+                },
+                {
+                    "name": "benjy",
+                    "homepage": "https://www.drupal.org/user/1852732"
+                },
+                {
+                    "name": "berdir",
+                    "homepage": "https://www.drupal.org/user/214652"
+                },
+                {
+                    "name": "dawehner",
+                    "homepage": "https://www.drupal.org/user/99340"
+                },
+                {
+                    "name": "jibran",
+                    "homepage": "https://www.drupal.org/user/1198144"
+                },
+                {
+                    "name": "larowlan",
+                    "homepage": "https://www.drupal.org/user/395439"
+                },
+                {
+                    "name": "sam152",
+                    "homepage": "https://www.drupal.org/user/1485048"
+                }
+            ],
+            "description": "Imports default content when a module is enabled",
+            "homepage": "https://www.drupal.org/project/default_content",
+            "support": {
+                "source": "https://git.drupalcode.org/project/default_content"
+            }
+        },
+        {
             "name": "drupal/facets",
             "version": "3.0.2",
             "source": {
@@ -3363,6 +3440,66 @@
             }
         },
         {
+            "name": "drupal/views_ajax_history",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_ajax_history.git",
+                "reference": "8.x-1.8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_ajax_history-8.x-1.8.zip",
+                "reference": "8.x-1.8",
+                "shasum": "94242393b5ce610c3b5d7ec6dc0ac08da947aff6"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9 || ^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.8",
+                    "datestamp": "1735593764",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "amateescu",
+                    "homepage": "https://www.drupal.org/user/729614"
+                },
+                {
+                    "name": "i-trokhanenko",
+                    "homepage": "https://www.drupal.org/user/3546872"
+                },
+                {
+                    "name": "joelpittet",
+                    "homepage": "https://www.drupal.org/user/160302"
+                },
+                {
+                    "name": "kalman.hosszu",
+                    "homepage": "https://www.drupal.org/user/267481"
+                },
+                {
+                    "name": "nod_",
+                    "homepage": "https://www.drupal.org/user/598310"
+                }
+            ],
+            "description": "Add bookmarking abilities to AJAX Views.",
+            "homepage": "https://www.drupal.org/project/views_ajax_history",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_ajax_history"
+            }
+        },
+        {
             "name": "drupal/views_bootstrap",
             "version": "5.4.1",
             "source": {
@@ -3420,6 +3557,82 @@
             "homepage": "https://www.drupal.org/project/views_bootstrap",
             "support": {
                 "source": "https://git.drupalcode.org/project/views_bootstrap"
+            }
+        },
+        {
+            "name": "drupal/views_filters_summary",
+            "version": "3.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_filters_summary.git",
+                "reference": "3.4.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_filters_summary-3.4.0.zip",
+                "reference": "3.4.0",
+                "shasum": "2a0790050ae937bfdc408be6bf17162fcefd1e65"
+            },
+            "require": {
+                "drupal/core": "^10 || ^11"
+            },
+            "require-dev": {
+                "drupal/address": "*",
+                "drupal/better_exposed_filters": "*",
+                "drupal/commerce": "*",
+                "drupal/configurable_views_filter_block": "*",
+                "drupal/entity_browser": "*",
+                "drupal/entity_reference_exposed_filters": "*",
+                "drupal/verf": "*",
+                "drupal/views_core_entity_reference": "*",
+                "drupal/views_selective_filters": "^2.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.4.0",
+                    "datestamp": "1774011410",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "alexshor",
+                    "homepage": "https://www.drupal.org/user/281770"
+                },
+                {
+                    "name": "asherry",
+                    "homepage": "https://www.drupal.org/user/941916"
+                },
+                {
+                    "name": "droath",
+                    "homepage": "https://www.drupal.org/user/718562"
+                },
+                {
+                    "name": "irinaz",
+                    "homepage": "https://www.drupal.org/user/225592"
+                },
+                {
+                    "name": "joelsteidl",
+                    "homepage": "https://www.drupal.org/user/658038"
+                },
+                {
+                    "name": "mably",
+                    "homepage": "https://www.drupal.org/user/3375160"
+                }
+            ],
+            "description": "Plugin to display summary of selected exposed filters in header or footer area of a view.",
+            "homepage": "https://www.drupal.org/project/views_filters_summary",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_filters_summary",
+                "issues": "https://www.drupal.org/project/issues/views_filters_summary"
             }
         },
         {
@@ -15292,6 +15505,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/default_content": 10,
         "opengov/og": 20
     },
     "prefer-stable": true,

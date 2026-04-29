@@ -1,0 +1,20 @@
+parameters:
+  default_content.link_domain: 'http://drupal.org'
+  deprecated: The "default_content.link_domain" container parameter is deprecated. No replacement is provided. See https://www.drupal.org/node/3296226
+services:
+  default_content.content_file_storage:
+    class: Drupal\default_content\ContentFileStorage
+    arguments: ['@file_system']
+  default_content.importer:
+    class: Drupal\default_content\Importer
+    arguments: ['@entity_type.manager', '@event_dispatcher', '@default_content.content_file_storage', '@account_switcher', '@default_content.content_entity_normalizer', '@extension.list.module', '@file_system', '%default_content.link_domain%']
+  default_content.exporter:
+    class: Drupal\default_content\Exporter
+    arguments: ['@entity_type.manager', '@entity.repository', '@event_dispatcher', '@module_handler', '@info_parser', '@default_content.content_file_storage', '@default_content.content_entity_normalizer']
+  default_content.config_subscriber:
+    class: Drupal\default_content\Config\DefaultContentConfigSubscriber
+    arguments: ['@default_content.importer']
+    tags: [{ name: event_subscriber }]
+  default_content.content_entity_normalizer:
+    class: Drupal\default_content\Normalizer\ContentEntityNormalizer
+    arguments: ['@entity_type.manager', '@module_handler', '@entity.repository', '@language_manager']

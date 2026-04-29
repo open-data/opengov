@@ -1,0 +1,10 @@
+views_filters_summary:
+  js:
+    js/views-filters-summary.js: {}
+  css:
+    theme:
+      css/views_filters_summary.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once

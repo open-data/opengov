@@ -1,0 +1,5 @@
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+  Drupal\views_filters_summary_search_api\Hook\ViewsFiltersSummarySearchApiHooks: ~

@@ -1,0 +1,13 @@
+type: module
+name: Views Exposed Filters Summary for EREF
+description: Views Filters Summary hooks allowing usage with the Entity Reference Exposed Filters module.
+core_version_requirement: ^10 || ^11
+package: Views
+dependencies:
+  - views_filters_summary:views_filters_summary
+  - entity_reference_exposed_filters:entity_reference_exposed_filters
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

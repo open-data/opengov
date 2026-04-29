@@ -1,0 +1,15 @@
+{
+    "name": "drupal/views_filters_summary",
+    "type": "drupal-module",
+    "description": "Plugin to display summary of selected exposed filters in header or footer area of a view.",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "homepage": "https://www.drupal.org/project/views_filters_summary",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/views_filters_summary",
+        "source": "https://git.drupalcode.org/project/views_filters_summary"
+    },
+    "require-dev": {
+        "drupal/views_selective_filters": "^2.0"
+    }
+}

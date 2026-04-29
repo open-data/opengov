@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary_commerce module.
+ */
+
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\views_filters_summary_commerce\Hook\ViewsFiltersSummaryCommerceHooks;
+
+/**
+ * Implements hook_views_filters_summary_plugin_alias().
+ */
+#[LegacyHook]
+function views_filters_summary_commerce_views_filters_summary_plugin_alias($filter) {
+  return \Drupal::service(ViewsFiltersSummaryCommerceHooks::class)->pluginAlias($filter);
+}

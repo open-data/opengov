@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary module.
+ *
+ * Provides the ability to show which filters are used in Views Result.
+ */
+
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
+use Drupal\views_filters_summary\Hook\ViewsFiltersSummaryHooks;
+
+/**
+ * Implements hook_theme().
+ */
+#[LegacyHook]
+function views_filters_summary_theme($existing, $type, $theme, $path): array {
+  return \Drupal::service(ViewsFiltersSummaryHooks::class)->theme($existing, $type, $theme, $path);
+}
+
+/**
+ * Implements hook_views_data().
+ */
+#[LegacyHook]
+function views_filters_summary_views_data(): array {
+  return \Drupal::service(ViewsFiltersSummaryHooks::class)->viewsData();
+}
+
+/**
+ * Implements hook_views_filters_summary_filter_value_alter().
+ */
+#[LegacyHook]
+function views_filters_summary_views_filters_summary_filter_value_alter(
+  mixed &$value,
+  FilterPluginBase $filter,
+) {
+  \Drupal::service(ViewsFiltersSummaryHooks::class)->filterValueAlter($value, $filter);
+}
+
+/**
+ * Implements hook_views_filters_summary_plugin_alias().
+ */
+#[LegacyHook]
+function views_filters_summary_views_filters_summary_plugin_alias($filter) {
+  return \Drupal::service(ViewsFiltersSummaryHooks::class)->pluginAlias($filter);
+}

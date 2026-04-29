@@ -1,0 +1,12 @@
+type: module
+name: Views Exposed Filters Summary
+description: Plugin to display summary of selected exposed filters in header or footer area of a view.
+core_version_requirement: ^10 || ^11
+package: Views
+dependencies:
+  - drupal:views
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

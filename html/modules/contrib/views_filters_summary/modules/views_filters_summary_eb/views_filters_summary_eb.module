@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary_eb module.
+ */
+
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\views\Plugin\views\display\DisplayPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\views_filters_summary_eb\Hook\ViewsFiltersSummaryEbHooks;
+
+/**
+ * Implements hook_views_filters_summary_exposed_form_id_alter().
+ */
+#[LegacyHook]
+function views_filters_summary_eb_views_filters_summary_exposed_form_id_alter(
+  string &$exposed_form_id,
+  ViewExecutable $view,
+  DisplayPluginBase $display_handler,
+) {
+  \Drupal::service(ViewsFiltersSummaryEbHooks::class)->exposedFormIdAlter($exposed_form_id, $view, $display_handler);
+}

@@ -1,0 +1,48 @@
+# Schema for views exposed filters summary.
+views.area.views_filters_summary:
+  type: views_area
+  label: 'View filters summary'
+  mapping:
+    filters:
+      type: sequence
+      label: 'The filters to show'
+      sequence:
+        type: string
+        label: 'Field name'
+    show_labels:
+      type: boolean
+      label: 'Show labels'
+    show_remove_link:
+      type: boolean
+      label: 'Show remove link'
+    show_reset_link:
+      type: boolean
+      label: 'Show reset link'
+    group_values:
+      type: boolean
+      label: 'Group values'
+    display_remove_option:
+      type: boolean
+      label: 'Display remove option'
+    content:
+      type: text
+      label: 'The shown text of the result summary area'
+    filters_reset_link_title:
+      type: label
+      label: 'The title of the link to reset all filters'
+    filters_summary_separator:
+      type: label
+      label: 'Exposed Filter Summary Separator'
+    filters_summary_prefix:
+      type: label
+      label: 'Exposed Filters Summary Prefix'
+    filters_result_label:
+      type: mapping
+      label: 'Filter result labels'
+      mapping:
+        plural:
+          type: label
+          label: 'Plural label for the type of result being shown'
+        singular:
+          type: label
+          label: 'Singular label for the type of result being shown'

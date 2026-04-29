@@ -1,0 +1,12 @@
+type: module
+name: Views Exposed Filters Summary A11y
+description: Various accessibility improvements for the Views Filters Summary module.
+core_version_requirement: ^10 || ^11
+package: Views
+dependencies:
+  - views_filters_summary:views_filters_summary
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

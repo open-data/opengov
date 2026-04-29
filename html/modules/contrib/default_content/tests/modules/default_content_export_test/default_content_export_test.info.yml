@@ -1,0 +1,14 @@
+name: 'Default content export test'
+type: module
+hidden: TRUE
+description: 'Used in testing to ensure modules can declare content.'
+package: Testing
+
+default_content:
+  node:
+    - 0e45d92f-1919-47cd-8b60-964a8a761292
+
+# Information added by Drupal.org packaging script on 2026-01-12
+version: '2.0.0-beta1'
+project: 'default_content'
+datestamp: 1768258045

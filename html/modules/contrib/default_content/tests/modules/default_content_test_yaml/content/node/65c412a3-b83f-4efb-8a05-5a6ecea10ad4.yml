@@ -1,0 +1,46 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 65c412a3-b83f-4efb-8a05-5a6ecea10ad4
+  bundle: page
+  default_langcode: en
+  depends:
+    ab301be5-7017-4ff8-b2d3-09dc0a30bd43: user
+    550f86ad-aa11-4047-953f-636d42889f85: taxonomy_term
+default:
+  revision_timestamp:
+    -
+      value: 1381646540
+  revision_uid:
+    -
+      entity: ab301be5-7017-4ff8-b2d3-09dc0a30bd43
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: ab301be5-7017-4ff8-b2d3-09dc0a30bd43
+  title:
+    -
+      value: 'Imported node'
+  created:
+    -
+      value: 1381645976
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      pid: 0
+      langcode: en
+  body:
+    -
+      value: 'Crikey it works!'
+      format: ''
+  field_tags:
+    -
+      entity: 550f86ad-aa11-4047-953f-636d42889f85

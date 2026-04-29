@@ -1,0 +1,13 @@
+type: module
+name: Views Exposed Filters Summary for VCER
+description: Views Filters Summary hooks allowing usage with the Views Core Entity Reference module.
+core_version_requirement: ^10 || ^11
+package: Views
+dependencies:
+  - views_filters_summary:views_filters_summary
+  - views_core_entity_reference:views_core_entity_reference
+
+# Information added by Drupal.org packaging script on 2026-03-20
+version: '3.4.0'
+project: 'views_filters_summary'
+datestamp: 1774011411

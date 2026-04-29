@@ -53,6 +53,9 @@
         "drupal/core": "^11",
         "drupal/core-composer-scaffold": "^11",
         "drupal/core-recommended": "^11",
+        "drupal/default_content": "^2.0@beta",
+        "drupal/views_ajax_history": "^1.8",
+        "drupal/views_filters_summary": "^3.4",
         "opengov/og": "dev-drupal-core/11.2.2",
         "webflo/drupal-finder": "^1.0.0",
         "wikimedia/composer-merge-plugin": "2.0.1"

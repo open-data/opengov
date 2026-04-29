@@ -1,0 +1,24 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 806afcf6-05bf-4178-92dd-ae9445285770
+  default_langcode: en
+default:
+  filename:
+    -
+      value: test-file.txt
+  uri:
+    -
+      value: 'public://test-file.txt'
+  filemime:
+    -
+      value: text/plain
+  filesize:
+    -
+      value: 20
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1594458177

@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function views_ajax_history_install() {
+  views_ajax_history_update_views_settings_handler();
+}
+
+/**
+ * Enable the ajax_history views display extender.
+ */
+function views_ajax_history_update_8001() {
+  views_ajax_history_update_views_settings_handler();
+
+  // Keep the previous behavior of the module by enabling the new 'ajax_history'
+  // display extender on every view that uses AJAX.
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $config = $config_factory->getEditable($view_config_name);
+    if (!$config->get('display')['default']['display_options']['use_ajax'] == TRUE) {
+      continue;
+    }
+
+    $save = FALSE;
+    foreach ($config->get('display') as $display_id => $display) {
+      if (!isset($display['display_options']['display_extenders']['ajax_history'])) {
+        $display['display_options']['display_extenders']['ajax_history']['enable_history'] = TRUE;
+        $config->set("display.$display_id", $display);
+        $save = TRUE;
+      }
+    }
+    if ($save) {
+      $config->save(TRUE);
+    }
+  }
+}
+
+/**
+ * Helper function for enable display extender for Views.
+ */
+function views_ajax_history_update_views_settings_handler() {
+  // Enable ajax_history plugin.
+  $config = \Drupal::service('config.factory')->getEditable('views.settings');
+  $display_extenders = $config->get('display_extenders') ?: [];
+  $display_extenders[] = 'ajax_history';
+  $config->set('display_extenders', $display_extenders);
+  $config->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function views_ajax_history_uninstall() {
+  // Disable ajax_history plugin.
+  $config = \Drupal::service('config.factory')->getEditable('views.settings');
+  $display_extenders = $config->get('display_extenders') ?: [];
+  $key = array_search('ajax_history', $display_extenders);
+  if ($key !== FALSE) {
+    unset($display_extenders[$key]);
+    $config->set('display_extenders', $display_extenders);
+    $config->save();
+  }
+}

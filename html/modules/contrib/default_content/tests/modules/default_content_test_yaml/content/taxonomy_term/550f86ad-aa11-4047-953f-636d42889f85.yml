@@ -1,0 +1,28 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 550f86ad-aa11-4047-953f-636d42889f85
+  bundle: tags
+  default_langcode: und
+default:
+  revision_created:
+    -
+      value: 1594327087
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'A tag'
+  description:
+    -
+      value: ''
+      format: ''
+  weight:
+    -
+      value: 0
+  path:
+    -
+      alias: ''
+      pid: 0
+      langcode: und

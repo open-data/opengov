@@ -1,0 +1,45 @@
+
+{#
+/**
+ * @file
+ * Default theme implementation to display views exposed filters summary.
+ *
+ * Available variables:
+ *  - show_label: Show the filter label.
+ *  - show_remove_link: Show a remove link.
+ *  - show_reset_link: Show a reset link.
+ *  - reset_link:
+ *      - title: The reset link title.
+ *  - filters_summary:
+ *      - prefix: The exposed filter summary prefix.
+ *      - separator: The exposed filter summary separator.
+ *  - summary: An array of selected filters. Available keys:
+ *      - label: The label of the filter.
+ *      - value: The value of the filter.
+ */
+#}
+
+
+{% set classes = [
+  'views-filters-summary',
+  options.use_ajax ? 'views-filters-summary--use-ajax'
+] %}
+
+{% apply spaceless %}
+  <div{{ attributes.addClass(classes) }} data-exposed-form-id={{ exposed_form_id }}>
+    {% if summary and options.filters_summary.prefix %}
+      <span class="prefix">
+        {{ options.filters_summary.prefix }}
+      </span>
+    {% endif %}
+
+    {% include 'views-filters-summary-items.html.twig' with {
+      summary: summary,
+      options: options
+    } %}
+
+    {% if summary and options.show_reset_link and options.reset_link.title %}
+      <a class="reset disabled" href='#' data-filter-ids="{{ options.reset_link.filter_ids|join(',') }}">{{ options.reset_link.title }}</a>
+    {% endif %}
+  </div>
+{% endapply %}

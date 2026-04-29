@@ -1,0 +1,25 @@
+.views-filters-summary .items {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 0.5em;
+}
+
+.views-filters-summary .item {
+  display: inline-block;
+}
+
+.views-filters-summary a.remove-filter {
+  display: inline-block;
+}
+
+.views-filters-summary .remove-label {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.views-filters-summary .remove-button {
+  display: inline-block;
+  margin-left: 0.5em;
+}

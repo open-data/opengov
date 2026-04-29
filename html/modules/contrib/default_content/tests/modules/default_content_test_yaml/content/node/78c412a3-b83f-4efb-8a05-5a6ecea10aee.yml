@@ -1,0 +1,46 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 78c412a3-b83f-4efb-8a05-5a6ecea10aee
+  bundle: page
+  default_langcode: en
+  depends:
+    598aa6e8-119d-4ac6-87e9-ca27ca779999: user
+    550f86ad-aa11-4047-953f-636d42889f85: taxonomy_term
+default:
+  revision_timestamp:
+    -
+      value: 1381646540
+  revision_uid:
+    -
+      entity: 598aa6e8-119d-4ac6-87e9-ca27ca779999
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 598aa6e8-119d-4ac6-87e9-ca27ca779999
+  title:
+    -
+      value: 'Imported node with owned by user that does not exist'
+  created:
+    -
+      value: 1381645976
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      pid: 0
+      langcode: en
+  body:
+    -
+      value: 'Crikey it works!'
+      format: ''
+  field_tags:
+    -
+      entity: 550f86ad-aa11-4047-953f-636d42889f85

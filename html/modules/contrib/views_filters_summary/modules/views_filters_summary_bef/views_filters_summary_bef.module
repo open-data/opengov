@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary_bef module.
+ */
+
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
+use Drupal\views_filters_summary_bef\Hook\ViewsFiltersSummaryBefHooks;
+
+/**
+ * Implements hook_views_filters_summary_filter_value_label_alter().
+ */
+#[LegacyHook]
+function views_filters_summary_bef_views_filters_summary_filter_value_label_alter(
+  string &$label,
+  string &$value,
+  FilterPluginBase $filter,
+) {
+  \Drupal::service(ViewsFiltersSummaryBefHooks::class)->filterValueLabelAlter($label, $value, $filter);
+}

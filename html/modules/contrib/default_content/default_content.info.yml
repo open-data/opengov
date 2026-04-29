@@ -1,0 +1,10 @@
+name: 'Default content'
+type: module
+description: 'Imports default content when a module is enabled'
+package: Web services
+core_version_requirement: ^9.1 || ^10 || ^11
+
+# Information added by Drupal.org packaging script on 2026-01-12
+version: '2.0.0-beta1'
+project: 'default_content'
+datestamp: 1768258045
