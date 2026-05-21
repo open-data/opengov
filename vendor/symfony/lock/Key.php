@@ -18,7 +18,7 @@ use Symfony\Component\Lock\Exception\UnserializableKeyException;
  *
  * @author Jérémy Derussé <jeremy@derusse.com>
  */
-final class Key
+final class Key implements \Stringable
 {
     private ?float $expiringTime = null;
     private array $state = [];
@@ -87,6 +87,13 @@ final class Key
     public function isExpired(): bool
     {
         return null !== $this->expiringTime && $this->expiringTime <= microtime(true);
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->resource = $data['resource'] ?? $data["\0".self::class."\0resource"];
+        $this->expiringTime = $data['expiringTime'] ?? $data["\0".self::class."\0expiringTime"] ?? null;
+        $this->state = $data['state'] ?? $data["\0".self::class."\0state"] ?? [];
     }
 
     public function __serialize(): array

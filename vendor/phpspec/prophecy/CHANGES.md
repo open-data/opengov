@@ -1,6 +1,27 @@
 Unreleased
 ==========
 
+1.26.1
+======
+
+**Fixed:**
+
+* Fix compatibility with `sebastian/comparator` 8.1+ (@stof)
+
+1.26.0
+======
+
+**Added:**
+
+* Add support for `phpdocumentor/reflection-docblock` v6 (@mspirkov)
+
+1.25.0
+======
+
+**Added:**
+
+* Add support for PHPUnit 13 (@Jean85)
+
 1.24.0
 ======
 

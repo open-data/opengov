@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2025 Justin Hileman
+ * (c) 2012-2026 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -348,9 +348,9 @@ class ManualFormatter
      * Takes wrapped text and adds indentation to each line.
      * The first line can have a different prefix than subsequent lines.
      *
-     * @param string $wrapped     Wrapped text (may contain newlines)
-     * @param string $indent      Indentation for continuation lines
-     * @param string $firstIndent Optional different indentation for first line (defaults to $indent)
+     * @param string      $wrapped     Wrapped text (may contain newlines)
+     * @param string      $indent      Indentation for continuation lines
+     * @param string|null $firstIndent Optional different indentation for first line (defaults to $indent)
      *
      * @return array Lines with indentation applied
      */

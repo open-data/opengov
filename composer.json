@@ -52,7 +52,7 @@
         "drupal/core": "^11",
         "drupal/core-composer-scaffold": "^11",
         "drupal/core-recommended": "^11",
-        "opengov/og": "dev-drupal-core/11.2.2",
+        "opengov/og": "dev-master",
         "webflo/drupal-finder": "^1.0.0",
         "wikimedia/composer-merge-plugin": "2.0.1"
     },

@@ -3,8 +3,6 @@
 namespace Prophecy\Doubler\Generator\Node;
 
 use Prophecy\Doubler\Generator\Node\Type\BuiltinType;
-use Prophecy\Doubler\Generator\Node\Type\SimpleType;
-use Prophecy\Exception\Doubler\DoubleException;
 
 final class ReturnTypeNode extends TypeNodeAbstract
 {

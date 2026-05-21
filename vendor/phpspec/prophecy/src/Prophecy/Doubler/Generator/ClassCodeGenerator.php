@@ -11,14 +11,7 @@
 
 namespace Prophecy\Doubler\Generator;
 
-use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
-use Prophecy\Doubler\Generator\Node\Type\IntersectionType;
-use Prophecy\Doubler\Generator\Node\Type\ObjectType;
-use Prophecy\Doubler\Generator\Node\Type\SimpleType;
-use Prophecy\Doubler\Generator\Node\Type\TypeInterface;
-use Prophecy\Doubler\Generator\Node\Type\UnionType;
 use Prophecy\Doubler\Generator\Node\TypeNodeAbstract;
-use Prophecy\Exception\Doubler\ClassCreatorException;
 
 /**
  * Class code creator.

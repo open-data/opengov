@@ -3,11 +3,13 @@
 namespace PHPStan\Rules\PHPUnit;
 
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\FileTypeMapper;
 use PHPUnit\Framework\TestCase;
-use ReflectionMethod;
+use function array_key_exists;
 use function str_starts_with;
 use function strtolower;
 
@@ -18,6 +20,9 @@ final class TestMethodsHelper
 
 	private PHPUnitVersion $PHPUnitVersion;
 
+	/** @var array<string, array<ReflectionMethod>> */
+	private array $methodCache = [];
+
 	public function __construct(
 		FileTypeMapper $fileTypeMapper,
 		PHPUnitVersion $PHPUnitVersion
@@ -27,17 +32,32 @@ final class TestMethodsHelper
 		$this->PHPUnitVersion = $PHPUnitVersion;
 	}
 
+	public function getTestMethodReflection(ClassReflection $classReflection, MethodReflection $methodReflection, Scope $scope): ?ReflectionMethod
+	{
+		foreach ($this->getTestMethods($classReflection, $scope) as $testMethod) {
+			if ($testMethod->getName() === $methodReflection->getName()) {
+				return $testMethod;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * @return array<ReflectionMethod>
 	 */
 	public function getTestMethods(ClassReflection $classReflection, Scope $scope): array
 	{
+		$className = $classReflection->getName();
+		if (array_key_exists($className, $this->methodCache)) {
+			return $this->methodCache[$className];
+		}
 		if (!$classReflection->is(TestCase::class)) {
-			return [];
+			return $this->methodCache[$className] = [];
 		}
 
 		$testMethods = [];
-		foreach ($classReflection->getNativeReflection()->getMethods() as $reflectionMethod) {
+		foreach ($classReflection->getNativeReflection()->getBetterReflection()->getImmediateMethods() as $reflectionMethod) {
 			if (!$reflectionMethod->isPublic()) {
 				continue;
 			}
@@ -48,10 +68,10 @@ final class TestMethodsHelper
 			}
 
 			$docComment = $reflectionMethod->getDocComment();
-			if ($docComment !== false) {
+			if ($docComment !== null) {
 				$methodPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
 					$scope->getFile(),
-					$classReflection->getName(),
+					$className,
 					$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
 					$reflectionMethod->getName(),
 					$docComment,
@@ -67,7 +87,7 @@ final class TestMethodsHelper
 				continue;
 			}
 
-			$testAttributes = $reflectionMethod->getAttributes('PHPUnit\Framework\Attributes\Test'); // @phpstan-ignore argument.type
+			$testAttributes = $reflectionMethod->getAttributesByName('PHPUnit\Framework\Attributes\Test'); // @phpstan-ignore argument.type
 			if ($testAttributes === []) {
 				continue;
 			}
@@ -75,7 +95,7 @@ final class TestMethodsHelper
 			$testMethods[] = $reflectionMethod;
 		}
 
-		return $testMethods;
+		return $this->methodCache[$className] = $testMethods;
 	}
 
 	private function hasTestAnnotation(?ResolvedPhpDocBlock $phpDoc): bool

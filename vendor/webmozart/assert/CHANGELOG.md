@@ -1,7 +1,94 @@
 Changelog
 =========
 
-## UNRELEASED
+## 2.4.0
+
+### Changed
+
+- Updated docblocks for many methods, improving psalm support and type hints.
+
+## 2.3.0
+
+### Changed
+
+- Clarified documentation and testing of `uniqueValues`.
+
+### Added
+
+- All assertions now support `string|callable` for the message.
+
+## 2.2.0
+
+### Added
+
+- Added `isNotInstanceOfAny` assertion.
+
+## 2.1.6
+
+### Fixed
+
+- Corrected docblocks for `list*` methods.
+
+## 2.1.5
+
+### Fixed
+
+- Fixed regression of `instanceOf` messages
+
+## 2.1.4
+
+### Fixed
+
+- Use custom message for more internal calls.
+
+## 2.1.3
+
+### Fixed
+
+- Corrected `isList` type documentation.
+- Corrected `isAOf`, `isInstanceOf`, etc type documentation.
+
+## 2.1.2
+
+### Fixed
+
+- Changed `all*` assertion values back to `mixed`.
+
+## 2.1.1
+
+### Fixed
+
+- Optimized `stringNotEmpty` by internally using `notSame`.
+
+## 2.1.0
+
+### Fixed
+
+- Corrected `@param` declaration for `isMap`.
+- Pass custom message to internal assertion calls.
+
+## 2.0.0
+
+### Changed
+
+- **BREAKING** Minimum PHP version is now 8.2 (was 7.2).
+- **BREAKING** Remove deprecated `isTraversable`, use `isIterable` or `isInstanceOf` instead.
+- **BREAKING** Added `declare(strict_types=1)` to all classes.
+- Updated CI/CD test matrix to test PHP 8.2, 8.3, 8.4, and 8.5.
+- Updated development tools (PHPUnit, Psalm, PHP-CS-Fixer) to supported versions.
+- Added explicit return types and parameter types to all methods in both source code and tests.
+
+### Added
+
+- All assertion methods now return the checked value.
+- Added `notInArray` and `notOneOf`.
+- Added `isInitialized`, to check if a class property is initialized.
+- Added `negativeInteger` and `notNegativeInteger`
+- Added `isStatic` and `notStatic`
+
+### Fixed
+
+- Corrected validation of emails with unicode characters.
 
 ## 1.12.1
 
