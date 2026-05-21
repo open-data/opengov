@@ -54,7 +54,7 @@ class GitDriver extends VcsDriver
 
             $this->repoDir = $this->config->get('cache-vcs-dir') . '/' . Preg::replace('{[^a-z0-9.]}i', '-', Url::sanitize($this->url)) . '/';
 
-            GitUtil::cleanEnv();
+            GitUtil::cleanEnv($this->process);
 
             $fs = new Filesystem();
             $fs->ensureDirectoryExists(dirname($this->repoDir));
@@ -164,9 +164,14 @@ class GitDriver extends VcsDriver
      */
     public function getChangeDate(string $identifier): ?\DateTimeImmutable
     {
-        $this->process->execute(['git', '-c', 'log.showSignature=false', 'log', '-1', '--format=%at', $identifier], $output, $this->repoDir);
+        if (isset($identifier[0]) && $identifier[0] === '-') {
+            throw new \RuntimeException('Invalid git identifier detected. Identifier must not start with a -, given: ' . $identifier);
+        }
 
-        return new \DateTimeImmutable('@'.trim($output), new \DateTimeZone('UTC'));
+        $command = GitUtil::buildRevListCommand($this->process, ['-n1', '--format=%at', $identifier]);
+        $this->process->execute($command, $output, $this->repoDir);
+
+        return new \DateTimeImmutable('@'.trim(GitUtil::parseRevListOutput($output, $this->process)), new \DateTimeZone('UTC'));
     }
 
     /**
@@ -239,8 +244,9 @@ class GitDriver extends VcsDriver
             return false;
         }
 
-        $gitUtil = new GitUtil($io, $config, new ProcessExecutor($io), new Filesystem());
-        GitUtil::cleanEnv();
+        $process = new ProcessExecutor($io);
+        $gitUtil = new GitUtil($io, $config, $process, new Filesystem());
+        GitUtil::cleanEnv($process);
 
         try {
             $gitUtil->runCommands([['git', 'ls-remote', '--heads', '--', '%url%']], $url, sys_get_temp_dir());

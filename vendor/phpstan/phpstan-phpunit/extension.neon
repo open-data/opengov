@@ -1,7 +1,7 @@
 parameters:
 	phpunit:
 		convertUnionToIntersectionType: true
-		checkDataProviderData: %featureToggles.bleedingEdge%
+		reportMissingDataProviderReturnType: false
 	additionalConstructors:
 		- PHPUnit\Framework\TestCase::setUp
 	earlyTerminatingMethodCalls:
@@ -24,8 +24,8 @@ parameters:
 
 parametersSchema:
 	phpunit: structure([
-		convertUnionToIntersectionType: bool()
-		checkDataProviderData: bool(),
+		convertUnionToIntersectionType: bool(),
+		reportMissingDataProviderReturnType: bool(),
 	])
 
 services:
@@ -47,6 +47,11 @@ services:
 		class: PHPStan\Type\PHPUnit\MockBuilderDynamicReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: PHPStan\Type\PHPUnit\MockForIntersectionDynamicReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
 		class: PHPStan\Rules\PHPUnit\CoversHelper
 	-
@@ -72,8 +77,13 @@ services:
 	-
 		class: PHPStan\Type\PHPUnit\DataProviderReturnTypeIgnoreExtension
 
+	-
+		class: PHPStan\Type\PHPUnit\DynamicCallToAssertionIgnoreExtension
+
 conditionalTags:
 	PHPStan\PhpDoc\PHPUnit\MockObjectTypeNodeResolverExtension:
 		phpstan.phpDoc.typeNodeResolverExtension: %phpunit.convertUnionToIntersectionType%
 	PHPStan\Type\PHPUnit\DataProviderReturnTypeIgnoreExtension:
-		phpstan.ignoreErrorExtension: %phpunit.checkDataProviderData%
+		phpstan.ignoreErrorExtension: [%featureToggles.bleedingEdge%, not(%phpunit.reportMissingDataProviderReturnType%)]
+	PHPStan\Type\PHPUnit\DynamicCallToAssertionIgnoreExtension:
+		phpstan.ignoreErrorExtension: %featureToggles.bleedingEdge%

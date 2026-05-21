@@ -34,6 +34,8 @@ use Symfony\Component\ExpressionLanguage\Expression;
  * XmlFileLoader loads XML files service definitions.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since Symfony 7.4, use another loader instead
  */
 class XmlFileLoader extends FileLoader
 {
@@ -43,6 +45,8 @@ class XmlFileLoader extends FileLoader
 
     public function load(mixed $resource, ?string $type = null): mixed
     {
+        trigger_deprecation('symfony/dependency-injection', '7.4', 'XML configuration format is deprecated, use YAML or PHP instead.');
+
         $path = $this->locator->locate($resource);
 
         $xml = $this->parseFileToDOM($path);
@@ -51,18 +55,17 @@ class XmlFileLoader extends FileLoader
 
         $this->loadXml($xml, $path);
 
+        $xpath = new \DOMXPath($xml);
+        $xpath->registerNamespace('container', self::NS);
+
         if ($this->env) {
-            $xpath = new \DOMXPath($xml);
-            $xpath->registerNamespace('container', self::NS);
             foreach ($xpath->query(\sprintf('//container:when[@env="%s"]', $this->env)) ?: [] as $root) {
-                $env = $this->env;
-                $this->env = null;
-                try {
-                    $this->loadXml($xml, $path, $root);
-                } finally {
-                    $this->env = $env;
-                }
+                $this->loadXml($xml, $path, $root);
             }
+        }
+        foreach ($xpath->query('//container:when') ?: [] as $root) {
+            $knownEnvs = $this->container->hasParameter('.container.known_envs') ? array_flip($this->container->getParameter('.container.known_envs')) : [];
+            $this->container->setParameter('.container.known_envs', array_keys($knownEnvs + [$root->getAttribute('env') => true]));
         }
 
         return null;
@@ -346,28 +349,31 @@ class XmlFileLoader extends FileLoader
             );
         }
 
-        $tags = $this->getChildren($service, 'tag');
-
-        foreach ($tags as $tag) {
-            $tagNameComesFromAttribute = $tag->childElementCount || '' === $tag->nodeValue;
-            if ('' === $tagName = $tagNameComesFromAttribute ? $tag->getAttribute('name') : $tag->nodeValue) {
-                throw new InvalidArgumentException(\sprintf('The tag name for service "%s" in "%s" must be a non-empty string.', $service->getAttribute('id'), $file));
-            }
-
-            $parameters = $this->getTagAttributes($tag, \sprintf('The attribute name of tag "%s" for service "%s" in %s must be a non-empty string.', $tagName, $service->getAttribute('id'), $file));
-            foreach ($tag->attributes as $name => $node) {
-                if ($tagNameComesFromAttribute && 'name' === $name) {
-                    continue;
+        foreach (['tag', 'resource-tag'] as $type) {
+            foreach ($this->getChildren($service, $type) as $tag) {
+                $tagNameComesFromAttribute = $tag->childElementCount || '' === $tag->nodeValue;
+                if ('' === $tagName = $tagNameComesFromAttribute ? $tag->getAttribute('name') : $tag->nodeValue) {
+                    throw new InvalidArgumentException(\sprintf('The tag name for service "%s" in "%s" must be a non-empty string.', $service->getAttribute('id'), $file));
                 }
 
-                if (str_contains($name, '-') && !str_contains($name, '_') && !\array_key_exists($normalizedName = str_replace('-', '_', $name), $parameters)) {
-                    $parameters[$normalizedName] = XmlUtils::phpize($node->nodeValue);
-                }
-                // keep not normalized key
-                $parameters[$name] = XmlUtils::phpize($node->nodeValue);
-            }
+                $parameters = $this->getTagAttributes($tag, \sprintf('The attribute name of tag "%s" for service "%s" in %s must be a non-empty string.', $tagName, $service->getAttribute('id'), $file));
+                foreach ($tag->attributes as $name => $node) {
+                    if ($tagNameComesFromAttribute && 'name' === $name) {
+                        continue;
+                    }
 
-            $definition->addTag($tagName, $parameters);
+                    if (str_contains($name, '-') && !str_contains($name, '_') && !\array_key_exists($normalizedName = str_replace('-', '_', $name), $parameters)) {
+                        $parameters[$normalizedName] = XmlUtils::phpize($node->nodeValue);
+                    }
+                    // keep not normalized key
+                    $parameters[$name] = XmlUtils::phpize($node->nodeValue);
+                }
+
+                match ($type) {
+                    'tag' => $definition->addTag($tagName, $parameters),
+                    'resource-tag' => $definition->addResourceTag($tagName, $parameters),
+                };
+            }
         }
 
         $definition->setTags(array_merge_recursive($definition->getTags(), $defaults->getTags()));
@@ -751,38 +757,39 @@ class XmlFileLoader extends FileLoader
         $tmpfiles = [];
         $imports = '';
         foreach ($schemaLocations as $namespace => $location) {
-            $parts = explode('/', $location);
-            $locationstart = 'file:///';
             if (0 === stripos($location, 'phar://')) {
-                $tmpfile = tempnam(sys_get_temp_dir(), 'symfony');
-                if ($tmpfile) {
+                if ($tmpfile = tempnam(sys_get_temp_dir(), 'symfony')) {
                     copy($location, $tmpfile);
                     $tmpfiles[] = $tmpfile;
-                    $parts = explode('/', str_replace('\\', '/', $tmpfile));
+                    $location = self::getFileUrl($tmpfile);
                 } else {
+                    $parts = explode('/', '\\' === \DIRECTORY_SEPARATOR ? str_replace('\\', '/', $location) : $location);
                     array_shift($parts);
-                    $locationstart = 'phar:///';
+                    $drive = '\\' === \DIRECTORY_SEPARATOR ? array_shift($parts).'/' : '';
+                    $location = 'phar:///'.$drive.implode('/', array_map('rawurlencode', $parts));
                 }
             } elseif ('\\' === \DIRECTORY_SEPARATOR && str_starts_with($location, '\\\\')) {
-                $locationstart = '';
+                $parts = explode('/', $location);
+                $drive = array_shift($parts).'/';
+                $location = $drive.implode('/', array_map('rawurlencode', $parts));
+            } else {
+                $location = self::getFileUrl($location);
             }
-            $drive = '\\' === \DIRECTORY_SEPARATOR ? array_shift($parts).'/' : '';
-            $location = $locationstart.$drive.implode('/', array_map('rawurlencode', $parts));
 
             $imports .= \sprintf('  <xsd:import namespace="%s" schemaLocation="%s" />'."\n", $namespace, $location);
         }
 
         $source = <<<EOF
-<?xml version="1.0" encoding="utf-8" ?>
-<xsd:schema xmlns="http://symfony.com/schema"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://symfony.com/schema"
-    elementFormDefault="qualified">
+            <?xml version="1.0" encoding="utf-8" ?>
+            <xsd:schema xmlns="http://symfony.com/schema"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                targetNamespace="http://symfony.com/schema"
+                elementFormDefault="qualified">
 
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
-$imports
-</xsd:schema>
-EOF
+                <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+            $imports
+            </xsd:schema>
+            EOF
         ;
 
         if ($this->shouldEnableEntityLoader()) {
@@ -812,7 +819,7 @@ EOF
             });
             $schema = '<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <xsd:include schemaLocation="file:///'.rawurlencode(str_replace('\\', '/', $tmpfile)).'" />
+  <xsd:include schemaLocation="'.self::getFileUrl($tmpfile).'" />
 </xsd:schema>';
             file_put_contents($tmpfile, '<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -824,10 +831,23 @@ EOF
         return !@$dom->schemaValidateSource($schema);
     }
 
+    private static function getFileUrl(string $path): string
+    {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $parts = explode('/', str_replace('\\', '/', $path));
+            $drive = array_shift($parts).'/';
+        } else {
+            $parts = explode('/', $path);
+            $drive = '';
+        }
+
+        return 'file:///'.$drive.implode('/', array_map('rawurlencode', $parts));
+    }
+
     private function validateAlias(\DOMElement $alias, string $file): void
     {
         foreach ($alias->attributes as $name => $node) {
-            if (!\in_array($name, ['alias', 'id', 'public'])) {
+            if (!\in_array($name, ['alias', 'id', 'public'], true)) {
                 throw new InvalidArgumentException(\sprintf('Invalid attribute "%s" defined for alias "%s" in "%s".', $name, $alias->getAttribute('id'), $file));
             }
         }
@@ -856,7 +876,7 @@ EOF
 
             // can it be handled by an extension?
             if (!$this->prepend && !$this->container->hasExtension($node->namespaceURI)) {
-                $extensionNamespaces = array_filter(array_map(fn (ExtensionInterface $ext) => $ext->getNamespace(), $this->container->getExtensions()));
+                $extensionNamespaces = array_filter(array_map(static fn (ExtensionInterface $ext) => $ext->getNamespace(), $this->container->getExtensions()));
                 throw new InvalidArgumentException(UndefinedExtensionHandler::getErrorMessage($node->tagName, $file, $node->namespaceURI, $extensionNamespaces));
             }
         }

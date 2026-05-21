@@ -10,6 +10,7 @@ return (new PhpCsFixer\Config())
         'braces_position' => [
             'control_structures_opening_brace' => 'same_line',
         ],
+        'no_unused_imports' => true,
         'concat_space' => ['spacing' => 'none'],
         'method_argument_space' => ['on_multiline' => 'ignore'],
         // Since PHP 7.2 is supported we can't add trailing commas in arguments, parameters and match

@@ -19,7 +19,6 @@ use Prophecy\Doubler\LazyDouble;
 use Prophecy\Argument\ArgumentsWildcard;
 use Prophecy\Call\CallCenter;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
-use Prophecy\Exception\Prophecy\MethodProphecyException;
 use Prophecy\Exception\Prediction\AggregateException;
 use Prophecy\Exception\Prediction\PredictionException;
 

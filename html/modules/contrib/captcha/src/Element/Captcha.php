@@ -287,6 +287,21 @@ class Captcha extends FormElement implements ContainerFactoryPluginInterface {
       // of the generated CAPTCHA.
       _captcha_update_captcha_session($captcha_sid, $captcha_info['solution']);
 
+      // For "show always" persistence, regenerate the token after validation
+      // since it may have been invalidated to prevent replay attacks. This
+      // ensures the rendered form has a valid token for the next submission.
+      // @see https://www.drupal.org/project/captcha/issues/3558256
+      $captcha_persistence = \Drupal::config('captcha.settings')
+        ->get('persistence');
+      if ($captcha_persistence == CaptchaConstants::CAPTCHA_PERSISTENCE_SHOW_ALWAYS) {
+        $new_token = Crypt::randomBytesBase64();
+        \Drupal::database()->update('captcha_sessions')
+          ->fields(['token' => $new_token])
+          ->condition('csid', $captcha_sid)
+          ->execute();
+        $element['captcha_token']['#value'] = $new_token;
+      }
+
       // Handle the response field if it is available and if it is a textfield.
       if (isset($element['captcha_widgets']['captcha_response']['#type']) && $element['captcha_widgets']['captcha_response']['#type'] == 'textfield') {
         // Before rendering: presolve an admin mode challenge or

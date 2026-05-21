@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\captcha\Unit\Controller;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -61,13 +62,13 @@ class CaptchaPointListBuilderTest extends UnitTestCase {
    */
   public function setUp(): void {
     parent::setUp();
-    $this->mockModuleHandler = $this->prophesize(ModuleHandlerInterface::class);
-    $this->mockModuleHandler->invokeAll(Argument::any(), Argument::any())->willReturn([]);
-    $this->mockModuleHandler->alter(Argument::any(), Argument::any(), Argument::any())->willReturn([]);
+    $this->moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
+    $this->moduleHandler->invokeAll(Argument::any(), Argument::any())->willReturn([]);
+    $this->moduleHandler->alter(Argument::cetera())->willReturn([]);
 
     $this->mockContainer = $this->prophesize(ContainerInterface::class);
     $this->mockContainer->get('string_translation')->willReturn($this->getStringTranslationStub());
-    $this->mockContainer->get('module_handler')->willReturn($this->mockModuleHandler->reveal());
+    $this->mockContainer->get('module_handler')->willReturn($this->moduleHandler->reveal());
 
     $this->mockEntityType = $this->prophesize(EntityTypeInterface::class);
     $this->mockEntityStorage = $this->prophesize(EntityStorageInterface::class);
@@ -92,8 +93,12 @@ class CaptchaPointListBuilderTest extends UnitTestCase {
    */
   public function testBuildRow() {
     $mockEntity = $this->prophesize(CaptchaPoint::class);
-    $mockEntity->access(Argument::any())->willReturn(FALSE);
+    $mockEntity->access(Argument::cetera())->willReturn(AccessResult::forbidden());
     $mockEntity->id()->willReturn('target_form_id');
+    $mockEntity->label()->willReturn('target_form_id');
+    $mockEntity->bundle()->willReturn('captcha_point');
+    $mockEntity->uuid()->willReturn('test-uuid');
+    $mockEntity->getEntityTypeId()->willReturn('captcha_point');
     $mockEntity->getCaptchaType()->willReturn('captcha_type');
     $mockEntity->status()->willReturn('captcha_status');
     $mockEntity->hasLinkTemplate('edit-form')->willReturn(FALSE);
