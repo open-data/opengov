@@ -2,7 +2,6 @@
 
 namespace Prophecy\Util;
 
-use Prophecy\Prophecy\ProphecyInterface;
 use SebastianBergmann\RecursionContext\Context;
 
 /*

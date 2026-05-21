@@ -216,7 +216,6 @@ class Crawler implements \Countable, \IteratorAggregate
         $internalErrors = libxml_use_internal_errors(true);
 
         $dom = new \DOMDocument('1.0', $charset);
-        $dom->validateOnParse = true;
 
         if ('' !== trim($content)) {
             @$dom->loadXML($content, $options);
@@ -1110,7 +1109,11 @@ class Crawler implements \Countable, \IteratorAggregate
 
         $internalErrors = libxml_use_internal_errors(true);
 
-        $document = \Dom\HTMLDocument::createFromString($htmlContent, \Dom\HTML_NO_DEFAULT_NS, $charset);
+        try {
+            $document = \Dom\HTMLDocument::createFromString($htmlContent, \Dom\HTML_NO_DEFAULT_NS, $charset);
+        } catch (\ValueError) {
+            $document = \Dom\HTMLDocument::createFromString($htmlContent, \Dom\HTML_NO_DEFAULT_NS);
+        }
 
         libxml_use_internal_errors($internalErrors);
 

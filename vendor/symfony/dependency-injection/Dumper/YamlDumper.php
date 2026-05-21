@@ -70,7 +70,7 @@ class YamlDumper extends Dumper
 
         $tagsCode = '';
         $tags = $definition->getTags();
-        $tags['container.error'] = array_map(fn ($e) => ['message' => $e], $definition->getErrors());
+        $tags['container.error'] = array_map(static fn ($e) => ['message' => $e], $definition->getErrors());
         foreach ($tags as $name => $tags) {
             foreach ($tags as $attributes) {
                 $att = [];
@@ -146,7 +146,7 @@ class YamlDumper extends Dumper
             }
 
             $decorationOnInvalid = $decoratedService[3] ?? ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE;
-            if (\in_array($decorationOnInvalid, [ContainerInterface::IGNORE_ON_INVALID_REFERENCE, ContainerInterface::NULL_ON_INVALID_REFERENCE])) {
+            if (\in_array($decorationOnInvalid, [ContainerInterface::IGNORE_ON_INVALID_REFERENCE, ContainerInterface::NULL_ON_INVALID_REFERENCE], true)) {
                 $invalidBehavior = ContainerInterface::NULL_ON_INVALID_REFERENCE === $decorationOnInvalid ? 'null' : 'ignore';
                 $code .= \sprintf("        decoration_on_invalid: %s\n", $invalidBehavior);
             }

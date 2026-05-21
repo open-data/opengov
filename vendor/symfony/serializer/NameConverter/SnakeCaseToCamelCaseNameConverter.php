@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedPropertyException;
  *
  * @author Kévin Dunglas <kevin@dunglas.dev>
  */
-final readonly class SnakeCaseToCamelCaseNameConverter implements NameConverterInterface
+final class SnakeCaseToCamelCaseNameConverter implements NameConverterInterface
 {
     /**
      * Require all properties to be written in camelCase.
@@ -30,8 +30,8 @@ final readonly class SnakeCaseToCamelCaseNameConverter implements NameConverterI
      * @param bool          $lowerCamelCase Use lowerCamelCase style
      */
     public function __construct(
-        private ?array $attributes = null,
-        private bool $lowerCamelCase = true,
+        private readonly ?array $attributes = null,
+        private readonly bool $lowerCamelCase = true,
     ) {
     }
 
@@ -47,7 +47,7 @@ final readonly class SnakeCaseToCamelCaseNameConverter implements NameConverterI
 
         $camelCasedName = preg_replace_callback(
             '/(^|_|\.)+(.)/',
-            fn ($match) => ('.' === $match[1] ? '_' : '').strtoupper($match[2]),
+            static fn ($match) => ('.' === $match[1] ? '_' : '').strtoupper($match[2]),
             $propertyName
         );
 

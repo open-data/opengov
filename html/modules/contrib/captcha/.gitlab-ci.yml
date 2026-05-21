@@ -8,13 +8,13 @@
 #   * DrupalSpoons
 ################
 
-################
+#################
 # Guidelines
 #
 # This template is designed to give any Contrib maintainer everything they need to test, without requiring modification. It is also designed to keep up to date with Core Development automatically through the use of include files that can be centrally maintained.
 #
 # However, you can modify this template if you have additional needs for your project.
-################
+#################
 
 ################
 # Includes

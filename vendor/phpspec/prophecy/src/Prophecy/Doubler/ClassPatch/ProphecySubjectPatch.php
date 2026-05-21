@@ -15,7 +15,6 @@ use Prophecy\Doubler\Generator\Node\ArgumentTypeNode;
 use Prophecy\Doubler\Generator\Node\ClassNode;
 use Prophecy\Doubler\Generator\Node\MethodNode;
 use Prophecy\Doubler\Generator\Node\ArgumentNode;
-use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 use Prophecy\Doubler\Generator\Node\Type\ObjectType;
 
 /**

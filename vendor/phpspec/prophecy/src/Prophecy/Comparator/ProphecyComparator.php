@@ -14,7 +14,6 @@ namespace Prophecy\Comparator;
 use Prophecy\Prophecy\ProphecyInterface;
 use SebastianBergmann\Comparator\Comparator;
 use SebastianBergmann\Comparator\Factory;
-use SebastianBergmann\Comparator\ObjectComparator;
 
 /**
  * @final
