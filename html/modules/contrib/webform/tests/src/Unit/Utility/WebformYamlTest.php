@@ -27,7 +27,7 @@ class WebformYamlTest extends UnitTestCase {
    *
    * @dataProvider providerTidy
    */
-  public function testTidy(array $data, $expected) {
+  public function testTidy(array $data, $expected): void {
     $result = WebformYaml::tidy(Yaml::encode($data));
     $this->assertEquals($expected, $result);
   }
@@ -77,7 +77,7 @@ class WebformYamlTest extends UnitTestCase {
    *
    * @dataProvider providerDecode
    */
-  public function testDecode($yaml, $expected) {
+  public function testDecode($yaml, $expected): void {
     $result = WebformYaml::decode($yaml);
     $this->assertEquals($expected, $result);
   }
@@ -139,7 +139,7 @@ class WebformYamlTest extends UnitTestCase {
    *
    * @dataProvider providerEncode
    */
-  public function testEncode($yaml, $expected) {
+  public function testEncode($yaml, $expected): void {
     $result = WebformYaml::encode($yaml);
     $this->assertEquals($expected, $result);
   }

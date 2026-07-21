@@ -43,7 +43,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
   /**
    * Test computed elements.
    */
-  public function testComputedElement() {
+  public function testComputedElement(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

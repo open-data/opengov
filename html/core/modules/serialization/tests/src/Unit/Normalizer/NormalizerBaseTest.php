@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\serialization\Unit\Normalizer;
 
-use Drupal\Tests\UnitTestCase;
 use Drupal\serialization\Normalizer\NormalizerBase;
+use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
- * @coversDefaultClass \Drupal\serialization\Normalizer\NormalizerBase
- * @group serialization
+ * Tests Drupal\serialization\Normalizer\NormalizerBase.
  */
+#[CoversClass(NormalizerBase::class)]
+#[Group('serialization')]
 class NormalizerBaseTest extends UnitTestCase {
 
   /**
@@ -22,9 +26,8 @@ class NormalizerBaseTest extends UnitTestCase {
    *   The data passed to supportsNormalization.
    * @param string $supported_types
    *   (optional) The supported interface or class to set on the normalizer.
-   *
-   * @dataProvider providerTestSupportsNormalization
    */
+  #[DataProvider('providerTestSupportsNormalization')]
   public function testSupportsNormalization($expected_return, $data, $supported_types = NULL): void {
     $normalizer_base = new TestNormalizerBase();
 
@@ -90,9 +93,19 @@ class TestNormalizerBase extends NormalizerBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Normalizes data into a set of arrays/scalars.
+   *
+   * @param object $object
+   *   Data to normalize.
+   * @param string|null $format
+   *   Format the normalization result will be encoded as.
+   * @param array<string, mixed> $context
+   *   Context options for the normalizer.
+   *
+   * @return null
+   *   The normalized data.
    */
-  public function normalize($object, $format = NULL, array $context = []): array|string|int|float|bool|\ArrayObject|NULL {
+  public function normalize($object, $format = NULL, array $context = []): NULL {
     return NULL;
   }
 

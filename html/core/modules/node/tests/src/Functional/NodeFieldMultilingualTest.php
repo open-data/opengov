@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\node\Functional;
 
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationUrl;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests multilingual support for fields.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeFieldMultilingualTest extends BrowserTestBase {
 
   /**
@@ -73,7 +75,6 @@ class NodeFieldMultilingualTest extends BrowserTestBase {
    */
   public function testMultilingualNodeForm(): void {
     // Create "Basic page" content.
-    $langcode = language_get_default_langcode('node', 'page');
     $title_key = 'title[0][value]';
     $title_value = $this->randomMachineName(8);
     $body_key = 'body[0][value]';
@@ -89,7 +90,7 @@ class NodeFieldMultilingualTest extends BrowserTestBase {
     // Check that the node exists in the database.
     $node = $this->drupalGetNodeByTitle($edit[$title_key]);
     $this->assertNotEmpty($node, 'Node found in database.');
-    $this->assertSame($langcode, $node->language()->getId());
+    $this->assertSame('en', $node->language()->getId());
     $this->assertSame($body_value, $node->body->value);
 
     // Change node language.

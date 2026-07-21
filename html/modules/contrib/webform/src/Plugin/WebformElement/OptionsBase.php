@@ -796,21 +796,31 @@ abstract class OptionsBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
+  public function getValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $value = parent::getValue($element, $webform_submission, $options);
+    if ($this->isOptionsOther()) {
+      // Handle edge case where the other element's value has not yet been processed by WebformOtherBase::validateWebformOther.
+      // e.g. if used in a computed field, or element is conditional.
+      // @see https://www.drupal.org/project/webform/issues/3000202, https://www.drupal.org/project/webform/issues/3350275
+      /** @var \Drupal\webform\Element\WebformOtherBase $class */
+      $class = $this->getFormElementClassDefinition();
+      $type = $class::getElementType();
+      if (is_array($value) && count($value) === 2 && array_key_exists($type, $value) && array_key_exists('other', $value)) {
+        $value = $class::processValue($element, $value);
+      }
+    }
+
+    return $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getElementSelectorInputValue($selector, $trigger, array $element, WebformSubmissionInterface $webform_submission) {
     if ($this->isOptionsOther()) {
       $input_name = WebformSubmissionConditionsValidator::getSelectorInputName($selector);
       $other_type = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 1);
       $value = $this->getRawValue($element, $webform_submission);
-
-      // Handle edge case where the other element's value has
-      // not been processed.
-      // @see https://www.drupal.org/project/webform/issues/3000202
-      /** @var \Drupal\webform\Element\WebformOtherBase $class */
-      $class = $this->getFormElementClassDefinition();
-      $type = $class::getElementType();
-      if (is_array($value) && count($value) === 2 && array_key_exists($type, $value) && isset($value['other'])) {
-        $value = $class::processValue($element, $value);
-      }
 
       $options = OptGroup::flattenOptions($element['#options']);
       if ($other_type === 'other') {

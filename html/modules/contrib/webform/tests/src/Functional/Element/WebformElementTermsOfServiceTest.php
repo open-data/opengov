@@ -26,7 +26,7 @@ class WebformElementTermsOfServiceTest extends WebformElementBrowserTestBase {
   /**
    * Tests TermsOfService element.
    */
-  public function testTermsOfService() {
+  public function testTermsOfService(): void {
     $assert_session = $this->assertSession();
 
     // Check rendering.

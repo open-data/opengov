@@ -5,17 +5,26 @@ declare(strict_types=1);
 namespace Drupal\Tests\package_manager\Kernel;
 
 use Drupal\Core\Extension\Extension;
+use Drupal\Core\Extension\Theme;
 use Drupal\fixture_manipulator\ActiveFixtureManipulator;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\PathLocator;
 use Drupal\package_manager\ValidationResult;
+use Drupal\package_manager\Validator\EnabledExtensionsValidator;
 use Drupal\Tests\package_manager\Traits\ComposerInstallersTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @covers \Drupal\package_manager\Validator\EnabledExtensionsValidator
- * @group package_manager
+ * Tests Enabled Extensions Validator.
+ *
  * @internal
  */
+#[Group('package_manager')]
+#[CoversClass(EnabledExtensionsValidator::class)]
+#[RunTestsInSeparateProcesses]
 class EnabledExtensionsValidatorTest extends PackageManagerKernelTestBase {
 
   use ComposerInstallersTrait;
@@ -96,9 +105,8 @@ class EnabledExtensionsValidatorTest extends PackageManagerKernelTestBase {
    *   stage directory.
    * @param \Drupal\package_manager\ValidationResult[] $expected_results
    *   The expected validation results.
-   *
-   * @dataProvider providerExtensionRemoved
    */
+  #[DataProvider('providerExtensionRemoved')]
   public function testExtensionRemoved(array $packages, array $expected_results): void {
     $project_root = $this->container->get(PathLocator::class)->getProjectRoot();
     $this->installComposerInstallers($project_root);
@@ -118,7 +126,8 @@ class EnabledExtensionsValidatorTest extends PackageManagerKernelTestBase {
       if ($extension->getType() === 'theme') {
         /** @var \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler */
         $theme_handler = $this->container->get('theme_handler');
-        $theme_handler->addTheme($extension);
+        $theme = new Theme($project_root, $extension->getPathname(), ['base theme' => FALSE], $extension->getExtensionFilename());
+        $theme_handler->addTheme($theme);
         $this->assertArrayHasKey($extension_name, $theme_handler->listInfo());
       }
       else {

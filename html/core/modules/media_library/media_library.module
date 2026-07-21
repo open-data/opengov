@@ -7,11 +7,11 @@
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
-use Drupal\Core\Template\Attribute;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\image\Plugin\Field\FieldType\ImageItem;
 use Drupal\media\MediaTypeInterface;
+use Drupal\media_library\Hook\MediaLibraryThemeHooks;
+use Drupal\media_library\MediaLibraryDisplayManager;
 
 /**
  * Prepares variables for the media library modal dialog.
@@ -22,10 +22,15 @@ use Drupal\media\MediaTypeInterface;
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #menu, #content.
+ *
+ * @deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Initial
+ *   template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_media_library_wrapper(array &$variables): void {
-  $variables['menu'] = &$variables['element']['menu'];
-  $variables['content'] = &$variables['element']['content'];
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(MediaLibraryThemeHooks::class)->preprocessMediaLibraryWrapper($variables);
 }
 
 /**
@@ -37,58 +42,27 @@ function template_preprocess_media_library_wrapper(array &$variables): void {
  *   An associative array containing:
  *   - element: An associative array containing the properties and children of
  *     the element.
+ *
+ * @deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Initial
+ *   template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_media_library_item(array &$variables): void {
-  $element = &$variables['element'];
-  foreach (Element::children($element) as $key) {
-    $variables['content'][$key] = $element[$key];
-  }
-}
-
-/**
- * Implements hook_preprocess_media().
- */
-function media_library_preprocess_media(&$variables): void {
-  if ($variables['view_mode'] === 'media_library') {
-    /** @var \Drupal\media\MediaInterface $media */
-    $media = $variables['media'];
-    $variables['#cache']['contexts'][] = 'user.permissions';
-    $rel = $media->access('edit') ? 'edit-form' : 'canonical';
-    $variables['url'] = $media->toUrl($rel, [
-      'language' => $media->language(),
-    ]);
-    $variables += [
-      'preview_attributes' => new Attribute(),
-      'metadata_attributes' => new Attribute(),
-    ];
-    $variables['status'] = $media->isPublished();
-  }
-}
-
-/**
- * Implements hook_preprocess_views_view() for the 'media_library' view.
- */
-function media_library_preprocess_views_view__media_library(array &$variables): void {
-  $variables['attributes']['data-view-display-id'] = $variables['view']->current_display;
-}
-
-/**
- * Implements hook_preprocess_views_view_fields().
- */
-function media_library_preprocess_views_view_fields(&$variables): void {
-  // Add classes to media rendered entity field so it can be targeted for
-  // JavaScript mouseover and click events.
-  if ($variables['view']->id() === 'media_library' && isset($variables['fields']['rendered_entity'])) {
-    if (isset($variables['fields']['rendered_entity']->wrapper_attributes)) {
-      $variables['fields']['rendered_entity']->wrapper_attributes->addClass('js-click-to-select-trigger');
-    }
-  }
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(MediaLibraryThemeHooks::class)->preprocessMediaLibraryItem($variables);
 }
 
 /**
  * Form #after_build callback for media_library view's exposed filters form.
+ *
+ * @deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no
+ *   replacement.
+ *
+ * @see https://www.drupal.org/node/3566774
  */
 function _media_library_views_form_media_library_after_build(array $form, FormStateInterface $form_state) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3566774', E_USER_DEPRECATED);
   // Remove .form-actions from the view's exposed filter actions. This prevents
   // the "Apply filters" submit button from being moved into the dialog's
   // button area.
@@ -104,13 +78,19 @@ function _media_library_views_form_media_library_after_build(array $form, FormSt
 
 /**
  * Submit callback for media type form.
+ *
+ * @deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no
+ *   replacement.
+ *
+ * @see https://www.drupal.org/node/3566774
  */
 function _media_library_media_type_form_submit(array &$form, FormStateInterface $form_state): void {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3566774', E_USER_DEPRECATED);
   $form_object = $form_state->getFormObject();
   if ($form_object->getOperation() === 'add') {
     $type = $form_object->getEntity();
-    $form_display_created = _media_library_configure_form_display($type);
-    $view_display_created = _media_library_configure_view_display($type);
+    $form_display_created = MediaLibraryDisplayManager::configureFormDisplay($type);
+    $view_display_created = MediaLibraryDisplayManager::configureViewDisplay($type);
     if ($form_display_created || $view_display_created) {
       \Drupal::messenger()->addStatus(t('Media Library form and view displays have been created for the %type media type.', [
         '%type' => $type->label(),
@@ -129,8 +109,14 @@ function _media_library_media_type_form_submit(array &$form, FormStateInterface 
  *   Whether a form display has been created or not.
  *
  * @throws \Drupal\Core\Entity\EntityStorageException
+ *
+ * @deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no
+ *   replacement.
+ *
+ * @see https://www.drupal.org/node/3566774
  */
 function _media_library_configure_form_display(MediaTypeInterface $type) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3566774', E_USER_DEPRECATED);
   $display = EntityFormDisplay::load('media.' . $type->id() . '.media_library');
 
   if ($display) {
@@ -176,8 +162,14 @@ function _media_library_configure_form_display(MediaTypeInterface $type) {
  *   Whether a view display has been created or not.
  *
  * @throws \Drupal\Core\Entity\EntityStorageException
+ *
+ * @deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no
+ *   replacement.
+ *
+ * @see https://www.drupal.org/node/3566774
  */
 function _media_library_configure_view_display(MediaTypeInterface $type) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3566774', E_USER_DEPRECATED);
   $display = EntityViewDisplay::load('media.' . $type->id() . '.media_library');
 
   if ($display) {

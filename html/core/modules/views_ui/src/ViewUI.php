@@ -11,7 +11,6 @@ use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TempStore\Lock;
 use Drupal\views\Controller\ViewAjaxController;
-use Drupal\views\Views;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\views\ViewExecutable;
 use Drupal\Core\Database\Database;
@@ -20,6 +19,7 @@ use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\Entity\View;
 use Drupal\views\ViewEntityInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
+use Drupal\views\ViewsFormHelperTrait;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ViewUI implements ViewEntityInterface {
 
   use StringTranslationTrait;
+  use ViewsFormHelperTrait;
 
   /**
    * Indicates if a view is currently being edited.
@@ -43,7 +44,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $changed_display;
 
   /**
@@ -51,7 +52,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var float
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $render_time;
 
   /**
@@ -76,7 +77,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $temporary_options;
 
   /**
@@ -91,7 +92,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var bool
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $live_preview;
 
   /**
@@ -331,14 +332,21 @@ class ViewUI implements ViewEntityInterface {
       // button labels.
       if (isset($names)) {
         $form['actions']['submit']['#values'] = $names;
-        $form['actions']['submit']['#process'] = array_merge(['views_ui_form_button_was_clicked'], \Drupal::service('element_info')->getInfoProperty($form['actions']['submit']['#type'], '#process', []));
+        $form['actions']['submit']['#process'] = [
+          [static::class, 'formButtonWasClicked'],
+          ...\Drupal::service('element_info')->getInfoProperty($form['actions']['submit']['#type'], '#process', []),
+        ];
       }
       // If a validation handler exists for the form, assign it to this button.
       $form['actions']['submit']['#validate'][] = [$form_state->getFormObject(), 'validateForm'];
     }
 
     // Create a "Cancel" button. For purely informational forms, label it "OK".
-    $cancel_submit = function_exists($form_id . '_cancel') ? $form_id . '_cancel' : [$this, 'standardCancel'];
+    $cancel_submit = [$this, 'standardCancel'];
+    if (function_exists($form_id . '_cancel')) {
+      @trigger_error('Support for magic cancel submit handlers such as ' . $form_id . '_cancel() is deprecated in drupal:11.3.0 and removed in drupal:13.0.0. Specify a submit handler in a class method instead. See https://www.drupal.org/node/3536715', E_USER_DEPRECATED);
+      $cancel_submit = $form_id . '_cancel';
+    }
     $form['actions']['cancel'] = [
       '#type' => 'submit',
       '#value' => !$form_state->get('ok_button') ? $this->t('Cancel') : $this->t('Ok'),
@@ -477,7 +485,7 @@ class ViewUI implements ViewEntityInterface {
         }
         $id = $this->getExecutable()->addHandler($display_id, $type, $table, $field);
 
-        // Check to see if we have group by settings
+        // Check to see if we have group by settings.
         $key = $type;
         // Footer,header and empty text have a different internal handler
         // type(area).
@@ -488,17 +496,17 @@ class ViewUI implements ViewEntityInterface {
           'table' => $table,
           'field' => $field,
         ];
-        $handler = Views::handlerManager($key)->getHandler($item);
+        $handler = \Drupal::service('views.plugin_managers')->get($key)->getHandler($item);
         if ($this->getExecutable()->displayHandlers->get('default')->useGroupBy() && $handler->usesGroupBy()) {
           $this->addFormToStack('handler-group', $display_id, $type, $id);
         }
 
         // Check to see if this type has settings, if so add the settings form
-        // first
+        // first.
         if ($handler && $handler->hasExtraOptions()) {
           $this->addFormToStack('handler-extra', $display_id, $type, $id);
         }
-        // Then add the form to the stack
+        // Then add the form to the stack.
         $this->addFormToStack('handler', $display_id, $type, $id);
       }
     }
@@ -507,7 +515,7 @@ class ViewUI implements ViewEntityInterface {
       unset($this->form_cache);
     }
 
-    // Store in cache
+    // Store in cache.
     $this->cacheSet();
   }
 
@@ -608,13 +616,6 @@ class ViewUI implements ViewEntityInterface {
       $request->setSession($request_stack->getSession());
       $request_stack->push($request);
 
-      // Suppress contextual links of entities within the result set during a
-      // Preview.
-      // @todo We'll want to add contextual links specific to editing the View,
-      //   so the suppression may need to be moved deeper into the Preview
-      //   pipeline.
-      views_ui_contextual_links_suppress_push();
-
       $show_additional_queries = $config->get('ui.show.additional_queries');
 
       Timer::start('entity.view.preview_form');
@@ -631,8 +632,6 @@ class ViewUI implements ViewEntityInterface {
       }
 
       $this->render_time = Timer::stop('entity.view.preview_form')['time'];
-
-      views_ui_contextual_links_suppress_pop();
 
       // Prepare the query information and statistics to show either above or
       // below the view preview.
@@ -684,7 +683,10 @@ class ViewUI implements ViewEntityInterface {
                 $query_string = strtr($query['query'], $query['args']);
                 $queries[] = [
                   '#prefix' => "\n",
-                  '#markup' => $this->t('[@time ms] @query', ['@time' => round($query['time'] * 100000, 1) / 100000.0, '@query' => $query_string]),
+                  '#markup' => $this->t('[@time ms] @query', [
+                    '@time' => round($query['time'] * 100000, 1) / 100000.0,
+                    '@query' => $query_string,
+                  ]),
                 ];
               }
 
@@ -856,7 +858,7 @@ class ViewUI implements ViewEntityInterface {
   /**
    * Get the user's current progress through the form stack.
    *
-   * @return array|bool
+   * @return array|false
    *   FALSE if the user is not currently in a multiple-form stack. Otherwise,
    *   an associative array with the following keys:
    *   - current: The number of the current form on the stack.
@@ -1312,6 +1314,7 @@ class ViewUI implements ViewEntityInterface {
    * {@inheritdoc}
    */
   public function trustData() {
+    @trigger_error(__METHOD__ . '() is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. There is no replacement. See https://www.drupal.org/node/3348180', E_USER_DEPRECATED);
     return $this->storage->trustData();
   }
 

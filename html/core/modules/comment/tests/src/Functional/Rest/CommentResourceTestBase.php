@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\comment\Functional\Rest;
 
+use Drupal\comment\CommentingStatus;
 use Drupal\comment\Entity\Comment;
 use Drupal\comment\Entity\CommentType;
-use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Core\Cache\Cache;
 use Drupal\entity_test\Entity\EntityTest;
@@ -60,7 +60,8 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
    */
   #[Before]
   public function commentResourceTestBaseSkipTests(): void {
-    if (static::$format === 'xml' && in_array($this->name(), ['testPostDxWithoutCriticalBaseFields', 'testPostSkipCommentApproval'], TRUE)) {
+    if (static::$format === 'xml'
+      && in_array($this->name(), ['testPostDxWithoutCriticalBaseFields', 'testPostSkipCommentApproval'], TRUE)) {
       $this->markTestSkipped('Deserialization of the XML format is not supported.');
     }
   }
@@ -112,7 +113,7 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
     $commented_entity = EntityTest::create([
       'name' => 'Camelids',
       'type' => 'bar',
-      'comment' => CommentItemInterface::OPEN,
+      'comment' => CommentingStatus::Open->value,
     ]);
     $commented_entity->save();
 
@@ -274,7 +275,10 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
    * {@inheritdoc}
    */
   protected function getNormalizedPatchEntity() {
-    return array_diff_key($this->getNormalizedPostEntity(), ['entity_type' => TRUE, 'entity_id' => TRUE, 'field_name' => TRUE]);
+    return array_diff_key(
+      $this->getNormalizedPostEntity(),
+      ['entity_type' => TRUE, 'entity_id' => TRUE, 'field_name' => TRUE],
+    );
   }
 
   /**

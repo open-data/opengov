@@ -16,7 +16,7 @@ class WebformCacheTest extends WebformBrowserTestBase {
   /**
    * Test cache.
    */
-  public function testCache() {
+  public function testCache(): void {
     /** @var \Drupal\Core\Entity\EntityFormBuilder $entity_form_builder */
     $entity_form_builder = \Drupal::service('entity.form_builder');
 

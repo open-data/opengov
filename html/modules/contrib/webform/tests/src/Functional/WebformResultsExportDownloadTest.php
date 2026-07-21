@@ -30,7 +30,7 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
   /**
    * Tests download files.
    */
-  public function testDownloadFiles() {
+  public function testDownloadFiles(): void {
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\webform\WebformInterface $webform */

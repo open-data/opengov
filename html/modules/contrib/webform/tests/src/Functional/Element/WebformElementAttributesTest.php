@@ -19,7 +19,7 @@ class WebformElementAttributesTest extends WebformElementBrowserTestBase {
   /**
    * Tests element attributes.
    */
-  public function testAttributes() {
+  public function testAttributes(): void {
     $assert_session = $this->assertSession();
 
     /* Rendering */

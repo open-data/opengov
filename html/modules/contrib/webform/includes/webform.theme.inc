@@ -512,7 +512,7 @@ function webform_preprocess_file_upload_help(&$variables) {
   // Remove any existing descriptions that match the outdated '@size limit.' message.
   $descriptions = array_filter(
     $variables['descriptions'],
-    fn($description) => $file_limit_description->getUntranslatedString() !== '@size limit.'
+    fn($description) => $description->getUntranslatedString() !== '@size limit.'
   );
 
   // Add the updated file limit description to the list of descriptions.

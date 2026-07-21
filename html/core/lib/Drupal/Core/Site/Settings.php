@@ -4,6 +4,7 @@ namespace Drupal\Core\Site;
 
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Database\Database;
+use Drupal\DrupalInstalled;
 
 /**
  * Read only settings that are initialized with the class.
@@ -102,11 +103,17 @@ final class Settings {
    *   The value of the setting, the provided default if not set.
    */
   public static function get($name, $default = NULL) {
-    // If the caller is asking for the value of a deprecated setting, trigger a
-    // deprecation message about it.
     if (isset(self::$deprecatedSettings[$name])) {
-      // phpcs:ignore Drupal.Semantics.FunctionTriggerError
-      @trigger_error(self::$deprecatedSettings[$name]['message'], E_USER_DEPRECATED);
+      $deprecation = self::$deprecatedSettings[$name];
+      // Only trigger a deprecation warning if the setting has a replacement
+      // (calling code must be updated to use the new key) or if the setting is
+      // actually configured (the user must remove it from settings.php).
+      // Settings with no replacement that are not configured do not trigger a
+      // warning, to avoid spurious deprecations when the feature is simply not
+      // in use.
+      if (!empty($deprecation['replacement']) || array_key_exists($name, self::$instance->storage)) {
+        @trigger_error($deprecation['message'], E_USER_DEPRECATED);
+      }
     }
     return self::$instance->storage[$name] ?? $default;
   }
@@ -128,7 +135,7 @@ final class Settings {
    *   The app root.
    * @param string $site_path
    *   The current site path.
-   * @param \Composer\Autoload\ClassLoader $class_loader
+   * @param \Composer\Autoload\ClassLoader|null $class_loader
    *   The class loader that is used for this request. Passed by reference and
    *   exposed to the local scope of settings.php, so as to allow it to be
    *   decorated.
@@ -203,9 +210,9 @@ final class Settings {
    */
   public static function getApcuPrefix($identifier, $root, $site_path = '') {
     if (static::get('apcu_ensure_unique_prefix', TRUE)) {
-      return 'drupal.' . $identifier . '.' . \Drupal::VERSION . '.' . static::get('deployment_identifier') . '.' . hash_hmac('sha256', $identifier, static::get('hash_salt') . '.' . $root . '/' . $site_path);
+      return 'drupal.' . $identifier . '.' . (class_exists(DrupalInstalled::class) ? DrupalInstalled::VERSIONS_HASH : \Drupal::VERSION) . '.' . static::get('deployment_identifier') . '.' . hash_hmac('sha256', $identifier, static::get('hash_salt') . '.' . $root . '/' . $site_path);
     }
-    return 'drupal.' . $identifier . '.' . \Drupal::VERSION . '.' . static::get('deployment_identifier') . '.' . Crypt::hashBase64($root . '/' . $site_path);
+    return 'drupal.' . $identifier . '.' . (class_exists(DrupalInstalled::class) ? DrupalInstalled::VERSIONS_HASH : \Drupal::VERSION) . '.' . static::get('deployment_identifier') . '.' . Crypt::hashBase64($root . '/' . $site_path);
   }
 
   /**
@@ -221,12 +228,12 @@ final class Settings {
       if (!empty($settings[$legacy])) {
         @trigger_error($deprecation['message'], E_USER_DEPRECATED);
         // Set the new key if needed.
-        if (!isset($settings[$deprecation['replacement']])) {
+        if (!empty($deprecation['replacement']) && !isset($settings[$deprecation['replacement']])) {
           $settings[$deprecation['replacement']] = $settings[$legacy];
         }
       }
       // Ensure that both keys have the same value.
-      if (isset($settings[$deprecation['replacement']])) {
+      if (!empty($deprecation['replacement']) && isset($settings[$deprecation['replacement']])) {
         $settings[$legacy] = $settings[$deprecation['replacement']];
       }
     }

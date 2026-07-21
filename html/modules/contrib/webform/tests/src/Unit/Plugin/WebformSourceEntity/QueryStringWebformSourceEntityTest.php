@@ -39,7 +39,7 @@ class QueryStringWebformSourceEntityTest extends UnitTestCase {
    *
    * @dataProvider providerGetCurrentSourceEntity
    */
-  public function testGetCurrentSourceEntity(array $options, $expect_source_entity, $assert_message = '') {
+  public function testGetCurrentSourceEntity(array $options, $expect_source_entity, $assert_message = ''): void {
     $options += [
       // Value for the setting 'form_prepopulate_source_entity' of the webform.
       'webform_settings_prepopulate_source_entity' => TRUE,

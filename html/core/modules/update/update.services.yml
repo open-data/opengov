@@ -1,3 +1,6 @@
+parameters:
+  update.skip_procedural_hook_scan: true
+
 services:
   _defaults:
     autoconfigure: true
@@ -25,3 +28,5 @@ services:
   logger.channel.update:
     parent: logger.channel_base
     arguments: [ 'update' ]
+  Drupal\update\MailHandler:
+    autowire: true

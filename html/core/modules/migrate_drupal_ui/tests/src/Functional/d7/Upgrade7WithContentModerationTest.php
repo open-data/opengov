@@ -6,13 +6,17 @@ namespace Drupal\Tests\migrate_drupal_ui\Functional\d7;
 
 use Drupal\workflows\Entity\Workflow;
 use Drupal\workflows\WorkflowInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests Drupal 7 upgrade using the migrate UI with Content Moderation.
- *
- * @group migrate_drupal_ui
- * @group #slow
  */
+#[Group('migrate_drupal_ui')]
+#[Group('#slow')]
+#[IgnoreDeprecations]
+#[RunTestsInSeparateProcesses]
 class Upgrade7WithContentModerationTest extends Upgrade7Test {
 
   /**
@@ -30,6 +34,7 @@ class Upgrade7WithContentModerationTest extends Upgrade7Test {
 
     // Set up a moderation flow.
     $types = [
+      'article',
       'blog',
       'et',
       'test_content_type',
@@ -49,6 +54,8 @@ class Upgrade7WithContentModerationTest extends Upgrade7Test {
     $type_plugin = $editorial->getTypePlugin();
     $type_plugin->setConfiguration($type_settings);
     $editorial->trustData()->save();
+
+    $this->expectedLoggedErrors = 29;
   }
 
   /**
@@ -59,7 +66,6 @@ class Upgrade7WithContentModerationTest extends Upgrade7Test {
       'content_moderation_state' => 5,
       'workflow' => 1,
     ];
-    $entity_counts['entity_view_display'] = $entity_counts['entity_view_display'] + 1;
     $entity_counts['field_config'] = $entity_counts['field_config'] + 2;
     $entity_counts['view'] = $entity_counts['view'] + 1;
     return $entity_counts;

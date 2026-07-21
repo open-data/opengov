@@ -711,7 +711,7 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    */
   public function isOwner(AccountInterface $account) {
     if ($account->isAnonymous()) {
-      return !empty($_SESSION['webform_submissions']) && isset($_SESSION['webform_submissions'][$this->id()]);
+      return $this->id() && !empty($_SESSION['webform_submissions']) && isset($_SESSION['webform_submissions'][$this->id()]);
     }
     else {
       return $account->id() === $this->getOwnerId();

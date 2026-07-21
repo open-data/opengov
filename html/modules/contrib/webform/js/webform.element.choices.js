@@ -64,7 +64,7 @@
 
           // Allow custom options.
           if ($select.attr('data-options')) {
-            options = $.extend(true, options, JSON.parse($input.attr('data-options')));
+            options = $.extend(true, options, JSON.parse($select.attr('data-options')));
           }
 
           var choices = new Choices(this, options);

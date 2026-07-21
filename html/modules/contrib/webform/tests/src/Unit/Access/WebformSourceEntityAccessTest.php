@@ -17,7 +17,7 @@ class WebformSourceEntityAccessTest extends WebformAccessTestBase {
    *
    * @covers ::checkEntityResultsAccess
    */
-  public function testWebformSourceEntityAccess() {
+  public function testWebformSourceEntityAccess(): void {
     // Mock anonymous account.
     $anonymous_account = $this->mockAccount();
 

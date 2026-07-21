@@ -2,6 +2,7 @@
 
 namespace Drupal\comment\Hook;
 
+use Drupal\comment\CommentingStatus;
 use Drupal\Core\Field\FieldTypeCategoryManagerInterface;
 use Drupal\Core\Entity\Entity\EntityViewMode;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -12,7 +13,6 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\node\NodeInterface;
 use Drupal\field\FieldStorageConfigInterface;
-use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\comment\Entity\CommentType;
 use Drupal\Core\Url;
@@ -97,21 +97,6 @@ class CommentHooks {
   }
 
   /**
-   * Implements hook_theme().
-   */
-  #[Hook('theme')]
-  public function theme() : array {
-    return [
-      'comment' => [
-        'render element' => 'elements',
-      ],
-      'field__comment' => [
-        'base hook' => 'field',
-      ],
-    ];
-  }
-
-  /**
    * Implements hook_ENTITY_TYPE_create() for 'field_config'.
    */
   #[Hook('field_config_create')]
@@ -121,7 +106,7 @@ class CommentHooks {
       $default_value = $field->getDefaultValueLiteral();
       $default_value += [[]];
       $default_value[0] += [
-        'status' => CommentItemInterface::OPEN,
+        'status' => CommentingStatus::Open->value,
         'cid' => 0,
         'last_comment_timestamp' => 0,
         'last_comment_name' => '',
@@ -151,8 +136,8 @@ class CommentHooks {
   public function fieldStorageConfigInsert(FieldStorageConfigInterface $field_storage): void {
     if ($field_storage->getType() == 'comment') {
       // Check that the target entity type uses an integer ID.
-      $entity_type_id = $field_storage->getTargetEntityTypeId();
-      if (!_comment_entity_uses_integer_id($entity_type_id)) {
+      $entity_type = \Drupal::entityTypeManager()->getDefinition($field_storage->getTargetEntityTypeId());
+      if (!$entity_type->hasIntegerId()) {
         throw new \UnexpectedValueException('You cannot attach a comment field to an entity with a non-integer ID field');
       }
     }
@@ -199,7 +184,7 @@ class CommentHooks {
       $comment_manager = \Drupal::service('comment.manager');
       $fields = $comment_manager->getFields($entity->getEntityTypeId());
       foreach ($fields as $field_name => $detail) {
-        if ($entity->hasField($field_name) && $entity->get($field_name)->status != CommentItemInterface::HIDDEN) {
+        if ($entity->hasField($field_name) && $entity->get($field_name)->status != CommentingStatus::Hidden->value) {
           // Add a comments RSS element which is a URL to the comments of this
           // entity.
           $options = ['fragment' => 'comments', 'absolute' => TRUE];
@@ -213,21 +198,12 @@ class CommentHooks {
   }
 
   /**
-   * Implements hook_ENTITY_TYPE_view_alter() for node entities.
-   */
-  #[Hook('node_view_alter')]
-  public function nodeViewAlter(array &$build, EntityInterface $node, EntityViewDisplayInterface $display): void {
-    if (\Drupal::moduleHandler()->moduleExists('history')) {
-      $build['#attributes']['data-history-node-id'] = $node->id();
-    }
-  }
-
-  /**
    * Implements hook_field_info_entity_type_ui_definitions_alter().
    */
   #[Hook('field_info_entity_type_ui_definitions_alter')]
   public function fieldInfoEntityTypeUiDefinitionsAlter(array &$ui_definitions, string $entity_type_id): void {
-    if (!_comment_entity_uses_integer_id($entity_type_id)) {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
+    if (!$entity_type->hasIntegerId()) {
       unset($ui_definitions['comment']);
     }
   }
@@ -376,9 +352,9 @@ class CommentHooks {
         continue;
       }
       // Do not make a string if comments are hidden.
-      $status = $node->get($field_name)->status;
-      if (\Drupal::currentUser()->hasPermission('access comments') && $status != CommentItemInterface::HIDDEN) {
-        if ($status == CommentItemInterface::OPEN) {
+      $status = CommentingStatus::tryFrom((int) $node->get($field_name)->status);
+      if (\Drupal::currentUser()->hasPermission('access comments') && $status != CommentingStatus::Hidden) {
+        if ($status == CommentingStatus::Open) {
           // At least one comment field is open.
           $open = TRUE;
         }
@@ -442,9 +418,9 @@ class CommentHooks {
   }
 
   /**
-   * Implements hook_ranking().
+   * Implements hook_node_search_ranking().
    */
-  #[Hook('ranking')]
+  #[Hook('node_search_ranking')]
   public function ranking(): array {
     return \Drupal::service('comment.statistics')->getRankingInfo();
   }

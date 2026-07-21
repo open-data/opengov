@@ -8,12 +8,14 @@ use Drupal\Core\Extension\Requirement\RequirementSeverity;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\views\Entity\View;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests redundant status filter warnings raised by node_requirements().
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeRequirementsStatusFilterWarningTest extends KernelTestBase {
 
   use UserCreationTrait;
@@ -25,7 +27,6 @@ class NodeRequirementsStatusFilterWarningTest extends KernelTestBase {
     'system',
     'user',
     'node',
-    'text',
     'field',
     'views',
   ];
@@ -79,6 +80,24 @@ class NodeRequirementsStatusFilterWarningTest extends KernelTestBase {
     $requirements = $this->getRequirements();
     $this->assertArrayHasKey('node_status_filter', $requirements);
     $this->assertEquals(RequirementSeverity::Warning, $requirements['node_status_filter']['severity']);
+  }
+
+  /**
+   * Tests node_requirements() ignores displays that have NULL filters.
+   */
+  public function testNodeGrantsViewWithNullFilters(): void {
+    $this->strictConfigSchema = FALSE;
+    $this->enableNodeAccessTestModule();
+
+    $this->createTestView(
+      'test_view_null_filters',
+      'Null Filters View',
+      TRUE,
+      NULL
+    );
+
+    $requirements = $this->getRequirements();
+    $this->assertArrayNotHasKey('node_status_filter', $requirements);
   }
 
   /**
@@ -217,13 +236,13 @@ class NodeRequirementsStatusFilterWarningTest extends KernelTestBase {
    *   The view label.
    * @param bool $status
    *   Whether the view is enabled.
-   * @param array $filters
-   *   Filters to apply to the view.
+   * @param array|null $filters
+   *   Filters to apply to the view, or NULL to omit filters.
    *
    * @return \Drupal\views\Entity\View
    *   The created view entity.
    */
-  private function createTestView(string $id, string $label, bool $status, array $filters): View {
+  private function createTestView(string $id, string $label, bool $status, ?array $filters): View {
     $view = View::create([
       'id' => $id,
       'label' => $label,

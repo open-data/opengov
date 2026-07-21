@@ -14,7 +14,7 @@ class WebformParagraphsTest extends WebformParagraphsTestBase {
   /**
    * Tests paragraphs.
    */
-  public function testParagraphs() {
+  public function testParagraphs(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('webform_test_paragraphs');

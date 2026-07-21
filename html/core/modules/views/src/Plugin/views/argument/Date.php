@@ -9,7 +9,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
 use Drupal\views\Attribute\ViewsArgument;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Argument handler for dates.
@@ -43,9 +42,6 @@ class Date extends Formula implements ContainerFactoryPluginInterface {
    * @var string
    */
   protected $argFormat = 'Y-m-d';
-
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
-  public $option_name = 'default_argument_date';
 
   /**
    * The route match.
@@ -92,27 +88,15 @@ class Date extends Formula implements ContainerFactoryPluginInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('current_route_match'),
-      $container->get('date.formatter'),
-      $container->get('datetime.time'),
-    );
-  }
-
-  /**
    * Add an option to set the default value to the current date.
    */
   public function defaultArgumentForm(&$form, FormStateInterface $form_state) {
     parent::defaultArgumentForm($form, $form_state);
-    $form['default_argument_type']['#options'] += ['date' => $this->t('Current date')];
-    $form['default_argument_type']['#options'] += ['node_created' => $this->t("Current node's creation time")];
-    $form['default_argument_type']['#options'] += ['node_changed' => $this->t("Current node's update time")];
+    $form['default_argument_type']['#options'] += [
+      'date' => $this->t('Current date'),
+      'node_created' => $this->t("Current node's creation time"),
+      'node_changed' => $this->t("Current node's update time"),
+    ];
   }
 
   /**
@@ -152,6 +136,16 @@ class Date extends Formula implements ContainerFactoryPluginInterface {
   public function getFormula() {
     $this->formula = $this->getDateFormat($this->argFormat);
     return parent::getFormula();
+  }
+
+  /**
+   * Returns the date format used in the query in a form usable by PHP.
+   *
+   * @return string
+   *   The date format used in the query.
+   */
+  public function getArgFormat(): string {
+    return $this->argFormat;
   }
 
 }

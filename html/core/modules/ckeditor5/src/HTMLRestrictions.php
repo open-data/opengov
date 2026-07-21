@@ -492,7 +492,7 @@ final class HTMLRestrictions {
     }
 
     // When allowing all tags on an attribute, transform FilterHtml output from
-    // ['tag' => ['*'=> TRUE]] to ['tag' => TRUE]
+    // "['tag' => ['*'=> TRUE]]" to "['tag' => TRUE]".
     $allowed = $restrictions['allowed'];
     foreach ($allowed as $element => $attributes) {
       if (is_array($attributes) && isset($attributes['*']) && $attributes['*'] === TRUE) {
@@ -580,7 +580,7 @@ final class HTMLRestrictions {
     }
 
     // When allowing all tags on an attribute, transform FilterHtml output from
-    // ['tag' => ['*'=> TRUE]] to ['tag' => TRUE]
+    // "['tag' => ['*'=> TRUE]]" to "['tag' => TRUE]".
     foreach ($allowed_elements as $element => $attributes) {
       if (is_array($attributes) && isset($attributes['*']) && $attributes['*'] === TRUE) {
         $allowed_elements[$element] = TRUE;
@@ -843,8 +843,10 @@ final class HTMLRestrictions {
       if (!(is_array($this->elements[$tag]) && is_array($other->elements[$tag]))) {
         continue;
       }
-      $other_wildcard_attributes = array_filter(array_keys($other->elements[$tag]), [__CLASS__, 'isWildcardAttributeName']);
-      $this_wildcard_attributes = array_filter(array_keys($this->elements[$tag]), [__CLASS__, 'isWildcardAttributeName']);
+      $other_wildcard_attributes = array_filter(
+        array_keys($other->elements[$tag]), [__CLASS__, 'isWildcardAttributeName']);
+      $this_wildcard_attributes = array_filter(
+        array_keys($this->elements[$tag]), [__CLASS__, 'isWildcardAttributeName']);
 
       // If the same wildcard attribute restrictions are present in both or
       // neither, no adjustment necessary: the intersection is already correct.

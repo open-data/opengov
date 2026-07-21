@@ -19,7 +19,7 @@ class WebformElementRangeTest extends WebformElementBrowserTestBase {
   /**
    * Test range element.
    */
-  public function testRating() {
+  public function testRating(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_range');

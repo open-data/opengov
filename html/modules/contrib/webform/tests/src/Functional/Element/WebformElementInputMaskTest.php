@@ -28,7 +28,7 @@ class WebformElementInputMaskTest extends WebformElementBrowserTestBase {
   /**
    * Test element input mask.
    */
-  public function testInputMask() {
+  public function testInputMask(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_input_mask');

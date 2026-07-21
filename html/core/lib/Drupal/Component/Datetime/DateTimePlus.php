@@ -2,8 +2,6 @@
 
 namespace Drupal\Component\Datetime;
 
-use Drupal\Component\Utility\ToStringTrait;
-
 /**
  * Wraps DateTime().
  *
@@ -37,9 +35,7 @@ use Drupal\Component\Utility\ToStringTrait;
  * @method int getTimestamp()
  * @method \DateTimeZone getTimezone()
  */
-class DateTimePlus {
-
-  use ToStringTrait;
+class DateTimePlus implements \Stringable {
 
   const FORMAT = 'Y-m-d H:i:s';
 
@@ -51,62 +47,6 @@ class DateTimePlus {
    * Example: Sun, 06 Nov 1994 08:49:37 GMT
    */
   const RFC7231 = 'D, d M Y H:i:s \G\M\T';
-
-  /**
-   * An array of possible date parts.
-   *
-   * @var string[]
-   */
-  protected static $dateParts = [
-    'year',
-    'month',
-    'day',
-    'hour',
-    'minute',
-    'second',
-  ];
-
-  /**
-   * The value of the time value passed to the constructor.
-   *
-   * @var string
-   */
-  protected $inputTimeRaw = '';
-
-  /**
-   * The prepared time, without timezone, for this date.
-   *
-   * @var string
-   */
-  protected $inputTimeAdjusted = '';
-
-  /**
-   * The value of the timezone passed to the constructor.
-   *
-   * @var string
-   */
-  protected $inputTimeZoneRaw = '';
-
-  /**
-   * The prepared timezone object used to construct this date.
-   *
-   * @var string
-   */
-  protected $inputTimeZoneAdjusted = '';
-
-  /**
-   * The value of the format passed to the constructor.
-   *
-   * @var string
-   */
-  protected $inputFormatRaw = '';
-
-  /**
-   * The prepared format, if provided.
-   *
-   * @var string
-   */
-  protected $inputFormatAdjusted = '';
 
   /**
    * The value of the language code passed to the constructor.
@@ -124,10 +64,8 @@ class DateTimePlus {
 
   /**
    * The DateTime object.
-   *
-   * @var \DateTime
    */
-  protected $dateTimeObject = NULL;
+  protected ?\DateTimeInterface $dateTimeObject = NULL;
 
   /**
    * Creates a date object from an input date object.
@@ -624,14 +562,20 @@ class DateTimePlus {
    *   TRUE if the datetime parts contain valid values, otherwise FALSE.
    */
   public static function checkArray($array) {
-    $valid_date = FALSE;
     $valid_time = TRUE;
     // Check for a valid date using checkdate(). Only values that
     // meet that test are valid. An empty value, either a string or a 0, is not
     // a valid value.
-    if (!empty($array['year']) && !empty($array['month']) && !empty($array['day'])) {
-      $valid_date = checkdate($array['month'], $array['day'], $array['year']);
+    foreach (['year', 'month', 'day'] as $key) {
+      if (
+        empty($array[$key])
+        || filter_var($array[$key], FILTER_VALIDATE_INT) === FALSE
+      ) {
+        return FALSE;
+      }
     }
+    $valid_date = checkdate($array['month'], $array['day'], $array['year']);
+
     // Testing for valid time is reversed. Missing time is OK,
     // but incorrect values are not.
     foreach (['hour', 'minute', 'second'] as $key) {
@@ -730,6 +674,16 @@ class DateTimePlus {
    */
   public function getPhpDateTime() {
     return clone $this->dateTimeObject;
+  }
+
+  /**
+   * Returns the string representation of this object.
+   *
+   * @return string
+   *   The string representation.
+   */
+  public function __toString(): string {
+    return (string) $this->render();
   }
 
 }

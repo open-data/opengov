@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Core\Test;
 
 use Drupal\Core\Test\Exception\MissingGroupException;
-use Drupal\TestTools\PhpUnitCompatibility\RunnerVersion;
 use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\DataProviderTestSuite;
@@ -17,6 +16,10 @@ use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 
 /**
  * Discovers available tests using the PHPUnit API.
+ *
+ * @phpstan-type TestClassInfo array{name: class-string, description: string, group: string|int, groups: list<string|int>, type: string, file: string, tests_count: positive-int}
+ * @phpstan-type TestClassInfoList array<class-string,TestClassInfo>
+ * @phpstan-type GroupedTestClassInfoList array<string|int,TestClassInfoList>
  *
  * @internal
  */
@@ -100,14 +103,16 @@ class PhpUnitTestDiscovery {
    *   (optional) An array of PHPUnit test suites to filter the discovery for.
    * @param string|null $directory
    *   (optional) Limit discovered tests to a specific directory.
+   * @param list<string> $testGroups
+   *   (optional) An array of test groups to filter the discovery for.
    *
-   * @return array<string<array<class-string, array{name: class-string, description: string, group: string|int, groups: list<string|int>, type: string, file: string, tests_count: positive-int}>>>
+   * @return GroupedTestClassInfoList
    *   An array of test groups keyed by the group name. Each test group is an
    *   array of test class information arrays as returned by
    *   ::getTestClassInfo(), keyed by test class. If a test class belongs to
    *   multiple groups, it will appear under all group keys it belongs to.
    */
-  public function getTestClasses(?string $extension = NULL, array $testSuites = [], ?string $directory = NULL): array {
+  public function getTestClasses(?string $extension = NULL, array $testSuites = [], ?string $directory = NULL, array $testGroups = []): array {
     $this->warnings = [];
 
     $args = ['--configuration', $this->configurationFilePath];
@@ -156,8 +161,8 @@ class PhpUnitTestDiscovery {
     }
 
     $list = $directory === NULL ?
-      $this->getTestList($phpUnitTestSuite, $extension) :
-      $this->getTestListLimitedToDirectory($phpUnitTestSuite, $extension, $testSuites);
+      $this->getTestList($phpUnitTestSuite, $extension, $testGroups) :
+      $this->getTestListLimitedToDirectory($phpUnitTestSuite, $extension, $testSuites, $testGroups);
 
     // Sort the groups and tests within the groups by name.
     uksort($list, 'strnatcasecmp');
@@ -175,13 +180,15 @@ class PhpUnitTestDiscovery {
    *   (optional) The name of an extension to limit discovery to; e.g., 'node'.
    * @param string|null $directory
    *   (optional) Limit discovered tests to a specific directory.
+   * @param list<string> $testGroups
+   *   (optional) An array of test groups to filter the discovery for.
    *
    * @return array
    *   A classmap containing all discovered class files; i.e., a map of
    *   fully-qualified classnames to path names.
    */
-  public function findAllClassFiles(?string $extension = NULL, ?string $directory = NULL): array {
-    $testClasses = $this->getTestClasses($extension, [], $directory);
+  public function findAllClassFiles(?string $extension = NULL, ?string $directory = NULL, array $testGroups = []): array {
+    $testClasses = $this->getTestClasses($extension, [], $directory, $testGroups);
     $classMap = [];
     foreach ($testClasses as $group) {
       foreach ($group as $className => $info) {
@@ -218,14 +225,16 @@ class PhpUnitTestDiscovery {
    *   The TestSuite object returned by PHPUnit test discovery.
    * @param string|null $extension
    *   The name of an extension to limit discovery to; e.g., 'node'.
+   * @param list<string> $testGroups
+   *   (optional) An array of test groups to filter the discovery for.
    *
-   * @return array<string<array<class-string, array{name: class-string, description: string, group: string|int, groups: list<string|int>, type: string, file: string, tests_count: positive-int}>>>
+   * @return GroupedTestClassInfoList
    *   An array of test groups keyed by the group name. Each test group is an
    *   array of test class information arrays as returned by
    *   ::getTestClassInfo(), keyed by test class. If a test class belongs to
    *   multiple groups, it will appear under all group keys it belongs to.
    */
-  private function getTestList(TestSuite $phpUnitTestSuite, ?string $extension): array {
+  private function getTestList(TestSuite $phpUnitTestSuite, ?string $extension, array $testGroups): array {
     $list = [];
     foreach ($phpUnitTestSuite->tests() as $testSuite) {
       foreach ($testSuite->tests() as $testClass) {
@@ -241,6 +250,11 @@ class PhpUnitTestDiscovery {
           $testClass,
           $this->reverseMap[$testSuite->name()] ?? $testSuite->name(),
         );
+
+        // Skip tests whose groups are not in the required ones.
+        if (!empty($testGroups) && empty(array_intersect($item['groups'], $testGroups))) {
+          continue;
+        }
 
         foreach ($item['groups'] as $group) {
           $list[$group][$item['name']] = $item;
@@ -259,14 +273,16 @@ class PhpUnitTestDiscovery {
    *   The name of an extension to limit discovery to; e.g., 'node'.
    * @param list<string> $testSuites
    *   An array of PHPUnit test suites to filter the discovery for.
+   * @param list<string> $testGroups
+   *   (optional) An array of test groups to filter the discovery for.
    *
-   * @return array<string<array<class-string, array{name: class-string, description: string, group: string|int, groups: list<string|int>, type: string, file: string, tests_count: positive-int}>>>
+   * @return GroupedTestClassInfoList
    *   An array of test groups keyed by the group name. Each test group is an
    *   array of test class information arrays as returned by
    *   ::getTestClassInfo(), keyed by test class. If a test class belongs to
    *   multiple groups, it will appear under all group keys it belongs to.
    */
-  private function getTestListLimitedToDirectory(TestSuite $phpUnitTestSuite, ?string $extension, array $testSuites): array {
+  private function getTestListLimitedToDirectory(TestSuite $phpUnitTestSuite, ?string $extension, array $testSuites, array $testGroups): array {
     $list = [];
 
     // In this case, PHPUnit found a single test class to run tests for.
@@ -312,6 +328,11 @@ class PhpUnitTestDiscovery {
 
       $item = $this->getTestClassInfo($testClass, $testSuite);
 
+      // Skip tests whose groups are not in the required ones.
+      if (!empty($testGroups) && empty(array_intersect($item['groups'], $testGroups))) {
+        continue;
+      }
+
       foreach ($item['groups'] as $group) {
         $list[$group][$item['name']] = $item;
       }
@@ -328,39 +349,30 @@ class PhpUnitTestDiscovery {
    * @param string $testSuite
    *   The test suite of this test class.
    *
-   * @return array{name: class-string, description: string, group: string|int, groups: list<string|int>, type: string, file: string, tests_count: positive-int}
+   * phpcs:ignore Drupal.Commenting.DataTypeNamespace.DataTypeNamespace
+   * @return TestClassInfo
    *   The test class information.
    */
   private function getTestClassInfo(Test $testClass, string $testSuite): array {
     $reflection = new \ReflectionClass($testClass->name());
 
-    // Let PHPUnit API return the groups, as it will deal transparently with
-    // annotations or attributes, but skip groups generated by PHPUnit
-    // internally and starting with a double underscore prefix.
-    if (RunnerVersion::getMajor() < 11) {
-      $groups = array_filter($testClass->groups(), function (string $value): bool {
-        return !str_starts_with($value, '__phpunit');
-      });
-    }
-    else {
-      // In PHPUnit 11+, we need to coalesce the groups from individual tests
-      // as they may not be available from the test class level (when tests are
-      // backed by data providers).
-      $tmp = [];
-      foreach ($testClass as $test) {
-        if ($test instanceof DataProviderTestSuite) {
-          foreach ($test as $testWithData) {
-            $tmp = array_merge($tmp, $testWithData->groups());
-          }
-        }
-        else {
-          $tmp = array_merge($tmp, $test->groups());
+    // In PHPUnit 11+, we need to coalesce the groups from individual tests
+    // as they may not be available from the test class level (when tests are
+    // backed by data providers).
+    $tmp = [];
+    foreach ($testClass as $test) {
+      if ($test instanceof DataProviderTestSuite) {
+        foreach ($test as $testWithData) {
+          $tmp = array_merge($tmp, $testWithData->groups());
         }
       }
-      $groups = array_filter(array_unique($tmp), function (string $value): bool {
-        return !str_starts_with($value, '__phpunit');
-      });
+      else {
+        $tmp = array_merge($tmp, $test->groups());
+      }
     }
+    $groups = array_filter(array_unique($tmp), function (string $value): bool {
+      return !str_starts_with($value, '__phpunit');
+    });
     if (empty($groups)) {
       throw new MissingGroupException(sprintf('Missing group metadata in test class %s', $testClass->name()));
     }

@@ -22,7 +22,7 @@ class WebformImageSelectElementTest extends WebformElementBrowserTestBase {
   /**
    * Test webform image select element.
    */
-  public function testImageSelect() {
+  public function testImageSelect(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_image_select');

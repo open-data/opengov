@@ -23,7 +23,7 @@ class WebformWizardAdvancedTest extends WebformWizardTestBase {
   /**
    * Test webform advanced wizard.
    */
-  public function testAdvancedWizard() {
+  public function testAdvancedWizard(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_form_wizard_advanced');

@@ -19,7 +19,7 @@ class WebformElementMappingTest extends WebformElementBrowserTestBase {
   /**
    * Test mapping element.
    */
-  public function testMappingElement() {
+  public function testMappingElement(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_mapping');

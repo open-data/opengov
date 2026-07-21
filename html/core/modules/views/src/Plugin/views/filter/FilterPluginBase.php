@@ -85,7 +85,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $group_info = NULL;
 
   /**
@@ -100,7 +100,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
    *
    * @var bool
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $no_operator = FALSE;
 
   /**
@@ -108,7 +108,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
    *
    * @var bool
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $always_required = FALSE;
 
   /**
@@ -900,7 +900,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       $error = $this->t('This identifier is not allowed.');
     }
     elseif (preg_match('/[^a-zA-Z0-9_~\.\-]+/', $identifier)) {
-      $error = $this->t('This identifier has illegal characters.');
+      $error = $this->t('This identifier has invalid characters.');
     }
 
     if ($form_state && !$this->view->display_handler->isIdentifierUnique($form_state->get('id'), $identifier)) {
@@ -990,6 +990,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
    * filter.
    */
   public function groupForm(&$form, FormStateInterface $form_state) {
+    $groups = [];
     if (!empty($this->options['group_info']['optional']) && !$this->multipleExposedInput()) {
       $groups = ['All' => $this->t('- Any -')];
     }
@@ -1500,16 +1501,20 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       if (!empty($selected_group_id)) {
         $selected_group = $selected_group_id;
       }
-      else {
+      elseif (isset($input[$this->options['group_info']['identifier']])) {
         $selected_group = $input[$this->options['group_info']['identifier']];
       }
+      else {
+        return FALSE;
+      }
+
       if ($selected_group == 'All' && !empty($this->options['group_info']['optional'])) {
         return NULL;
       }
       if ($selected_group != 'All' && empty($this->options['group_info']['group_items'][$selected_group])) {
         return FALSE;
       }
-      if (isset($selected_group) && isset($this->options['group_info']['group_items'][$selected_group])) {
+      if (isset($this->options['group_info']['group_items'][$selected_group])) {
         $selected_group_options = $this->options['group_info']['group_items'][$selected_group];
 
         $operator_id = $this->options['expose']['operator'];
@@ -1526,9 +1531,8 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
         $this->group_info = $input[$this->options['group_info']['identifier']];
         return TRUE;
       }
-      else {
-        return FALSE;
-      }
+
+      return FALSE;
     }
   }
 
@@ -1615,10 +1619,10 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
 
     if (!empty($this->options['expose']['identifier'])) {
       if ($this->options['is_grouped']) {
-        $value = $input[$this->options['group_info']['identifier']];
+        $value = $input[$this->options['group_info']['identifier']] ?? NULL;
       }
       else {
-        $value = $input[$this->options['expose']['identifier']];
+        $value = $input[$this->options['expose']['identifier']] ?? NULL;
       }
 
       // Various ways to check for the absence of non-required input.

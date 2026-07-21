@@ -25,7 +25,7 @@ class WebformFlexbox extends Container {
   protected function defineDefaultProperties() {
     return [
       // Flexbox.
-      'justify_content' => 'flex-start',
+      'justify_content' => 'justify-flex-start',
       'align_items' => 'flex-start',
     ] + parent::defineDefaultProperties();
   }

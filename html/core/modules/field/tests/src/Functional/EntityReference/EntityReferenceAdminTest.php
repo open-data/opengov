@@ -12,12 +12,14 @@ use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests for the administrative UI.
- *
- * @group entity_reference
  */
+#[Group('entity_reference')]
+#[RunTestsInSeparateProcesses]
 class EntityReferenceAdminTest extends BrowserTestBase {
 
   use FieldUiTestTrait;
@@ -277,7 +279,7 @@ class EntityReferenceAdminTest extends BrowserTestBase {
     $date_format_field_name = $this->createEntityReferenceField('date_format');
 
     // Display all newly created Entity Reference configuration.
-    $this->drupalGet('admin/structure/types/manage/' . $this->type . '/display');
+    $this->drupalGet('admin/structure/types/manage/' . $this->type . '/display/default');
 
     // Check for Taxonomy Term select box values.
     // Test if Taxonomy Term Entity Reference Field has the correct formatters.

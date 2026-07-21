@@ -19,7 +19,7 @@ class WebformFilterJavaScriptTest extends WebformWebDriverTestBase {
   /**
    * Test filter.
    */
-  public function testFilter() {
+  public function testFilter(): void {
     // Set admin theme to claro.
     \Drupal::service('theme_installer')->install(['claro']);
     \Drupal::configFactory()->getEditable('system.theme')

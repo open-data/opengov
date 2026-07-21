@@ -6,11 +6,18 @@ namespace Drupal\Tests\views\Functional\Update;
 
 use Drupal\block\Entity\Block;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @group Update
- * @covers views_post_update_block_items_per_page
+ * Tests Block Items Per Page Update.
  */
+#[Group('Update')]
+#[CoversFunction('views_post_update_block_items_per_page')]
+#[RunTestsInSeparateProcesses]
+#[IgnoreDeprecations]
 final class BlockItemsPerPageUpdateTest extends UpdatePathTestBase {
 
   /**

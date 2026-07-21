@@ -1260,7 +1260,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     foreach ($properties as $key => $value) {
       // Convert composite element access and required to boolean value.
       if (preg_match('/__(access|required)$/', $key)) {
-        $properties[$key] = (boolean) $value;
+        $properties[$key] = (bool) $value;
       }
     }
     return $properties;

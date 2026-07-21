@@ -52,7 +52,10 @@ class TaxonomyTokensHooks {
       'name' => $this->t("Vocabulary ID"),
       'description' => $this->t("The unique ID of the taxonomy vocabulary."),
     ];
-    $vocabulary['name'] = ['name' => $this->t("Name"), 'description' => $this->t("The name of the taxonomy vocabulary.")];
+    $vocabulary['name'] = [
+      'name' => $this->t("Name"),
+      'description' => $this->t("The name of the taxonomy vocabulary."),
+    ];
     $vocabulary['description'] = [
       'name' => $this->t("Description"),
       'description' => $this->t("The optional description of the taxonomy vocabulary."),
@@ -65,7 +68,7 @@ class TaxonomyTokensHooks {
       'name' => $this->t("Term count"),
       'description' => $this->t("The number of terms belonging to the taxonomy vocabulary."),
     ];
-    // Chained tokens for taxonomies
+    // Chained tokens for taxonomies.
     $term['vocabulary'] = [
       'name' => $this->t("Vocabulary"),
       'description' => $this->t("The vocabulary the taxonomy term belongs to."),
@@ -116,8 +119,7 @@ class TaxonomyTokensHooks {
             break;
 
           case 'description':
-            // "processed" returns a \Drupal\Component\Render\MarkupInterface
-            // via check_markup().
+            // "processed" returns a \Drupal\Component\Render\MarkupInterface.
             $replacements[$original] = $term->description->processed;
             break;
 

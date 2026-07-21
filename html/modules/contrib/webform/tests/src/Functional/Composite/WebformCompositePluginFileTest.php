@@ -31,7 +31,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
   /**
    * Test composite plugin.
    */
-  public function testPlugin() {
+  public function testPlugin(): void {
     $webform = Webform::load('test_element_comp_file_plugin');
 
     $first_file = $this->files[0];

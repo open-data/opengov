@@ -29,7 +29,7 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
   /**
    * Test file limit.
    */
-  public function testLimits() {
+  public function testLimits(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

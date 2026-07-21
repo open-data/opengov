@@ -3,6 +3,7 @@
 namespace Drupal\webform;
 
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\TypedConfigManagerInterface;
@@ -920,6 +921,7 @@ class WebformTranslationConfigManager implements WebformTranslationConfigManager
   protected function alterTextareaElement(array &$element, $mode = 'yaml') {
     // Source.
     $source_value = trim((string) $element['source']['#markup']);
+    $source_value = Html::decodeEntities($source_value);
     $source_value = preg_replace('#^<span lang="[^"]+">(.*)</span>#ims', '\1', $source_value);
 
     // Translation.

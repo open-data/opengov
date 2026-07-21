@@ -21,7 +21,7 @@ class WebformElementHeightTest extends WebformElementBrowserTestBase {
   /**
    * Test height element.
    */
-  public function testheightElement() {
+  public function testheightElement(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_height');

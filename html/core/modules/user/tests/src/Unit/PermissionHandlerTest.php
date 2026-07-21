@@ -14,15 +14,16 @@ use Drupal\user\PermissionHandler;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamWrapper;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the permission handler.
- *
- * @group user
- *
- * @coversDefaultClass \Drupal\user\PermissionHandler
- * @runTestsInSeparateProcesses
  */
+#[CoversClass(PermissionHandler::class)]
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class PermissionHandlerTest extends UnitTestCase {
 
   /**
@@ -83,10 +84,10 @@ class PermissionHandlerTest extends UnitTestCase {
   /**
    * Tests permissions provided by YML files.
    *
-   * @covers ::__construct
-   * @covers ::getPermissions
-   * @covers ::buildPermissionsYaml
-   * @covers ::moduleProvidesPermissions
+   * @legacy-covers ::__construct
+   * @legacy-covers ::getPermissions
+   * @legacy-covers ::buildPermissionsYaml
+   * @legacy-covers ::moduleProvidesPermissions
    */
   public function testBuildPermissionsYaml(): void {
     vfsStreamWrapper::register();
@@ -125,14 +126,14 @@ EOF
     );
     $modules = ['module_a', 'module_b', 'module_c'];
 
-    $this->moduleHandler->expects($this->any())
+    $this->moduleHandler
       ->method('getModuleList')
       ->willReturn(array_flip($modules));
 
     $this->callableResolver->expects($this->never())
       ->method('getCallableFromDefinition');
 
-    $module_extension_list = $this->createMock(ModuleExtensionList::class);
+    $module_extension_list = $this->createStub(ModuleExtensionList::class);
 
     $this->permissionHandler = new PermissionHandler($this->moduleHandler, $this->stringTranslation, $this->callableResolver, $module_extension_list);
 
@@ -148,12 +149,15 @@ EOF
   /**
    * Tests permissions sort inside a module.
    *
-   * @covers ::__construct
-   * @covers ::getPermissions
-   * @covers ::buildPermissionsYaml
-   * @covers ::sortPermissions
+   * @legacy-covers ::__construct
+   * @legacy-covers ::getPermissions
+   * @legacy-covers ::buildPermissionsYaml
+   * @legacy-covers ::sortPermissions
    */
   public function testBuildPermissionsSortPerModule(): void {
+    $this->callableResolver->expects($this->never())
+      ->method('getCallableFromDefinition');
+
     vfsStreamWrapper::register();
     $root = new vfsStreamDirectory('modules');
     vfsStreamWrapper::setRoot($root);
@@ -205,9 +209,9 @@ EOF
   /**
    * Tests dynamic callback permissions provided by YML files.
    *
-   * @covers ::__construct
-   * @covers ::getPermissions
-   * @covers ::buildPermissionsYaml
+   * @legacy-covers ::__construct
+   * @legacy-covers ::getPermissions
+   * @legacy-covers ::buildPermissionsYaml
    */
   public function testBuildPermissionsYamlCallback(): void {
     vfsStreamWrapper::register();
@@ -246,7 +250,7 @@ EOF
 
     $modules = ['module_a', 'module_b', 'module_c'];
 
-    $this->moduleHandler->expects($this->any())
+    $this->moduleHandler
       ->method('getModuleList')
       ->willReturn(array_flip($modules));
 
@@ -271,7 +275,7 @@ EOF
         ],
       ]);
 
-    $module_extension_list = $this->createMock(ModuleExtensionList::class);
+    $module_extension_list = $this->createStub(ModuleExtensionList::class);
 
     $this->permissionHandler = new PermissionHandler($this->moduleHandler, $this->stringTranslation, $this->callableResolver, $module_extension_list);
 
@@ -307,7 +311,7 @@ EOF
 
     $modules = ['module_a'];
 
-    $this->moduleHandler->expects($this->any())
+    $this->moduleHandler
       ->method('getModuleList')
       ->willReturn(array_flip($modules));
 
@@ -316,7 +320,7 @@ EOF
       ->with('Drupal\\user\\Tests\\TestPermissionCallbacks::titleDescription')
       ->willReturn([new TestPermissionCallbacks(), 'titleDescription']);
 
-    $module_extension_list = $this->createMock(ModuleExtensionList::class);
+    $module_extension_list = $this->createStub(ModuleExtensionList::class);
 
     $this->permissionHandler = new PermissionHandler($this->moduleHandler, $this->stringTranslation, $this->callableResolver, $module_extension_list);
 

@@ -19,7 +19,7 @@ class WebformElementCodeMirrorTest extends WebformElementBrowserTestBase {
   /**
    * Tests CodeMirror element.
    */
-  public function testCodeMirror() {
+  public function testCodeMirror(): void {
     $assert_session = $this->assertSession();
 
     /* ********************************************************************** */

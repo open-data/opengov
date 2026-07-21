@@ -19,7 +19,7 @@ class WebformElementRadiosTest extends WebformElementBrowserTestBase {
   /**
    * Tests radios element.
    */
-  public function testElementRadios() {
+  public function testElementRadios(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

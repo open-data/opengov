@@ -6,12 +6,14 @@ namespace Drupal\Tests\block\Functional;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests block caching.
- *
- * @group block
  */
+#[Group('block')]
+#[RunTestsInSeparateProcesses]
 class BlockCacheTest extends BrowserTestBase {
 
   /**
@@ -98,7 +100,7 @@ class BlockCacheTest extends BrowserTestBase {
     $this->assertSession()->pageTextContains($old_content);
 
     // Clear the cache and verify that the stale data is no longer there.
-    Cache::invalidateTags(['block_view']);
+    Cache::invalidateTags($this->block->getCacheTagsToInvalidate());
     $this->drupalGet('');
     $this->assertSession()->pageTextNotContains($old_content);
     // Fresh block content is displayed after clearing the cache.

@@ -47,7 +47,7 @@ interface FilterFormatInterface extends ConfigEntityInterface {
   /**
    * Returns the machine-readable permission name for the text format.
    *
-   * @return string|bool
+   * @return string|false
    *   The machine-readable permission name, or FALSE if the text format is
    *   malformed or is the fallback format (which is available to all users).
    */
@@ -84,5 +84,13 @@ interface FilterFormatInterface extends ConfigEntityInterface {
    *   The ID of a filter plugin to be removed.
    */
   public function removeFilter($instance_id);
+
+  /**
+   * Retrieves a list of roles that are allowed to use this format.
+   *
+   * @return array<string, string>
+   *   An array of role names, keyed by role ID.
+   */
+  public function getRoles(): array;
 
 }

@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\options\Kernel;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\entity_test\Entity\EntityTestRev;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the options allowed values api.
- *
- * @group options
  */
+#[Group('options')]
+#[RunTestsInSeparateProcesses]
 class OptionsDynamicValuesApiTest extends OptionsFieldUnitTestBase {
 
   /**
@@ -28,7 +29,7 @@ class OptionsDynamicValuesApiTest extends OptionsFieldUnitTestBase {
   /**
    * The created entity.
    */
-  protected EntityInterface $entity;
+  protected EntityTestRev $entity;
 
   /**
    * {@inheritdoc}

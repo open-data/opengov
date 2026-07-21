@@ -13,7 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base implementation of media source plugin.
@@ -87,21 +86,6 @@ abstract class MediaSourceBase extends PluginBase implements MediaSourceInterfac
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.manager'),
-      $container->get('entity_field.manager'),
-      $container->get('plugin.manager.field.field_type'),
-      $container->get('config.factory')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setConfiguration(array $configuration) {
     $this->configuration = NestedArray::mergeDeep(
       $this->defaultConfiguration(),
@@ -136,6 +120,15 @@ abstract class MediaSourceBase extends PluginBase implements MediaSourceInterfac
       case 'thumbnail_uri':
         $default_thumbnail_filename = $this->pluginDefinition['default_thumbnail_filename'];
         return $this->configFactory->get('media.settings')->get('icon_base_uri') . '/' . $default_thumbnail_filename;
+
+      case self::METADATA_ATTRIBUTE_LINK_TARGET:
+        // @see \Drupal\media\Entity\MediaLinkTarget
+        // Media entities are only linkable if and only if standalone URLs are
+        // enabled: linking to their edit forms is meaningless.
+        if ($this->configFactory->get('media.settings')->get('standalone_url')) {
+          return $media->toUrl()->toString(TRUE);
+        }
+        return NULL;
     }
 
     return NULL;

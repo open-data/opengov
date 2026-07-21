@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi\Functional;
 
-use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
@@ -15,17 +14,19 @@ use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\user\Entity\User;
 use GuzzleHttp\RequestOptions;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Psr\Http\Message\ResponseInterface;
 
 // cspell:ignore èxample msword
-
 /**
  * Tests binary data file upload route.
- *
- * @group jsonapi
  */
+#[Group('jsonapi')]
+#[RunTestsInSeparateProcesses]
 class FileUploadTest extends ResourceTestBase {
 
   /**
@@ -193,7 +194,7 @@ class FileUploadTest extends ResourceTestBase {
     $this->assertResourceErrorResponse(405, sprintf("JSON:API is configured to accept only read operations. Site administrators can configure this at %s.", Url::fromUri('base:/admin/config/services/jsonapi')->setAbsolute()->toString(TRUE)->getGeneratedUrl()), $uri, $response);
     $this->assertSame(['GET'], $response->getHeader('Allow'));
 
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     // DX: 403 when unauthorized.
     $response = $this->fileRequest($uri, $this->testFileData);
@@ -272,7 +273,7 @@ class FileUploadTest extends ResourceTestBase {
     $this->assertResourceErrorResponse(405, sprintf("JSON:API is configured to accept only read operations. Site administrators can configure this at %s.", Url::fromUri('base:/admin/config/services/jsonapi')->setAbsolute()->toString(TRUE)->getGeneratedUrl()), $uri, $response);
     $this->assertSame(['GET'], $response->getHeader('Allow'));
 
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     // DX: 403 when unauthorized.
     $response = $this->fileRequest($uri, $this->testFileData);
@@ -288,7 +289,16 @@ class FileUploadTest extends ResourceTestBase {
     // This request fails despite the upload succeeding, because we're not
     // allowed to view the entity we're uploading to.
     $response = $this->fileRequest($uri, $this->testFileData);
-    $this->assertResourceErrorResponse(403, $this->getExpectedUnauthorizedAccessMessage('GET'), $uri, $response, FALSE, ['4xx-response', 'http_response'], ['url.query_args', 'url.site', 'user.permissions']);
+    $this->assertResourceErrorResponse(
+      403, $this->getExpectedUnauthorizedAccessMessage('GET'),
+      $uri,
+      $response,
+      FALSE,
+      ['4xx-response', 'http_response'],
+      ['url.query_args', 'url.site', 'user.permissions'],
+      NULL,
+      'UNCACHEABLE (403)',
+    );
 
     $this->setUpAuthorization('GET');
 
@@ -403,7 +413,7 @@ class FileUploadTest extends ResourceTestBase {
   public function testPostFileUploadDuplicateFile(): void {
     \Drupal::service('router.builder')->rebuild();
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     $uri = Url::fromUri('base:' . static::$postUri);
 
@@ -444,7 +454,7 @@ class FileUploadTest extends ResourceTestBase {
   public function testFileUploadStrippedFilePath(): void {
     \Drupal::service('router.builder')->rebuild();
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     $uri = Url::fromUri('base:' . static::$postUri);
 
@@ -491,7 +501,7 @@ class FileUploadTest extends ResourceTestBase {
   public function testInvalidFileUploads(): void {
     \Drupal::service('router.builder')->rebuild();
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
     $this->testFileUploadInvalidFileType();
     $this->testPostFileUploadInvalidHeaders();
     $this->testFileUploadLargerFileSize();
@@ -504,7 +514,7 @@ class FileUploadTest extends ResourceTestBase {
   public function testFileUploadUnicodeFilename(): void {
     \Drupal::service('router.builder')->rebuild();
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     $uri = Url::fromUri('base:' . static::$postUri);
 
@@ -523,7 +533,7 @@ class FileUploadTest extends ResourceTestBase {
   public function testFileUploadZeroByteFile(): void {
     \Drupal::service('router.builder')->rebuild();
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     $uri = Url::fromUri('base:' . static::$postUri);
 
@@ -694,7 +704,7 @@ class FileUploadTest extends ResourceTestBase {
    */
   public function testFileUploadNoConfiguration(): void {
     $this->setUpAuthorization('POST');
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     $uri = Url::fromUri('base:' . static::$postUri);
 

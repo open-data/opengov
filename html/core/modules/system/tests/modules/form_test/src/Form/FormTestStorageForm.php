@@ -34,7 +34,7 @@ class FormTestStorageForm extends FormBase {
     if ($form_state->isRebuilding()) {
       $form_state->setUserInput([]);
     }
-    // Initialize
+    // Initialize.
     $storage = $form_state->getStorage();
     $session = $this->getRequest()->getSession();
     if (empty($storage)) {
@@ -42,7 +42,7 @@ class FormTestStorageForm extends FormBase {
       if (empty($user_input)) {
         $session->set('constructions', 0);
       }
-      // Put the initial thing into the storage
+      // Put the initial thing into the storage.
       $storage = [
         'thing' => [
           'title' => 'none',
@@ -90,7 +90,7 @@ class FormTestStorageForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if ($this->getRequest()->get('cache')) {
+    if ($this->getRequest()->query->get('cache')) {
       // Manually activate caching, so we can test that the storage keeps
       // working when it's enabled.
       $form_state->setCached();
@@ -107,7 +107,7 @@ class FormTestStorageForm extends FormBase {
     // This presumes that another submitted form value triggers a validation
     // error elsewhere in the form. Form API should still update the cached form
     // storage though.
-    if ($this->getRequest()->get('cache') && $form_state->getValue('value') == 'change_title') {
+    if ($this->getRequest()->query->get('cache') && $form_state->getValue('value') == 'change_title') {
       $form_state->set(['thing', 'changed'], TRUE);
     }
   }

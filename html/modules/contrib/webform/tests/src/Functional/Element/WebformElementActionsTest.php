@@ -21,7 +21,7 @@ class WebformElementActionsTest extends WebformElementBrowserTestBase {
   /**
    * Tests actions element.
    */
-  public function testActions() {
+  public function testActions(): void {
     global $base_path;
 
     $assert_session = $this->assertSession();

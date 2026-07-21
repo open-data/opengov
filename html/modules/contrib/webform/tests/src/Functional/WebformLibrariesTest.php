@@ -26,7 +26,7 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
   /**
    * Tests webform libraries.
    */
-  public function testLibraries() {
+  public function testLibraries(): void {
     $assert_session = $this->assertSession();
 
     $optional_properties = [
@@ -122,7 +122,7 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
     $assert_session->pageTextNotContains('jQuery: RateIt library');
     $assert_session->pageTextNotContains('Signature Pad library');
 
-    // Check that choices, chosen, and select2 using webform's CDN URLs.
+    // Check that choices, chosen, and select2 use downloaded libraries or CDN URLs.
     $this->drupalGet('/admin/structure/webform/config/libraries');
     $edit = [
       'excluded_libraries[jquery.select2]' => TRUE,
@@ -130,8 +130,22 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
     ];
     $this->submitForm($edit, 'Save configuration');
     $this->drupalGet('/webform/test_libraries_optional');
-    $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/chosen');
-    $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/select2');
+
+    $libraries_manager = \Drupal::service('webform.libraries_manager');
+    if ($chosen_path = $libraries_manager->find('jquery.chosen')) {
+      $assert_session->responseContains('/' . $chosen_path);
+      $assert_session->responseNotContains('https://cdnjs.cloudflare.com/ajax/libs/chosen');
+    }
+    else {
+      $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/chosen');
+    }
+    if ($select2_path = $libraries_manager->find('jquery.select2')) {
+      $assert_session->responseContains('/' . $select2_path);
+      $assert_session->responseNotContains('https://cdnjs.cloudflare.com/ajax/libs/select2');
+    }
+    else {
+      $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/select2');
+    }
 
     // Install chosen and select2 modules.
     \Drupal::service('module_installer')->install(['chosen', 'chosen_lib', 'select2']);

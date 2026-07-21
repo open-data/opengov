@@ -8,19 +8,21 @@ use Drupal\ckeditor5\Plugin\Editor\CKEditor5;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Config\InstallStorage;
 use Drupal\Core\Config\StorageInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\editor\Entity\Editor;
 use Drupal\KernelTests\AssertConfigTrait;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Tests\SchemaCheckTestTrait;
-use Symfony\Component\Validator\ConstraintViolation;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * Tests demo_umami profile.
- *
- * @group demo_umami
- * @group #slow
  */
+#[Group('demo_umami')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class DemoUmamiProfileTest extends BrowserTestBase {
   use AssertConfigTrait;
   use SchemaCheckTestTrait;
@@ -100,7 +102,7 @@ class DemoUmamiProfileTest extends BrowserTestBase {
       }
 
       $this->assertSame([], array_map(
-        function (ConstraintViolation $v) {
+        function (ConstraintViolationInterface $v) {
           return (string) $v->getMessage();
         },
         iterator_to_array(CKEditor5::validatePair(
@@ -202,25 +204,9 @@ class DemoUmamiProfileTest extends BrowserTestBase {
   }
 
   /**
-   * Tests that the toolbar warning only appears on the admin pages.
-   */
-  protected function testDemonstrationWarningMessage(): void {
-    $permissions = [
-      'access content overview',
-      'access toolbar',
-      'administer nodes',
-      'edit any recipe content',
-      'create recipe content',
-      'use editorial transition create_new_draft',
-    ];
-    $this->assertDemonstrationWarningMessage($permissions);
-  }
-
-  /**
    * Tests that the navigation warning only appears on the admin pages.
    */
-  protected function testNavigationDemonstrationWarningMessage(): void {
-    \Drupal::service('module_installer')->install(['navigation']);
+  protected function testDemonstrationWarningMessage(): void {
     $permissions = [
       'access content overview',
       'access navigation',
@@ -312,15 +298,15 @@ class DemoUmamiProfileTest extends BrowserTestBase {
     $web_assert->statusCodeEquals(200);
     $web_assert->pageTextContains('This site is intended for demonstration purposes.');
 
-    // Check when viewing a node, the warning is not visible.
+    // Check when viewing a node, the warning is visible.
     $this->drupalGet($recipe_node->toUrl());
     $web_assert->statusCodeEquals(200);
-    $web_assert->pageTextNotContains('This site is intended for demonstration purposes.');
+    $web_assert->pageTextContains('This site is intended for demonstration purposes.');
 
-    // Check when viewing the homepage, the warning is not visible.
+    // Check when viewing the homepage, the warning is visible.
     $this->drupalGet('<front>');
     $web_assert->statusCodeEquals(200);
-    $web_assert->pageTextNotContains('This site is intended for demonstration purposes.');
+    $web_assert->pageTextContains('This site is intended for demonstration purposes.');
   }
 
 }

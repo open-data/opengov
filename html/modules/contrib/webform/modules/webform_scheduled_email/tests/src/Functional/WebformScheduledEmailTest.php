@@ -23,7 +23,7 @@ class WebformScheduledEmailTest extends WebformNodeBrowserTestBase {
   /**
    * Tests webform schedule email handler.
    */
-  public function testWebformScheduledEmail() {
+  public function testWebformScheduledEmail(): void {
     // Set default timezone to America/Los_Angeles.
     $this->config('system.date')
       ->set('timezone.default', 'America/Los_Angeles')
@@ -341,7 +341,7 @@ class WebformScheduledEmailTest extends WebformNodeBrowserTestBase {
 
     // Check 'Other' email is sent immediately via testing.
     $this->drupalGet('/webform/test_handler_scheduled_email/test');
-    $edit = ['send' => 'other', 'date[date]' => '2101-01-01'];
+    $edit = ['send' => 'other', 'date[date]' => '2049-01-01'];
     $this->submitForm($edit, 'Submit');
     $this->assertEquals($scheduled_manager->total(), 0);
     $assert_session->responseContains('Webform submission from: Test: Handler: Test scheduled email</em> sent to <em class="placeholder">simpletest@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>');

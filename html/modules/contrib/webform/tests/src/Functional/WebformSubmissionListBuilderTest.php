@@ -28,7 +28,7 @@ class WebformSubmissionListBuilderTest extends WebformBrowserTestBase {
   /**
    * Tests results.
    */
-  public function testResults() {
+  public function testResults(): void {
     $assert_session = $this->assertSession();
 
     $own_submission_user = $this->drupalCreateUser([

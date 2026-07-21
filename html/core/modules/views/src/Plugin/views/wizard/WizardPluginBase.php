@@ -10,10 +10,10 @@ use Drupal\Core\Menu\MenuParentFormSelectorInterface;
 use Drupal\Core\Url;
 use Drupal\views\Entity\View;
 use Drupal\views\Views;
+use Drupal\views\ViewsFormAjaxHelperTrait;
 use Drupal\views_ui\ViewUI;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\PluginBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @defgroup views_wizard_plugins Views wizard plugins
@@ -37,12 +37,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class WizardPluginBase extends PluginBase implements WizardInterface {
 
+  use ViewsFormAjaxHelperTrait;
+
   /**
    * The base table connected with the wizard.
    *
    * @var string
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $base_table;
 
   /**
@@ -67,7 +69,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $validated_views = [];
 
   /**
@@ -106,7 +108,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $filter_defaults = [
     'id' => NULL,
     'expose' => ['operator' => FALSE],
@@ -128,19 +130,6 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
   protected $parentFormSelector;
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.bundle.info'),
-      $container->get('menu.parent_form_selector')
-    );
-  }
-
-  /**
    * Constructs a WizardPluginBase object.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeBundleInfoInterface $bundle_info_service, MenuParentFormSelectorInterface $parent_form_selector) {
@@ -153,7 +142,12 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
 
     $entity_types = \Drupal::entityTypeManager()->getDefinitions();
     foreach ($entity_types as $entity_type_id => $entity_type) {
-      if (in_array($this->base_table, [$entity_type->getBaseTable(), $entity_type->getDataTable(), $entity_type->getRevisionTable(), $entity_type->getRevisionDataTable()], TRUE)) {
+      if (in_array($this->base_table, [
+        $entity_type->getBaseTable(),
+        $entity_type->getDataTable(),
+        $entity_type->getRevisionTable(),
+        $entity_type->getRevisionDataTable(),
+      ], TRUE)) {
         $this->entityType = $entity_type;
         $this->entityTypeId = $entity_type_id;
       }
@@ -294,7 +288,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
     $style_form['style_plugin']['#default_value'] = static::getSelected($form_state, ['page', 'style', 'style_plugin'], 'default', $style_form['style_plugin']);
     // Changing this dropdown updates $form['displays']['page']['options'] via
     // AJAX.
-    views_ui_add_ajax_trigger($style_form, 'style_plugin', ['displays', 'page', 'options']);
+    $this->addAjaxTrigger($style_form, 'style_plugin', ['displays', 'page', 'options']);
 
     $this->buildFormStyle($form, $form_state, 'page');
     $form['displays']['page']['options']['items_per_page'] = [
@@ -421,10 +415,14 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
         '#options' => $style_options,
       ];
       $style_form = &$form['displays']['block']['options']['style'];
-      $style_form['style_plugin']['#default_value'] = static::getSelected($form_state, ['block', 'style', 'style_plugin'], 'default', $style_form['style_plugin']);
+      $style_form['style_plugin']['#default_value'] = static::getSelected($form_state, [
+        'block',
+        'style',
+        'style_plugin',
+      ], 'default', $style_form['style_plugin']);
       // Changing this dropdown updates $form['displays']['block']['options']
       // via AJAX.
-      views_ui_add_ajax_trigger($style_form, 'style_plugin', ['displays', 'block', 'options']);
+      $this->addAjaxTrigger($style_form, 'style_plugin', ['displays', 'block', 'options']);
 
       $this->buildFormStyle($form, $form_state, 'block');
       $form['displays']['block']['options']['items_per_page'] = [
@@ -579,7 +577,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
   protected function buildFormStyle(array &$form, FormStateInterface $form_state, $type) {
     $style_form = &$form['displays'][$type]['options']['style'];
     $style = $style_form['style_plugin']['#default_value'];
-    $style_plugin = Views::pluginManager('style')->createInstance($style);
+    $style_plugin = \Drupal::service('plugin.manager.views.style')->createInstance($style);
     if (isset($style_plugin) && $style_plugin->usesRowPlugin()) {
       $options = $this->rowStyleOptions();
       $style_form['row_plugin'] = [
@@ -594,7 +592,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
       $default_value = $block_with_linked_titles_available ? 'titles_linked' : key($options);
       $style_form['row_plugin']['#default_value'] = static::getSelected($form_state, [$type, 'style', 'row_plugin'], $default_value, $style_form['row_plugin']);
       // Changing this dropdown updates the individual row options via AJAX.
-      views_ui_add_ajax_trigger($style_form, 'row_plugin', ['displays', $type, 'options', 'style', 'row_options']);
+      $this->addAjaxTrigger($style_form, 'row_plugin', ['displays', $type, 'options', 'style', 'row_options']);
 
       // This is the region that can be updated by AJAX. The base class doesn't
       // add anything here, but child classes can.
@@ -626,9 +624,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
    * available).
    */
   protected function buildFilters(&$form, FormStateInterface $form_state) {
-    \Drupal::moduleHandler()->loadInclude('views_ui', 'inc', 'admin');
-
-    $bundles = $this->bundleInfoService->getBundleInfo($this->entityTypeId);
+    $bundles = isset($this->entityTypeId) ? $this->bundleInfoService->getBundleInfo($this->entityTypeId) : [];
     // If the current base table support bundles and has more than one (like
     // user).
     if (!empty($bundles) && $this->entityType && $this->entityType->hasKey('bundle')) {
@@ -647,7 +643,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
       // Changing this dropdown updates the entire content of $form['displays']
       // via AJAX, since each bundle might have entirely different fields
       // attached to it, etc.
-      views_ui_add_ajax_trigger($form['displays']['show'], 'type', ['displays']);
+      $this->addAjaxTrigger($form['displays']['show'], 'type', ['displays']);
     }
   }
 
@@ -722,7 +718,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
    *   arrays of options for that display.
    */
   protected function buildDisplayOptions($form, FormStateInterface $form_state) {
-    // Display: Default
+    // Display: Default.
     $display_options['default'] = $this->defaultDisplayOptions();
     $display_options['default'] += [
       'filters' => [],
@@ -731,17 +727,17 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
     $display_options['default']['filters'] += $this->defaultDisplayFilters($form, $form_state);
     $display_options['default']['sorts'] += $this->defaultDisplaySorts($form, $form_state);
 
-    // Display: Page
+    // Display: Page.
     if (!$form_state->isValueEmpty(['page', 'create'])) {
       $display_options['page'] = $this->pageDisplayOptions($form, $form_state);
 
-      // Display: Feed (attached to the page)
+      // Display: Feed (attached to the page).
       if (!$form_state->isValueEmpty(['page', 'feed'])) {
         $display_options['feed'] = $this->pageFeedDisplayOptions($form, $form_state);
       }
     }
 
-    // Display: Block
+    // Display: Block.
     if (!$form_state->isValueEmpty(['block', 'create'])) {
       $display_options['block'] = $this->blockDisplayOptions($form, $form_state);
     }
@@ -760,7 +756,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
   protected function alterDisplayOptions(&$display_options, $form, FormStateInterface $form_state) {
     foreach ($display_options as $display_type => $options) {
       // Allow style plugins to hook in and provide some settings.
-      $style_plugin = Views::pluginManager('style')->createInstance($options['style']['type']);
+      $style_plugin = \Drupal::service('plugin.manager.views.style')->createInstance($options['style']['type']);
       $style_plugin->wizardSubmit($form, $form_state, $this, $display_options, $display_type);
     }
   }
@@ -773,13 +769,13 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
     // instances.
     $executable = $view->getExecutable();
 
-    // Display: Default
+    // Display: Default.
     $default_display = $executable->newDisplay('default', 'Default', 'default');
     foreach ($display_options['default'] as $option => $value) {
       $default_display->setOption($option, $value);
     }
 
-    // Display: Page
+    // Display: Page.
     if (isset($display_options['page'])) {
       $display = $executable->newDisplay('page', 'Page', 'page_1');
       // The page display is usually the main one (from the user's point of
@@ -932,7 +928,6 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
       // Figure out the table where $bundle_key lives. It may not be the same as
       // the base table for the view; the taxonomy vocabulary machine_name, for
       // example, is stored in taxonomy_vocabulary, not taxonomy_term_data.
-      \Drupal::moduleHandler()->loadInclude('views_ui', 'inc', 'admin');
       $fields = Views::viewsDataHelper()->fetchFields($this->base_table, 'filter');
       $table = FALSE;
       if (isset($fields[$this->base_table . '.' . $bundle_key])) {
@@ -954,7 +949,7 @@ abstract class WizardPluginBase extends PluginBase implements WizardInterface {
         $table_data = Views::viewsData()->get($table);
         // If the 'in' operator is being used, map the values to an array.
         $handler = $table_data[$bundle_key]['filter']['id'];
-        $handler_definition = Views::pluginManager('filter')
+        $handler_definition = \Drupal::service('plugin.manager.views.filter')
           ->getDefinition($handler);
         if ($handler == 'in_operator' || is_subclass_of($handler_definition['class'], 'Drupal\\views\\Plugin\\views\\filter\\InOperator')) {
           $value = [$type => $type];

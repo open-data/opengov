@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Drupal\Tests\node\Functional;
 
 use Drupal\Core\Url;
+use Drupal\filter\FilterFormatRepositoryInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests reverting node revisions correctly sets authorship information.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeRevisionsAuthorTest extends NodeTestBase {
 
   /**
@@ -47,7 +50,7 @@ class NodeRevisionsAuthorTest extends NodeTestBase {
     $revisedBody = $this->randomMachineName(32);
     $node->set('body', [
       'value' => $revisedBody,
-      'format' => filter_default_format(),
+      'format' => \Drupal::service(FilterFormatRepositoryInterface::class)->getDefaultFormat()->id(),
     ]);
     $node->setOwnerId($initialRevisionAuthor->id());
     $node->setRevisionUserId($initialRevisionUser->id());

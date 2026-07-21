@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\FunctionalTests\Installer;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+
 /**
  * Installs Drupal in German and checks resulting site.
  *
- * @group Installer
- *
  * @see \Drupal\FunctionalTests\Installer\InstallerTranslationTest
  */
+#[Group('Installer')]
+#[RunTestsInSeparateProcesses]
 class InstallerTranslationQueryTest extends InstallerTestBase {
 
   /**
@@ -31,7 +34,7 @@ class InstallerTranslationQueryTest extends InstallerTestBase {
   protected function visitInstaller(): void {
     // Place a custom local translation in the translations directory.
     mkdir($this->root . '/' . $this->siteDirectory . '/files/translations', 0777, TRUE);
-    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-8.0.0.de.po', $this->getPo('de'));
+    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-' . \Drupal::VERSION . '.de.po', $this->getPo('de'));
 
     // The unrouted URL assembler does not exist at this point, so we build the
     // URL ourselves.

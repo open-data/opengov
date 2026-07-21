@@ -125,16 +125,16 @@ class WebformOptionsHelper {
       if (is_array($option_text)) {
         $option_text = self::getOptionText($value, $option_text, $options_description);
         if ((string) $value !== (string) $option_text) {
-          return $option_text;
+          return ($option_text !== '') ? $option_text : $value;
         }
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
         if ($options_description && str_contains($option_text, static::DESCRIPTION_DELIMITER)) {
           [$option_text] = static::splitOption($option_text);
-          return $option_text;
+          return ($option_text !== '') ? $option_text : $value;
         }
         else {
-          return $option_text;
+          return ($option_text !== '') ? $option_text : $value;
         }
       }
     }

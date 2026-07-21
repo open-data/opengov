@@ -9,9 +9,11 @@ use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\file\Element\ManagedFile;
 use Drupal\file\Entity\File;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\image\ImageDerivativeUtilities;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
@@ -73,7 +75,7 @@ class ImageWidget extends FileWidget {
     $element['preview_image_style'] = [
       '#title' => $this->t('Preview image style'),
       '#type' => 'select',
-      '#options' => image_style_options(FALSE),
+      '#options' => \Drupal::service(ImageDerivativeUtilities::class)->styleOptions(FALSE),
       '#empty_option' => '<' . $this->t('no preview') . '>',
       '#default_value' => $this->getSetting('preview_image_style'),
       '#description' => $this->t('The preview image will be shown while editing the content.'),
@@ -89,7 +91,7 @@ class ImageWidget extends FileWidget {
   public function settingsSummary() {
     $summary = parent::settingsSummary();
 
-    $image_styles = image_style_options(FALSE);
+    $image_styles = \Drupal::service(ImageDerivativeUtilities::class)->styleOptions(FALSE);
     // Unset possible 'No defined styles' option.
     unset($image_styles['']);
     // Styles could be lost because of enabled/disabled modules that defines
@@ -293,7 +295,7 @@ class ImageWidget extends FileWidget {
     // Only do validation if the function is triggered from other places than
     // the image process form.
     $triggering_element = $form_state->getTriggeringElement();
-    if (!empty($triggering_element['#submit']) && in_array('file_managed_file_submit', $triggering_element['#submit'], TRUE)) {
+    if (!empty($triggering_element['#submit']) && in_array([ManagedFile::class, 'submit'], $triggering_element['#submit'], TRUE)) {
       $form_state->setLimitValidationErrors([]);
     }
   }

@@ -7,16 +7,19 @@ namespace Drupal\Tests\node\Kernel;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\NodeType;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\node\Traits\NodeAccessTrait;
+use Drupal\node\NodeAccessRebuild;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests node access with multiple languages and two node access modules.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
 
   use NodeAccessTrait;
@@ -84,7 +87,7 @@ class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
     ])->save();
 
     // After enabling a node access module, the access table has to be rebuild.
-    node_access_rebuild();
+    \Drupal::service(NodeAccessRebuild::class)->rebuild();
 
     // Add Hungarian and Catalan.
     ConfigurableLanguage::createFromLangcode('hu')->save();

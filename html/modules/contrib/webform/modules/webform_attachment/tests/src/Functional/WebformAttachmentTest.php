@@ -24,7 +24,7 @@ class WebformAttachmentTest extends WebformBrowserTestBase {
   /**
    * Tests webform attachment.
    */
-  public function testWebformAttachment() {
+  public function testWebformAttachment(): void {
     global $base_url;
 
     $assert_session = $this->assertSession();

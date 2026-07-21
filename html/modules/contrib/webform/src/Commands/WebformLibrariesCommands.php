@@ -298,7 +298,7 @@ class WebformLibrariesCommands extends WebformCommandsBase {
   }
 
   /* ************************************************************************ */
-  // :ibraries remove.
+  // Libraries remove.
   /* ************************************************************************ */
 
   /**

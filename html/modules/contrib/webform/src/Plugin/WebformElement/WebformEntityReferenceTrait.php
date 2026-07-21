@@ -528,11 +528,6 @@ trait WebformEntityReferenceTrait {
       }
     }
 
-    // Entity Reference fields are no longer supported to reference Paragraphs.
-    // @see paragraphs_form_field_storage_config_edit_form_alter()
-    $target_type_options = $this->entityTypeRepository->getEntityTypeLabels(TRUE);
-    unset($target_type_options[(string) $this->t('Content')]['paragraph']);
-
     $form['entity_reference'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Entity reference settings'),
@@ -542,7 +537,7 @@ trait WebformEntityReferenceTrait {
     $form['entity_reference']['target_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type of item to reference'),
-      '#options' => $target_type_options,
+      '#options' => $this->entityTypeRepository->getEntityTypeLabels(TRUE),
       '#required' => TRUE,
       '#empty_option' => $this->t('- Select a target type -'),
       '#default_value' => $target_type,

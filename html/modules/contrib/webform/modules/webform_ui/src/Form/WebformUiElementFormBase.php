@@ -357,7 +357,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     // Get element validation errors.
     $element_errors = $subform_state->getErrors();
     foreach ($element_errors as $element_error) {
-      $form_state->setErrorByName(NULL, $element_error);
+      $form_state->setErrorByName('', $element_error);
     }
 
     // Stop validation if the element's properties has any errors.

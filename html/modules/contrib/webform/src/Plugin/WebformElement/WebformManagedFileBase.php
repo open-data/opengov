@@ -1228,7 +1228,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       if ($source_uri !== $destination_uri) {
         $destination_uri = $this->fileSystem->move($source_uri, $destination_uri);
         $file->setFileUri($destination_uri);
-        $file->setFileName($this->fileSystem->basename($destination_uri));
+        $file->setFileName(\basename($destination_uri));
         $file->save();
         $this->entityTypeManager->getStorage('file')->resetCache([$file->id()]);
       }
@@ -1382,9 +1382,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       // Return file content headers.
       $headers = file_get_content_headers($file);
 
-      /** @var \Drupal\Core\File\FileSystemInterface $file_system */
-      $file_system = \Drupal::service('file_system');
-      $filename = $file_system->basename($uri);
+      $filename = \basename($uri);
       // Fallback name in case file name contains none ASCII characters.
       $filename_fallback = \Drupal::transliteration()->transliterate($filename);
       // Remove other characters not removed by Transliteration.

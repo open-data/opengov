@@ -57,7 +57,7 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
   /**
    * Tests webform submission conditions (#states) validator required.
    */
-  public function testFormStatesValidatorRequired() {
+  public function testFormStatesValidatorRequired(): void {
     $assert_session = $this->assertSession();
 
     /* ********************************************************************** */

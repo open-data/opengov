@@ -19,7 +19,7 @@ class WebformElementReadonlyTest extends WebformElementBrowserTestBase {
   /**
    * Tests element readonly.
    */
-  public function testReadonly() {
+  public function testReadonly(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_readonly');

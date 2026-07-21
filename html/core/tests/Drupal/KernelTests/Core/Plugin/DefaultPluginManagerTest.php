@@ -8,14 +8,16 @@ use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\plugin_test\Plugin\Annotation\PluginExample as AnnotationPluginExample;
 use Drupal\plugin_test\Plugin\Attribute\PluginExample as AttributePluginExample;
-use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the default plugin manager.
- *
- * @group Plugin
- * @group legacy
  */
+#[Group('Plugin')]
+#[IgnoreDeprecations]
+#[RunTestsInSeparateProcesses]
 class DefaultPluginManagerTest extends KernelTestBase {
 
   /**
@@ -29,7 +31,7 @@ class DefaultPluginManagerTest extends KernelTestBase {
   public function testDefaultPluginManager(): void {
     $subdir = 'Plugin/plugin_test/custom_annotation';
     $base_directory = $this->root . '/core/modules/system/tests/modules/plugin_test/src';
-    $namespaces = new \ArrayObject(['Drupal\plugin_test' => $base_directory]);
+    $namespaces = \Drupal::service('container.namespaces');
     $module_handler = $this->container->get('module_handler');
 
     // Ensure broken files exist as expected.
@@ -45,7 +47,7 @@ class DefaultPluginManagerTest extends KernelTestBase {
     // Ensure there is a class with the expected name. We cannot reflect on this
     // as it triggers a fatal error.
     $this->assertFileExists($base_directory . '/' . $subdir . '/UsingNonInstalledTraitClass.php');
-    $this->expectDeprecation('Using @PluginExample annotation for plugin with ID example_1 is deprecated and is removed from drupal:13.0.0. Use a Drupal\plugin_test\Plugin\Attribute\PluginExample attribute instead. See https://www.drupal.org/node/3395575');
+    $this->expectUserDeprecationMessage('Using @PluginExample annotation for plugin with ID example_1 is deprecated and is removed from drupal:13.0.0. Use a Drupal\plugin_test\Plugin\Attribute\PluginExample attribute instead. See https://www.drupal.org/node/3395575');
 
     // Annotation only.
     $manager = new DefaultPluginManager($subdir, $namespaces, $module_handler, NULL, AnnotationPluginExample::class);
@@ -72,20 +74,10 @@ class DefaultPluginManagerTest extends KernelTestBase {
     // attribute should be picked up.
     $this->assertArrayHasKey('example_attribute_not_annotation', $definitions);
     $this->assertArrayNotHasKey('example_annotation_not_attribute', $definitions);
+    // Plugin class with an external dependency should not be found.
+    $this->assertArrayNotHasKey("example_with_other_module_dependency", $definitions);
 
     // Attributes only.
-    // \Drupal\Component\Plugin\Discovery\AttributeClassDiscovery does not
-    // support parsing classes that cannot be reflected. Therefore, we use VFS
-    // to create a directory remove plugin_test's plugins and remove the broken
-    // plugins.
-    vfsStream::setup('plugin_test');
-    $dir = vfsStream::create(['src' => ['Plugin' => ['plugin_test' => ['custom_annotation' => []]]]]);
-    $plugin_directory = $dir->getChild('src/' . $subdir);
-    vfsStream::copyFromFileSystem($base_directory . '/' . $subdir, $plugin_directory);
-    $plugin_directory->removeChild('ExtendingNonInstalledClass.php');
-    $plugin_directory->removeChild('UsingNonInstalledTraitClass.php');
-
-    $namespaces = new \ArrayObject(['Drupal\plugin_test' => vfsStream::url('plugin_test/src')]);
     $manager = new DefaultPluginManager($subdir, $namespaces, $module_handler, NULL, AttributePluginExample::class);
     $definitions = $manager->getDefinitions();
     $this->assertArrayNotHasKey('example_1', $definitions);
@@ -99,6 +91,28 @@ class DefaultPluginManagerTest extends KernelTestBase {
     // attribute should be picked up.
     $this->assertArrayHasKey('example_attribute_not_annotation', $definitions);
     $this->assertArrayNotHasKey('example_annotation_not_attribute', $definitions);
+    // Plugin class with an external dependency should not be found.
+    $this->assertArrayNotHasKey("example_with_other_module_dependency", $definitions);
+
+    // Test that example with dependencies is discovered after module dependency
+    // is installed.
+    \Drupal::service('module_installer')->install(['plugin_test_extended']);
+    $namespaces = \Drupal::service('container.namespaces');
+    // There is a new module handler instance after module install.
+    $module_handler = \Drupal::moduleHandler();
+    $manager = new DefaultPluginManager($subdir, $namespaces, $module_handler, NULL, AttributePluginExample::class, AnnotationPluginExample::class);
+    $definitions = $manager->getDefinitions();
+    $this->assertArrayHasKey("example_with_other_module_dependency", $definitions);
+
+    // Test that example with dependencies is not discovered after module
+    // dependency is back to being uninstalled.
+    \Drupal::service('module_installer')->uninstall(['plugin_test_extended']);
+    $namespaces = \Drupal::service('container.namespaces');
+    // There is a new module handler instance after module uninstall.
+    $module_handler = \Drupal::moduleHandler();
+    $manager = new DefaultPluginManager($subdir, $namespaces, $module_handler, NULL, AttributePluginExample::class, AnnotationPluginExample::class);
+    $definitions = $manager->getDefinitions();
+    $this->assertArrayNotHasKey("example_with_other_module_dependency", $definitions);
   }
 
   /**
@@ -110,7 +124,7 @@ class DefaultPluginManagerTest extends KernelTestBase {
     $namespaces = new \ArrayObject(['Drupal\plugin_test' => $base_directory]);
     $module_handler = $this->container->get('module_handler');
 
-    $this->expectDeprecation('Not supporting attribute discovery in Drupal\Core\Plugin\DefaultPluginManager is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Provide an Attribute class and an Annotation class for BC. See https://www.drupal.org/node/3395582');
+    $this->expectUserDeprecationMessage('Not supporting attribute discovery in Drupal\Core\Plugin\DefaultPluginManager is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Provide an Attribute class and an Annotation class for BC. See https://www.drupal.org/node/3395582');
 
     $manager = new DefaultPluginManager($subdir, $namespaces, $module_handler, NULL, AnnotationPluginExample::class);
     $manager->getDefinitions();

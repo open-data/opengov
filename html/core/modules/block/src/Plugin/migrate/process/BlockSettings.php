@@ -9,12 +9,16 @@ use Drupal\migrate\Attribute\MigrateProcess;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 // cspell:ignore whois
 
 /**
  * Determines the block settings.
+ *
+ * @deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. There is no
+ *   replacement.
+ *
+ * @see https://www.drupal.org/node/3533560
  */
 #[MigrateProcess('block_settings')]
 class BlockSettings extends ProcessPluginBase implements ContainerFactoryPluginInterface {
@@ -27,6 +31,7 @@ class BlockSettings extends ProcessPluginBase implements ContainerFactoryPluginI
   protected readonly BlockManagerInterface $blockManager;
 
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ?BlockManagerInterface $blockManager = NULL) {
+    @trigger_error(__CLASS__ . ' is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3533560', E_USER_DEPRECATED);
     if (empty($blockManager)) {
       @trigger_error('Calling ' . __METHOD__ . '() without the $blockManager parameter is deprecated in drupal:11.2.0 and must be provided in drupal:12.0.0. See https://www.drupal.org/node/3522023', E_USER_DEPRECATED);
       $blockManager = \Drupal::service(BlockManagerInterface::class);
@@ -34,18 +39,6 @@ class BlockSettings extends ProcessPluginBase implements ContainerFactoryPluginI
     $this->blockManager = $blockManager;
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get(BlockManagerInterface::class),
-    );
   }
 
   /**

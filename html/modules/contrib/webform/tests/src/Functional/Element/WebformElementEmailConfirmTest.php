@@ -19,7 +19,7 @@ class WebformElementEmailConfirmTest extends WebformElementBrowserTestBase {
   /**
    * Test email_confirm element.
    */
-  public function testEmailConfirm() {
+  public function testEmailConfirm(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_email_confirm');

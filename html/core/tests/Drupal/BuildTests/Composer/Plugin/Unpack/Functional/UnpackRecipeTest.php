@@ -6,15 +6,15 @@ namespace Drupal\BuildTests\Composer\Plugin\Unpack\Functional;
 
 use Composer\InstalledVersions;
 use Composer\Util\Filesystem;
-use Drupal\Tests\Composer\Plugin\Unpack\Fixtures;
 use Drupal\BuildTests\Framework\BuildTestBase;
 use Drupal\Tests\Composer\Plugin\ExecTrait;
+use Drupal\Tests\Composer\Plugin\Unpack\Fixtures;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests recipe unpacking.
- *
- * @group Unpack
  */
+#[Group('Unpack')]
 class UnpackRecipeTest extends BuildTestBase {
 
   use ExecTrait;
@@ -708,7 +708,7 @@ class UnpackRecipeTest extends BuildTestBase {
     $cwd ??= $this->fixturesDir . '/composer-root';
 
     // Always add --no-interaction and --no-ansi to Composer commands.
-    $output = $this->mustExec("composer $command --no-interaction --no-ansi", $cwd, [], $error_output);
+    $output = $this->mustExec("COMPOSER_NO_AUDIT=1 composer $command --no-interaction --no-ansi", $cwd, [], $error_output);
     if ($command === 'install') {
       $this->assertFileExists($cwd . '/composer.lock');
     }

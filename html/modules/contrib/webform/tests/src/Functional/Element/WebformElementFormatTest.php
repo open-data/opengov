@@ -32,7 +32,7 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
   /**
    * Tests element format.
    */
-  public function testFormat() {
+  public function testFormat(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

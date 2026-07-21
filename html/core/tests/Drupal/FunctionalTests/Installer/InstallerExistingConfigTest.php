@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Drupal\FunctionalTests\Installer;
 
-// cspell:ignore nmsgid nmsgstr enregistrer
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
+// cspell:ignore nmsgid nmsgstr enregistrer
 /**
  * Verifies that installing from existing configuration works.
- *
- * @group Installer
  */
+#[Group('Installer')]
+#[RunTestsInSeparateProcesses]
 class InstallerExistingConfigTest extends InstallerConfigDirectoryTestBase {
 
   /**
@@ -19,7 +21,7 @@ class InstallerExistingConfigTest extends InstallerConfigDirectoryTestBase {
   protected function setUpLanguage(): void {
     // Place a custom local translation in the translations directory.
     mkdir($this->root . '/' . $this->siteDirectory . '/files/translations', 0777, TRUE);
-    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-8.0.0.fr.po', "msgid \"\"\nmsgstr \"\"\nmsgid \"Save and continue\"\nmsgstr \"Enregistrer et continuer\"");
+    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-' . \Drupal::VERSION . '.fr.po', "msgid \"\"\nmsgstr \"\"\nmsgid \"Save and continue\"\nmsgstr \"Enregistrer et continuer\"");
     parent::setUpLanguage();
   }
 

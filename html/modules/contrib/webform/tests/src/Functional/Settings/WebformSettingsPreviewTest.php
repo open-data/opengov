@@ -35,7 +35,7 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
   /**
    * Tests webform webform submission form preview.
    */
-  public function testPreview() {
+  public function testPreview(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

@@ -22,7 +22,7 @@ class WebformHandlerEmailTwigTest extends WebformBrowserTestBase {
   /**
    * Test email twig handler.
    */
-  public function testEmailTwigHandler() {
+  public function testEmailTwigHandler(): void {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_email_twig');
 

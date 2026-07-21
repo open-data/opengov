@@ -72,7 +72,7 @@ class WebformEntityPrintHooks {
       if ($webform_entity_print_token === $encrypt_token) {
         /** @var \Drupal\Core\File\FileSystemInterface $file_system */
         $file_system = \Drupal::service('file_system');
-        $filename = $file_system->basename($uri);
+        $filename = \basename($uri);
         $filesize = filesize($file_system->realpath($uri));
         return [
           'Content-Type' => 'image/png',

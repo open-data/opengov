@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\FunctionalJavascriptTests;
 
-use WebDriver\Service\CurlService;
-use WebDriver\Exception\CurlExec;
 use WebDriver\Exception as WebDriverException;
+use WebDriver\Exception\CurlExec;
+use WebDriver\Service\CurlService;
 
 // cspell:ignore curle curlopt customrequest failonerror postfields
 // cspell:ignore returntransfer
@@ -38,7 +38,7 @@ class WebDriverCurlService extends CurlService {
    *
    * This is useful if the caller is implementing it's own waiting process.
    */
-  public static function enableRetry() {
+  public static function enableRetry(): void {
     static::$retry = TRUE;
   }
 
@@ -47,7 +47,7 @@ class WebDriverCurlService extends CurlService {
    *
    * This is useful if the caller is implementing it's own waiting process.
    */
-  public static function disableRetry() {
+  public static function disableRetry(): void {
     static::$retry = FALSE;
   }
 
@@ -63,8 +63,8 @@ class WebDriverCurlService extends CurlService {
     while ($retries < $max_retries) {
       try {
         $customHeaders = [
-          'Content-Type: application/json;charset=UTF-8',
-          'Accept: application/json;charset=UTF-8',
+          'Content-Type: application/json;charset=utf-8',
+          'Accept: application/json;charset=utf-8',
         ];
 
         $curl = curl_init($url);
