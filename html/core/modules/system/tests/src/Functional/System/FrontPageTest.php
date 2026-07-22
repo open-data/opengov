@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace Drupal\Tests\system\Functional\System;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests front page functionality and administration.
- *
- * @group system
  */
+#[Group('system')]
+#[RunTestsInSeparateProcesses]
 class FrontPageTest extends BrowserTestBase {
 
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['node', 'system_test', 'views'];
+  protected static $modules = ['node', 'path', 'system_test', 'views'];
 
   /**
    * {@inheritdoc}
@@ -95,6 +97,27 @@ class FrontPageTest extends BrowserTestBase {
     $this->assertSession()->pageTextNotContains('On front page.');
     $this->drupalGet($this->nodePath);
     $this->assertSession()->pageTextContains('On front page.');
+
+    // Test the form when page.front is null.
+    $this->config('system.site')->clear('page.front')->save();
+    $this->drupalGet('admin/config/system/site-information');
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Create a new piece of content with an alias and confirm that its aliased
+    // path can be set as the front page.
+    $this->drupalCreateNode([
+      'path' => '/what-a-twist',
+      'body' => 'Space, the final frontier.',
+    ]);
+    $edit['site_frontpage'] = '/what-a-twist';
+    $this->submitForm($edit, 'Save configuration');
+    $assert_session = $this->assertSession();
+    $assert_session->pageTextContains('The configuration options have been saved.');
+    $assert_session->fieldValueEquals('site_frontpage', '/what-a-twist');
+    $this->drupalGet('<front>');
+    $assert_session->pageTextContains('Space, the final frontier.');
+    $assert_session->addressEquals('/');
+    $this->assertSame('/what-a-twist', $this->config('system.site')->get('page.front'));
   }
 
 }

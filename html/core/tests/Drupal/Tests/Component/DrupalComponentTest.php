@@ -6,13 +6,14 @@ namespace Drupal\Tests\Component;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 /**
  * General tests for \Drupal\Component that can't go anywhere else.
- *
- * @group Component
  */
+#[Group('Component')]
 class DrupalComponentTest extends TestCase {
 
   /**
@@ -40,9 +41,8 @@ class DrupalComponentTest extends TestCase {
    *
    * @param string $component_path
    *   The path to the component.
-   *
-   * @dataProvider getComponents
    */
+  #[DataProvider('getComponents')]
   public function testComponentLicense(string $component_path): void {
     $this->assertFileExists($component_path . DIRECTORY_SEPARATOR . 'LICENSE.txt');
     $this->assertSame('e84dac1d9fbb5a4a69e38654ce644cea769aa76b', hash_file('sha1', $component_path . DIRECTORY_SEPARATOR . 'LICENSE.txt'));
@@ -102,9 +102,9 @@ class DrupalComponentTest extends TestCase {
     preg_match_all('/^.*Drupal\\\Core.*$/m', $contents, $matches);
     $matches = array_filter($matches[0], function ($line) {
       // Filter references that don't really matter.
-      return preg_match('/@see|E_USER_DEPRECATED|expectDeprecation/', $line) === 0;
+      return preg_match('/@see|E_USER_DEPRECATED|expectUserDeprecationMessage/', $line) === 0;
     });
-    $this->assertEmpty($matches, "Checking for illegal reference to 'Drupal\\Core' namespace in $class_path");
+    $this->assertEmpty($matches, "Checking for invalid reference to 'Drupal\\Core' namespace in $class_path");
   }
 
   /**
@@ -115,7 +115,7 @@ class DrupalComponentTest extends TestCase {
    *   - TRUE if the test passes, FALSE otherwise.
    *   - File data as a string. This will be used as a virtual file.
    */
-  public static function providerAssertNoCoreUsage() {
+  public static function providerAssertNoCoreUsage(): array {
     return [
       [
         TRUE,
@@ -139,9 +139,9 @@ class DrupalComponentTest extends TestCase {
   }
 
   /**
-   * @covers \Drupal\Tests\Component\DrupalComponentTest::assertNoCoreUsage
-   * @dataProvider providerAssertNoCoreUsage
+   * @legacy-covers \Drupal\Tests\Component\DrupalComponentTest::assertNoCoreUsage
    */
+  #[DataProvider('providerAssertNoCoreUsage')]
   public function testAssertNoCoreUsage($expected_pass, $file_data): void {
     // Set up a virtual file to read.
     $vfs_root = vfsStream::setup('root');

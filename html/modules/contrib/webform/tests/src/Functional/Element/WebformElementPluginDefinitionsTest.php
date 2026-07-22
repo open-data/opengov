@@ -40,7 +40,7 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
   /**
    * Test element definitions.
    */
-  public function testElementDefinitions() {
+  public function testElementDefinitions(): void {
     // Comparing all element's expected and actual definitions ensures
     // that there are not unexpected changes to any element's definitions.
     $expected_definitions = $this->getExpectedElementDefinitions();

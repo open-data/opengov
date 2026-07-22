@@ -24,14 +24,17 @@ use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestComputedField;
 use Drupal\entity_test\Entity\EntityTestRev;
 use Drupal\entity_test\EntityTestHelper;
+use Drupal\filter\FilterFormatRepositoryInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the Entity Field API.
- *
- * @group Entity
  */
+#[Group('Entity')]
+#[RunTestsInSeparateProcesses]
 class EntityFieldTest extends EntityKernelTestBase {
 
   /**
@@ -40,16 +43,22 @@ class EntityFieldTest extends EntityKernelTestBase {
   protected static $modules = ['filter', 'text', 'node', 'user', 'field_test'];
 
   /**
+   * The name of the entity.
+   *
    * @var string
    */
   protected $entityName;
 
   /**
+   * The user for the entity.
+   *
    * @var \Drupal\user\Entity\User
    */
   protected $entityUser;
 
   /**
+   * Text for the field on the entity.
+   *
    * @var string
    */
   protected $entityFieldText;
@@ -143,14 +152,24 @@ class EntityFieldTest extends EntityKernelTestBase {
     $entity->field_test_text->value = 'bar';
     $entity->save();
 
+    // The updated field value should have correctly saved as 'bar'.
+    $pending_revision = $storage->loadRevision($entity->getRevisionId());
+    $this->assertEquals('bar', $pending_revision->get('field_test_text')->value);
+
     // Now save the pending revision as the default one, without creating a new
     // revision.
     $entity->isDefaultRevision(TRUE);
+    $entity->get('field_test_text')->value = 'baz';
     $entity->save();
 
-    // The updated field value should have correctly saved as 'bar'.
+    // The updated field value should have correctly saved as 'baz'.
     $default_revision = $storage->loadUnchanged($entity->id());
-    $this->assertEquals('bar', $default_revision->field_test_text->value);
+    $this->assertEquals('baz', $default_revision->get('field_test_text')->value);
+
+    // Also verify that this is consistent when loading by revision.
+    $storage->resetCache([$entity->id()]);
+    $default_revision = $storage->loadRevision($entity->getRevisionId());
+    $this->assertEquals('baz', $default_revision->get('field_test_text')->value);
   }
 
   /**
@@ -274,7 +293,7 @@ class EntityFieldTest extends EntityKernelTestBase {
     // Test emptying a field by assigning an empty value, NULL and an empty
     // array behave the same.
     foreach ([NULL, [], 'unset'] as $empty) {
-      // Make sure a value is present
+      // Make sure a value is present.
       $entity->name->value = 'a value';
       $this->assertTrue(isset($entity->name->value), "$entity_type: Name is set.");
       // Now, empty the field.
@@ -968,7 +987,7 @@ class EntityFieldTest extends EntityKernelTestBase {
   protected function doTestComputedProperties($entity_type): void {
     $entity = $this->createTestEntity($entity_type);
     $entity->field_test_text->value = "The <strong>text</strong> text to filter.";
-    $entity->field_test_text->format = filter_default_format();
+    $entity->field_test_text->format = \Drupal::service(FilterFormatRepositoryInterface::class)->getDefaultFormat()->id();
 
     $target = "<p>The &lt;strong&gt;text&lt;/strong&gt; text to filter.</p>\n";
     $this->assertSame($target, (string) $entity->field_test_text->processed, "$entity_type: Text is processed with the default filter.");

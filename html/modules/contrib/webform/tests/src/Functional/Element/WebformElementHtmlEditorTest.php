@@ -40,7 +40,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
   /**
    * Tests HTML Editor element.
    */
-  public function testHtmlEditor() {
+  public function testHtmlEditor(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

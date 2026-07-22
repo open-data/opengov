@@ -29,7 +29,7 @@ class WebformElementTableTest extends WebformElementBrowserTestBase {
   /**
    * Tests table elements.
    */
-  public function testTable() {
+  public function testTable(): void {
     global $base_path;
 
     $assert_session = $this->assertSession();

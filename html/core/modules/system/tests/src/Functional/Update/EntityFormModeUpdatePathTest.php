@@ -6,12 +6,16 @@ namespace Drupal\Tests\system\Functional\Update;
 
 use Drupal\Core\Entity\Entity\EntityFormMode;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests update path for the entity form mode description value from '' to NULL.
- *
- * @group system
  */
+#[Group('system')]
+#[RunTestsInSeparateProcesses]
+#[IgnoreDeprecations]
 class EntityFormModeUpdatePathTest extends UpdatePathTestBase {
 
   /**

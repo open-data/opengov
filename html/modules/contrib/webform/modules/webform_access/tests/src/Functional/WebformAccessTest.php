@@ -21,7 +21,7 @@ class WebformAccessTest extends WebformAccessBrowserTestBase {
   /**
    * Tests webform access.
    */
-  public function testWebformAccess() {
+  public function testWebformAccess(): void {
     $assert_session = $this->assertSession();
 
     $nid = $this->nodes['contact_01']->id();
@@ -180,7 +180,7 @@ class WebformAccessTest extends WebformAccessBrowserTestBase {
   /**
    * Tests webform administrator access.
    */
-  public function testWebformAdministratorAccess() {
+  public function testWebformAdministratorAccess(): void {
     $assert_session = $this->assertSession();
 
     // Check root user access to group edit form.

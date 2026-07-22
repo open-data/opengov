@@ -268,6 +268,15 @@ class WebformResultsExportController extends ControllerBase implements Container
     $webform_submissions = WebformSubmission::loadMultiple($entity_ids);
     $submission_exporter->writeRecords($webform_submissions);
 
+    // Free up memory by resetting the entity caches for the processed
+    // submissions and any related entities (users, files, etc.) loaded during
+    // export. Without this, caches grow with each batch iteration, leading to
+    // memory exhaustion during large exports (e.g., 20,000+ submissions).
+    \Drupal::entityTypeManager()
+      ->getStorage('webform_submission')
+      ->resetCache(array_keys($webform_submissions));
+    \Drupal::service('entity.memory_cache')->deleteAll();
+
     // Track progress.
     $context['sandbox']['progress'] += count($webform_submissions);
     $context['sandbox']['offset'] += $submission_exporter->getBatchLimit();

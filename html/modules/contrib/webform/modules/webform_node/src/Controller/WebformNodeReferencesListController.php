@@ -174,6 +174,74 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
   /**
    * {@inheritdoc}
    */
+  public function render() {
+    $build = [];
+
+    $build['info'] = $this->buildInfo();
+
+    $build['table'] = [
+      '#type' => 'table',
+      '#header' => $this->buildHeader(),
+      '#title' => $this->getTitle(),
+      '#rows' => [],
+      '#empty' => $this->t('There are no webform node references.'),
+      '#sticky' => TRUE,
+      '#cache' => [
+        'contexts' => $this->entityType->getListCacheContexts(),
+        'tags' => $this->entityType->getListCacheTags(),
+      ],
+    ];
+    foreach ($this->load() as $entity) {
+      $build['table']['#rows']['node:' . $entity->id()] = $this->buildRow($entity);
+      if ($this->webform->hasVariants()
+        && !empty($this->nodeParagraphs[$entity->id()])) {
+        foreach ($this->nodeParagraphs[$entity->id()] as $paragraph_id => $paragraph) {
+          $build['table']['#rows']['paragraph:' . $paragraph_id] = $this->buildRow($paragraph);
+        }
+      }
+    }
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $build['pager'] = [
+        '#type' => 'pager',
+      ];
+    }
+
+    // Must manually add local actions because we can't alter local actions and
+    // add query string parameter.
+    // @see https://www.drupal.org/node/2585169
+    $local_actions = $this->getLocalActions();
+    if ($local_actions) {
+      $build['local_actions'] = [
+          '#prefix' => '<ul class="action-links">',
+          '#suffix' => '</ul>',
+          '#weight' => -100,
+      ] + $local_actions;
+    }
+
+    $build['#attached']['library'][] = 'webform_node/webform_node.references';
+    return $build;
+  }
+
+  /**
+   * Build information summary.
+   *
+   * @return array
+   *   A render array representing the information summary.
+   */
+  protected function buildInfo(): array {
+    $total = $this->getTotal();
+    return [
+      '#markup' => $this->formatPlural($total, '@count reference', '@count references'),
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildHeader() {
     $webform = $this->webform;
 
@@ -229,7 +297,14 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
     $bundle_entity_type = $this
       ->getEntityStorage($entity->getEntityType()->getBundleEntityType())
       ->load($entity->bundle());
-    $row['type'] = $bundle_entity_type->label();
+    if ($entity instanceof NodeInterface
+      && !$webform->hasVariants()
+      && !empty($this->nodeParagraphs[$entity->id()])) {
+      $row['type'] = $bundle_entity_type->label() . ' (' . $this->t('Paragraphs') . ')';
+    }
+    else {
+      $row['type'] = $bundle_entity_type->label();
+    }
 
     if ($webform->hasVariants()) {
       $field_names = ($entity instanceof NodeInterface)
@@ -401,73 +476,6 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       ];
     }
     return $operations;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function render() {
-    $build = [];
-
-    $build['info'] = $this->buildInfo();
-
-    $build['table'] = [
-      '#type' => 'table',
-      '#header' => $this->buildHeader(),
-      '#title' => $this->getTitle(),
-      '#rows' => [],
-      '#empty' => $this->t('There are no webform node references.'),
-      '#sticky' => TRUE,
-      '#cache' => [
-        'contexts' => $this->entityType->getListCacheContexts(),
-        'tags' => $this->entityType->getListCacheTags(),
-      ],
-    ];
-    foreach ($this->load() as $entity) {
-      $build['table']['#rows']['node:' . $entity->id()] = $this->buildRow($entity);
-      if (!empty($this->nodeParagraphs[$entity->id()])) {
-        foreach ($this->nodeParagraphs[$entity->id()] as $paragraph_id => $paragraph) {
-          $build['table']['#rows']['paragraph:' . $paragraph_id] = $this->buildRow($paragraph);
-        }
-      }
-    }
-
-    // Only add the pager if a limit is specified.
-    if ($this->limit) {
-      $build['pager'] = [
-        '#type' => 'pager',
-      ];
-    }
-
-    // Must manually add local actions because we can't alter local actions and
-    // add query string parameter.
-    // @see https://www.drupal.org/node/2585169
-    $local_actions = $this->getLocalActions();
-    if ($local_actions) {
-      $build['local_actions'] = [
-        '#prefix' => '<ul class="action-links">',
-        '#suffix' => '</ul>',
-        '#weight' => -100,
-      ] + $local_actions;
-    }
-
-    $build['#attached']['library'][] = 'webform_node/webform_node.references';
-    return $build;
-  }
-
-  /**
-   * Build information summary.
-   *
-   * @return array
-   *   A render array representing the information summary.
-   */
-  protected function buildInfo(): array {
-    $total = $this->getTotal();
-    return [
-      '#markup' => $this->formatPlural($total, '@count reference', '@count references'),
-      '#prefix' => '<div>',
-      '#suffix' => '</div>',
-    ];
   }
 
   /**

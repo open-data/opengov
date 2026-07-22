@@ -43,7 +43,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
   /**
    * Tests webform entity settings files.
    */
-  public function testWebformSettingsFiles() {
+  public function testWebformSettingsFiles(): void {
     $this->drupalLogin($this->rootUser);
 
     // Create three test images.
@@ -183,7 +183,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
   /**
    * Tests webform configuration files.
    */
-  public function testWebformConfigurationFiles() {
+  public function testWebformConfigurationFiles(): void {
     $this->drupalLogin($this->rootUser);
 
     // Create three test images.

@@ -41,10 +41,12 @@ use Drupal\field\FieldStorageConfigStorage;
   ],
   constraints: [
     'ImmutableProperties' => [
-      'id',
-      'entity_type',
-      'field_name',
-      'type',
+      'properties' => [
+        'id',
+        'entity_type',
+        'field_name',
+        'type',
+      ],
     ],
   ],
   config_export: [
@@ -444,7 +446,7 @@ class FieldStorageConfig extends ConfigEntityBase implements FieldStorageConfigI
     parent::preDelete($storage, $field_storages);
 
     // Keep the field storage definitions in the deleted fields repository so we
-    // can use them later during field_purge_batch().
+    // can use them later during the field purge process.
     /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
     foreach ($field_storages as $field_storage) {
       // Only mark a field for purging if there is data. Otherwise, just remove
@@ -780,7 +782,10 @@ class FieldStorageConfig extends ConfigEntityBase implements FieldStorageConfigI
   /**
    * {@inheritdoc}
    */
-  public function getPropertyDefinition($name) {
+  public function getPropertyDefinition(/* string */ $name) {
+    if (!is_string($name)) {
+      @trigger_error('Calling ' . __CLASS__ . '::getPropertyDefinition() with a non-string $name is deprecated in drupal:11.3.0 and throws an exception in drupal:12.0.0. See https://www.drupal.org/node/3557373', E_USER_DEPRECATED);
+    }
     if (!isset($this->propertyDefinitions)) {
       $this->getPropertyDefinitions();
     }

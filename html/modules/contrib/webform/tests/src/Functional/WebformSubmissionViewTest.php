@@ -40,7 +40,7 @@ class WebformSubmissionViewTest extends WebformBrowserTestBase {
   /**
    * Tests view submissions.
    */
-  public function testView() {
+  public function testView(): void {
     $assert_session = $this->assertSession();
 
     $admin_submission_user = $this->drupalCreateUser([

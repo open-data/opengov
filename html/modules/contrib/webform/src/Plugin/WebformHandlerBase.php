@@ -484,10 +484,10 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     foreach ($values as $key => $value) {
       if (array_key_exists($key, $this->configuration)) {
         if (is_bool($default_configuration[$key])) {
-          $this->configuration[$key] = (boolean) $value;
+          $this->configuration[$key] = (bool) $value;
         }
         elseif (is_int($default_configuration[$key])) {
-          $this->configuration[$key] = (integer) $value;
+          $this->configuration[$key] = (int) $value;
         }
         else {
           $this->configuration[$key] = $value;

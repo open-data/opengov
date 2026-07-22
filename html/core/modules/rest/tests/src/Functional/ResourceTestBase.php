@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rest\Functional;
 
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Url;
 use Drupal\rest\RestResourceConfigInterface;
 use Drupal\Tests\ApiRequestTrait;
@@ -149,7 +150,11 @@ abstract class ResourceTestBase extends BrowserTestBase {
    * @param string[] $methods
    *   The allowed methods for this resource.
    */
-  protected function provisionResource($formats = [], $authentication = [], array $methods = ['GET', 'POST', 'PATCH', 'DELETE']) {
+  protected function provisionResource(
+    $formats = [],
+    $authentication = [],
+    array $methods = ['GET', 'POST', 'PATCH', 'DELETE'],
+  ) {
     $this->resourceConfigStorage->create([
       'id' => static::$resourceConfigId,
       'granularity' => RestResourceConfigInterface::RESOURCE_GRANULARITY,
@@ -358,7 +363,7 @@ abstract class ResourceTestBase extends BrowserTestBase {
       // sets it to 'text/html' by default. We also cannot detect the presence
       // of Apache either here in the CLI. For now having this documented here
       // is all we can do.
-      // $this->assertFalse($response->hasHeader('Content-Type'));
+      // "$this->assertFalse($response->hasHeader('Content-Type'));".
       $this->assertSame('', (string) $response->getBody());
     }
     else {
@@ -370,13 +375,19 @@ abstract class ResourceTestBase extends BrowserTestBase {
 
     // Expected cache tags: X-Drupal-Cache-Tags header.
     $this->assertSame($expected_cache_tags !== FALSE, $response->hasHeader('X-Drupal-Cache-Tags'));
-    if (is_array($expected_cache_tags)) {
+    if ($expected_cache_tags === []) {
+      $this->assertSame('', $response->getHeader('X-Drupal-Cache-Tags')[0]);
+    }
+    elseif (is_array($expected_cache_tags)) {
       $this->assertEqualsCanonicalizing($expected_cache_tags, explode(' ', $response->getHeader('X-Drupal-Cache-Tags')[0]));
     }
 
     // Expected cache contexts: X-Drupal-Cache-Contexts header.
     $this->assertSame($expected_cache_contexts !== FALSE, $response->hasHeader('X-Drupal-Cache-Contexts'));
-    if (is_array($expected_cache_contexts)) {
+    if ($expected_cache_contexts === []) {
+      $this->assertSame('', $response->getHeader('X-Drupal-Cache-Contexts')[0]);
+    }
+    elseif (is_array($expected_cache_contexts)) {
       $optimized_expected_cache_contexts = \Drupal::service('cache_contexts_manager')->optimizeTokens($expected_cache_contexts);
       $this->assertEqualsCanonicalizing($optimized_expected_cache_contexts, explode(' ', $response->getHeader('X-Drupal-Cache-Contexts')[0]));
     }
@@ -396,7 +407,7 @@ abstract class ResourceTestBase extends BrowserTestBase {
       $this->assertSame($expected_dynamic_page_cache_header_value, $response->getHeader('X-Drupal-Dynamic-Cache')[0]);
     }
     elseif ($response->hasHeader('X-Drupal-Dynamic-Cache')) {
-      $this->assertMatchesRegularExpression('#^UNCACHEABLE \(((no|poor) cacheability|(request|response) policy)\)$#', $response->getHeader('X-Drupal-Dynamic-Cache')[0]);
+      $this->assertMatchesRegularExpression('#^UNCACHEABLE \(((no|poor) cacheability|(request|response) policy|\d{3}(, sub-request: (HIT|MISS))?)\)$#', $response->getHeader('X-Drupal-Dynamic-Cache')[0]);
     }
   }
 
@@ -437,15 +448,7 @@ abstract class ResourceTestBase extends BrowserTestBase {
    *   An array to sort.
    */
   protected static function recursiveKSort(array &$array) {
-    // First, sort the main array.
-    ksort($array);
-
-    // Then check for child arrays.
-    foreach ($array as &$value) {
-      if (is_array($value)) {
-        static::recursiveKSort($value);
-      }
-    }
+    SortArray::sortByKeyRecursive($array);
   }
 
 }

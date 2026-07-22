@@ -19,7 +19,7 @@ class WebformElementSelectTest extends WebformElementBrowserTestBase {
   /**
    * Test select element.
    */
-  public function testSelectElement() {
+  public function testSelectElement(): void {
     $assert_session = $this->assertSession();
 
     // Check default empty option always included.

@@ -11,7 +11,6 @@ use Drupal\Core\Menu\MenuParentFormSelectorInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\views\Attribute\ViewsWizard;
 use Drupal\views\Plugin\views\wizard\WizardPluginBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @todo Replace numbers with constants.
@@ -76,23 +75,8 @@ class Node extends WizardPluginBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.bundle.info'),
-      $container->get('entity_display.repository'),
-      $container->get('entity_field.manager'),
-      $container->get('menu.parent_form_selector')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getAvailableSorts() {
-    // You can't execute functions in properties, so override the method
+    // You can't execute functions in properties, so override the method.
     return [
       'node_field_data-title:ASC' => $this->t('Title'),
     ];

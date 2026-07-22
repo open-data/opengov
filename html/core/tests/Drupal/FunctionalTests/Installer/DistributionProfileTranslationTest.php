@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Drupal\FunctionalTests\Installer;
 
 use Drupal\Core\Serialization\Yaml;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests distribution profile support.
  *
- * @group Installer
- *
  * @see \Drupal\FunctionalTests\Installer\DistributionProfileTest
  */
+#[Group('Installer')]
+#[RunTestsInSeparateProcesses]
 class DistributionProfileTranslationTest extends InstallerTestBase {
 
   /**
@@ -58,7 +60,7 @@ class DistributionProfileTranslationTest extends InstallerTestBase {
 
     // Place a custom local translation in the translations directory.
     mkdir($this->root . '/' . $this->siteDirectory . '/files/translations', 0777, TRUE);
-    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-8.0.0.de.po', $this->getPo('de'));
+    file_put_contents($this->root . '/' . $this->siteDirectory . '/files/translations/drupal-' . \Drupal::VERSION . '.de.po', $this->getPo('de'));
   }
 
   /**

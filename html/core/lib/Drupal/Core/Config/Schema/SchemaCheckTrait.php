@@ -12,7 +12,7 @@ use Drupal\Core\TypedData\Type\BooleanInterface;
 use Drupal\Core\TypedData\Type\StringInterface;
 use Drupal\Core\TypedData\Type\FloatInterface;
 use Drupal\Core\TypedData\Type\IntegerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * Provides a trait for checking configuration schema.
@@ -59,13 +59,6 @@ trait SchemaCheckTrait {
         "The 'contact.form.feedback' config does not exist.",
       ],
     ],
-    'editor.editor.*' => [
-      // @todo Fix stream wrappers not being available early enough in
-      //   https://www.drupal.org/project/drupal/issues/3416735
-      'image_upload.scheme' => [
-        '^The file storage you selected is not a visible, readable and writable stream wrapper\. Possible choices: <em class="placeholder"><\/em>\.$',
-      ],
-    ],
     'search.settings' => [
       // @todo Simple config cannot have dependencies on any other config.
       //   Remove this in https://www.drupal.org/project/drupal/issues/3425992.
@@ -109,10 +102,10 @@ trait SchemaCheckTrait {
       $violations = $this->schema->validate();
       $filtered_violations = array_filter(
         iterator_to_array($violations),
-        fn(ConstraintViolation $v) => !static::isViolationForIgnoredPropertyPath($v),
+        fn(ConstraintViolationInterface $v) => !static::isViolationForIgnoredPropertyPath($v),
       );
       $validation_errors = array_map(
-        fn(ConstraintViolation $v) => sprintf("[%s] %s", $v->getPropertyPath(), (string) $v->getMessage()),
+        fn(ConstraintViolationInterface $v) => sprintf("[%s] %s", $v->getPropertyPath(), (string) $v->getMessage()),
         $filtered_violations
       );
       // @todo Decide in https://www.drupal.org/project/drupal/issues/3395099 when/how to trigger deprecation errors or even failures for contrib modules.
@@ -128,14 +121,14 @@ trait SchemaCheckTrait {
   /**
    * Determines whether this violation is for an ignored Config property path.
    *
-   * @param \Symfony\Component\Validator\ConstraintViolation $v
+   * @param \Symfony\Component\Validator\ConstraintViolationInterface $v
    *   A validation constraint violation for a Config object.
    *
    * @return bool
    *   TRUE when the violation is for an ignored configuration property path,
    *   FALSE otherwise.
    */
-  protected static function isViolationForIgnoredPropertyPath(ConstraintViolation $v): bool {
+  protected static function isViolationForIgnoredPropertyPath(ConstraintViolationInterface $v): bool {
     // When the validated object is a config entity wrapped in a
     // ConfigEntityAdapter, some work is necessary to map from e.g.
     // `entity:comment_type` to the corresponding `comment.type.*`.

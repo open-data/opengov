@@ -108,7 +108,8 @@ language.entity.*:
       constraints:
         # @see \Drupal\Core\Language\LanguageInterface::DIRECTION_LTR and
         # \Drupal\Core\Language\LanguageInterface::DIRECTION_RTL
-        Choice: [ 'ltr', 'rtl' ]
+        Choice:
+          choices: [ 'ltr', 'rtl' ]
     weight:
       type: weight
       label: 'Weight'
@@ -138,7 +139,8 @@ language.content_settings.*.*:
       type:  string
       label: 'Bundle'
       constraints:
-        EntityBundleExists: '%parent.target_entity_type_id'
+        EntityBundleExists:
+          entityTypeId: '%parent.target_entity_type_id'
     default_langcode:
       type: langcode
       label: 'Default language'

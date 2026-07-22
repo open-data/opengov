@@ -30,7 +30,7 @@ used to identify the different environments available for this site. These
 may be used on the command line to select a different target environment
 to operate on by prepending an `@` character, e.g. `@live` or `@stage`.
 
-Following these steps, a cache:rebuild on the live environment would be:
+Following these steps, a [cache:rebuild](commands/cache_rebuild.md) on the live environment would be:
 ```bash
   $ drush @live cache:rebuild
 ```
@@ -278,18 +278,25 @@ Drush provides transport for running drush commands on your Kubernetes cluster v
  ```yml
  prod: 
    kubectl:
+     context: "gke_production_cluster"
      namespace: 'my-drupal-namespace'
      resource: 'pods/my-drupal-pod' 
      container: 'drupal'
  ```
 
 #### Key options
+
+  * **context:** The context name defined in the `kubeconfig`.
   * **namespace:** The namespace where your Drupal deployment resides.
   * **resource:**  Kubernetes resource type (usually 'pods').
   * **container:** The specific container within the pod where Drupal runs.
   * **kubeconfig:** The kubeconfig file to use for authentication.
   * **entrypoint:** The command to use as the container entrypoint.
 
+Drush will attempt to use the status of the connection to determine if it is tty/interactive, but in some complex cases that status may not be available. These options can be used to force those flags:
+
+  * **tty:** Set to `true` to force a tty connection using the `kubectl --tty` flag.
+  * **interactive:** Set to `true` to force an interactive connection using the `kubectl --stdin` flag.
 
 ### Example of rsync with exclude-paths
 
@@ -312,4 +319,3 @@ dev:
           mode: rlptz
           exclude-paths: 'css:imagecache:ctools:js:tmp:php:styles'
 ```
-

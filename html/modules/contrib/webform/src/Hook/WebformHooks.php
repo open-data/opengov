@@ -275,7 +275,7 @@ class WebformHooks {
    */
   #[Hook('token_info_alter')]
   public function tokenInfoAlter(&$data) {
-    \Drupal::moduleHandler()->loadInclude('webform', 'tokens.inc');
+    \Drupal::moduleHandler()->loadInclude('webform', 'tokens.inc', 'includes/webform');
     // Append learn more about token suffixes to all webform token descriptions.
     // @see \Drupal\webform\WebformTokenManager::replace
     // @see webform_page_attachments()

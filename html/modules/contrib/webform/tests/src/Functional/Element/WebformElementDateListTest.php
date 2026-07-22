@@ -22,7 +22,7 @@ class WebformElementDateListTest extends WebformElementBrowserTestBase {
   /**
    * Test datelist element.
    */
-  public function testDateListElement() {
+  public function testDateListElement(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_datelist');

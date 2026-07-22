@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Drupal\FunctionalJavascriptTests\Dialog;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests jQuery events deprecations.
- *
- * @group dialog
  */
+#[Group('dialog')]
+#[RunTestsInSeparateProcesses]
 class DialogDeprecationsTest extends WebDriverTestBase {
 
   /**
@@ -42,7 +44,7 @@ class DialogDeprecationsTest extends WebDriverTestBase {
 
     $this->assertNotNull($assert_session->waitForElement('css', '.ui-dialog-content'));
     $this->getSession()->executeScript("window.jQuery('.ui-dialog-content').trigger('dialogButtonsChange');");
-    $this->expectDeprecation('Javascript Deprecation: jQuery event dialogButtonsChange is deprecated in 11.2.0 and is removed from Drupal:12.0.0. See https://www.drupal.org/node/3464202');
+    $this->expectUserDeprecationMessage('Javascript Deprecation: jQuery event dialogButtonsChange is deprecated in 11.2.0 and is removed from Drupal:12.0.0. See https://www.drupal.org/node/3464202');
   }
 
 }

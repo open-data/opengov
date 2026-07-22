@@ -13,6 +13,8 @@ use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Entity\View;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -20,12 +22,13 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * Tests the serializer style plugin.
  *
- * @group rest
  * @see \Drupal\rest\Plugin\views\display\RestExport
  * @see \Drupal\rest\Plugin\views\style\Serializer
  * @see \Drupal\rest\Plugin\views\row\DataEntityRow
  * @see \Drupal\rest\Plugin\views\row\DataFieldRow
  */
+#[Group('rest')]
+#[RunTestsInSeparateProcesses]
 class StyleSerializerEntityTest extends ViewTestBase {
 
   use AssertPageCacheContextsAndTagsTrait;
@@ -53,7 +56,14 @@ class StyleSerializerEntityTest extends ViewTestBase {
    *
    * @var array
    */
-  public static $testViews = ['test_serializer_display_field', 'test_serializer_display_entity', 'test_serializer_display_entity_translated', 'test_serializer_node_display_field', 'test_serializer_node_exposed_filter', 'test_serializer_shared_path'];
+  public static $testViews = [
+    'test_serializer_display_field',
+    'test_serializer_display_entity',
+    'test_serializer_display_entity_translated',
+    'test_serializer_node_display_field',
+    'test_serializer_node_exposed_filter',
+    'test_serializer_shared_path',
+  ];
 
   /**
    * A user with permissions to look at test entity and configure views.
@@ -281,7 +291,7 @@ class StyleSerializerEntityTest extends ViewTestBase {
 
     $result_xml = $this->drupalGet('test/serialize/entity', ['query' => ['_format' => 'xml']]);
     $this->addRequestWithFormat('xml');
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=utf-8');
     $this->assertCacheContexts($cache_contexts);
     $this->assertCacheTags($cache_tags);
     $this->assertNotEmpty($render_cache->get($original));
@@ -325,7 +335,7 @@ class StyleSerializerEntityTest extends ViewTestBase {
 
     // Ensure a request with no format returns 406 Not Acceptable.
     $this->drupalGet('test/serialize/field');
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=utf-8');
     $this->assertSession()->statusCodeEquals(406);
 
     // Select only 'xml' as an accepted format.
@@ -339,7 +349,7 @@ class StyleSerializerEntityTest extends ViewTestBase {
     $this->assertSession()->statusCodeEquals(406);
     // Ensure a request for XML returns 200 OK.
     $this->drupalGet('test/serialize/field', ['query' => ['_format' => 'xml']]);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=utf-8');
     $this->assertSession()->statusCodeEquals(200);
 
     // Add 'json' as an accepted format, so we have multiple.
@@ -349,12 +359,12 @@ class StyleSerializerEntityTest extends ViewTestBase {
 
     // Should return a 406. Emulates a sample Firefox header.
     $this->drupalGet('test/serialize/field', [], ['Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8']);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=utf-8');
     $this->assertSession()->statusCodeEquals(406);
 
     // Ensure a request for HTML returns 406 Not Acceptable.
     $this->drupalGet('test/serialize/field', ['query' => ['_format' => 'html']]);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=utf-8');
     $this->assertSession()->statusCodeEquals(406);
 
     // Ensure a request for JSON returns 200 OK.
@@ -364,7 +374,7 @@ class StyleSerializerEntityTest extends ViewTestBase {
 
     // Ensure a request XML returns 200 OK.
     $this->drupalGet('test/serialize/field', ['query' => ['_format' => 'xml']]);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=utf-8');
     $this->assertSession()->statusCodeEquals(200);
 
     // Now configure no format, so both serialization formats should be allowed.
@@ -381,12 +391,12 @@ class StyleSerializerEntityTest extends ViewTestBase {
 
     // Ensure a request for XML returns 200 OK.
     $this->drupalGet('test/serialize/field', ['query' => ['_format' => 'xml']]);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/xml; charset=utf-8');
     $this->assertSession()->statusCodeEquals(200);
 
     // Should return a 406 for HTML still.
     $this->drupalGet('test/serialize/field', ['query' => ['_format' => 'html']]);
-    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=UTF-8');
+    $this->assertSession()->responseHeaderEquals('content-type', 'text/html; charset=utf-8');
     $this->assertSession()->statusCodeEquals(406);
   }
 
@@ -430,7 +440,10 @@ class StyleSerializerEntityTest extends ViewTestBase {
       'created' => 'created',
     ];
 
-    $edit = ['row_options[field_options][name][alias]' => $alias_map['name'], 'row_options[field_options][nothing][alias]' => $alias_map['nothing']];
+    $edit = [
+      'row_options[field_options][name][alias]' => $alias_map['name'],
+      'row_options[field_options][nothing][alias]' => $alias_map['nothing'],
+    ];
     $this->drupalGet($row_options);
     $this->submitForm($edit, 'Apply');
     $this->assertSession()->pageTextContains('The machine-readable name must contain only letters, numbers, dashes and underscores.');
@@ -438,7 +451,10 @@ class StyleSerializerEntityTest extends ViewTestBase {
     // Change the map alias value to a valid one.
     $alias_map['nothing'] = $this->randomMachineName();
 
-    $edit = ['row_options[field_options][name][alias]' => $alias_map['name'], 'row_options[field_options][nothing][alias]' => $alias_map['nothing']];
+    $edit = [
+      'row_options[field_options][name][alias]' => $alias_map['name'],
+      'row_options[field_options][nothing][alias]' => $alias_map['nothing'],
+    ];
     $this->drupalGet($row_options);
     $this->submitForm($edit, 'Apply');
 

@@ -42,7 +42,7 @@ class WebformElementPluginPropertiesTest extends WebformElementBrowserTestBase {
   /**
    * Test element default properties.
    */
-  public function testElementDefaultProperties() {
+  public function testElementDefaultProperties(): void {
     // Comparing all element's expected and actual default properties ensures
     // that there are not unexpected changes to any element's
     // default properties.
@@ -3242,7 +3242,7 @@ webform_flexbox:
   format_attributes: {  }
   format_html: ''
   format_text: ''
-  justify_content: flex-start
+  justify_content: justify-flex-start
   randomize: false
   states: {  }
   states_clear: true

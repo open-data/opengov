@@ -52,12 +52,23 @@ class FieldItemNormalizer extends NormalizerBase implements DenormalizerInterfac
   }
 
   /**
-   * {@inheritdoc}
+   * Normalizes data into a set of arrays/scalars.
    *
    * This normalizer leaves JSON:API normalizer land and enters the land of
    * Drupal core's serialization system. That system was never designed with
    * cacheability in mind, and hence bubbles cacheability out of band. This must
    * catch it, and pass it to the value object that JSON:API uses.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface $object
+   *   Data to normalize.
+   * @param string|null $format
+   *   Format the normalization result will be encoded as.
+   * @param array<string, mixed> $context
+   *   Context options for the normalizer.
+   *
+   * @return array|string|int|float|bool|\ArrayObject<mixed, mixed>|null
+   *   \ArrayObject is used to make sure an empty object is encoded as an
+   *   object not an array.
    */
   public function doNormalize($object, $format = NULL, array $context = []): array|string|int|float|bool|\ArrayObject|NULL {
     assert($object instanceof FieldItemInterface);
@@ -92,6 +103,13 @@ class FieldItemNormalizer extends NormalizerBase implements DenormalizerInterfac
     $item_definition = $context['field_definition']->getItemDefinition();
     assert($item_definition instanceof FieldItemDataDefinitionInterface);
 
+    // The NULL normalization means there is no value, hence we can return
+    // early. Note that this is not just an optimization but a necessity for
+    // field types without main properties (such as the "map" field type).
+    if ($data === NULL) {
+      return $data;
+    }
+
     $field_item = $this->getFieldItemInstance($context['resource_type'], $item_definition);
     $this->checkForSerializedStrings($data, $class, $field_item);
 
@@ -113,12 +131,6 @@ class FieldItemNormalizer extends NormalizerBase implements DenormalizerInterfac
     // be expanded to an array of all properties, we special-case single-value
     // properties.
     if (!is_array($data)) {
-      // The NULL normalization means there is no value, hence we can return
-      // early. Note that this is not just an optimization but a necessity for
-      // field types without main properties (such as the "map" field type).
-      if ($data === NULL) {
-        return $data;
-      }
       $property_value = $data;
       $property_name = $item_definition->getMainPropertyName();
       $property_value_class = $property_definitions[$property_name]->getClass();

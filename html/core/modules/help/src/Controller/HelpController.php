@@ -10,7 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\help\HelpSectionManager;
 use Drupal\system\ModuleAdminLinksHelper;
 use Drupal\user\ModulePermissionsLinkHelper;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -34,24 +34,12 @@ class HelpController extends ControllerBase {
    */
   public function __construct(
     protected RouteMatchInterface $routeMatch,
+    #[Autowire(service: 'plugin.manager.help_section')]
     protected HelpSectionManager $helpManager,
     protected ModuleExtensionList $moduleExtensionList,
     protected ModuleAdminLinksHelper $moduleAdminLinks,
     protected ModulePermissionsLinkHelper $modulePermissionsLinks,
   ) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('current_route_match'),
-      $container->get('plugin.manager.help_section'),
-      $container->get('extension.list.module'),
-      $container->get('system.module_admin_links_helper'),
-      $container->get('user.module_permissions_link_helper')
-    );
   }
 
   /**
@@ -84,6 +72,7 @@ class HelpController extends ControllerBase {
       $plugin = $this->helpManager->createInstance($plugin_id);
       $this_output = [
         '#theme' => 'help_section',
+        '#plugin_id' => $plugin_id,
         '#title' => $plugin->getTitle(),
         '#description' => $plugin->getDescription(),
         '#empty' => $this->t('There is currently nothing in this section.'),

@@ -17,7 +17,7 @@ class WebformSubmissionStorageTest extends WebformBrowserTestBase {
   /**
    * Test webform submission storage.
    */
-  public function testSubmissionStorage() {
+  public function testSubmissionStorage(): void {
     /** @var \Drupal\webform\WebformSubmissionStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
 

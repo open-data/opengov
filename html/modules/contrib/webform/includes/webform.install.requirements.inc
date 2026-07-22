@@ -208,31 +208,34 @@ function webform_requirements($phase) {
     $projects['antibot'] = [
       'title' => t('Antibot'),
       'description' => t('Prevent forms from being submitted without JavaScript enabled.'),
-      'url' => Url::fromUri('https://www.drupal.org/project/antibot'),
     ];
 
     // Spam: CAPTCHA.
     $projects['captcha'] = [
       'title' => t('CAPTCHA'),
       'description' => t('Provides CAPTCHA for adding challenges to arbitrary forms.'),
-      'url' => Url::fromUri('https://www.drupal.org/project/captcha'),
     ];
 
     // Spam: reCAPTCHA.
     $projects['recaptcha'] = [
       'title' => t('reCAPTCHA'),
-      'description' => t('Uses the Google <a href=":href">reCAPTCHA</a> web service to improve the CAPTCHA system.', [':href' => 'https://www.google.com/recaptcha/about/']),
-      'url' => Url::fromUri('https://www.drupal.org/project/recaptcha'),
+      'description' => t('Uses the Google <a href=":href">reCAPTCHA</a> web service to improve the CAPTCHA system.', [':href' => 'https://cloud.google.com/security/products/recaptcha']),
     ];
 
     // Spam: Honeypot.
     $projects['honeypot'] = [
       'title' => t('Honeypot'),
       'description' => t('Mitigates spam form submissions using the honeypot method.'),
-      'url' => Url::fromUri('https://www.drupal.org/project/honeypot'),
+    ];
+
+    // Spam: Cleantalk.
+    $projects['cleantalk'] = [
+      'title' => t('Cleantalk'),
+      'description' => t('Protects forms from spam and bots without CAPTCHA.'),
     ];
 
     foreach ($projects as $project_name => $project) {
+      $project['url'] = Url::fromUri('https://www.drupal.org/project/' . $project_name);
       $available_projects[$project_name] = [
         'title' => [
           '#type' => 'link',

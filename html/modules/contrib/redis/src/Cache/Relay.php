@@ -6,6 +6,7 @@ use Drupal\Component\Assertion\Inspector;
 use Drupal\Component\Serialization\SerializationInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheTagsChecksumInterface;
+use Drupal\Core\Cache\CacheTagsChecksumPreloadInterface;
 use Drupal\Core\Cache\ChainedFastBackend;
 use Drupal\Core\Site\Settings;
 
@@ -73,6 +74,19 @@ class Relay extends CacheBase {
     $result = [];
     foreach ($keys as $key) {
       $result[] = $this->client->hgetall($key);
+    }
+
+    // Before checking the validity of each item individually, register the
+    // cache tags for all returned cache items for preloading, this allows the
+    // cache tag service to optimize cache tag lookups.
+    if (method_exists($this->checksumProvider, 'registerCacheTagsForPreload')) {
+      $tags_for_preload = [];
+      foreach ($result as $item) {
+        if (!empty($item['tags'])) {
+          $tags_for_preload[] = explode(' ', $item['tags']);
+        }
+      }
+      $this->checksumProvider->registerCacheTagsForPreload(array_merge(...$tags_for_preload));
     }
 
     // Loop over the cid values to ensure numeric indexes.

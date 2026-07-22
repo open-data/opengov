@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Drupal\Tests\system\Functional\Session;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Drupal legacy session handling tests.
- *
- * @group legacy
- * @group Session
  */
+#[IgnoreDeprecations]
+#[Group('Session')]
+#[RunTestsInSeparateProcesses]
 class LegacySessionTest extends BrowserTestBase {
 
   /**
@@ -28,7 +31,7 @@ class LegacySessionTest extends BrowserTestBase {
    * Tests data persistence via the session_test module callbacks.
    */
   public function testLegacyDataPersistence(): void {
-    $this->expectDeprecation('Storing values directly in $_SESSION is deprecated in drupal:11.2.0 and will become unsupported in drupal:12.0.0. Use $request-&gt;getSession()-&gt;set() instead. Affected keys: legacy_test_value. See https://www.drupal.org/node/3518527');
+    $this->expectUserDeprecationMessage('Storing values directly in $_SESSION is deprecated in drupal:11.2.0 and will become unsupported in drupal:12.0.0. Use $request-&gt;getSession()-&gt;set() instead. Affected keys: legacy_test_value. See https://www.drupal.org/node/3518527');
     $value = $this->randomMachineName();
 
     // Verify that the session value is stored.

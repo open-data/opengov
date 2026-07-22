@@ -19,6 +19,7 @@ use Drupal\Component\Gettext\PoItem;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Routing\StackedRouteMatchInterface;
 use Drupal\Core\Asset\AttachedAssetsInterface;
+use Drupal\Core\Field\FieldPurger;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -46,12 +47,12 @@ class SystemHooks {
         $output .= '<dt>' . $this->t('Managing modules') . '</dt>';
         $output .= '<dd>' . $this->t('Users with appropriate permission can install and uninstall modules from the <a href=":modules">Extend page</a>. Depending on which distribution or installation profile you choose when you install your site, several modules are installed and others are provided but not installed. Each module provides a discrete set of features; modules may be installed or uninstalled depending on the needs of the site. Many additional modules contributed by members of the Drupal community are available for download from the <a href=":drupal-modules">Drupal.org module page</a>. Note that uninstalling a module is a destructive action: when you uninstall a module, you will permanently lose all data connected to the module.', [
           ':modules' => Url::fromRoute('system.modules_list')->toString(),
-          ':drupal-modules' => 'https://www.drupal.org/project/modules',
+          ':drupal-modules' => 'https://www.drupal.org/project/project_module',
         ]) . '</dd>';
         $output .= '<dt>' . $this->t('Managing themes') . '</dt>';
         $output .= '<dd>' . $this->t('Users with appropriate permission can install and uninstall themes on the <a href=":themes">Appearance page</a>. Themes determine the design and presentation of your site. Depending on which distribution or installation profile you choose when you install your site, a default theme is installed, and possibly a different theme for administration pages. Other themes are provided but not installed, and additional contributed themes are available at the <a href=":drupal-themes">Drupal.org theme page</a>.', [
           ':themes' => Url::fromRoute('system.themes_page')->toString(),
-          ':drupal-themes' => 'https://www.drupal.org/project/themes',
+          ':drupal-themes' => 'https://www.drupal.org/project/project_theme',
         ]) . '</dd>';
         $output .= '<dt>' . $this->t('Disabling drag-and-drop functionality') . '</dt>';
         $output .= '<dd>' . $this->t('The default drag-and-drop user interface for ordering tables in the administrative interface presents a challenge for some users, including users of screen readers and other assistive technology. The drag-and-drop interface can be disabled in a table by clicking a link labeled "Show row weights" above the table. The replacement interface allows users to order the table by choosing numerical weights instead of dragging table rows.') . '</dd>';
@@ -105,7 +106,7 @@ class SystemHooks {
         return '<p>' . $this->t('This page shows you all available administration tasks for each module.') . '</p>';
 
       case 'system.themes_page':
-        $output = '<p>' . $this->t('Set and configure the default theme for your website.  Alternative <a href=":themes">themes</a> are available.', [':themes' => 'https://www.drupal.org/project/themes']) . '</p>';
+        $output = '<p>' . $this->t('Set and configure the default theme for your website.  Alternative <a href=":themes">themes</a> are available.', [':themes' => 'https://www.drupal.org/project/project_theme']) . '</p>';
         if (\Drupal::moduleHandler()->moduleExists('block')) {
           $output .= '<p>' . $this->t('You can place blocks for each theme on the <a href=":blocks">block layout</a> page.', [':blocks' => Url::fromRoute('block.admin_display')->toString()]) . '</p>';
         }
@@ -120,7 +121,7 @@ class SystemHooks {
         return '<p>' . $this->t('Control default display settings for your site, across all themes. Use theme-specific settings to override these defaults.') . '</p>';
 
       case 'system.modules_list':
-        $output = '<p>' . $this->t('Add <a href=":modules">contributed modules</a> to extend your site\'s functionality.', [':modules' => 'https://www.drupal.org/project/modules']) . '</p>';
+        $output = '<p>' . $this->t('Add <a href=":modules">contributed modules</a> to extend your site\'s functionality.', [':modules' => 'https://www.drupal.org/project/project_module']) . '</p>';
         if (!\Drupal::moduleHandler()->moduleExists('update')) {
           $output .= '<p>' . $this->t('Regularly review available updates and update as required to maintain a secure and current site. Always run the <a href=":update-php">update script</a> each time a module is updated. Install the <a href=":update-status">Update Status module</a> to see a report of available releases for Drupal Core and contributed modules and themes.', [
             ':update-php' => Url::fromRoute('system.db_update')->toString(),
@@ -339,11 +340,17 @@ class SystemHooks {
     \Drupal::service('file.htaccess_writer')->ensure();
     if (\Drupal::config('system.advisories')->get('enabled')) {
       // Fetch the security advisories so that they will be pre-fetched during
-      // _system_advisories_requirements() and system_page_top().
+      // systemAdvisoriesRequirements() and system_page_top().
       /** @var \Drupal\system\SecurityAdvisories\SecurityAdvisoriesFetcher $fetcher */
       $fetcher = \Drupal::service('system.sa_fetcher');
       $fetcher->getSecurityAdvisories();
     }
+
+    // Do a pass of purging on deleted entity field data, if any exists.
+    if (!$config_purge_batch_size = \Drupal::config('field.field_settings')->get('purge_batch_size')) {
+      $config_purge_batch_size = Settings::get('field_purge_batch_size', 50);
+    }
+    \Drupal::service(FieldPurger::class)->purgeBatch($config_purge_batch_size);
   }
 
   /**
@@ -414,32 +421,6 @@ class SystemHooks {
         $entity_type->setRevisionMetadataKey('workspace', NULL);
         $entity_definition_update_manager->updateEntityType($entity_type);
       }
-    }
-  }
-
-  /**
-   * Implements hook_library_info_alter().
-   */
-  #[Hook('library_info_alter')]
-  public function libraryInfoAlter(&$libraries, $extension): void {
-    // If Claro is the admin theme but not the active theme, grant Claro the
-    // ability to override the toolbar library with its own assets.
-    if ($extension === 'toolbar' && _system_is_claro_admin_and_not_active()) {
-      require_once DRUPAL_ROOT . '/core/themes/claro/claro.theme';
-      claro_system_module_invoked_library_info_alter($libraries, $extension);
-    }
-  }
-
-  /**
-   * Implements hook_theme_registry_alter().
-   */
-  #[Hook('theme_registry_alter')]
-  public function themeRegistryAlter(array &$theme_registry): void {
-    // If Claro is the admin theme but not the active theme, use Claro's toolbar
-    // templates.
-    if (_system_is_claro_admin_and_not_active()) {
-      require_once DRUPAL_ROOT . '/core/themes/claro/claro.theme';
-      claro_system_module_invoked_theme_registry_alter($theme_registry);
     }
   }
 
@@ -540,7 +521,7 @@ class SystemHooks {
    *
    * Transforms empty description into null.
    */
-  #[Hook('hook_entity_form_mode_presave')]
+  #[Hook('entity_form_mode_presave')]
   public function systemEntityFormModePresave(EntityInterface $entity): void {
     if ($entity->get('description') !== NULL && trim($entity->get('description')) === '') {
       @trigger_error("Setting description to an empty string is deprecated in drupal:11.2.0 and it must be null in drupal:12.0.0. See https://www.drupal.org/node/3452144", E_USER_DEPRECATED);

@@ -3,6 +3,7 @@
 namespace Drupal\user\Hook;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\ConfigTarget;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\filter\FilterFormatInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -19,6 +20,7 @@ use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\user\OneTimeAuthentication;
 
 /**
  * Hook implementations for user.
@@ -90,25 +92,6 @@ class UserHooks {
   }
 
   /**
-   * Implements hook_theme().
-   */
-  #[Hook('theme')]
-  public function theme() : array {
-    return [
-      'user' => [
-        'render element' => 'elements',
-      ],
-      'username' => [
-        'variables' => [
-          'account' => NULL,
-          'attributes' => [],
-          'link_options' => [],
-        ],
-      ],
-    ];
-  }
-
-  /**
    * Implements hook_js_settings_alter().
    */
   #[Hook('js_settings_alter')]
@@ -151,20 +134,6 @@ class UserHooks {
       'weight' => 5,
     ];
     return $fields;
-  }
-
-  /**
-   * Implements hook_ENTITY_TYPE_presave() for user entities.
-   *
-   * @todo https://www.drupal.org/project/drupal/issues/3112704 Move to
-   *   \Drupal\user\Entity\User::preSave().
-   */
-  #[Hook('user_presave')]
-  public function userPresave(UserInterface $account): void {
-    $config = \Drupal::config('system.date');
-    if ($config->get('timezone.user.configurable') && !$account->getTimeZone() && !$config->get('timezone.user.default')) {
-      $account->timezone = $config->get('timezone.default');
-    }
   }
 
   /**
@@ -264,7 +233,11 @@ class UserHooks {
     $original_language = $language_manager->getConfigOverrideLanguage();
     $language_manager->setConfigOverrideLanguage($language);
     $mail_config = \Drupal::config('user.mail');
-    $token_options = ['langcode' => $langcode, 'callback' => 'user_mail_tokens', 'clear' => TRUE];
+    $token_options = [
+      'langcode' => $langcode,
+      'callback' => \Drupal::service(OneTimeAuthentication::class)->tokens(...),
+      'clear' => TRUE,
+    ];
     $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
     $message['body'][] = $token_service->replacePlain($mail_config->get($key . '.body'), $variables, $token_options);
     $language_manager->setConfigOverrideLanguage($original_language);
@@ -296,7 +269,7 @@ class UserHooks {
         ],
         'plugin' => 'user_add_role_action',
       ]);
-      $action->trustData()->save();
+      $action->save();
     }
     $remove_id = 'user_remove_role_action.' . $role->id();
     if (!Action::load($remove_id)) {
@@ -311,7 +284,7 @@ class UserHooks {
         ],
         'plugin' => 'user_remove_role_action',
       ]);
-      $action->trustData()->save();
+      $action->save();
     }
   }
 
@@ -333,16 +306,6 @@ class UserHooks {
     $actions = Action::loadMultiple(['user_add_role_action.' . $role->id(), 'user_remove_role_action.' . $role->id()]);
     foreach ($actions as $action) {
       $action->delete();
-    }
-  }
-
-  /**
-   * Implements hook_element_info_alter().
-   */
-  #[Hook('element_info_alter')]
-  public function elementInfoAlter(array &$types): void {
-    if (isset($types['password_confirm'])) {
-      $types['password_confirm']['#process'][] = 'user_form_process_password_confirm';
     }
   }
 
@@ -441,11 +404,10 @@ class UserHooks {
    */
   #[Hook('form_system_regional_settings_alter')]
   public function formSystemRegionalSettingsAlter(&$form, FormStateInterface $form_state) : void {
-    $config = \Drupal::config('system.date');
     $form['timezone']['configurable_timezones'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Users may set their own time zone'),
-      '#default_value' => $config->get('timezone.user.configurable'),
+      '#config_target' => 'system.date:timezone.user.configurable',
     ];
     $form['timezone']['configurable_timezones_wrapper'] = [
       '#type' => 'container',
@@ -462,13 +424,13 @@ class UserHooks {
     $form['timezone']['configurable_timezones_wrapper']['empty_timezone_message'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Remind users at login if their time zone is not set'),
-      '#default_value' => $config->get('timezone.user.warn'),
+      '#config_target' => 'system.date:timezone.user.warn',
       '#description' => $this->t('Only applied if users may set their own time zone.'),
     ];
     $form['timezone']['configurable_timezones_wrapper']['user_default_timezone'] = [
       '#type' => 'radios',
       '#title' => $this->t('Time zone for new users'),
-      '#default_value' => $config->get('timezone.user.default'),
+      '#config_target' => new ConfigTarget('system.date', 'timezone.user.default', toConfig: fn($v) => (int) $v),
       '#options' => [
         UserInterface::TIMEZONE_DEFAULT => $this->t('Default time zone'),
         UserInterface::TIMEZONE_EMPTY => $this->t('Empty time zone'),
@@ -476,7 +438,6 @@ class UserHooks {
       ],
       '#description' => $this->t('Only applied if users may set their own time zone.'),
     ];
-    $form['#submit'][] = 'user_form_system_regional_settings_submit';
   }
 
   /**

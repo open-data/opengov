@@ -217,7 +217,7 @@ class OverrideWebformVariant extends WebformVariantBase {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration = $form_state->getValues();
-    $this->configuration['debug'] = (boolean) $this->configuration['debug'];
+    $this->configuration['debug'] = (bool) $this->configuration['debug'];
   }
 
   /**

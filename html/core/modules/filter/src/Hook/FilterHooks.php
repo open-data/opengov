@@ -65,46 +65,11 @@ class FilterHooks {
   }
 
   /**
-   * Implements hook_theme().
-   */
-  #[Hook('theme')]
-  public function theme() : array {
-    return [
-      'filter_tips' => [
-        'variables' => [
-          'tips' => NULL,
-          'long' => FALSE,
-        ],
-      ],
-      'text_format_wrapper' => [
-        'variables' => [
-          'children' => NULL,
-          'description' => NULL,
-          'attributes' => [],
-        ],
-      ],
-      'filter_guidelines' => [
-        'variables' => [
-          'format' => NULL,
-        ],
-      ],
-      'filter_caption' => [
-        'variables' => [
-          'node' => NULL,
-          'tag' => NULL,
-          'caption' => NULL,
-          'classes' => NULL,
-        ],
-      ],
-    ];
-  }
-
-  /**
    * Implements hook_filter_secure_image_alter().
    *
    * Formats an image DOM element that has an invalid source.
    *
-   * @see _filter_html_image_secure_process()
+   * @see \Drupal\filter\Plugin\Filter\FilterHtmlImageSecure::process()
    */
   #[Hook('filter_secure_image_alter')]
   public function filterSecureImageAlter(&$image): void {

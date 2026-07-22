@@ -28,7 +28,7 @@ class WebformVariantExcludedTest extends WebformBrowserTestBase {
   /**
    * Test variant element.
    */
-  public function testVariantExcluded() {
+  public function testVariantExcluded(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

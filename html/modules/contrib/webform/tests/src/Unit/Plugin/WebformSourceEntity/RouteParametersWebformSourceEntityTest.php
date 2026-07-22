@@ -38,7 +38,7 @@ class RouteParametersWebformSourceEntityTest extends UnitTestCase {
    *
    * @dataProvider providerGetCurrentSourceEntity
    */
-  public function testGetCurrentSourceEntity(array $route_parameters, array $ignored_types, $expect_source_entity, $assert_message = '') {
+  public function testGetCurrentSourceEntity(array $route_parameters, array $ignored_types, $expect_source_entity, $assert_message = ''): void {
     $route_match = $this->createMock(RouteMatchInterface::class);
 
     $source_entity = $this->createMock(EntityInterface::class);

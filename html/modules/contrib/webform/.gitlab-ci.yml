@@ -26,8 +26,10 @@ include:
 variables:
   _PHPUNIT_CONCURRENT: 1
   OPT_IN_TEST_MAX_PHP: 1
-  #   SKIP_ESLINT: '1'
+  OPT_IN_TEST_NEXT_MINOR: 1
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  OPT_IN_TEST_PREVIOUS_MINOR: 1
+  _LENIENT_ALLOW_LIST: "select2, styleguide"
   _CSPELL_IGNORE_PATHS: 'webform.libraries.yml,
   config/install/*,
   config/schema/*,
@@ -42,16 +44,12 @@ variables:
   modules/*/tests/modules/*/style-guide/*'
   _PHPCS_EXTRA: '--ignore=*/modules/webform_bootstap/*'
 
+composer (next minor):
+  variables:
+    _COMPOSER_PATCHES_FILE: .gitlab-ci/next_minor_patches.json
+
 phpcs:
   allow_failure: false
-
-composer:
-  variables:
-    _LENIENT_ALLOW_LIST: "select2, styleguide"
-
-composer (max PHP version):
-  variables:
-    _LENIENT_ALLOW_LIST: "select2, styleguide"
 
 # Todo: Remove this workaround once all our dependencies are D11 compatible.
 phpunit:

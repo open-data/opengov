@@ -9,15 +9,19 @@ use Drupal\entity_test\Entity\EntityTestMulRev;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Test field item methods.
- *
- * @group Field
  */
+#[Group('Field')]
+#[RunTestsInSeparateProcesses]
 class FieldItemTest extends EntityKernelTestBase {
 
   /**
+   * The field name.
+   *
    * @var string
    */
   protected $fieldName;
@@ -105,7 +109,7 @@ class FieldItemTest extends EntityKernelTestBase {
    */
   public function testGetLabel(): void {
     $data_definition = \Drupal::service('typed_data_manager')->createDataDefinition('field_item:string');
-    $this->assertEquals('Text (plain)', $data_definition->getLabel());
+    $this->assertEquals('Short text', $data_definition->getLabel());
 
     $label = 'Foo bar';
     $data_definition->setLabel($label);

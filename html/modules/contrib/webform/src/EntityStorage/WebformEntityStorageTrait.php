@@ -82,7 +82,7 @@ trait WebformEntityStorageTrait {
    * @return \Drupal\Core\Entity\EntityStorageInterface
    *   Entity storage or NULL.
    */
-  public function __get($name) {
+  public function __get($name): mixed {
     if (isset($this->entityStorageToTypeMappings[$name])) {
       $entity_type = $this->entityStorageToTypeMappings[$name];
       $class_name = get_class($this);

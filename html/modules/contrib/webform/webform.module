@@ -586,9 +586,10 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
 
   // Issue #2839344: Some aria-describedby refers to not existing element ID.
   // @see https://www.drupal.org/project/drupal/issues/2839344
+  // @todo Remove this once Drupal 11.3 is required, as this is now fixed.
   if (!empty($element['#attributes']['aria-describedby'])) {
     foreach (Element::children($element) as $key) {
-      if (empty($element[$key]['#attributes']['aria-describedby'])
+      if (!empty($element[$key]['#attributes']['aria-describedby'])
         && $element['#attributes']['aria-describedby'] === $element[$key]['#attributes']['aria-describedby']) {
         unset($element[$key]['#attributes']['aria-describedby']);
       }

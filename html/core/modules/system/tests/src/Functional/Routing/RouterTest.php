@@ -7,17 +7,20 @@ namespace Drupal\Tests\system\Functional\Routing;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Url;
 use Drupal\router_test\TestControllers;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Routing\Alias;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Drupal\Core\Url;
 
 /**
  * Functional class for the full integrated routing system.
- *
- * @group Routing
  */
+#[Group('Routing')]
+#[RunTestsInSeparateProcesses]
 class RouterTest extends BrowserTestBase {
 
   /**
@@ -35,7 +38,10 @@ class RouterTest extends BrowserTestBase {
    */
   public function testFinishResponseSubscriber(): void {
     $renderer_required_cache_contexts = ['languages:' . LanguageInterface::TYPE_INTERFACE, 'theme', 'user.permissions'];
-    $expected_cache_contexts = Cache::mergeContexts($renderer_required_cache_contexts, ['url.query_args:' . MainContentViewSubscriber::WRAPPER_FORMAT, 'user.roles:authenticated']);
+    $expected_cache_contexts = Cache::mergeContexts(
+      $renderer_required_cache_contexts,
+      ['url.query_args:' . MainContentViewSubscriber::WRAPPER_FORMAT, 'user.roles:authenticated'],
+    );
     sort($expected_cache_contexts);
 
     // Confirm that the router can get to a controller.
@@ -68,7 +74,10 @@ class RouterTest extends BrowserTestBase {
     // X-Drupal-Cache-Contexts and X-Drupal-Cache-Tags headers.
     // 1. controller result: render array, globally cacheable route access.
     $this->drupalGet('router_test/test18');
-    $expected_cache_contexts = Cache::mergeContexts($renderer_required_cache_contexts, ['url', 'user.roles:authenticated']);
+    $expected_cache_contexts = Cache::mergeContexts(
+      $renderer_required_cache_contexts,
+      ['url', 'user.roles:authenticated'],
+    );
     sort($expected_cache_contexts);
     $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Contexts', implode(' ', $expected_cache_contexts));
     $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Tags', 'config:user.role.anonymous foo http_response rendered');
@@ -371,16 +380,15 @@ class RouterTest extends BrowserTestBase {
 
   /**
    * Tests route aliasing with deprecation.
-   *
-   * @group legacy
    */
+  #[IgnoreDeprecations]
   public function testRouteAliasWithDeprecation(): void {
     $request = \Drupal::request();
     $route_provider = \Drupal::service('router.route_provider');
 
     // Check an aliased route with a deprecation message.
     $deprecated_route_url = Url::fromRoute('router_test.deprecated');
-    $this->expectDeprecation('The "router_test.deprecated" route is deprecated in drupal:11.2.0 and will be removed in drupal:12.0.0. Use the "router_test.1" route instead.');
+    $this->expectUserDeprecationMessage('The "router_test.deprecated" route is deprecated in drupal:11.2.0 and will be removed in drupal:12.0.0. Use the "router_test.1" route instead.');
     $this->drupalGet($deprecated_route_url);
     $this->assertSession()->addressEquals($request->getUriForPath('/router_test/test1'));
 
@@ -392,6 +400,19 @@ class RouterTest extends BrowserTestBase {
     $this->assertEquals('drupal/core', $deprecation['package']);
     $this->assertEquals('11.2.0', $deprecation['version']);
     $this->assertEquals('The "router_test.deprecated" route is deprecated in drupal:11.2.0 and will be removed in drupal:12.0.0. Use the "router_test.1" route instead.', $deprecation['message']);
+  }
+
+  /**
+   * Tests routes defined using PHP attributes.
+   */
+  public function testAttributeDiscovery(): void {
+    $this->drupalGet('/test_class_attribute');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Testing __invoke() with a Route attribute on the class');
+
+    $this->drupalGet('/test_method_attribute');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Testing method with a Route attribute');
   }
 
 }

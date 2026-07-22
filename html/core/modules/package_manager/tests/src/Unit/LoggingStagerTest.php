@@ -11,11 +11,14 @@ use PhpTuf\ComposerStager\API\Core\StagerInterface;
 use PhpTuf\ComposerStager\API\Path\Value\PathInterface;
 use PhpTuf\ComposerStager\API\Process\Service\OutputCallbackInterface;
 use PhpTuf\ComposerStager\API\Process\Value\OutputTypeEnum;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
- * @covers \Drupal\package_manager\LoggingStager
- * @group package_manager
+ * Tests Logging Stager.
  */
+#[Group('package_manager')]
+#[CoversClass(LoggingStager::class)]
 class LoggingStagerTest extends UnitTestCase {
 
   /**
@@ -24,9 +27,9 @@ class LoggingStagerTest extends UnitTestCase {
   public function testDecoratedStagerIsCalled(): void {
     $decorated = $this->createMock(StagerInterface::class);
 
-    $activeDir = $this->createMock(PathInterface::class);
-    $stagingDir = $this->createMock(PathInterface::class);
-    $stagingDir->expects($this->any())
+    $activeDir = $this->createStub(PathInterface::class);
+    $stagingDir = $this->createStub(PathInterface::class);
+    $stagingDir
       ->method('absolute')
       ->willReturn('staging-dir');
 

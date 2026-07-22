@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\user\Functional;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Flood\DatabaseBackend;
 use Drupal\Core\Test\AssertMailTrait;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Controller\UserAuthenticationController;
 use GuzzleHttp\Cookie\CookieJar;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -18,9 +20,9 @@ use Symfony\Component\Serializer\Serializer;
 
 /**
  * Tests login and password reset via direct HTTP.
- *
- * @group user
  */
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class UserLoginHttpTest extends BrowserTestBase {
 
   use AssertMailTrait {
@@ -138,13 +140,13 @@ class UserLoginHttpTest extends BrowserTestBase {
       ->save();
 
     $response = $this->loginRequest($name, 'wrong-pass', $format);
-    $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+    $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
 
     $response = $this->loginRequest($name, 'wrong-pass', $format);
-    $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+    $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
 
     $response = $this->loginRequest($name, 'wrong-pass', $format);
-    $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+    $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
 
     $response = $this->loginRequest($name, 'wrong-pass', $format);
     $this->assertHttpResponseWithMessage($response, 403, 'Too many failed login attempts from your IP address. This IP address is temporarily blocked.', $format);
@@ -176,10 +178,10 @@ class UserLoginHttpTest extends BrowserTestBase {
       ->save();
 
     $response = $this->loginRequest($name, 'garbage', $format);
-    $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+    $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
 
     $response = $this->loginRequest('garbage', $pass, $format);
-    $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+    $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
 
     $response = $this->loginRequest($name, $pass, $format);
     $this->assertEquals(200, $response->getStatusCode());
@@ -387,7 +389,7 @@ class UserLoginHttpTest extends BrowserTestBase {
       // Try 2 failed logins.
       for ($i = 0; $i < 2; $i++) {
         $response = $this->loginRequest($incorrect_user1->getAccountName(), $incorrect_user1->passRaw, $format);
-        $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+        $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
       }
 
       // A successful login will reset the per-user flood control count.
@@ -398,7 +400,7 @@ class UserLoginHttpTest extends BrowserTestBase {
       // Try 3 failed logins for user 1, they will not trigger flood control.
       for ($i = 0; $i < 3; $i++) {
         $response = $this->loginRequest($incorrect_user1->getAccountName(), $incorrect_user1->passRaw, $format);
-        $this->assertHttpResponseWithMessage($response, 400, 'Sorry, unrecognized username or password.', $format);
+        $this->assertHttpResponseWithMessage($response, 400, 'Unrecognized username or password.', $format);
       }
 
       // Try one successful attempt for user 2, it should not trigger any

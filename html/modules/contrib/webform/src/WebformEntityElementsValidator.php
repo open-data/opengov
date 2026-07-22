@@ -561,15 +561,16 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
     set_error_handler('_webform_entity_element_validate_rendering_error_handler');
     set_exception_handler('_webform_entity_element_validate_rendering_exception_handler');
     try {
+      // Render the elements as a form.
       /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
       $webform_submission = $this->entityTypeManager
         ->getStorage('webform_submission')
         ->create(['webform' => $this->webform]);
-
       $form_object = $this->entityTypeManager->getFormObject('webform_submission', 'add');
       $form_object->setEntity($webform_submission);
       $form_state = (new FormState())->setFormState([]);
-      $this->formBuilder->buildForm($form_object, $form_state);
+      $form = $this->formBuilder->buildForm($form_object, $form_state);
+      $this->renderer->renderInIsolation($form);
       $message = NULL;
     }
     // PHP 7 introduces Throwable, which covers both Error and

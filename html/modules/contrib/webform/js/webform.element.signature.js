@@ -22,7 +22,6 @@
 
       $(once('webform-signature', 'input.js-webform-signature', context)).each(function () {
         var $input = $(this);
-        var value = $input.val();
         var $wrapper = $input.parent();
         var $canvas = $wrapper.find('canvas');
         var $button = $wrapper.find(':button, :submit');
@@ -51,7 +50,6 @@
         var options = $.extend({
           onEnd: function () {
             $input.val(signaturePad.toDataURL());
-            $input.change();
           }
         }, Drupal.webform.signaturePad.options);
 

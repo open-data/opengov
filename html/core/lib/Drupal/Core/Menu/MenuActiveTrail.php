@@ -77,6 +77,15 @@ class MenuActiveTrail extends CacheCollector implements MenuActiveTrailInterface
 
   /**
    * {@inheritdoc}
+   */
+  public function destruct(): void {
+    // Because this cache is not additive, it stores exactly the same thing
+    // every time, there is no need to acquire a lock before writing.
+    $this->updateCache(FALSE);
+  }
+
+  /**
+   * {@inheritdoc}
    *
    * @see ::getActiveTrailIds()
    */
@@ -109,6 +118,9 @@ class MenuActiveTrail extends CacheCollector implements MenuActiveTrailInterface
    * @see \Drupal\Core\Cache\CacheCollector
    */
   public function getActiveTrailIds($menu_name) {
+    // A NULL menu name correlates to cache entry keyed by an empty string. See
+    // ::doGetActiveTrailIds().
+    $menu_name = $menu_name ?? '';
     return $this->get($menu_name);
   }
 
@@ -141,7 +153,6 @@ class MenuActiveTrail extends CacheCollector implements MenuActiveTrailInterface
     // service in the container.
     // The menu links coming from the storage are already sorted by depth,
     // weight and ID.
-    $found = NULL;
     $links = [];
 
     $route_name = $this->routeMatch->getRouteName();
@@ -164,11 +175,14 @@ class MenuActiveTrail extends CacheCollector implements MenuActiveTrailInterface
       $links = array_merge($links, $this->menuLinkManager->loadLinksByRoute('<front>', [], $menu_name));
     }
 
-    // Select the first matching link.
-    if ($links) {
-      $found = reset($links);
+    // Select the first enabled matching link.
+    foreach ($links as $link) {
+      if ($link->isEnabled()) {
+        return $link;
+      }
     }
-    return $found;
+
+    return NULL;
   }
 
 }

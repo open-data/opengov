@@ -44,7 +44,7 @@ class WebformSubmissionPurgeApiTest extends KernelTestBase {
   /**
    * Tests webform handler prePurge and postPurge methods and associated hooks.
    */
-  public function testPurgeApis() {
+  public function testPurgeApis(): void {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::create([
       'id' => $this->randomMachineName(),

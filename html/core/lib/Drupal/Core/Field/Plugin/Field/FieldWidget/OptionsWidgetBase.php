@@ -45,7 +45,7 @@ abstract class OptionsWidgetBase extends WidgetBase {
   /**
    * Tracks whether the field has a value.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected bool $has_value;
 
   /**
@@ -187,7 +187,7 @@ abstract class OptionsWidgetBase extends WidgetBase {
       $value = $item->{$this->column};
       // Keep the value if it actually is in the list of options (needs to be
       // checked against the flat list).
-      if (isset($flat_options[$value])) {
+      if ($value !== NULL && isset($flat_options[$value])) {
         $selected_options[] = $value;
       }
     }

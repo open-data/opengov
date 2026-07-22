@@ -46,9 +46,13 @@
         var storage = $element.attr('data-message-storage');
         var effect = $element.attr('data-message-close-effect') || 'hide';
         switch (effect) {
-          case 'slide': effect = 'slideUp'; break;
+          case 'slide':
+            effect = 'slideUp';
+            break;
 
-          case 'fade': effect = 'fadeOut'; break;
+          case 'fade':
+            effect = 'fadeOut';
+            break;
         }
 
         // Check storage status.

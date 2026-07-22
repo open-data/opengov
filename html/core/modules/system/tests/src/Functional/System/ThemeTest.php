@@ -9,12 +9,14 @@ use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\TestFileCreationTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the theme administration user interface.
- *
- * @group system
  */
+#[Group('system')]
+#[RunTestsInSeparateProcesses]
 class ThemeTest extends BrowserTestBase {
 
   use TestFileCreationTrait {
@@ -80,8 +82,8 @@ class ThemeTest extends BrowserTestBase {
     $this->drupalGet('admin/appearance/settings/' . $this->randomMachineName());
     $this->assertSession()->statusCodeEquals(404);
     // Ensure a hidden theme settings form URL returns 404.
-    $this->assertTrue(\Drupal::service('theme_installer')->install(['stable9']));
-    $this->drupalGet('admin/appearance/settings/stable9');
+    $this->assertTrue(\Drupal::service('theme_installer')->install(['test_base_theme']));
+    $this->drupalGet('admin/appearance/settings/test_base_theme');
     $this->assertSession()->statusCodeEquals(404);
 
     // Specify a filesystem path to be used for the logo.
@@ -229,15 +231,15 @@ class ThemeTest extends BrowserTestBase {
     $theme_handler = \Drupal::service('theme_handler');
     $this->assertSession()->linkExists($theme_handler->getName('starterkit_theme'));
     $this->assertSession()->linkExists($theme_handler->getName('olivero'));
-    $this->assertSession()->linkNotExists($theme_handler->getName('stable9'));
+    $this->assertSession()->linkNotExists($theme_handler->getName('test_base_theme'));
 
     // If a hidden theme is an admin theme it should be viewable.
-    \Drupal::configFactory()->getEditable('system.theme')->set('admin', 'stable9')->save();
+    \Drupal::configFactory()->getEditable('system.theme')->set('admin', 'test_base_theme')->save();
     \Drupal::service('router.builder')->rebuildIfNeeded();
-    $this->drupalPlaceBlock('local_tasks_block', ['region' => 'header', 'theme' => 'stable9']);
+    $this->drupalPlaceBlock('local_tasks_block', ['region' => 'header', 'theme' => 'test_base_theme']);
     $this->drupalGet('admin/appearance/settings');
-    $this->assertSession()->linkExists($theme_handler->getName('stable9'));
-    $this->drupalGet('admin/appearance/settings/stable9');
+    $this->assertSession()->linkExists($theme_handler->getName('test_base_theme'));
+    $this->drupalGet('admin/appearance/settings/test_base_theme');
     $this->assertSession()->statusCodeEquals(200);
 
     // Ensure default logo and favicons are not triggering custom path
@@ -316,7 +318,7 @@ class ThemeTest extends BrowserTestBase {
     foreach ($valid_hex_codes as $valid_hex) {
       $this->submitForm(['base_primary_color' => $valid_hex], 'Save configuration');
       $this->assertSession()->statusMessageContains('The configuration options have been saved.', 'status');
-      $this->assertSame($valid_hex, $this->config('olivero.settings')->get('base_primary_color'));
+      $this->assertSame($valid_hex, \Drupal::service('config.factory')->getEditable('olivero.settings')->get('base_primary_color'));
     }
   }
 
@@ -522,8 +524,10 @@ class ThemeTest extends BrowserTestBase {
 
     // Uninstall each of the two themes starting with Olivero.
     $this->cssSelect('a[title="Uninstall Olivero theme"]')[0]->click();
+    $this->submitForm([], 'Uninstall');
     $this->assertSession()->responseContains('The <em class="placeholder">Olivero</em> theme has been uninstalled');
     $this->cssSelect('a[title="Uninstall Claro theme"]')[0]->click();
+    $this->submitForm([], 'Uninstall');
     $this->assertSession()->responseContains('The <em class="placeholder">Claro</em> theme has been uninstalled');
   }
 

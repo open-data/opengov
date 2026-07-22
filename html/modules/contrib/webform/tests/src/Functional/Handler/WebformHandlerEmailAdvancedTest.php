@@ -45,7 +45,7 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
    *
    * @see \Drupal\Core\Mail\Plugin\Mail\TestMailCollector
    */
-  public function testAdvancedEmailHandler() {
+  public function testAdvancedEmailHandler(): void {
     global $base_url;
 
     $assert_session = $this->assertSession();

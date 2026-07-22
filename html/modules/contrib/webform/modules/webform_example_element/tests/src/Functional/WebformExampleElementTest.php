@@ -23,7 +23,7 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
   /**
    * Tests webform example element.
    */
-  public function testWebformExampleElement() {
+  public function testWebformExampleElement(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('webform_example_element');
@@ -51,7 +51,7 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
   /**
    * Tests webform example element config form.
    */
-  public function testWebformExampleElementConfigForm() {
+  public function testWebformExampleElementConfigForm(): void {
     $assert_session = $this->assertSession();
     $webform = Webform::load('webform_example_element');
     // Login as admin.

@@ -19,7 +19,7 @@ class WebformElementValidateRequiredTest extends WebformElementBrowserTestBase {
   /**
    * Tests pattern validation.
    */
-  public function testPattern() {
+  public function testPattern(): void {
     $assert_session = $this->assertSession();
 
     // Check that HTML tags are stripped  from required error attribute.

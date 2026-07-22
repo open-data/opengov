@@ -17,7 +17,7 @@ class WebformSubmissionListBuilderJavaScriptTest extends WebformWebDriverTestBas
   /**
    * Test toggle links.
    */
-  public function testToggleLinks() {
+  public function testToggleLinks(): void {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::create([
       'langcode' => 'en',

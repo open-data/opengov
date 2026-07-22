@@ -150,8 +150,7 @@
   float: right;
 }
 
-.tabledrag-toggle-weight-wrapper.webform-multiple-tabledrag-toggle-weight
-  button {
+.tabledrag-toggle-weight-wrapper.webform-multiple-tabledrag-toggle-weight button {
   position: inherit;
   top: inherit;
   right: inherit;

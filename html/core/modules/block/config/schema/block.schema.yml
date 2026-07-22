@@ -14,7 +14,7 @@ block.block.*:
       # @see https://www.drupal.org/project/drupal/issues/2043527
       constraints:
         Regex:
-          pattern: '/^[a-z0-9_.]+$/'
+          pattern: '/^(?!\.)[a-z0-9_.]+$/'
           message: "The %value machine name is not valid."
     theme:
       type: string
@@ -22,13 +22,17 @@ block.block.*:
       constraints:
         NotBlank: []
         ExtensionName: []
-        ExtensionExists: theme
+        ExtensionExists:
+          type: theme
     region:
       type: string
       label: 'Region'
       constraints:
-        NotBlank: []
-        Callback: ['\Drupal\block\Entity\Block', validateRegion]
+        Sequentially:
+          constraints:
+            - NotBlank: []
+            - Callback:
+                callback: ['\Drupal\block\Entity\Block', validateRegion]
     weight:
       type: weight
       label: 'Weight'

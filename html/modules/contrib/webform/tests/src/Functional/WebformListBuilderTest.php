@@ -19,7 +19,7 @@ class WebformListBuilderTest extends WebformBrowserTestBase {
   /**
    * Tests the webform overview filter and limit.
    */
-  public function testFilterAndLimit() {
+  public function testFilterAndLimit(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->createUser(['administer webform']));
@@ -72,7 +72,7 @@ class WebformListBuilderTest extends WebformBrowserTestBase {
   /**
    * Tests the webform overview bulk operations.
    */
-  public function testBulkOperations() {
+  public function testBulkOperations(): void {
     $assert_session = $this->assertSession();
 
     // Add three test webforms.
@@ -208,7 +208,7 @@ class WebformListBuilderTest extends WebformBrowserTestBase {
   /**
    * Tests the webform overview access.
    */
-  public function testAccess() {
+  public function testAccess(): void {
     $assert_session = $this->assertSession();
 
     // Test with a administer.

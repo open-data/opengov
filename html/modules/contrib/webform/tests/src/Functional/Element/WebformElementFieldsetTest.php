@@ -19,7 +19,7 @@ class WebformElementFieldsetTest extends WebformElementBrowserTestBase {
   /**
    * Test fieldset element.
    */
-  public function testFieldset() {
+  public function testFieldset(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_fieldset');

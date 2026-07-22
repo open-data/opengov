@@ -25,7 +25,7 @@ class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
   /**
    * Test options limit.
    */
-  public function testOptionsLimit() {
+  public function testOptionsLimit(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_handler_options_limit_ent');

@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views\Functional\Plugin;
 
+use Drupal\filter\FilterFormatRepositoryInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\content_translation\Traits\ContentTranslationTestTrait;
 use Drupal\Tests\Traits\Core\PathAliasTestTrait;
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\Tests\WaitTerminateTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 // cspell:ignore português
-
 /**
  * Tests the feed display plugin with translated content.
  *
- * @group views
  * @see \Drupal\views\Plugin\views\display\Feed
  */
+#[Group('views')]
+#[RunTestsInSeparateProcesses]
 class DisplayFeedTranslationTest extends ViewTestBase {
 
   use ContentTranslationTestTrait;
@@ -101,7 +104,7 @@ class DisplayFeedTranslationTest extends ViewTestBase {
       'body' => [
         0 => [
           'value' => 'Something in English.',
-          'format' => filter_default_format(),
+          'format' => \Drupal::service(FilterFormatRepositoryInterface::class)->getDefaultFormat()->id(),
         ],
       ],
       'langcode' => 'en',

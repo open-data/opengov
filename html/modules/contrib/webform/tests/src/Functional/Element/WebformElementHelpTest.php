@@ -19,7 +19,7 @@ class WebformElementHelpTest extends WebformElementBrowserTestBase {
   /**
    * Test element help.
    */
-  public function testHelp() {
+  public function testHelp(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_help');

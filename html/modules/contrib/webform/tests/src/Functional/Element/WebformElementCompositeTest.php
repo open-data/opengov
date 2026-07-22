@@ -24,7 +24,7 @@ class WebformElementCompositeTest extends WebformElementBrowserTestBase {
   /**
    * Test composite (builder).
    */
-  public function testComposite() {
+  public function testComposite(): void {
     $assert_session = $this->assertSession();
 
     /* ********************************************************************** */
@@ -131,8 +131,9 @@ webform_element_composite_advanced:
     $assert_session->responseContains('<div data-drupal-selector="edit-radios-wrapper-container" id="edit-radios-wrapper-container--wrapper" class="radios--wrapper fieldgroup form-composite js-form-wrapper form-wrapper">');
 
     // Check radios 'aria-describedby' with wrapper description.
-    $assert_session->responseContains('<input data-drupal-selector="edit-radios-wrapper-fieldset-description-one" aria-describedby="edit-radios-wrapper-fieldset-description--wrapper--description" type="radio" id="edit-radios-wrapper-fieldset-description-one" name="radios_wrapper_fieldset_description" value="One" class="form-radio" />');
-    $assert_session->responseContains('<div class="description"><div id="edit-radios-wrapper-fieldset-description--wrapper--description" data-drupal-field-elements="description" class="webform-element-description">This is a description</div>');
+    $this->assertSession()->elementExists('xpath', '//fieldset[@id = "edit-radios-wrapper-fieldset-description--wrapper"][@aria-describedby = "edit-radios-wrapper-fieldset-description--wrapper--description"]');
+    $this->assertSession()->elementExists('xpath', '//fieldset[@id = "edit-radios-wrapper-fieldset-description--wrapper"]//div[@id = "edit-radios-wrapper-fieldset-description--wrapper--description"][text() = "This is a description"]');
+    $this->assertSession()->elementExists('xpath', '//fieldset[@id = "edit-radios-wrapper-fieldset-description--wrapper"]//input[@id = "edit-radios-wrapper-fieldset-description-one"][not(@aria-describedby)]');
 
     // Check wrapper with #states.
     $assert_session->responseContains('<fieldset data-drupal-selector="edit-states-fieldset" class="js-webform-states-hidden radios--wrapper fieldgroup form-composite webform-composite-visible-title js-webform-type-radios webform-type-radios js-form-item form-item js-form-wrapper form-wrapper" id="edit-states-fieldset--wrapper" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-composite-wrapper-add-form :input[name=\u0022states_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}">');

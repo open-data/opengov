@@ -130,7 +130,7 @@ class WebformTime extends FormElementBase {
     $time_format = $element['#time_format'];
 
     // Check minute steps.
-    if (!empty($element['#step'])) {
+    if ($has_access && !empty($element['#step'])) {
       // Covert step seconds to minutes.
       $step = ($element['#step'] / 60);
       // Get total minutes.

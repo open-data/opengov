@@ -163,9 +163,8 @@ trait WebformAjaxFormTrait {
     $form['#form_wrapper_id'] = $wrapper_id;
 
     $form += ['#prefix' => '', '#suffix' => ''];
-    $form['#prefix'] .= '<span id="' . $wrapper_id . '-content"></span>';
-    $form['#prefix'] .= '<div' . $wrapper_attributes . '>';
-    $form['#suffix'] = '</div>' . $form['#suffix'];
+    $form['#prefix'] .= '<div id="' . $wrapper_id . '-content" tabindex="-1"><div' . $wrapper_attributes . '>';
+    $form['#suffix'] = '</div></div>' . $form['#suffix'];
 
     // Add Ajax library which contains 'Scroll to top' Ajax command and
     // Ajax callback for confirmation back to link.

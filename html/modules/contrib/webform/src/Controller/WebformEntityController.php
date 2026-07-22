@@ -27,6 +27,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class WebformEntityController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * The renderer service.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -66,6 +73,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
+    $instance->currentUser = $container->get('current_user');
     $instance->renderer = $container->get('renderer');
     $instance->configFactory = $container->get('config.factory');
     $instance->requestHandler = $container->get('webform.request');
@@ -86,7 +94,17 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    *   The webform submission webform.
    */
   public function addForm(Request $request, WebformInterface $webform) {
-    return $webform->getSubmissionForm();
+    $build = $webform->getSubmissionForm();
+
+    // Ensure this form is cached per user.
+    $build['#cache']['contexts'][] = 'user.roles:authenticated';
+    if ($this->currentUser->isAuthenticated()) {
+      $build['#cache']['contexts'][] = 'user';
+    }
+
+    $this->renderer->addCacheableDependency($build, $webform);
+
+    return $build;
   }
 
   /**

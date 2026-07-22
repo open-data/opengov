@@ -8,18 +8,21 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\link\LinkItemInterface;
+use Drupal\link\LinkTitleVisibility;
 use Drupal\node\NodeInterface;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\Traits\Core\PathAliasTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests link field widgets and formatters.
- *
- * @group link
- * @group #slow
  */
+#[Group('link')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class LinkFieldTest extends BrowserTestBase {
 
   use PathAliasTestTrait;
@@ -92,7 +95,7 @@ class LinkFieldTest extends BrowserTestBase {
       'field_storage' => $this->fieldStorage,
       'bundle' => 'entity_test',
       'settings' => [
-        'title' => DRUPAL_DISABLED,
+        'title' => LinkTitleVisibility::Disabled->value,
         'link_type' => LinkItemInterface::LINK_GENERIC,
       ],
     ]);
@@ -136,6 +139,8 @@ class LinkFieldTest extends BrowserTestBase {
       'http://www.example.com/numbers_(9999)' => 'http://www.example.com/numbers_(9999)',
     ];
     $valid_internal_entries = [
+      'route:entity.node.canonical;node=1' => 'route:entity.node.canonical;node=1',
+      'route:entity.user.canonical;user=999999' => 'route:entity.user.canonical;user=999999',
       '/entity_test/add' => '/entity_test/add',
       '/a/path/alias' => '/a/path/alias',
 
@@ -185,13 +190,17 @@ class LinkFieldTest extends BrowserTestBase {
 
     // Define some invalid URLs.
     $validation_error_1 = "The path '@link_path' is invalid.";
-    $validation_error_2 = 'Manually entered paths should start with one of the following characters: / ? #';
+    $validation_error_2 = "Enter a content title to select it, or enter an internal path starting with /, ? or #. External links must be a full URL including the protocol, such as";
     $validation_error_3 = "The path '@link_path' is inaccessible.";
+    $validation_error_4 = 'Enter a content title to select it, or enter an internal path starting with /, ? or #.';
+    $validation_error_5 = "External links must be a full URL including the protocol, such as";
     $invalid_external_entries = [
-      // Invalid protocol
+      // Invalid protocol.
       'invalid://not-a-valid-protocol' => $validation_error_1,
-      // Missing host name
+      // Missing host name.
       'http://' => $validation_error_1,
+      // Missing protocol schema.
+      'www.example.com' => $validation_error_2,
     ];
     $invalid_internal_entries = [
       'no-leading-slash' => $validation_error_2,
@@ -206,12 +215,14 @@ class LinkFieldTest extends BrowserTestBase {
     $this->assertInvalidEntries($field_name, $invalid_external_entries + $invalid_internal_entries);
 
     // Test external URLs for 'link_type' = LinkItemInterface::LINK_EXTERNAL.
+    $invalid_external_entries['www.example.com'] = $validation_error_5;
     $this->field->setSetting('link_type', LinkItemInterface::LINK_EXTERNAL);
     $this->field->save();
     $this->assertValidEntries($field_name, $valid_external_entries);
     $this->assertInvalidEntries($field_name, $valid_internal_entries + $invalid_external_entries);
 
     // Test external URLs for 'link_type' = LinkItemInterface::LINK_INTERNAL.
+    $invalid_internal_entries['no-leading-slash'] = $validation_error_4;
     $this->field->setSetting('link_type', LinkItemInterface::LINK_INTERNAL);
     $this->field->save();
     $this->assertValidEntries($field_name, $valid_internal_entries);
@@ -231,7 +242,7 @@ class LinkFieldTest extends BrowserTestBase {
    *
    * @param string $field_name
    *   The field name.
-   * @param array $valid_entries
+   * @param array<string, string> $valid_entries
    *   An array of valid URL entries.
    *
    * @internal
@@ -255,7 +266,7 @@ class LinkFieldTest extends BrowserTestBase {
    *
    * @param string $field_name
    *   The field name.
-   * @param array $invalid_entries
+   * @param array<string, string> $invalid_entries
    *   An array of invalid URL entries.
    *
    * @internal
@@ -288,7 +299,7 @@ class LinkFieldTest extends BrowserTestBase {
       'bundle' => 'entity_test',
       'label' => 'Read more about this entity',
       'settings' => [
-        'title' => DRUPAL_OPTIONAL,
+        'title' => LinkTitleVisibility::Optional->value,
         'link_type' => LinkItemInterface::LINK_GENERIC,
       ],
     ]);
@@ -312,9 +323,9 @@ class LinkFieldTest extends BrowserTestBase {
       ->save();
 
     // Verify that the link text field works according to the field setting.
-    foreach ([DRUPAL_DISABLED, DRUPAL_REQUIRED, DRUPAL_OPTIONAL] as $title_setting) {
+    foreach (LinkTitleVisibility::cases() as $title_setting) {
       // Update the link title field setting.
-      $this->field->setSetting('title', $title_setting);
+      $this->field->setSetting('title', $title_setting->value);
       $this->field->save();
 
       // Display creation form.
@@ -324,7 +335,7 @@ class LinkFieldTest extends BrowserTestBase {
       $this->assertSession()->fieldValueEquals("{$field_name}[0][uri]", '');
       $this->assertSession()->responseContains('placeholder="http://example.com"');
 
-      if ($title_setting === DRUPAL_DISABLED) {
+      if ($title_setting === LinkTitleVisibility::Disabled) {
         $this->assertSession()->fieldNotExists("{$field_name}[0][title]");
         $this->assertSession()->responseNotContains('placeholder="Enter the text for this link"');
       }
@@ -332,7 +343,7 @@ class LinkFieldTest extends BrowserTestBase {
         $this->assertSession()->responseContains('placeholder="Enter the text for this link"');
 
         $this->assertSession()->fieldValueEquals("{$field_name}[0][title]", '');
-        if ($title_setting === DRUPAL_OPTIONAL) {
+        if ($title_setting === LinkTitleVisibility::Optional) {
           // Verify that the URL is required, if the link text is non-empty.
           $edit = [
             "{$field_name}[0][title]" => 'Example',
@@ -340,7 +351,7 @@ class LinkFieldTest extends BrowserTestBase {
           $this->submitForm($edit, 'Save');
           $this->assertSession()->statusMessageContains('The URL field is required when the Link text field is specified.', 'error');
         }
-        if ($title_setting === DRUPAL_REQUIRED) {
+        if ($title_setting === LinkTitleVisibility::Required) {
           // Verify that the link text is required, if the URL is non-empty.
           $edit = [
             "{$field_name}[0][uri]" => 'http://www.example.com',
@@ -367,7 +378,11 @@ class LinkFieldTest extends BrowserTestBase {
       }
     }
 
+    // Set link title back to optional.
+    $this->field->setSetting('title', LinkTitleVisibility::Optional->value)->save();
+
     // Verify that a link without link text is rendered using the URL as text.
+    $this->drupalGet('entity_test/add');
     $value = 'http://www.example.com/';
     $edit = [
       "{$field_name}[0][uri]" => $value,
@@ -375,7 +390,7 @@ class LinkFieldTest extends BrowserTestBase {
     ];
     $this->submitForm($edit, 'Save');
     preg_match('|entity_test/manage/(\d+)|', $this->getUrl(), $match);
-    $id = $match[1];
+    $id = (int) $match[1];
     $this->assertSession()->statusMessageContains('entity_test ' . $id . ' has been created.', 'status');
 
     $output = $this->renderTestEntity($id);
@@ -417,7 +432,7 @@ class LinkFieldTest extends BrowserTestBase {
       'label' => 'Read more about this entity',
       'bundle' => 'entity_test',
       'settings' => [
-        'title' => DRUPAL_OPTIONAL,
+        'title' => LinkTitleVisibility::Optional->value,
       ],
     ])->save();
 
@@ -461,7 +476,7 @@ class LinkFieldTest extends BrowserTestBase {
   /**
    * Renders a test_entity and returns the output.
    *
-   * @param int $id
+   * @param int|string $id
    *   The test_entity ID to render.
    * @param string $view_mode
    *   (optional) The view mode to use for rendering.
@@ -501,7 +516,7 @@ class LinkFieldTest extends BrowserTestBase {
       'label' => 'Link',
       'bundle' => 'entity_test',
       'settings' => [
-        'title' => DRUPAL_OPTIONAL,
+        'title' => LinkTitleVisibility::Optional->value,
         'link_type' => LinkItemInterface::LINK_GENERIC,
       ],
     ])->save();

@@ -6,12 +6,16 @@ namespace Drupal\Tests\system\Functional\Update;
 
 use Drupal\Core\Database\Connection;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests update of menu tree storage fields.
- *
- * @group system
  */
+#[Group('system')]
+#[RunTestsInSeparateProcesses]
+#[IgnoreDeprecations]
 class MenuTreeStorageSchemaUpdateTest extends UpdatePathTestBase {
 
   /**

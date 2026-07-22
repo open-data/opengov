@@ -2,6 +2,7 @@
 
 namespace Drupal\redis\Cache;
 
+use Drupal\Core\Cache\CacheTagsChecksumPreloadInterface;
 use Drupal\Core\Cache\ChainedFastBackend;
 use Predis\Client;
 use Drupal\Component\Serialization\SerializationInterface;
@@ -59,6 +60,19 @@ class Predis extends CacheBase {
     }
     else {
       $result = [$this->client->hGetAll(reset($keys))];
+    }
+
+    // Before checking the validity of each item individually, register the
+    // cache tags for all returned cache items for preloading, this allows the
+    // cache tag service to optimize cache tag lookups.
+    if (method_exists($this->checksumProvider, 'registerCacheTagsForPreload')) {
+      $tags_for_preload = [];
+      foreach ($result as $item) {
+        if (!empty($item['tags'])) {
+          $tags_for_preload[] = explode(' ', $item['tags']);
+        }
+      }
+      $this->checksumProvider->registerCacheTagsForPreload(array_merge(...$tags_for_preload));
     }
 
     // Loop over the cid values to ensure numeric indexes.

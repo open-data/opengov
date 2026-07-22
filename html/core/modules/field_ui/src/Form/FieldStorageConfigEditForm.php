@@ -2,6 +2,7 @@
 
 namespace Drupal\field_ui\Form;
 
+use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -105,12 +106,17 @@ class FieldStorageConfigEditForm extends EntityForm {
     ];
     // Create an arbitrary entity object, so that we can have an instantiated
     // FieldItem.
-    $ids = (object) [
+    $target_entity_storage = $this->entityTypeManager->getStorage($this->entity->getTargetEntityTypeId());
+    if (!$target_entity_storage instanceof ContentEntityStorageInterface) {
+      return $form;
+    }
+
+    $entity_identifiers = [
       'entity_type' => $form_state->get('entity_type_id'),
       'bundle' => $form_state->get('bundle'),
       'entity_id' => NULL,
     ];
-    $entity = _field_create_entity_from_ids($ids);
+    $entity = $target_entity_storage->createEntityFromIds($entity_identifiers);
     if (!$this->entity->isNew()) {
       $items = $entity->get($this->entity->getName());
     }
@@ -232,7 +238,15 @@ class FieldStorageConfigEditForm extends EntityForm {
         ->count()
         ->execute();
       if ($entities_with_higher_delta) {
-        $form_state->setError($element['cardinality_number'], $this->formatPlural($entities_with_higher_delta, 'There is @count entity with @delta or more values in this field, so the allowed number of values cannot be set to @allowed.', 'There are @count entities with @delta or more values in this field, so the allowed number of values cannot be set to @allowed.', ['@delta' => $cardinality_number + 1, '@allowed' => $cardinality_number]));
+        $form_state->setError($element['cardinality_number'], $this->formatPlural(
+          $entities_with_higher_delta,
+          'There is @count entity with @delta or more values in this field, so the allowed number of values cannot be set to @allowed.',
+          'There are @count entities with @delta or more values in this field, so the allowed number of values cannot be set to @allowed.',
+          [
+            '@delta' => $cardinality_number + 1,
+            '@allowed' => $cardinality_number,
+          ],
+        ));
       }
     }
   }

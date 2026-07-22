@@ -3,6 +3,8 @@
 namespace Drupal\Core\Template;
 
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Template\Attribute\TwigAllowed;
+use Twig\Extra\Html\Cva;
 use Twig\Sandbox\SecurityError;
 use Twig\Sandbox\SecurityPolicyInterface;
 
@@ -22,7 +24,7 @@ class TwigSandboxPolicy implements SecurityPolicyInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $allowed_methods;
 
   /**
@@ -32,7 +34,7 @@ class TwigSandboxPolicy implements SecurityPolicyInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $allowed_prefixes;
 
   /**
@@ -40,7 +42,7 @@ class TwigSandboxPolicy implements SecurityPolicyInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $allowed_classes;
 
   /**
@@ -53,6 +55,8 @@ class TwigSandboxPolicy implements SecurityPolicyInterface {
       // Allow any operations on the Attribute object as it is intended to be
       // changed from a Twig template, for example calling addClass().
       'Drupal\Core\Template\Attribute',
+      // The CVA class's only public method is meant to be called by templates.
+      Cva::class,
     ]);
     // Flip the array so we can check using isset().
     $this->allowed_classes = array_flip($allowed_classes);
@@ -99,6 +103,12 @@ class TwigSandboxPolicy implements SecurityPolicyInterface {
       if (str_starts_with($method, $prefix)) {
         return;
       }
+    }
+
+    // Allow the method if it has a TwigAllowed attribute.
+    $reflectionMethod = new \ReflectionMethod($obj, $method);
+    if ($reflectionMethod->getAttributes(TwigAllowed::class)) {
+      return;
     }
 
     throw new SecurityError(sprintf('Calling "%s" method on a "%s" object is not allowed.', $method, get_class($obj)));

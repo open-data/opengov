@@ -24,7 +24,7 @@ class WebformShareNodeTest extends WebformNodeBrowserTestBase {
   /**
    * Test share.
    */
-  public function testShare() {
+  public function testShare(): void {
     global $base_url;
 
     $assert_session = $this->assertSession();

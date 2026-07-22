@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\comment\Functional;
 
-use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field\Entity\FieldConfig;
+use Drupal\comment\CommentingStatus;
 use Drupal\comment\Entity\CommentType;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests fields on comments.
- *
- * @group comment
  */
+#[Group('comment')]
+#[RunTestsInSeparateProcesses]
 class CommentFieldsTest extends CommentTestBase {
 
   /**
@@ -58,10 +60,11 @@ class CommentFieldsTest extends CommentTestBase {
     $field = FieldConfig::loadByName('comment', 'comment', 'comment_body');
     $this->assertTrue(isset($field), "The comment_body field is present for comments on type $type_name");
 
-    // Test adding a field that defaults to CommentItemInterface::CLOSED.
-    $this->addDefaultCommentField('node', 'test_node_type', 'who_likes_ponies', CommentItemInterface::CLOSED, 'who_likes_ponies');
+    // Test adding a field that defaults to CommentingStatus::Closed.
+    $this->addDefaultCommentField('node', 'test_node_type', 'who_likes_ponies', CommentingStatus::Closed, 'who_likes_ponies');
+
     $field = FieldConfig::load('node.test_node_type.who_likes_ponies');
-    $this->assertEquals(CommentItemInterface::CLOSED, $field->getDefaultValueLiteral()[0]['status']);
+    $this->assertEquals(CommentingStatus::Closed->value, $field->getDefaultValueLiteral()[0]['status']);
   }
 
   /**
@@ -114,6 +117,7 @@ class CommentFieldsTest extends CommentTestBase {
     $node = $this->drupalCreateNode([
       'title' => 'Baloney',
       'type' => 'test_node_type',
+      'promote' => TRUE,
     ]);
 
     // Go to the node first so that web_user2 see new comments.
@@ -134,10 +138,6 @@ class CommentFieldsTest extends CommentTestBase {
     // we need a node listing, let's use views for that.
     $this->container->get('module_installer')->install(['views'], TRUE);
     $this->drupalGet('node');
-
-    $link_info = $this->getDrupalSettings()['comment']['newCommentsLinks']['node']['comment2']['2'];
-    $this->assertSame(1, $link_info['new_comment_count']);
-    $this->assertSame($node->toUrl('canonical', ['fragment' => 'new'])->toString(), $link_info['first_new_comment_link']);
   }
 
   /**

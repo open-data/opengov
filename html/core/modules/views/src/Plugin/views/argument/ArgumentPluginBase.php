@@ -12,7 +12,6 @@ use Drupal\Core\Render\Element;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\HandlerBase;
-use Drupal\views\Views;
 
 /**
  * @defgroup views_argument_handlers Views argument handlers
@@ -81,13 +80,13 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    *
    * @var string
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $name_table;
 
   /**
    * The name table alias.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $name_table_alias;
 
   /**
@@ -98,37 +97,37 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    *
    * @var string
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $name_field;
 
   /**
    * The alias for the field.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $name_alias;
 
   /**
    * The base table alias.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $base_alias;
 
   /**
    * The alias count.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $count_alias;
 
   /**
    * Is argument validated.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public ?bool $argument_validated;
 
   /**
    * Is argument a default.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public bool $is_default;
 
   /**
@@ -139,7 +138,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
   /**
    * The title set by argument validation.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public ?string $validated_title;
 
   /**
@@ -390,7 +389,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       ],
     ];
 
-    $plugins = Views::pluginManager('argument_validator')->getDefinitions();
+    $plugins = \Drupal::service('plugin.manager.views.argument_validator')->getDefinitions();
     foreach ($plugins as $id => $info) {
       if (!empty($info['no_ui'])) {
         continue;
@@ -511,7 +510,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       $plugin->validateOptionsForm($form['argument_default'][$default_id], $form_state, $option_values['argument_default'][$default_id]);
     }
 
-    // Summary plugin
+    // Summary plugin.
     $summary_id = $option_values['summary']['format'];
     $plugin = $this->getPlugin('style', $summary_id);
     if ($plugin) {
@@ -548,7 +547,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       $option_values['default_argument_options'] = $options;
     }
 
-    // Summary plugin
+    // Summary plugin.
     $summary_id = $option_values['summary']['format'];
     $plugin = $this->getPlugin('style', $summary_id);
     if ($plugin) {
@@ -651,7 +650,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    * This is used when the default action provides a default argument.
    */
   public function defaultArgumentForm(&$form, FormStateInterface $form_state) {
-    $plugins = Views::pluginManager('argument_default')->getDefinitions();
+    $plugins = \Drupal::service('plugin.manager.views.argument_default')->getDefinitions();
     $options = [];
 
     $form['default_argument_type'] = [
@@ -710,7 +709,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    * This is used when the default action displays a summary.
    */
   public function defaultSummaryForm(&$form, FormStateInterface $form_state) {
-    $style_plugins = Views::pluginManager('style')->getDefinitions();
+    $style_plugins = \Drupal::service('plugin.manager.views.style')->getDefinitions();
     $summary_plugins = [];
     $format_options = [];
     foreach ($style_plugins as $key => $plugin) {
@@ -922,7 +921,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
 
     // Change the display style to the summary style for this
     // argument.
-    $this->view->style_plugin = Views::pluginManager("style")->createInstance($this->options['summary']['format']);
+    $this->view->style_plugin = \Drupal::service('plugin.manager.views.style')->createInstance($this->options['summary']['format']);
     $this->view->style_plugin->init($this->view, $this->displayHandler, $this->options['summary_options']);
 
     // Clear out the normal primary field and whatever else may have
@@ -1000,10 +999,16 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    * code that goes into summaryQuery()
    */
   public function summaryBasics($count_field = TRUE) {
-    // Add the number of nodes counter
+    // Add the number of nodes counter.
     $distinct = ($this->view->display_handler->getOption('distinct') && empty($this->query->no_distinct));
 
-    $count_alias = $this->query->addField($this->view->storage->get('base_table'), $this->view->storage->get('base_field'), 'num_records', ['count' => TRUE, 'distinct' => $distinct]);
+    $count_alias = $this->query->addField($this->view->storage->get('base_table'),
+      $this->view->storage->get('base_field'),
+      'num_records',
+      [
+        'count' => TRUE,
+        'distinct' => $distinct,
+      ]);
     $this->query->addGroupBy($this->name_alias);
 
     if ($count_field) {
@@ -1213,7 +1218,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       $options = $this->options[$options_name] ?? [];
     }
 
-    $plugin = Views::pluginManager($type)->createInstance($name);
+    $plugin = \Drupal::service('views.plugin_managers')->get($type)->createInstance($name);
     if ($plugin) {
       $plugin->init($this->view, $this->displayHandler, $options);
 

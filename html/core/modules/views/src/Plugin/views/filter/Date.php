@@ -35,7 +35,10 @@ class Date extends NumericFilter {
         '#title' => $this->t('Value type'),
         '#options' => [
           'date' => $this->t('A date in any machine readable format. CCYY-MM-DD HH:MM:SS is preferred.'),
-          'offset' => $this->t('An offset from the current time such as "@example1" or "@example2"', ['@example1' => '+1 day', '@example2' => '-2 hours -30 minutes']),
+          'offset' => $this->t('An offset from the current time such as "@example1" or "@example2"', [
+            '@example1' => '+1 day',
+            '@example2' => '-2 hours -30 minutes',
+          ]),
         ],
         '#default_value' => !empty($this->value['type']) ? $this->value['type'] : 'date',
       ];
@@ -54,7 +57,13 @@ class Date extends NumericFilter {
       return;
     }
 
-    $this->validateValidTime($form['value'], $form_state, $form_state->getValue(['options', 'operator']), $form_state->getValue(['options', 'value']));
+    $this->validateValidTime($form['value'],
+      $form_state,
+      $form_state->getValue([
+        'options',
+        'operator',
+      ]),
+      $form_state->getValue(['options', 'value']));
   }
 
   /**
@@ -163,6 +172,13 @@ class Date extends NumericFilter {
       // When the operator is either <, <=, =, !=, >=, > or regular_expression
       // the input contains only one value.
       if ($this->value['value'] == '') {
+        // If the filter was not submitted but has a default offset value,
+        // apply it so backends receive a resolved date.
+        if (!empty($this->options['value']['value']) && $this->options['value']['type'] === 'offset') {
+          $this->value['value'] = $this->options['value']['value'];
+          $this->value['type'] = 'offset';
+          return TRUE;
+        }
         return FALSE;
       }
     }
@@ -170,6 +186,14 @@ class Date extends NumericFilter {
       // When the operator is either between or not between the input contains
       // two values.
       if ($this->value['min'] == '' || $this->value['max'] == '') {
+        // If the filter was not submitted but has default offset values,
+        // apply them so backends receive resolved dates.
+        if ((!empty($this->options['value']['min']) || !empty($this->options['value']['max'])) && $this->options['value']['type'] === 'offset') {
+          $this->value['min'] = $this->options['value']['min'];
+          $this->value['max'] = $this->options['value']['max'];
+          $this->value['type'] = 'offset';
+          return TRUE;
+        }
         return FALSE;
       }
     }

@@ -28,7 +28,7 @@ class WebformElementMessageTest extends WebformElementBrowserTestBase {
   /**
    * Tests message element.
    */
-  public function testMessage() {
+  public function testMessage(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_message');

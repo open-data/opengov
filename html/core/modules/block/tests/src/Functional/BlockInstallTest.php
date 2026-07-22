@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\block\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests block module's installation.
- *
- * @group block
  */
+#[Group('block')]
+#[RunTestsInSeparateProcesses]
 class BlockInstallTest extends BrowserTestBase {
 
   /**
@@ -28,7 +30,7 @@ class BlockInstallTest extends BrowserTestBase {
     $this->assertSession()->responseHeaderNotContains('X-Drupal-Cache-Tags', 'config:block_list');
 
     // Install the block module, and place the "Powered by Drupal" block.
-    $this->container->get('module_installer')->install(['block', 'shortcut']);
+    $this->container->get('module_installer')->install(['block']);
     $this->rebuildContainer();
     $this->drupalPlaceBlock('system_powered_by_block');
 

@@ -19,7 +19,7 @@ class WebformElementAutocompleteTest extends WebformElementBrowserTestBase {
   /**
    * Tests CONTAINS autocomplete element.
    */
-  public function testAutocompleteContains() {
+  public function testAutocompleteContains(): void {
     global $base_path;
 
     $assert_session = $this->assertSession();
@@ -96,7 +96,7 @@ class WebformElementAutocompleteTest extends WebformElementBrowserTestBase {
   /**
    * Tests STARTS_WITH autocomplete element.
    */
-  public function testAutocompleteStartsWith() {
+  public function testAutocompleteStartsWith(): void {
     $assert_session = $this->assertSession();
 
     // Log in as an admin to access the webform page.

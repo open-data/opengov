@@ -113,7 +113,15 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
     }
 
     $elements = $form_state->getValue('elements');
-    $elements = $this->getElementsWithWebformTypePrefix($elements);
+
+    try {
+      $elements = $this->getElementsWithWebformTypePrefix($elements);
+    }
+    catch (\Exception $e) {
+      $form_state->setErrorByName('elements', $this->t('Invalid YAML. If copying from another form, use that form\'s "Build", "Source", not its config export.'));
+      return;
+    }
+
     $form_state->setValueForElement($element, $elements);
   }
 

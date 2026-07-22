@@ -4,13 +4,14 @@ namespace Drupal\node\Hook;
 
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\text\TextSummary;
 use Drupal\user\Entity\User;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Hook\Attribute\Hook;
 
 /**
- * Hook implementations for node.
+ * Token hook implementations for node.
  */
 class NodeTokensHooks {
 
@@ -109,7 +110,7 @@ class NodeTokensHooks {
             break;
 
           case 'type-name':
-            $type_name = node_get_type_label($node);
+            $type_name = $node->getBundleEntity()->label();
             $replacements[$original] = $type_name;
             break;
 
@@ -141,11 +142,10 @@ class NodeTokensHooks {
                     $settings = \Drupal::service('plugin.manager.field.formatter')->getDefaultSettings('text_summary_or_trimmed');
                     $length = $settings['trim_length'];
                   }
-                  $output = text_summary($output, $item->format, $length);
+                  $output = \Drupal::service(TextSummary::class)->generate($output, $item->format, $length);
                 }
               }
-              // "processed" returns a \Drupal\Component\Render\MarkupInterface
-              // via check_markup().
+              // "processed" returns a \Drupal\Component\Render\MarkupInterface.
               $replacements[$original] = $output;
             }
             break;

@@ -87,7 +87,7 @@ class Select extends Query implements SelectInterface {
   /**
    * The range limiters for this query.
    *
-   * @var array
+   * @var array|null
    */
   protected $range;
 
@@ -412,6 +412,13 @@ class Select extends Query implements SelectInterface {
    */
   public function &getTables() {
     return $this->tables;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function &getRange(): ?array {
+    return $this->range;
   }
 
   /**
@@ -810,13 +817,13 @@ class Select extends Query implements SelectInterface {
     // Create a sanitized comment string to prepend to the query.
     $comments = $this->connection->makeComment($this->comments);
 
-    // SELECT
+    // SELECT.
     $query = $comments . 'SELECT ';
     if ($this->distinct) {
       $query .= 'DISTINCT ';
     }
 
-    // FIELDS and EXPRESSIONS
+    // FIELDS and EXPRESSIONS.
     $fields = [];
     foreach ($this->tables as $alias => $table) {
       if (!empty($table['all_fields'])) {
@@ -870,13 +877,13 @@ class Select extends Query implements SelectInterface {
       }
     }
 
-    // WHERE
+    // WHERE.
     if (count($this->condition)) {
       // There is an implicit string cast on $this->condition.
       $query .= "\nWHERE " . $this->condition;
     }
 
-    // GROUP BY
+    // GROUP BY.
     if ($this->group) {
       $group_by_fields = array_map(function (string $field): string {
         return $this->connection->escapeField($field);
@@ -884,7 +891,7 @@ class Select extends Query implements SelectInterface {
       $query .= "\nGROUP BY " . implode(', ', $group_by_fields);
     }
 
-    // HAVING
+    // HAVING.
     if (count($this->having)) {
       // There is an implicit string cast on $this->having.
       $query .= "\nHAVING " . $this->having;
@@ -898,7 +905,7 @@ class Select extends Query implements SelectInterface {
       }
     }
 
-    // ORDER BY
+    // ORDER BY.
     if ($this->order) {
       $query .= "\nORDER BY ";
       $fields = [];

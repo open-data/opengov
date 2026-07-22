@@ -27,7 +27,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @dataProvider providerToPlainText
    */
-  public function testToPlainText($text, $expected) {
+  public function testToPlainText($text, $expected): void {
     $config_factory = $this->getConfigFactoryStub([
       'webform.settings' => ['element' => ['allowed_tags' => 'b']],
     ]);
@@ -67,7 +67,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @dataProvider providerToHtmlMarkup
    */
-  public function testToHtmlMarkup($text, $expected) {
+  public function testToHtmlMarkup($text, $expected): void {
     $config_factory = $this->getConfigFactoryStub([
       'webform.settings' => ['element' => ['allowed_tags' => 'b']],
     ]);
@@ -107,7 +107,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @dataProvider providerContainsHtml
    */
-  public function testContainsHtml($text, $expected) {
+  public function testContainsHtml($text, $expected): void {
     $result = WebformHtmlHelper::containsHtml($text);
     $this->assertEquals($expected, $result, $text);
   }
@@ -136,7 +136,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
    *
    * @dataProvider providerHasBlockTags
    */
-  public function testHasBlockTags($text, $expected) {
+  public function testHasBlockTags($text, $expected): void {
     $result = WebformHtmlHelper::hasBlockTags($text);
     $this->assertEquals($expected, $result, $text);
   }

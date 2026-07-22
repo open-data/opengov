@@ -26,7 +26,7 @@ class WebformOptionsCustomEntityTest extends WebformBrowserTestBase {
   /**
    * Test options custom entity.
    */
-  public function testOptionsCustomEntity() {
+  public function testOptionsCustomEntity(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_options_custom_ent');

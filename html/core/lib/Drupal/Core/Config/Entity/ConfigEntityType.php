@@ -18,13 +18,13 @@ class ConfigEntityType extends EntityType implements ConfigEntityTypeInterface {
    *
    * @see \Drupal\Core\Config\Entity\ConfigEntityTypeInterface::getConfigPrefix()
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $config_prefix;
 
   /**
    * {@inheritdoc}
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $static_cache = FALSE;
 
   /**
@@ -32,7 +32,7 @@ class ConfigEntityType extends EntityType implements ConfigEntityTypeInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $lookup_keys = [];
 
   /**
@@ -40,7 +40,7 @@ class ConfigEntityType extends EntityType implements ConfigEntityTypeInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $config_export = [];
 
   /**
@@ -200,7 +200,7 @@ class ConfigEntityType extends EntityType implements ConfigEntityTypeInterface {
     $id_key = $this->getKey('id');
     if ($id_key) {
       $constraints += [
-        'ImmutableProperties' => [$id_key],
+        'ImmutableProperties' => ['properties' => [$id_key]],
       ];
     }
     return $constraints;

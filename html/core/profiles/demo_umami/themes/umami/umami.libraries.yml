@@ -10,7 +10,6 @@ global:
       css/components/blocks/search/search.css: {}
       css/components/blocks/search/search-results.css: {}
       css/components/blocks/articles-aside/articles-aside.css: {}
-      css/components/forms/contact.css: {}
       css/components/forms/form.css: { weight: -10 }
       css/components/forms/content-moderation.css: {}
       css/components/content/node.css: {}
@@ -42,6 +41,13 @@ global:
       css/components/layout_builder/layout-builder.css: {}
     layout:
       css/layout/layout.css: {}
+  fonts:
+    fonts/source-sans-pro-v21-latin-regular.woff2:
+      preload: true
+    fonts/scope-one-v14-latin-regular.woff2:
+      preload: true
+    fonts/source-sans-pro-v21-latin-700.woff2:
+      preload: true
 
 messages:
   css:

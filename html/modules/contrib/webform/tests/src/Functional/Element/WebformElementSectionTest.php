@@ -19,7 +19,7 @@ class WebformElementSectionTest extends WebformElementBrowserTestBase {
   /**
    * Test element section.
    */
-  public function testSection() {
+  public function testSection(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_section');

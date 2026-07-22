@@ -29,7 +29,7 @@ class WebformSettingsArchivedTest extends WebformBrowserTestBase {
   /**
    * Test webform submission form archived.
    */
-  public function testArchived() {
+  public function testArchived(): void {
     global $base_path;
 
     $assert_session = $this->assertSession();

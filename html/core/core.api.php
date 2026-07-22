@@ -467,6 +467,9 @@
  *   - data: Contains data that can vary by path or similar context.
  *   - discovery: Contains cached discovery data for things such as plugins,
  *     views_data, or YAML discovered data such as library info.
+ *   - memory: An in-memory cache bin, also called static cache. Useful
+ *     alternative to properties when cache invalidation is needed, for example
+ *     through cache tags.
  *
  * A module can define a cache bin by defining a service in its
  * modulename.services.yml file as follows (substituting the desired name for
@@ -479,6 +482,15 @@
  *   factory: ['@cache_factory', 'get']
  *   arguments: [name_of_bin]
  * @endcode
+ *
+ * The tag can also include a default backend, which is useful for example
+ * when defining in-memory (which uses a separate tag) or fast chained bin.
+ *
+ * @code
+ * - { name: cache.bin, default_backend: cache.backend.chainedfast }
+ * - { name: cache.bin.memory, default_backend: cache.backend.memory.memory }
+ * @endcode
+ *
  * See the @link container Services topic @endlink for more on defining
  * services.
  *
@@ -551,7 +563,7 @@
  *
  * Drupal is a content management system, so naturally you want changes to your
  * content to be reflected everywhere, immediately. That's why we made sure that
- * every entity type in Drupal 8 automatically has support for cache tags: when
+ * every entity type in Drupal automatically has support for cache tags: when
  * you save an entity, you can be sure that the cache items that have the
  * corresponding cache tags will be invalidated.
  * This also is the case when you define your own entity types: you'll get the
@@ -1138,15 +1150,13 @@
  *     subdirectory)
  *
  * Some notes about writing PHP test classes:
- * - The class needs a phpDoc comment block with a description and
- *   @group annotation, which gives information about the test.
- * - For unit tests, this comment block should also have @coversDefaultClass
- *   annotation.
+ * - The class needs a phpDoc comment block with a description of the test, and
+ *   a #[Group(...)] attribute, which gives information about the test.
+ * - For unit tests, this comment block should also have a #[CoversClass(...)]
+ *   attribute.
  * - When writing tests, put the test code into public methods, each covering a
  *   logical subset of the functionality that is being tested.
- * - The test methods must have names starting with 'test'. For unit tests, the
- *   test methods need to have a phpDoc block with @covers annotation telling
- *   which class method they are testing.
+ * - The test methods must have names starting with 'test'.
  * - In some cases, you may need to write a test module to support your test;
  *   put such modules under the your_module/tests/modules directory.
  *
@@ -1672,8 +1682,10 @@
  * - hook_install_tasks()
  * - hook_install_tasks_alter()
  * - hook_post_update_NAME()
+ * - hook_removed_post_updates()
  * - hook_schema()
  * - hook_uninstall()
+ * - hook_update_dependencies()
  * - hook_update_last_removed()
  * - hook_update_N()
  *
@@ -2279,7 +2291,7 @@ function hook_mail($key, &$message, $params): void {
     $variables += [
       '%uid' => $node->getOwnerId(),
       '%url' => $node->toUrl('canonical', ['absolute' => TRUE])->toString(),
-      '%node_type' => node_get_type_label($node),
+      '%node_type' => $node->getBundleEntity()->label(),
       '%title' => $node->getTitle(),
       '%teaser' => $node->teaser,
       '%body' => $node->body,
@@ -2678,8 +2690,8 @@ function hook_validation_constraint_alter(array &$definitions) {
  * Creating a tag for a service does not do anything on its own, but tags
  * can be discovered or queried in a compiler pass when the container is built,
  * and a corresponding action can be taken. See
- * \Drupal\Core\Render\MainContent\MainContentRenderersPass for an example of
- * finding tagged services.
+ * \Drupal\Core\DependencyInjection\Compiler\TaggedHandlersPass for an example
+ * of finding tagged services.
  *
  * See @link container Services and Dependency Injection Container @endlink for
  * information on services and the dependency injection container.
@@ -2707,9 +2719,10 @@ function hook_validation_constraint_alter(array &$definitions) {
  * the proxy service, and not on all the dependencies of the lazy service.
  *
  * To define a service as lazy, add "lazy: true" to the service definition, and
- * use the "core/scripts/generate-proxy.sh" script to generate the proxy class.
+ * use the "core/scripts/generate-proxy-class.php" script to generate the proxy
+ * class.
  *
- * @see core/scripts/generate-proxy.sh
+ * @see core/scripts/generate-proxy-class.php
  */
 
 /**
@@ -2856,5 +2869,125 @@ function hook_validation_constraint_alter(array &$definitions) {
  * @endcode
  * Session data must be deleted from custom session bags as soon as it is no
  * longer needed (see @ref sec_intro above).
+ * @}
+ */
+
+/**
+ * @defgroup console_commands CLI Commands
+ * @{
+ * Providing CLI commands for the Drupal CLI.
+ *
+ * Drupal includes a CLI tool (invoked as `vendor/bin/dr`) built on the Symfony
+ * Console component. Modules can provide their own commands that are
+ * automatically discovered.
+ *
+ * @section sec_creating Creating a command
+ * To provide a command, place a class in your module's `src/Command/` directory
+ * and apply the `#[AsCommand]` attribute to declare the command name and
+ * description. Command names follow the convention `module:action`
+ * (e.g. `my_module:hello`).
+ *
+ * There are two types of commands:
+ *
+ * @subsection sec_command_class Extending Symfony's Command class
+ * One style extends `\Symfony\Component\Console\Command\Command` and implements
+ * `execute()`:
+ * @code
+ * use Drupal\Component\Datetime\TimeInterface;
+ * use Symfony\Component\Console\Attribute\AsCommand;
+ * use Symfony\Component\Console\Command\Command;
+ * use Symfony\Component\Console\Input\InputInterface;
+ * use Symfony\Component\Console\Output\OutputInterface;
+ * use Symfony\Component\Console\Style\SymfonyStyle;
+ *
+ * #[AsCommand(
+ *   name: 'my_module:hello',
+ *   description: 'Say hello.',
+ * )]
+ * class HelloCommand extends Command {
+ *
+ *   public function __construct(
+ *     private readonly TimeInterface $time,
+ *   ) {
+ *     parent::__construct();
+ *   }
+ *
+ *   protected function execute(InputInterface $input, OutputInterface $output): int {
+ *     $io = new SymfonyStyle($input, $output);
+ *     $now = new \DateTimeImmutable('@' . $this->time->getRequestTime());
+ *     $io->success('Hello! The time is ' . $now->format('r'));
+ *     return Command::SUCCESS;
+ *   }
+ *
+ * }
+ * @endcode
+ *
+ * @subsection sec_invokable_command Invokable command classes
+ * As an alternative, a plain class can define a single `__invoke()` method
+ * instead of extending `\Symfony\Component\Console\Command\Command`. Symfony
+ * Console attributes such as `#[Argument]`, `#[Option]`, and `#[Ask]` can be
+ * applied to individual parameters to declare arguments, options, and
+ * interactive prompts, removing the need for a `configure()` method. Drupal
+ * services can be injected via the constructor as normal.
+ * @code
+ * use Drupal\Component\Datetime\TimeInterface;
+ * use Symfony\Component\Console\Attribute\Argument;
+ * use Symfony\Component\Console\Attribute\Ask;
+ * use Symfony\Component\Console\Attribute\AsCommand;
+ * use Symfony\Component\Console\Attribute\Option;
+ * use Symfony\Component\Console\Output\OutputInterface;
+ *
+ * #[AsCommand(
+ *   name: 'my_module:greet',
+ *   description: 'Greet someone.',
+ * )]
+ * class GreetCommand {
+ *
+ *   public function __construct(
+ *     protected readonly TimeInterface $time,
+ *   ) {}
+ *
+ *   public function __invoke(
+ *     OutputInterface $output,
+ *     #[Argument('The name to greet.')]
+ *     #[Ask('Who should be greeted?', 'World')]
+ *     string $name,
+ *     #[Option('Shout the greeting.')]
+ *     bool $shout = FALSE,
+ *   ): int {
+ *     $now = new \DateTimeImmutable('@' . $this->time->getRequestTime());
+ *     $greeting = "[$now] Hello, $name!";
+ *     $output->writeln($shout ? strtoupper($greeting) : $greeting);
+ *     return Command::SUCCESS;
+ *   }
+ *
+ * }
+ * @endcode
+ *
+ * @section sec_discovery Auto-discovery and dependency injection
+ * `\Drupal\Core\DependencyInjection\Compiler\ConsoleCompilerPass` scans each
+ * installed module's `src/Command/` directory at container compile time. Any
+ * class carrying the `#[AsCommand]` attribute is automatically registered as an
+ * autowired service tagged `console.command` — no service YAML entry is
+ * needed. Constructor dependencies are resolved from the service container
+ * automatically.
+ *
+ * After Drupal bootstraps, `\Drupal\Core\Command\DrupalApplication` registers
+ * all tagged commands.
+ *
+ * @section sec_service_tag Registering via service tag
+ * Commands that do not use `#[AsCommand]` — for example, those that declare
+ * their name only via `configure()` — are not auto-discovered and must be
+ * registered explicitly as a service tagged `console.command` in a module's
+ * `*.services.yml` file:
+ * @code
+ * my_module.hello_command:
+ *   class: Drupal\my_module\Command\HelloCommand
+ *   tags:
+ *     - { name: console.command }
+ * @endcode
+ *
+ * @see \Drupal\Core\Command\DrupalApplication
+ * @see \Drupal\Core\DependencyInjection\Compiler\ConsoleCompilerPass
  * @}
  */

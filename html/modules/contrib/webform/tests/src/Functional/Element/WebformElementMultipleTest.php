@@ -24,7 +24,7 @@ class WebformElementMultipleTest extends WebformElementBrowserTestBase {
   /**
    * Tests multiple element.
    */
-  public function testMultiple() {
+  public function testMultiple(): void {
     $assert_session = $this->assertSession();
 
     /* ********************************************************************** */

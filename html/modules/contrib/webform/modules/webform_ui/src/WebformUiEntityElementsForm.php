@@ -244,7 +244,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
       'rendering' => TRUE,
     ];
     if ($this->elementsValidator->validate($webform, $validate_options)) {
-      $form_state->setErrorByName(NULL, $this->t('There has been error validating the elements.'));
+      $form_state->setErrorByName('', $this->t('There has been error validating the elements.'));
     }
   }
 

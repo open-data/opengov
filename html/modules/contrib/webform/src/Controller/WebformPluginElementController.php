@@ -152,7 +152,7 @@ class WebformPluginElementController extends ControllerBase implements Container
         $default_format = $webform_element->getItemDefaultFormat();
         $format_names = array_keys($webform_element->getItemFormats());
         $formats = array_combine($format_names, $format_names);
-        if (isset($formats[$default_format])) {
+        if (isset($default_format) && isset($formats[$default_format])) {
           $formats[$default_format] = '<b>' . $formats[$default_format] . '</b>';
         }
 

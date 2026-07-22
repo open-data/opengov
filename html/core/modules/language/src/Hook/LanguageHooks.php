@@ -22,6 +22,8 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\Element\RenderElementBase;
+use Drupal\Core\Render\Element\Select;
 
 /**
  * Hook implementations for language.
@@ -140,23 +142,6 @@ class LanguageHooks {
   }
 
   /**
-   * Implements hook_theme().
-   */
-  #[Hook('theme')]
-  public function theme() : array {
-    return [
-      'language_negotiation_configure_form' => [
-        'render element' => 'form',
-        'file' => 'language.admin.inc',
-      ],
-      'language_content_settings_table' => [
-        'render element' => 'element',
-        'file' => 'language.admin.inc',
-      ],
-    ];
-  }
-
-  /**
    * Implements hook_element_info_alter().
    *
    * @see \Drupal\Core\Render\Element\LanguageSelect
@@ -173,17 +158,13 @@ class LanguageHooks {
       if (!isset($type['language_select']['#theme_wrappers'])) {
         $type['language_select']['#theme_wrappers'] = [];
       }
-      $type['language_select']['#process'] = array_merge($type['language_select']['#process'], [
-        'language_process_language_select',
-            [
-              'Drupal\Core\Render\Element\Select',
-              'processSelect',
-            ],
-            [
-              'Drupal\Core\Render\Element\RenderElementBase',
-              'processAjaxForm',
-            ],
-      ]);
+      $type['language_select']['#process'] = array_merge(
+        $type['language_select']['#process'],
+        [
+          static::class . ':processLanguageSelect',
+          Select::class . '::processSelect',
+          RenderElementBase::class . '::processAjaxForm',
+        ]);
       $type['language_select']['#theme'] = 'select';
       $type['language_select']['#theme_wrappers'] = array_merge($type['language_select']['#theme_wrappers'], ['form_element']);
       $type['language_select']['#languages'] = LanguageInterface::STATE_CONFIGURABLE;
@@ -378,6 +359,27 @@ class LanguageHooks {
       LanguageNegotiationUrl::METHOD_ID,
       LanguageNegotiationUrlFallback::METHOD_ID,
     ];
+  }
+
+  /**
+   * Processes a language select list form element.
+   *
+   * @param array $element
+   *   The form element to process.
+   *
+   * @return array
+   *   The processed form element.
+   */
+  public function processLanguageSelect(array $element): array {
+    // Don't set the options if another module (translation, for example)
+    // already set the options.
+    if (!isset($element['#options'])) {
+      $element['#options'] = [];
+      foreach (\Drupal::languageManager()->getLanguages($element['#languages']) as $langcode => $language) {
+        $element['#options'][$langcode] = $language->isLocked() ? $this->t('- @name -', ['@name' => $language->getName()]) : $language->getName();
+      }
+    }
+    return $element;
   }
 
 }

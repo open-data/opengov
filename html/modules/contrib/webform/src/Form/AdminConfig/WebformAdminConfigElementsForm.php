@@ -461,7 +461,7 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
         '#parents' => ['format', $element_id, 'item'],
         '#states' => $element_plugin_states,
       ];
-      $item_default_format = $element_plugin->getItemDefaultFormat();
+      $item_default_format = $element_plugin->getItemDefaultFormat() ?? '';
       $item_default_format_label = $item_formats[$item_default_format] ?? $item_default_format;
       if ($item_default_format_label) {
         $row['item']['#field_suffix'] = [

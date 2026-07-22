@@ -7,13 +7,19 @@ namespace Drupal\Tests\block\Kernel;
 use Drupal\block\Entity\Block;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\KernelTests\Core\Config\ConfigEntityValidationTestBase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests validation of block entities.
- *
- * @group block
- * @group #slow
  */
+#[Group('block')]
+#[Group('#slow')]
+#[Group('config')]
+#[Group('Validation')]
+#[RunTestsInSeparateProcesses]
 class BlockValidationTest extends ConfigEntityValidationTestBase {
 
   /**
@@ -87,6 +93,10 @@ class BlockValidationTest extends ConfigEntityValidationTestBase {
     unset($cases['INVALID: period separated']);
     // And instead add a test case that verifies it is allowed for blocks.
     $cases['VALID: period separated'] = ['period.separated', TRUE];
+    // Add test cases to ensure machine names cannot start or end with a period.
+    // @see https://www.drupal.org/node/3244349
+    $cases['INVALID: begins with period'] = ['.begins_with_period', FALSE];
+    $cases['VALID: ends with period'] = ['ends_with_period.', TRUE];
     return $cases;
   }
 
@@ -131,7 +141,7 @@ class BlockValidationTest extends ConfigEntityValidationTestBase {
     parent::testRequiredPropertyValuesMissing([
       'region' => [
         'region' => [
-          'This is not a valid region of the <em class="placeholder">stark</em> theme.',
+          'This value should not be blank.',
           'This value should not be null.',
         ],
       ],
@@ -171,12 +181,13 @@ class BlockValidationTest extends ConfigEntityValidationTestBase {
   }
 
   /**
-   * @group legacy
-   */
+ * Tests weight cannot be null.
+ */
+  #[IgnoreDeprecations]
   public function testWeightCannotBeNull(): void {
     $this->entity->set('weight', NULL);
     $this->assertNull($this->entity->getWeight());
-    $this->expectDeprecation('Saving a block with a non-integer weight is deprecated in drupal:11.1.0 and removed in drupal:12.0.0. See https://www.drupal.org/node/3462474');
+    $this->expectUserDeprecationMessage('Saving a block with a non-integer weight is deprecated in drupal:11.1.0 and removed in drupal:12.0.0. See https://www.drupal.org/node/3462474');
     $this->entity->save();
   }
 
@@ -243,9 +254,8 @@ class BlockValidationTest extends ConfigEntityValidationTestBase {
 
   /**
    * Tests validating menu block `level` and `depth` settings.
-   *
-   * @dataProvider providerMenuBlockLevelAndDepth
    */
+  #[DataProvider('providerMenuBlockLevelAndDepth')]
   public function testMenuBlockLevelAndDepth(int $level, ?int $depth, array $expected_errors): void {
     $this->installConfig('system');
 
@@ -256,7 +266,7 @@ class BlockValidationTest extends ConfigEntityValidationTestBase {
       'settings' => [
         'id' => 'system_menu_block:account',
         'label' => 'Account Menu',
-        'label_display' => FALSE,
+        'label_display' => '0',
         'provider' => 'system',
         'level' => $level,
         'depth' => $depth,

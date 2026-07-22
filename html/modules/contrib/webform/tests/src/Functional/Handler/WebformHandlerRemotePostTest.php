@@ -37,7 +37,7 @@ class WebformHandlerRemotePostTest extends WebformBrowserTestBase {
   /**
    * Test remote post handler.
    */
-  public function testRemotePostHandler() {
+  public function testRemotePostHandler(): void {
     global $base_url;
 
     $assert_session = $this->assertSession();

@@ -14,12 +14,15 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\TestFileCreationTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests image theme functions.
- *
- * @group image
  */
+#[Group('image')]
+#[RunTestsInSeparateProcesses]
 class ImageThemeFunctionTest extends KernelTestBase {
 
   use TestFileCreationTrait {
@@ -57,6 +60,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
+    $this->installConfig('system');
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('file');
     $this->installSchema('file', ['file_usage']);
@@ -157,6 +161,42 @@ class ImageThemeFunctionTest extends KernelTestBase {
       ':height' => $image->getHeight(),
     ]);
     $this->assertCount(1, $elements, 'theme_image_formatter() correctly renders a link fragment.');
+  }
+
+  /**
+   * Test the deprecated item_attributes property.
+   */
+  #[IgnoreDeprecations]
+  public function testImageFormatterDeprecatedProperty(): void {
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = $this->container->get('renderer');
+
+    // Create an image.
+    $files = $this->drupalGetTestFiles('image');
+    $file = reset($files);
+    $original_uri = \Drupal::service('file_system')->copy($file->uri, 'public://', FileExists::Rename);
+
+    // Create a test entity with the image field set.
+    $entity = EntityTest::create();
+    $entity->image_test->target_id = $this->image->id();
+    $entity->image_test->alt = NULL;
+    $entity->image_test->uri = $original_uri;
+    $entity->save();
+
+    // Create the base element that we'll use in the tests below.
+    $path = $this->randomMachineName();
+    $element = [
+      '#theme' => 'image_formatter',
+      '#item' => $entity->image_test,
+      '#url' => Url::fromUri('base:' . $path),
+      '#item_attributes' => [
+        'class' => [
+          'foo',
+        ],
+      ],
+    ];
+    $renderer->renderRoot($element);
+    $this->expectUserDeprecationMessage('Usage of #item_attributes is deprecated in drupal:11.4.0 and is removed from drupal:12.0.0. Use #attributes instead. See https://www.drupal.org/node/3554585');
   }
 
   /**

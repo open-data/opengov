@@ -371,14 +371,22 @@ class LocaleConfigManager {
       if (!isset($this->translations[$name][$langcode])) {
         // Preload all translations for this configuration name and language.
         $this->translations[$name][$langcode] = [];
-        foreach ($this->localeStorage->getTranslations(['language' => $langcode, 'type' => 'configuration', 'name' => $name]) as $string) {
+        foreach ($this->localeStorage->getTranslations([
+          'language' => $langcode,
+          'type' => 'configuration',
+          'name' => $name,
+        ]) as $string) {
           $this->translations[$name][$langcode][$string->context][$string->source] = $string;
         }
       }
       if (!isset($this->translations[$name][$langcode][$context][$source])) {
         // There is no translation of the source string in this config location
         // to this language for this context.
-        if ($translation = $this->localeStorage->findTranslation(['source' => $source, 'context' => $context, 'language' => $langcode])) {
+        if ($translation = $this->localeStorage->findTranslation([
+          'source' => $source,
+          'context' => $context,
+          'language' => $langcode,
+        ])) {
           // Look for a translation of the string. It might have one, but not
           // be saved in this configuration location yet.
           // If the string has a translation for this context to this language,
@@ -597,7 +605,7 @@ class LocaleConfigManager {
             $this->deleteTranslationOverride($name, $langcode);
             $count++;
           }
-          elseif (!empty($data)) {
+          elseif (!empty($data) && $override->get() !== $data) {
             // Update translation data in configuration override.
             $this->saveTranslationOverride($name, $langcode, $data);
             $count++;
@@ -607,9 +615,11 @@ class LocaleConfigManager {
           // If the language code is the active storage language, we should
           // update. If it is English, we should only update if English is also
           // translatable.
-          $active = NestedArray::mergeDeepArray([$active, $processed], TRUE);
-          $this->saveTranslationActive($name, $active);
-          $count++;
+          $data = NestedArray::mergeDeepArray([$active, $processed], TRUE);
+          if ($data !== $active) {
+            $this->saveTranslationActive($name, $data);
+            $count++;
+          }
         }
       }
     }

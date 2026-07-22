@@ -7,11 +7,11 @@ namespace Drupal\KernelTests\Core\Test;
 use Drupal\Core\Test\PhpUnitTestDiscovery;
 use Drupal\Core\Test\TestDiscovery;
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\TestTools\PhpUnitCompatibility\RunnerVersion;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests ::findAllClassFiles() between TestDiscovery and PhpUnitTestDiscovery.
@@ -23,6 +23,7 @@ use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 #[Group('TestSuites')]
 #[Group('Test')]
 #[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class PhpUnitApiFindAllClassFilesTest extends KernelTestBase {
 
   /**
@@ -30,16 +31,11 @@ class PhpUnitApiFindAllClassFilesTest extends KernelTestBase {
    */
   #[DataProvider('argumentsProvider')]
   #[IgnoreDeprecations]
-  public function testEquality(?string $extension = NULL, ?string $directory = NULL): void {
+  public function testEquality(?string $extension = NULL, ?string $directory = NULL, array $testsArg = []): void {
     // PHPUnit discovery.
     $configurationFilePath = $this->container->getParameter('app.root') . \DIRECTORY_SEPARATOR . 'core';
-    // @todo once PHPUnit 10 is no longer used, remove the condition.
-    // @see https://www.drupal.org/project/drupal/issues/3497116
-    if (RunnerVersion::getMajor() >= 11) {
-      $configurationFilePath .= \DIRECTORY_SEPARATOR . '.phpunit-next.xml';
-    }
     $phpUnitTestDiscovery = PhpUnitTestDiscovery::instance()->setConfigurationFilePath($configurationFilePath);
-    $phpUnitList = $phpUnitTestDiscovery->findAllClassFiles($extension, $directory);
+    $phpUnitList = $phpUnitTestDiscovery->findAllClassFiles($extension, $directory, $testsArg);
 
     // Legacy TestDiscovery.
     $testDiscovery = new TestDiscovery(
@@ -65,6 +61,11 @@ class PhpUnitApiFindAllClassFilesTest extends KernelTestBase {
     yield 'Extension: system, directory' => [
       'extension' => 'system',
       'directory' => 'core/modules/system/tests/src',
+    ];
+    yield 'directory, tests arg' => [
+      'extension' => NULL,
+      'directory' => 'core/modules/system/tests/src',
+      'testsArg' => ['Menu'],
     ];
   }
 

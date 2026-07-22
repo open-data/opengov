@@ -6,12 +6,14 @@ namespace Drupal\Tests\menu_link_content\Functional;
 
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the menu link content UI.
- *
- * @group Menu
  */
+#[Group('Menu')]
+#[RunTestsInSeparateProcesses]
 class MenuLinkContentFormTest extends BrowserTestBase {
 
   /**
@@ -109,7 +111,7 @@ class MenuLinkContentFormTest extends BrowserTestBase {
       'title[0][value]' => 'Test page',
       'link[0][uri]' => '<test>',
     ], 'Save');
-    $this->assertSession()->pageTextContains('Manually entered paths should start with one of the following characters: / ? #');
+    $this->assertSession()->pageTextContains('Enter a content title to select it, or enter an internal path starting with /, ? or #.');
   }
 
   /**

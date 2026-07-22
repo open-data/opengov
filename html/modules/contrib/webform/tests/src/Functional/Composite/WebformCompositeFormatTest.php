@@ -32,7 +32,7 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
   /**
    * Tests element format.
    */
-  public function testFormat() {
+  public function testFormat(): void {
     /* ********************************************************************** */
     /* Format composite element as HTML and text */
     /* ********************************************************************** */

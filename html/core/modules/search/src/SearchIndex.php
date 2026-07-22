@@ -83,7 +83,7 @@ class SearchIndex implements SearchIndexInterface {
     foreach ($split as $value) {
       if ($tag) {
         // Increase or decrease score per word based on tag.
-        [$tagname] = explode(' ', $value, 2);
+        [$tagname] = preg_split('/\s+/', $value, 2);
         $tagname = mb_strtolower($tagname);
         // Closing or opening tag?
         if ($tagname[0] == '/') {
@@ -269,9 +269,12 @@ class SearchIndex implements SearchIndexInterface {
           ->fetchField();
         // Apply Zipf's law to equalize the probability distribution.
         $total = log10(1 + 1 / (max(1, $total)));
-        $this->connection->merge('search_total')
-          ->key('word', $word)
-          ->fields(['count' => $total])
+        $this->connection->upsert('search_total')
+          ->key('word')
+          ->fields([
+            'word' => $word,
+            'count' => $total,
+          ])
           ->execute();
       }
       // Find words that were deleted from search_index, but are still in

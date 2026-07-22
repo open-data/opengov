@@ -27,7 +27,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @dataProvider providerIsTitleDisplayed
    */
-  public function testIsTitleDisplayed(array $element, $expected) {
+  public function testIsTitleDisplayed(array $element, $expected): void {
     $result = WebformElementHelper::IsTitleDisplayed($element);
     $this->assertEquals($expected, $result, serialize($element));
   }
@@ -59,7 +59,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @dataProvider providerGetIgnoredProperties
    */
-  public function testGetIgnoredProperties(array $element, $expected) {
+  public function testGetIgnoredProperties(array $element, $expected): void {
     $result = WebformElementHelper::getIgnoredProperties($element);
     $this->assertEquals($expected, $result);
   }
@@ -106,7 +106,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @dataProvider providerRemoveIgnoredProperties
    */
-  public function testRemoveIgnoredProperties(array $element, $expected) {
+  public function testRemoveIgnoredProperties(array $element, $expected): void {
     $result = WebformElementHelper::removeIgnoredProperties($element);
     $this->assertEquals($expected, $result);
   }
@@ -186,7 +186,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @dataProvider providerConvertRenderMarkupToStrings
    */
-  public function testConvertRenderMarkupToStrings(array $elements, $expected) {
+  public function testConvertRenderMarkupToStrings(array $elements, $expected): void {
     WebformElementHelper::convertRenderMarkupToStrings($elements);
     $this->assertEquals($expected, $elements);
   }
@@ -221,7 +221,7 @@ class WebformElementHelperTest extends UnitTestCase {
    *
    * @dataProvider providerHasProperty
    */
-  public function testHasProperty(array $arguments, $expected) {
+  public function testHasProperty(array $arguments, $expected): void {
     $result = WebformElementHelper::hasProperty($arguments[0], $arguments[1], $arguments[2]);
     $this->assertEquals($expected, $result);
   }

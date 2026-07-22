@@ -11,11 +11,14 @@ use Drupal\package_manager\ProcessOutputCallback;
 use Drupal\Tests\UnitTestCase;
 use PhpTuf\ComposerStager\API\Core\BeginnerInterface;
 use PhpTuf\ComposerStager\API\Path\Value\PathInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
- * @covers \Drupal\package_manager\LoggingBeginner
- * @group package_manager
+ * Tests Logging Beginner.
  */
+#[Group('package_manager')]
+#[CoversClass(LoggingBeginner::class)]
 class LoggingBeginnerTest extends UnitTestCase {
 
   /**
@@ -24,9 +27,9 @@ class LoggingBeginnerTest extends UnitTestCase {
   public function testDecoratedBeginnerIsCalled(): void {
     $decorated = $this->createMock(BeginnerInterface::class);
 
-    $activeDir = $this->createMock(PathInterface::class);
-    $stagingDir = $this->createMock(PathInterface::class);
-    $stagingDir->expects($this->any())
+    $activeDir = $this->createStub(PathInterface::class);
+    $stagingDir = $this->createStub(PathInterface::class);
+    $stagingDir
       ->method('absolute')
       ->willReturn('staging-dir');
 

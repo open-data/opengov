@@ -29,6 +29,8 @@ interface RevisionableStorageInterface extends EntityStorageInterface {
    *
    * @return \Drupal\Core\Entity\RevisionableInterface|null
    *   The specified entity revision or NULL if not found.
+   *
+   * @not-deprecated
    */
   public function loadRevision($revision_id);
 
@@ -43,6 +45,20 @@ interface RevisionableStorageInterface extends EntityStorageInterface {
    *   array if none found.
    */
   public function loadMultipleRevisions(array $revision_ids);
+
+  /**
+   * Loads an unchanged entity by revision ID from the database.
+   *
+   * @param int $revision_id
+   *   The revision ID of the entity to load.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The unchanged entity, or NULL if the entity cannot be loaded.
+   *
+   * @todo Remove this method once we have a reliable way to retrieve the
+   *   unchanged revision from the entity object.
+   */
+  public function loadRevisionUnchanged($revision_id): ?EntityInterface;
 
   /**
    * Deletes a specific entity revision.

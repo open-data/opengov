@@ -79,7 +79,7 @@ class ViewsExposedForm extends FormBase implements WorkspaceSafeFormInterface {
 
     // Let form plugins know this is for exposed widgets.
     $form_state->set('exposed', TRUE);
-    // Check if the form was already created
+    // Check if the form was already created.
     if ($cache = $this->exposedFormCache->getForm($view->storage->id(), $view->current_display)) {
       return $cache;
     }
@@ -124,7 +124,7 @@ class ViewsExposedForm extends FormBase implements WorkspaceSafeFormInterface {
     if (!$view->hasUrl()) {
       // On any non views.ajax route, use the current route for the form action.
       if ($this->getRouteMatch()->getRouteName() !== 'views.ajax') {
-        $form_action = Url::fromRoute('<current>')->toString();
+        $form_action = $view->display_handler->getPath() ?: Url::fromRoute('<current>')->toString();
       }
       else {
         // On the views.ajax route, set the action to the page we were on.

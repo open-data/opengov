@@ -8,6 +8,7 @@ use Drupal\Component\Utility\Variable;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormHelper;
 use Drupal\Core\Render\Element\RenderCallbackInterface;
@@ -15,6 +16,7 @@ use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Security\DoTrustedCallbackTrait;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Utility\CallableResolver;
+use Drupal\Core\Utility\FiberResumeType;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -199,7 +201,7 @@ class Renderer implements RendererInterface {
    * {@inheritdoc}
    */
   public function renderPlaceholder($placeholder, array $elements) {
-    // Get the render array for the given placeholder
+    // Get the render array for the given placeholder.
     $placeholder_element = $elements['#attached']['placeholders'][$placeholder];
     $markup = $this->doRenderPlaceholder($placeholder_element);
     return $this->doReplacePlaceholder($placeholder, $markup, $elements, $placeholder_element);
@@ -211,12 +213,13 @@ class Renderer implements RendererInterface {
   public function render(/* array */&$elements, $is_root_call = FALSE) {
 
     if (!is_array($elements)) {
+      trigger_error('Calling ' . __METHOD__ . ' with NULL is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Either pass an array or skip the call. See https://www.drupal.org/node/3534020.');
       return '';
     }
 
     $context = $this->getCurrentRenderContext();
     if (!isset($context)) {
-      throw new \LogicException("Render context is empty, because render() was called outside of a renderRoot() or renderPlain() call. Use renderPlain()/renderRoot() or #lazy_builder/#pre_render instead.");
+      throw new \LogicException("Render context is empty, because render() was called outside of a renderRoot() or renderInIsolation() call. Use renderInIsolation()/renderRoot() or #lazy_builder/#pre_render instead.");
     }
 
     if ($is_root_call) {
@@ -282,6 +285,12 @@ class Renderer implements RendererInterface {
 
     // Early-return nothing if user does not have access.
     if (isset($elements['#access'])) {
+      if (!is_bool($elements['#access']) && !($elements['#access'] instanceof AccessResultInterface)) {
+        @trigger_error(
+          'Using a #access value other than a boolean or an AccessResultInterface object is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. See https://www.drupal.org/node/3549344',
+          E_USER_DEPRECATED
+        );
+      }
       // If #access is an AccessResultInterface object, we must apply its
       // cacheability metadata to the render array.
       if ($elements['#access'] instanceof AccessResultInterface) {
@@ -476,16 +485,14 @@ class Renderer implements RendererInterface {
     // Assume that if #theme is set it represents an implemented hook.
     $theme_is_implemented = isset($elements['#theme']);
     // Check the elements for insecure HTML and pass through sanitization.
-    if (isset($elements)) {
-      $markup_keys = [
-        '#description',
-        '#field_prefix',
-        '#field_suffix',
-      ];
-      foreach ($markup_keys as $key) {
-        if (!empty($elements[$key]) && is_scalar($elements[$key])) {
-          $elements[$key] = $this->xssFilterAdminIfUnsafe($elements[$key]);
-        }
+    $markup_keys = [
+      '#description',
+      '#field_prefix',
+      '#field_suffix',
+    ];
+    foreach ($markup_keys as $key) {
+      if (!empty($elements[$key]) && is_scalar($elements[$key])) {
+        $elements[$key] = $this->xssFilterAdminIfUnsafe($elements[$key]);
       }
     }
 
@@ -619,12 +626,40 @@ class Renderer implements RendererInterface {
    * {@inheritdoc}
    */
   public function executeInRenderContext(RenderContext $context, callable $callable) {
-    // Store the current render context.
+    // When executing in a render context, we need to isolate any bubbled
+    // context within this method. To allow for async rendering, it's necessary
+    // to detect if a fiber suspends within a render context. When this happens,
+    // we swap the previous render context in before suspending upwards, then
+    // back out again before resuming.
     $previous_context = $this->getCurrentRenderContext();
-
     // Set the provided context and call the callable, it will use that context.
     $this->setCurrentRenderContext($context);
-    $result = $callable();
+
+    $fiber = new \Fiber(static fn () => $callable());
+    $fiber->start();
+    $resume_type = NULL;
+    while (!$fiber->isTerminated()) {
+      if ($fiber->isSuspended()) {
+        // When ::executeInRenderContext() is executed within a Fiber, which is
+        // always the case when rendering placeholders, if the callback results
+        // in this fiber being suspended, we need to suspend again up to the
+        // parent Fiber. Doing so allows other placeholders to be rendered
+        // before returning here.
+        if (\Fiber::getCurrent() !== NULL) {
+          $this->setCurrentRenderContext($previous_context);
+          \Fiber::suspend(FiberResumeType::Immediate);
+          $this->setCurrentRenderContext($context);
+        }
+        $resume_type = $fiber->resume();
+      }
+      // If the fiber has been suspended and has not signaled that it can be
+      // immediately resumed, assume that the fiber is waiting on an async
+      // operation and wait a bit.
+      if (!$fiber->isTerminated() && $resume_type !== FiberResumeType::Immediate) {
+        usleep(500);
+      }
+    }
+    $result = $fiber->getReturn();
     assert($context->count() <= 1, 'Bubbling failed.');
 
     // Restore the original render context.
@@ -707,9 +742,9 @@ class Renderer implements RendererInterface {
     // depends on global state that can be modified when other placeholders are
     // being rendered: any code can add messages to render.
     // This violates the principle that each lazy builder must be able to render
-    // itself in isolation, and therefore in any order. However, we cannot
-    // change the way \Drupal\Core\Messenger\Messenger works in the Drupal 8
-    // cycle. So we have to accommodate its special needs.
+    // itself in isolation, and therefore in any order. However, we could not
+    // change the way \Drupal\Core\Messenger\Messenger worked during the
+    // Drupal 8 development cycle. So we accommodated its special needs.
     // Allowing placeholders to be rendered in a particular order (in this case:
     // last) would violate this isolation principle. Thus a monopoly is granted
     // to this one special case, with this hard-coded solution.
@@ -724,7 +759,7 @@ class Renderer implements RendererInterface {
         $message_placeholders[] = $placeholder;
       }
       else {
-        // Get the render array for the given placeholder
+        // Get the render array for the given placeholder.
         $fibers[$placeholder] = new \Fiber(function () use ($placeholder_element) {
           return [$this->doRenderPlaceholder($placeholder_element), $placeholder_element];
         });
@@ -748,7 +783,7 @@ class Renderer implements RendererInterface {
           if ($iterations) {
             $fiber = \Fiber::getCurrent();
             if ($fiber !== NULL) {
-              $fiber->suspend();
+              $fiber->suspend(FiberResumeType::Immediate);
             }
           }
           continue;
@@ -783,6 +818,9 @@ class Renderer implements RendererInterface {
    * {@inheritdoc}
    */
   public function addCacheableDependency(array &$elements, $dependency) {
+    if (!$dependency instanceof CacheableDependencyInterface) {
+      @trigger_error(sprintf("Calling %s() with an object that doesn't implement %s is deprecated in drupal:11.3.0 and will throw an error in drupal:13.0.0. See https://www.drupal.org/node/3525389", __METHOD__, CacheableDependencyInterface::class), E_USER_DEPRECATED);
+    }
     $meta_a = CacheableMetadata::createFromRenderArray($elements);
     $meta_b = CacheableMetadata::createFromObject($dependency);
     $meta_a->merge($meta_b)->applyTo($elements);

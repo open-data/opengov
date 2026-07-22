@@ -24,7 +24,7 @@ class WebformSettingsFormTitleTest extends WebformBrowserTestBase {
   /**
    * Tests form title.
    */
-  public function testTitle() {
+  public function testTitle(): void {
     $assert_session = $this->assertSession();
 
     $node = $this->drupalCreateNode(['title' => 'test_node']);

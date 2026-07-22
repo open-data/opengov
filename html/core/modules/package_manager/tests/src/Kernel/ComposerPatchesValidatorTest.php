@@ -10,13 +10,21 @@ use Drupal\fixture_manipulator\ActiveFixtureManipulator;
 use Drupal\package_manager\Event\PreCreateEvent;
 use Drupal\package_manager\Exception\SandboxEventException;
 use Drupal\package_manager\ValidationResult;
+use Drupal\package_manager\Validator\ComposerPatchesValidator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @covers \Drupal\package_manager\Validator\ComposerPatchesValidator
- * @group package_manager
- * @group #slow
+ * Tests Composer Patches Validator.
+ *
  * @internal
  */
+#[Group('package_manager')]
+#[Group('#slow')]
+#[CoversClass(ComposerPatchesValidator::class)]
+#[RunTestsInSeparateProcesses]
 class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
 
   use StringTranslationTrait;
@@ -65,10 +73,6 @@ class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
             t('It must be a root dependency.'),
           ], $summary),
         ],
-        [
-          'package-manager-faq-composer-patches-not-a-root-dependency',
-          NULL,
-        ],
       ],
       'VALID: present' => [
         static::CONFIG_ALLOWED_PLUGIN | static::EXTRA_EXIT_ON_PATCH_FAILURE | static::REQUIRE_PACKAGE_FROM_ROOT,
@@ -88,9 +92,8 @@ class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
    *   What aspects of the patcher are installed how.
    * @param \Drupal\package_manager\ValidationResult[] $expected_results
    *   The expected validation results.
-   *
-   *  @dataProvider providerErrorDuringPreCreate
    */
+  #[DataProvider('providerErrorDuringPreCreate')]
   public function testErrorDuringPreCreate(int $options, array $expected_results): void {
     $active_manipulator = new ActiveFixtureManipulator();
     if ($options & static::CONFIG_ALLOWED_PLUGIN) {
@@ -205,10 +208,13 @@ class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
    *   Whether patcher is installed in stage.
    * @param \Drupal\package_manager\ValidationResult[] $expected_results
    *   The expected validation results.
-   *
-   * @dataProvider providerErrorDuringPreApply
+   * @param string[] $help_page_sections
+   *   An associative array of fragments (anchors) in the online help. The keys
+   *   should be the numeric indices of the validation result messages which
+   *   should link to those fragments.
    */
-  public function testErrorDuringPreApply(int $in_active, int $in_stage, array $expected_results): void {
+  #[DataProvider('providerErrorDuringPreApply')]
+  public function testErrorDuringPreApply(int $in_active, int $in_stage, array $expected_results, array $help_page_sections): void {
     // Simulate in active.
     $active_manipulator = new ActiveFixtureManipulator();
     if ($in_active & static::CONFIG_ALLOWED_PLUGIN) {
@@ -283,9 +289,8 @@ class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
    *   An associative array of fragments (anchors) in the online help. The keys
    *   should be the numeric indices of the validation result messages which
    *   should link to those fragments.
-   *
-   * @dataProvider providerErrorDuringPreApply
    */
+  #[DataProvider('providerErrorDuringPreApply')]
   public function testErrorDuringPreApplyWithHelp(int $in_active, int $in_stage, array $expected_results, array $help_page_sections): void {
     $this->enableModules(['help']);
 
@@ -310,7 +315,7 @@ class ComposerPatchesValidatorTest extends PackageManagerKernelTestBase {
       }
       $expected_results[$result_index] = ValidationResult::createError($messages, $result->summary);
     }
-    $this->testErrorDuringPreApply($in_active, $in_stage, $expected_results);
+    $this->testErrorDuringPreApply($in_active, $in_stage, $expected_results, $help_page_sections);
   }
 
 }

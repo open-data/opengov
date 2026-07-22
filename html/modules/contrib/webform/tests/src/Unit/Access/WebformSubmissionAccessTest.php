@@ -19,7 +19,7 @@ class WebformSubmissionAccessTest extends WebformAccessTestBase {
    * @covers ::checkResendAccess
    * @covers ::checkWizardPagesAccess
    */
-  public function testWebformSubmissionAccess() {
+  public function testWebformSubmissionAccess(): void {
     // Mock Drupal service container.
     $this->container = new ContainerBuilder();
     \Drupal::setContainer($this->container);

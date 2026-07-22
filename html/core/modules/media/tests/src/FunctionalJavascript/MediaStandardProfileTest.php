@@ -11,14 +11,15 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media_test_oembed\Controller\ResourceController;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\media\Traits\OEmbedTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 // cspell:ignore Drupalin Hustlin Schipulcon
-
 /**
  * Basic tests for Media configuration in the standard profile.
- *
- * @group media
  */
+#[Group('media')]
+#[RunTestsInSeparateProcesses]
 class MediaStandardProfileTest extends MediaJavascriptTestBase {
 
   use OEmbedTestTrait;
@@ -56,6 +57,9 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
       $this->markTestSkipped('Test frequently causes a locked database on SQLite');
     }
 
+    // Standard profile does not include a content type by default.
+    $this->drupalCreateContentType(['type' => 'test_content', 'name' => 'Test Content']);
+
     $storage = FieldStorageConfig::create([
       'entity_type' => 'node',
       'field_name' => 'field_related_media',
@@ -69,7 +73,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     FieldConfig::create([
       'field_storage' => $storage,
       'entity_type' => 'node',
-      'bundle' => 'article',
+      'bundle' => 'test_content',
       'label' => 'Related media',
       'settings' => [
         'handler_settings' => [
@@ -84,7 +88,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
       ],
     ])->save();
 
-    $display = EntityViewDisplay::load('node.article.default');
+    $display = EntityViewDisplay::load('node.test_content.default');
     $display->setComponent('field_related_media', [
       'type' => 'entity_reference_entity_view',
       'settings' => [
@@ -140,7 +144,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     // the output is what we expect.
     $node = Node::create([
       'title' => 'Host node',
-      'type' => 'article',
+      'type' => 'test_content',
       'field_related_media' => [
         'target_id' => $audio_media_id,
       ],
@@ -228,7 +232,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     // the output is what we expect.
     $node = Node::create([
       'title' => 'Host node',
-      'type' => 'article',
+      'type' => 'test_content',
       'field_related_media' => [
         'target_id' => $image_media_id,
       ],
@@ -331,7 +335,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     // the output is what we expect.
     $node = Node::create([
       'title' => 'Host node',
-      'type' => 'article',
+      'type' => 'test_content',
       'field_related_media' => [
         'target_id' => $file_media_id,
       ],
@@ -419,7 +423,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     // the output is what we expect.
     $node = Node::create([
       'title' => 'Host node',
-      'type' => 'article',
+      'type' => 'test_content',
       'field_related_media' => [
         'target_id' => $remote_video_media_id,
       ],
@@ -516,7 +520,7 @@ class MediaStandardProfileTest extends MediaJavascriptTestBase {
     // the output is what we expect.
     $node = Node::create([
       'title' => 'Host node',
-      'type' => 'article',
+      'type' => 'test_content',
       'field_related_media' => [
         'target_id' => $video_media_id,
       ],

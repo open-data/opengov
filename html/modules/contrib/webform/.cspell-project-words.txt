@@ -3,6 +3,7 @@ algolia
 analyse
 Acquia
 abap
+cleantalk
 PARAVALU
 Lastname
 Firstname

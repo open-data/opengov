@@ -305,7 +305,7 @@ class WebformOptionsCustom extends FormElementBase implements WebformOptionsCust
     }
 
     // Get option value and text attributes.
-    $value_attribute_name = NULL;
+    $value_attribute_name = '';
     if ($element['#value_attributes']) {
       $value_attributes = preg_split('/\s*,\s*/', trim($element['#value_attributes']));
       foreach ($value_attributes as $value_attribute) {
@@ -315,7 +315,7 @@ class WebformOptionsCustom extends FormElementBase implements WebformOptionsCust
         }
       }
     }
-    $text_attribute_name = NULL;
+    $text_attribute_name = '';
     if ($element['#text_attributes']) {
       $text_attributes = preg_split('/\s*,\s*/', trim($element['#text_attributes']));
       foreach ($text_attributes as $text_attribute) {
