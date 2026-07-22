@@ -3,7 +3,7 @@
         'name' => 'opengov/opengov-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '1ea8b38d4065bed4d1ed90ce99c875918c03e81d',
+        'reference' => '770330141e1f83c702dc2fe8425de0e92ff5324d',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -647,9 +647,9 @@
             'dev_requirement' => false,
         ),
         'drupal/redis' => array(
-            'pretty_version' => '1.10.0',
-            'version' => '1.10.0.0',
-            'reference' => '8.x-1.10',
+            'pretty_version' => '1.11.0',
+            'version' => '1.11.0.0',
+            'reference' => '8.x-1.11',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../html/modules/contrib/redis',
             'aliases' => array(),
@@ -1053,7 +1053,7 @@
         'opengov/og' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '13d2305d7c20b8245a620924fc38885cf44fc2f9',
+            'reference' => '4fcb15fa786eb9a1e01554d6aba92efb9e6d1368',
             'type' => 'drupal-profile',
             'install_path' => __DIR__ . '/../../html/profiles/og',
             'aliases' => array(
@@ -1064,7 +1064,7 @@
         'opengov/opengov-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '1ea8b38d4065bed4d1ed90ce99c875918c03e81d',
+            'reference' => '770330141e1f83c702dc2fe8425de0e92ff5324d',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1372,8 +1372,8 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.1|2.0',
-                1 => '^1.0',
+                0 => '^1.0',
+                1 => '1.1|2.0',
             ),
         ),
         'psr/event-dispatcher' => array(
@@ -1403,8 +1403,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -1419,8 +1419,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -1435,8 +1435,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -1451,8 +1451,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '1.0.0 || 2.0.0 || 3.0.0',
+                0 => '1.0.0 || 2.0.0 || 3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psy/psysh' => array(

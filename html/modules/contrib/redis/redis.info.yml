@@ -6,7 +6,7 @@ core_version_requirement: ^9.3 || ^10 || ^11
 configure: redis.report
 php: 7.1.0
 
-# Information added by Drupal.org packaging script on 2025-08-01
-version: '8.x-1.10'
+# Information added by Drupal.org packaging script on 2025-11-09
+version: '8.x-1.11'
 project: 'redis'
-datestamp: 1754045878
+datestamp: 1762688848
