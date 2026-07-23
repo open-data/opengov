@@ -19,7 +19,7 @@ class WebformElementDetailsTest extends WebformElementBrowserTestBase {
   /**
    * Test details element.
    */
-  public function testDetails() {
+  public function testDetails(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_details');

@@ -26,7 +26,7 @@ class WebformElementCaptchaTest extends WebformElementBrowserTestBase {
   /**
    * Test CAPTCHA element.
    */
-  public function testCaptcha() {
+  public function testCaptcha(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_captcha');

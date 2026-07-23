@@ -47,7 +47,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
   /**
    * Tests element properties.
    */
-  public function testElementProperties() {
+  public function testElementProperties(): void {
     $this->drupalLogin($this->rootUser);
 
     // Loops through all the elements, edits them via the UI, and checks that
@@ -69,7 +69,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
         }
         // Check that the original and updated element are equal.
         $updated_element = $this->reloadWebform($webform_id)->getElementDecoded($key);
-        $this->assertEquals($original_element, $updated_element, "'$key'' properties on '$webform_id' is equal.");
+        $this->assertEquals($original_element, $updated_element, "The '$key' properties on '$webform_id' are equal.");
       }
     }
   }

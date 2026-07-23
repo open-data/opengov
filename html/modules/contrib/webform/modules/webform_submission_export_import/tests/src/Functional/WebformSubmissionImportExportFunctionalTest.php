@@ -28,7 +28,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
   /**
    * Test submission import.
    */
-  public function testSubmissionExport() {
+  public function testSubmissionExport(): void {
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
@@ -160,7 +160,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
   /**
    * Test submission import.
    */
-  public function testSubmissionImport() {
+  public function testSubmissionImport(): void {
     /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
     $file_url_generator = \Drupal::service('file_url_generator');
 

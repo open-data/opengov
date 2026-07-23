@@ -6,18 +6,20 @@ namespace Drupal\Tests\dblog\Functional;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Database\Database;
-use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Link;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Url;
 use Drupal\dblog\Controller\DbLogController;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\system\Functional\Menu\AssertBreadcrumbTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Verifies log entries and user access based on permissions.
- *
- * @group dblog
  */
+#[Group('dblog')]
+#[RunTestsInSeparateProcesses]
 class DbLogTest extends BrowserTestBase {
   use FakeLogEntries;
   use AssertBreadcrumbTrait;
@@ -479,7 +481,10 @@ class DbLogTest extends BrowserTestBase {
     $this->submitForm($edit, 'Create new account');
     $this->assertSession()->statusCodeEquals(200);
     // Retrieve the user object.
-    $user = user_load_by_name($name);
+    $users = \Drupal::entityTypeManager()
+      ->getStorage('user')
+      ->loadByProperties(['name' => $name]);
+    $user = reset($users);
     $this->assertNotNull($user, "User $name was loaded");
     // pass_raw property is needed by drupalLogin.
     $user->passRaw = $pass;

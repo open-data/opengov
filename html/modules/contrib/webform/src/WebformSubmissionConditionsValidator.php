@@ -672,7 +672,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         return ($conditions_sum === 1);
 
       case 'or':
-        return (boolean) $conditions_sum;
+        return (bool) $conditions_sum;
 
       case 'and':
         return ($conditions_sum === $conditions_total);
@@ -729,7 +729,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         $sub_condition_results[] = $this->checkCondition($element, $selector, $sub_condition, $webform_submission);
       }
       // Evaluate sub-conditions using the 'OR' operator.
-      return (boolean) array_sum($sub_condition_results);
+      return (bool) array_sum($sub_condition_results);
     }
     else {
       return $this->checkCondition($element, $selector, $condition, $webform_submission);
@@ -820,10 +820,10 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     switch ($trigger) {
       case 'empty':
         $empty = (empty($element_value) && $element_value !== '0');
-        return ($empty === (boolean) $trigger_value);
+        return ($empty === (bool) $trigger_value);
 
       case 'checked':
-        return ((boolean) $element_value === (boolean) $trigger_value);
+        return ((bool) $element_value === (bool) $trigger_value);
 
       case 'value':
         return ((string) $element_value === (string) $trigger_value);

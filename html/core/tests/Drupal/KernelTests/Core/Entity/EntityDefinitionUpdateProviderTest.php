@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace Drupal\KernelTests\Core\Entity;
 
 use Drupal\Core\Database\Statement\FetchAs;
+use Drupal\Core\Entity\EntityDefinitionUpdateManager;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldPurger;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\system\Functional\Entity\Traits\EntityDefinitionTestTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests EntityDefinitionUpdateManager functionality.
- *
- * @coversDefaultClass \Drupal\Core\Entity\EntityDefinitionUpdateManager
- *
- * @group Entity
- * @group #slow
  */
+#[CoversClass(EntityDefinitionUpdateManager::class)]
+#[Group('Entity')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
 
   use EntityDefinitionTestTrait;
@@ -65,9 +70,8 @@ class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
 
   /**
    * Tests deleting a base field when it has existing data.
-   *
-   * @dataProvider baseFieldDeleteWithExistingDataTestCases
    */
+  #[DataProvider('baseFieldDeleteWithExistingDataTestCases')]
   public function testBaseFieldDeleteWithExistingData($entity_type_id, $create_entity_revision, $base_field_revisionable, $create_entity_translation): void {
     // Enable an additional language.
     ConfigurableLanguage::createFromLangcode('ro')->save();
@@ -207,7 +211,7 @@ class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
 
     // Purge field data, and check that the storage definition has been
     // completely removed once the data is purged.
-    field_purge_batch(10);
+    \Drupal::service(FieldPurger::class)->purgeBatch(10);
     $deleted_storage_definitions = \Drupal::service('entity_field.deleted_fields_repository')->getFieldStorageDefinitions();
     $this->assertEmpty($deleted_storage_definitions, 'The base field has been deleted.');
     $this->assertFalse($schema_handler->tableExists($dedicated_deleted_table_name), 'A dedicated field table was deleted after new_base_field was purged.');
@@ -220,7 +224,7 @@ class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
   /**
    * Test cases for ::testBaseFieldDeleteWithExistingData.
    */
-  public static function baseFieldDeleteWithExistingDataTestCases() {
+  public static function baseFieldDeleteWithExistingDataTestCases(): array {
     return [
       'Non-revisionable, non-translatable entity type' => [
         'entity_test_update',
@@ -287,9 +291,8 @@ class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
 
   /**
    * Tests adding a base field with initial values inherited from another field.
-   *
-   * @dataProvider initialValueFromFieldTestCases
    */
+  #[DataProvider('initialValueFromFieldTestCases')]
   public function testInitialValueFromField($default_initial_value, $expected_value): void {
     $storage = \Drupal::entityTypeManager()->getStorage('entity_test_update');
     $db_schema = $this->database->schema();
@@ -340,7 +343,7 @@ class EntityDefinitionUpdateProviderTest extends EntityKernelTestBase {
   /**
    * Test cases for ::testInitialValueFromField.
    */
-  public static function initialValueFromFieldTestCases() {
+  public static function initialValueFromFieldTestCases(): array {
     return [
       'literal value' => [
         'test initial value',

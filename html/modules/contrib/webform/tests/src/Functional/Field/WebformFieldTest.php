@@ -22,7 +22,7 @@ class WebformFieldTest extends WebformBrowserTestBase {
   /**
    * Tests the webform (entity reference) field.
    */
-  public function testWebformField() {
+  public function testWebformField(): void {
     $assert_session = $this->assertSession();
 
     /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */

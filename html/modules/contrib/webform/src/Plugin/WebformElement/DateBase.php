@@ -662,7 +662,10 @@ abstract class DateBase extends WebformElementBase {
   protected static function datetimeRangeYears($string, $date = NULL) {
     $datetime = new DrupalDateTime();
     $this_year = $datetime->format('Y');
-    [$min_year, $max_year] = explode(':', $string);
+    // Ensure we always have two elements, even if $string is malformed.
+    $parts = explode(':', $string ?? '');
+    $min_year = $parts[0] ?? '';
+    $max_year = $parts[1] ?? '';
 
     // Valid patterns would be -5:+5, 0:+1, 2008:2010.
     $plus_pattern = '@[\+|\-][0-9]{1,4}@';

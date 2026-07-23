@@ -40,7 +40,7 @@ class WebformUiElementJavaScriptTest extends WebformWebDriverTestBase {
   /**
    * Tests element.
    */
-  public function testElement() {
+  public function testElement(): void {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 

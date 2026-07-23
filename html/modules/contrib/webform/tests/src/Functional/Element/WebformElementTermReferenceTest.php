@@ -39,7 +39,7 @@ class WebformElementTermReferenceTest extends WebformElementBrowserTestBase {
   /**
    * Test term reference element.
    */
-  public function testTermReference() {
+  public function testTermReference(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_term_reference');

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\KernelTests\Config\Schema;
 
-// cspell:ignore childkey
-
 use Drupal\block\Entity\Block;
 use Drupal\Core\Config\Schema\Mapping;
 use Drupal\Core\TypedData\MapDataDefinition;
@@ -13,11 +11,19 @@ use Drupal\editor\Entity\Editor;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
+// cspell:ignore childkey
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\TestWith;
 
 /**
- * @coversDefaultClass \Drupal\Core\Config\Schema\Mapping
- * @group Config
+ * Tests Drupal\Core\Config\Schema\Mapping.
  */
+#[CoversClass(Mapping::class)]
+#[Group('Config')]
+#[RunTestsInSeparateProcesses]
 class MappingTest extends KernelTestBase {
 
   /**
@@ -28,8 +34,9 @@ class MappingTest extends KernelTestBase {
   ];
 
   /**
-   * @dataProvider providerMappingInterpretation
-   */
+ * Tests mapping interpretation.
+ */
+  #[DataProvider('providerMappingInterpretation')]
   public function testMappingInterpretation(
     string $config_name,
     ?string $property_path,
@@ -53,7 +60,7 @@ class MappingTest extends KernelTestBase {
             'use_site_logo' => TRUE,
             'use_site_name' => TRUE,
             'use_site_slogan' => TRUE,
-            'label_display' => FALSE,
+            'label_display' => '0',
             // This is inherited from `type: block_settings`.
             'context_mapping' => [],
           ],
@@ -93,14 +100,13 @@ class MappingTest extends KernelTestBase {
           'theme' => 'stark',
           'status' => TRUE,
           'settings' => [
-            'label_display' => FALSE,
+            'label_display' => '0',
             // This is inherited from `type: block_settings`.
             'context_mapping' => [],
           ],
           // Avoid showing "Powered by Drupal" on 404 responses.
           'visibility' => [
             'I_CAN_CHOOSE_THIS' => [
-              // This is what determines the
               'id' => 'response_status',
               'negate' => FALSE,
               'status_codes' => [
@@ -138,9 +144,6 @@ class MappingTest extends KernelTestBase {
         $this->installEntitySchema('user');
         $this->installEntitySchema('node');
         $this->assertNull(FieldConfig::load('node.config_mapping_test.comment_config_mapping_test'));
-        // \Drupal\node\Entity\NodeType::$preview_mode uses DRUPAL_OPTIONAL,
-        // which is defined in system.module.
-        require_once 'core/modules/system/system.module';
         $this->installConfig(['config_mapping_test']);
         $this->assertNotNull(FieldConfig::load('node.config_mapping_test.comment_config_mapping_test'));
         break;
@@ -186,6 +189,7 @@ class MappingTest extends KernelTestBase {
         'level',
         'depth',
         'expand_all_items',
+        'ignore_active_trail',
       ],
       'block.settings.local_tasks_block' => [
         'primary',
@@ -219,7 +223,7 @@ class MappingTest extends KernelTestBase {
     // Special case: deprecated  is needed for deprecated config schema:
     // - deprecated keys are treated as optional
     // - if a deprecated property path is itself a mapping, then the keys inside
-    //   are not optional
+    //   are not optional.
     yield 'No dynamic type: config_schema_deprecated_test.settings' => [
       'config_schema_deprecated_test.settings',
       NULL,
@@ -402,14 +406,15 @@ class MappingTest extends KernelTestBase {
         // @see core/config/schema/core.data_types.schema.yml
         'id',
         'negate',
-        'uuid',
         'context_mapping',
         // Keys defined locally, in `type: condition.plugin.response_status`.
         // @see core/modules/system/config/schema/system.schema.yml
         'status_codes',
       ],
-      [],
-      // Note the presence of `id`, `negate`, `uuid` and `context_mapping` here.
+      // This key is optional, see `type: condition.plugin`.
+      // @see core.data_types.schema.yml
+      ['context_mapping'],
+      // Note the presence of `id`, `negate`, and `context_mapping` here.
       // That's because there is no `condition.plugin.*` type that specifies
       // defaults. Each individual condition plugin has the freedom to deviate
       // from this approach!
@@ -417,28 +422,24 @@ class MappingTest extends KernelTestBase {
         'condition.plugin.entity_bundle:*' => [
           'id',
           'negate',
-          'uuid',
           'context_mapping',
           'bundles',
         ],
         'condition.plugin.request_path' => [
           'id',
           'negate',
-          'uuid',
           'context_mapping',
           'pages',
         ],
         'condition.plugin.response_status' => [
           'id',
           'negate',
-          'uuid',
           'context_mapping',
           'status_codes',
         ],
         'condition.plugin.current_theme' => [
           'id',
           'negate',
-          'uuid',
           'context_mapping',
           'theme',
         ],
@@ -454,14 +455,15 @@ class MappingTest extends KernelTestBase {
         // @see core/config/schema/core.data_types.schema.yml
         'id',
         'negate',
-        'uuid',
         'context_mapping',
         // Keys defined locally, in `type: condition.plugin.response_status`.
         // @see core/modules/system/config/schema/system.schema.yml
         'status_codes',
       ],
-      [],
-      // Note the ABSENCE of `id`, `negate`, `uuid` and `context_mapping`
+      // This key is optional, see `type: condition.plugin`.
+      // @see core.data_types.schema.yml
+      ['context_mapping'],
+      // Note the ABSENCE of `id`, `negate`, and `context_mapping`
       // compared to the previous test case, because now the
       // `condition.plugin.*` type does exist.
       [
@@ -509,15 +511,18 @@ class MappingTest extends KernelTestBase {
   }
 
   /**
-   * @testWith [false, 42, "The mapping definition at `foobar` is invalid: its `invalid` key contains a integer. It must be an array."]
-   *           [false, 10.2, "The mapping definition at `foobar` is invalid: its `invalid` key contains a double. It must be an array."]
-   *           [false, "type", "The mapping definition at `foobar` is invalid: its `invalid` key contains a string. It must be an array."]
-   *           [false, false, "The mapping definition at `foobar` is invalid: its `invalid` key contains a boolean. It must be an array."]
-   *           [true, 42, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a integer. It must be an array."]
-   *           [true, 10.2, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a double. It must be an array."]
-   *           [true, "type", "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a string. It must be an array."]
-   *           [true, false, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a boolean. It must be an array."]
-   */
+ * Tests invalid mapping key definition.
+ */
+  // phpcs:disable Drupal.Arrays.Array.LongLineDeclaration
+  #[TestWith([FALSE, 42, "The mapping definition at `foobar` is invalid: its `invalid` key contains a integer. It must be an array."])]
+  #[TestWith([FALSE, 10.2, "The mapping definition at `foobar` is invalid: its `invalid` key contains a double. It must be an array."])]
+  #[TestWith([FALSE, "type", "The mapping definition at `foobar` is invalid: its `invalid` key contains a string. It must be an array."])]
+  #[TestWith([FALSE, FALSE, "The mapping definition at `foobar` is invalid: its `invalid` key contains a boolean. It must be an array."])]
+  #[TestWith([TRUE, 42, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a integer. It must be an array."])]
+  #[TestWith([TRUE, 10.2, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a double. It must be an array."])]
+  #[TestWith([TRUE, "type", "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a string. It must be an array."])]
+  #[TestWith([TRUE, FALSE, "The mapping definition at `my_module.settings:foobar` is invalid: its `invalid` key contains a boolean. It must be an array."])]
+  // phpcs:enable
   public function testInvalidMappingKeyDefinition(bool $has_parent, mixed $invalid_key_definition, string $expected_message): void {
     $definition = new MapDataDefinition([
       'type' => 'mapping',
@@ -542,12 +547,13 @@ class MappingTest extends KernelTestBase {
   }
 
   /**
-   * @testWith [true]
-   *           [1]
-   *           ["true"]
-   *           [0]
-   *           ["false"]
-   */
+ * Tests invalid required key flag.
+ */
+  #[TestWith([TRUE])]
+  #[TestWith([1])]
+  #[TestWith(["true"])]
+  #[TestWith([0])]
+  #[TestWith(["false"])]
   public function testInvalidRequiredKeyFlag(mixed $required_key_flag_value): void {
     $this->expectException(\LogicException::class);
     $this->expectExceptionMessage('The `requiredKey` flag must either be omitted or have `false` as the value.');

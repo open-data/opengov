@@ -63,9 +63,11 @@ use Drupal\user\EntityOwnerTrait;
   ],
   links: [
     'canonical' => '/node/{node}',
+    'add-page' => '/node/add',
+    'add-form' => '/node/add/{node_type}',
+    'edit-form' => '/node/{node}/edit',
     'delete-form' => '/node/{node}/delete',
     'delete-multiple-form' => '/admin/content/node/delete',
-    'edit-form' => '/node/{node}/edit',
     'version-history' => '/node/{node}/revisions',
     'revision' => '/node/{node}/revisions/{node_revision}/view',
     'create' => '/node',
@@ -106,7 +108,7 @@ class Node extends EditorialContentEntityBase implements NodeInterface {
    * @var true|null
    *   TRUE if the node is being previewed and NULL if it is not.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $in_preview = NULL;
 
   /**
@@ -150,15 +152,6 @@ class Node extends EditorialContentEntityBase implements NodeInterface {
    * {@inheritdoc}
    */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
-    if ($update && \Drupal::moduleHandler()->moduleExists('search')) {
-      // Remove deleted translations from the search index.
-      foreach ($this->translations as $langcode => $translation) {
-        if ($translation['status'] === static::TRANSLATION_REMOVED) {
-          \Drupal::service('search.index')->clear('node_search', $this->id(), $langcode);
-        }
-      }
-    }
-
     parent::postSave($storage, $update);
 
     // Update the node access table for this node, but only if it is the
@@ -169,28 +162,6 @@ class Node extends EditorialContentEntityBase implements NodeInterface {
       $access_control_handler = \Drupal::entityTypeManager()->getAccessControlHandler('node');
       $grants = $access_control_handler->acquireGrants($this);
       \Drupal::service('node.grant_storage')->write($this, $grants, NULL, $update);
-    }
-
-    // Reindex the node when it is updated. The node is automatically indexed
-    // when it is added, simply by being added to the node table.
-    if ($update) {
-      node_reindex_node_search($this->id());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function preDelete(EntityStorageInterface $storage, array $entities) {
-    parent::preDelete($storage, $entities);
-
-    // Ensure that all nodes deleted are removed from the search index.
-    if (\Drupal::hasService('search.index')) {
-      /** @var \Drupal\search\SearchIndexInterface $search_index */
-      $search_index = \Drupal::service('search.index');
-      foreach ($entities as $entity) {
-        $search_index->clear('node_search', $entity->nid->value);
-      }
     }
   }
 
@@ -357,13 +328,9 @@ class Node extends EditorialContentEntityBase implements NodeInterface {
       ->setLabel(t('Promoted to front page'))
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
-      ->setDefaultValue(TRUE)
+      ->setDefaultValue(FALSE)
       ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'settings' => [
-          'display_label' => TRUE,
-        ],
-        'weight' => 15,
+        'region' => 'hidden',
       ])
       ->setDisplayConfigurable('form', TRUE);
 
@@ -373,11 +340,7 @@ class Node extends EditorialContentEntityBase implements NodeInterface {
       ->setTranslatable(TRUE)
       ->setDefaultValue(FALSE)
       ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'settings' => [
-          'display_label' => TRUE,
-        ],
-        'weight' => 16,
+        'region' => 'hidden',
       ])
       ->setDisplayConfigurable('form', TRUE);
 

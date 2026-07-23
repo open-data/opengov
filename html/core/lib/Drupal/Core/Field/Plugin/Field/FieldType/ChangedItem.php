@@ -23,6 +23,18 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
   default_formatter: "timestamp",
   no_ui: TRUE,
   list_class: ChangedFieldItemList::class,
+  constraints: [
+    "ComplexData" => [
+      'properties' => [
+        "value" => [
+          "Range" => [
+            "min" => "-2147483648",
+            "max" => "2147483648",
+          ],
+        ],
+      ],
+    ],
+  ]
 )]
 class ChangedItem extends CreatedItem {
 

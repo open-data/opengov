@@ -337,7 +337,7 @@ abstract class TextBase extends WebformElementBase {
       // @see https://bytefreaks.net/programming-2/php-programming-2/php-convert-javascript-escaped-unicode-characters-to-html-hex-references
       $pcre_pattern = preg_replace('/\\\\u([a-fA-F0-9]{4})/', '\\x{\\1}', $properties['#pattern']);
 
-      if (preg_match('{^(?:' . $pcre_pattern . ')$}u', NULL) === FALSE) {
+      if (preg_match('{^(?:' . $pcre_pattern . ')$}u', '') === FALSE) {
         $form_state->setErrorByName('pattern', $this->t('Pattern %pattern is not a valid regular expression.', ['%pattern' => $properties['#pattern']]));
       }
 

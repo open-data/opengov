@@ -7,6 +7,8 @@ namespace Drupal\Tests\node\Functional;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Ensures that node types translation work correctly.
@@ -14,9 +16,9 @@ use Drupal\Tests\BrowserTestBase;
  * Note that the child site is installed in French; therefore, when making
  * assertions on translated text it is important to provide a langcode. This
  * ensures the asserts pass regardless of the Drupal version.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeTypeTranslationTest extends BrowserTestBase {
 
   use StringTranslationTrait;
@@ -98,7 +100,7 @@ class NodeTypeTranslationTest extends BrowserTestBase {
     // localize.drupal.org. It does not need to match the version exactly as the
     // multi-lingual system will fallback.
     \Drupal::service('file_system')->mkdir($this->publicFilesDirectory . '/translations', NULL, TRUE);
-    file_put_contents($this->publicFilesDirectory . "/translations/drupal-8.0.0.{$this->defaultLangcode}.po", '');
+    file_put_contents($this->publicFilesDirectory . '/translations/drupal-' . \Drupal::VERSION . ".{$this->defaultLangcode}.po", '');
     return $parameters;
   }
 

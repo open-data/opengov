@@ -8,13 +8,16 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\views\ViewExecutable;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests handler UI for views.
  *
- * @group views_ui
  * @see \Drupal\views\Plugin\views\HandlerBase
  */
+#[Group('views_ui')]
+#[RunTestsInSeparateProcesses]
 class HandlerTest extends UITestBase {
 
   /**
@@ -146,7 +149,7 @@ class HandlerTest extends UITestBase {
       $display = $view->getDisplay('default');
       $this->assertTrue(isset($display['display_options'][$type_info['plural']][$id]), 'Ensure the field was added to the view itself.');
 
-      // Remove the item and check that it's removed
+      // Remove the item and check that it's removed.
       $this->drupalGet($edit_handler_url);
       $this->submitForm([], 'Remove');
       $this->assertSession()->linkByHrefNotExists($edit_handler_url, 0, 'The handler edit link does not appears in the UI after removing.');
@@ -217,7 +220,7 @@ class HandlerTest extends UITestBase {
 
     $this->drupalGet('admin/structure/views/nojs/add-handler/content/default/field');
     $this->assertSession()->assertEscaped('The <em>giraffe"</em> label <script>alert("the return of the xss")</script>');
-    $this->assertSession()->assertEscaped('Appears in: page, article. Also known as: Content: The giraffe" label');
+    $this->assertSession()->assertEscaped('Appears in: article, page. Also known as: Content: The giraffe" label');
   }
 
   /**

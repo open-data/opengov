@@ -23,7 +23,7 @@ use Drupal\webform_options_limit\Plugin\WebformOptionsLimitHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Webform options and boolean (boolean) limit handler.
+ * Webform options and boolean (bool) limit handler.
  *
  * @WebformHandler(
  *   id = "options_limit",
@@ -858,7 +858,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
     // Disable or remove boolean element.
     $element_key = $this->configuration['element_key'];
     $webform_submission = $this->getWebformSubmission();
-    $boolean_value = (boolean) ($webform_submission->getElementOriginalData($element_key) ?: FALSE);
+    $boolean_value = (bool) ($webform_submission->getElementOriginalData($element_key) ?: FALSE);
     if ($limit['status'] === WebformOptionsLimitHandlerInterface::LIMIT_STATUS_NONE && !$boolean_value) {
       switch ($this->configuration['option_none_action']) {
         case WebformOptionsLimitHandlerInterface::LIMIT_ACTION_DISABLE:

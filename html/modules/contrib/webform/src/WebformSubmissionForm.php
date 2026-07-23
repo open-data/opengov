@@ -1481,7 +1481,7 @@ class WebformSubmissionForm extends ContentEntityForm {
           $track_last_page = ($this->getWebform()->getSetting('wizard_confirmation')) ? count($track_pages) : count($track_pages) + 1;
           break;
 
-        default;
+        default:
         case 'name':
           $track_previous_page = $previous_page;
           $track_next_page = $next_page;
@@ -1899,7 +1899,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = $this->getEntity();
     if ($webform_submission->id() && !WebformSubmission::load($webform_submission->id())) {
-      $form_state->setErrorByName(NULL, $this->t('An error occurred while trying to validate the submission. Please save your work and reload this page.'));
+      $form_state->setErrorByName('', $this->t('An error occurred while trying to validate the submission. Please save your work and reload this page.'));
       return;
     }
 
@@ -2156,7 +2156,7 @@ class WebformSubmissionForm extends ContentEntityForm {
         '#theme' => 'item_list',
         '#items' => $file_names,
       ];
-      $form_state->setErrorByName(NULL, $this->renderer->renderInIsolation($message));
+      $form_state->setErrorByName('', $this->renderer->renderInIsolation($message));
     }
   }
 

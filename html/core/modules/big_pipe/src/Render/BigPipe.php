@@ -19,6 +19,7 @@ use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\LocalRedirectResponse;
 use Drupal\Core\Routing\RequestContext;
+use Drupal\Core\Utility\FiberResumeType;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -416,7 +417,7 @@ class BigPipe {
       // - the HTML to load the CSS can be rendered.
       // - the HTML to load the JS (at the top) can be rendered.
       $fake_request = $this->requestStack->getMainRequest()->duplicate();
-      $fake_request->query->set('ajax_page_state', ['libraries' => implode(',', $cumulative_assets->getAlreadyLoadedLibraries())]);
+      $fake_request->attributes->set('ajax_page_state', ['libraries' => implode(',', $cumulative_assets->getAlreadyLoadedLibraries())]);
       try {
         $html_response = $this->filterEmbeddedResponse($fake_request, $html_response);
       }
@@ -518,7 +519,7 @@ class BigPipe {
             if ($iterations) {
               $fiber = \Fiber::getCurrent();
               if ($fiber !== NULL) {
-                $fiber->suspend();
+                $fiber->suspend(FiberResumeType::Immediate);
               }
             }
             continue;
@@ -560,7 +561,7 @@ class BigPipe {
           // which allows us to track the total set of asset libraries sent in
           // the initial HTML response plus all embedded AJAX responses sent so
           // far.
-          $fake_request->query->set('ajax_page_state', ['libraries' => implode(',', $cumulative_assets->getAlreadyLoadedLibraries())] + $cumulative_assets->getSettings()['ajaxPageState']);
+          $fake_request->attributes->set('ajax_page_state', ['libraries' => implode(',', $cumulative_assets->getAlreadyLoadedLibraries())] + $cumulative_assets->getSettings()['ajaxPageState']);
           $ajax_response = $this->filterEmbeddedResponse($fake_request, $ajax_response);
           // Send this embedded AJAX response.
           $json = $ajax_response->getContent();

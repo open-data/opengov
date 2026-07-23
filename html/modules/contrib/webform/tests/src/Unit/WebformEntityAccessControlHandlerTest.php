@@ -70,7 +70,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
    *
    * @dataProvider providerCheckAccess
    */
-  public function testCheckAccess($operation, array $options, array $expected, $assert_message = '') {
+  public function testCheckAccess($operation, array $options, array $expected, $assert_message = ''): void {
     // Set $options default value.
     $options += [
       // What is the request path.

@@ -165,7 +165,7 @@ class WebformAdminConfigAdvancedForm extends WebformAdminConfigBaseForm {
     $form['ui']['support_disabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Disable support options'),
-      '#description' => $this->t('If checked, support option, displayed on the <a href=":help_href">Help</a> page will be disabled.', [':href_help' => Url::fromRoute('webform.help')->toString()]),
+      '#description' => $this->t('If checked, support option, displayed on the <a href=":href">Help</a> page will be disabled.', [':href' => Url::fromRoute('webform.help')->toString()]),
       '#return_value' => TRUE,
       '#default_value' => $config->get('ui.support_disabled'),
     ];

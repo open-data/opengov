@@ -176,10 +176,6 @@ services:
     class: Drupal\webform\Hook\WebformFormAlterHooks
     autowire: true
 
-  Drupal\webform\Hook\WebformInstallUpdateHooks:
-    class: Drupal\webform\Hook\WebformInstallUpdateHooks
-    autowire: true
-
   Drupal\webform\Hook\WebformLibrariesHooks:
     class: Drupal\webform\Hook\WebformLibrariesHooks
     autowire: true

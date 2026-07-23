@@ -15,7 +15,7 @@ class WebformSubmissionDeleteTest extends WebformBrowserTestBase {
   /**
    * Tests webform submissions delete multiple.
    */
-  public function testWebformSubmissionsDeleteMultiple() {
+  public function testWebformSubmissionsDeleteMultiple(): void {
     $assert_session = $this->assertSession();
     $own_account = $this->drupalCreateUser([
       'access webform overview',
@@ -70,7 +70,7 @@ class WebformSubmissionDeleteTest extends WebformBrowserTestBase {
   /**
    * Tests webform submissions delete.
    */
-  public function testWebformSubmissionsDelete() {
+  public function testWebformSubmissionsDelete(): void {
     $assert_session = $this->assertSession();
     $own_account = $this->drupalCreateUser([
       'access webform overview',

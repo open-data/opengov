@@ -1,4 +1,5 @@
 parameters:
+  node.skip_procedural_hook_scan: true
   node.moved_classes:
     'Drupal\node\NodeForm':
       class: 'Drupal\node\Form\NodeForm'
@@ -16,9 +17,12 @@ services:
     autoconfigure: true
   node.route_subscriber:
     class: Drupal\node\Routing\RouteSubscriber
+  Drupal\node\NodeGrantsHelper:
+    class: Drupal\node\NodeGrantsHelper
+    autowire: true
   node.grant_storage:
     class: Drupal\node\NodeGrantDatabaseStorage
-    arguments: ['@database', '@module_handler', '@language_manager']
+    autowire: true
     tags:
       - { name: backend_overridable }
   Drupal\node\NodeGrantDatabaseStorageInterface: '@node.grant_storage'
@@ -35,10 +39,9 @@ services:
     arguments: ['@tempstore.private']
     tags:
       - { name: paramconverter }
-    lazy: true
   cache_context.user.node_grants:
     class: Drupal\node\Cache\NodeAccessGrantsCacheContext
-    arguments: ['@current_user']
+    arguments: ['@current_user', '@entity_type.manager', '@Drupal\node\NodeGrantsHelper']
     tags:
       - { name: cache.context }
   node.node_route_context:
@@ -46,3 +49,10 @@ services:
     arguments: ['@current_route_match']
     tags:
       - { name: 'context_provider' }
+  node.view_all_nodes_memory_cache:
+    class: Drupal\Core\Cache\MemoryCache\MemoryCache
+    autowire: true
+  Drupal\node\NodeBulkUpdate:
+    autowire: true
+  Drupal\node\NodeAccessRebuild:
+    autowire: true

@@ -13,12 +13,15 @@ use Drupal\Core\Field\FieldTypePluginManager;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \Drupal\Core\Field\FieldTypePluginManager
- * @group Field
+ * Tests Drupal\Core\Field\FieldTypePluginManager.
  */
+#[CoversClass(FieldTypePluginManager::class)]
+#[Group('Field')]
 class FieldTypePluginManagerTest extends UnitTestCase {
 
   /**
@@ -76,14 +79,14 @@ class FieldTypePluginManagerTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::getGroupedDefinitions
+   * Tests get grouped definitions.
    */
   public function testGetGroupedDefinitions(): void {
     $this->discovery->getDefinitions()->willReturn([
-      'telephone' => [
+      'field_test' => [
         'category' => 'general',
-        'label' => 'Telephone',
-        'id' => 'telephone',
+        'label' => 'field_test',
+        'id' => 'field_test',
       ],
       'string' => [
         'category' => 'text',
@@ -129,7 +132,7 @@ class FieldTypePluginManagerTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::getGroupedDefinitions
+   * Tests get grouped definitions invalid.
    */
   public function testGetGroupedDefinitionsInvalid(): void {
     $this->discovery->getDefinitions()->willReturn([
@@ -169,7 +172,7 @@ class FieldTypePluginManagerTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::getGroupedDefinitions
+   * Tests get grouped definitions empty.
    */
   public function testGetGroupedDefinitionsEmpty(): void {
     $this->fieldTypeCategoryManager->getDefinitions()->willReturn([]);

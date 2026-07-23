@@ -142,19 +142,23 @@ class TextFormat extends WebformElementBase {
     }
 
     // Hide tips.
-    if (!empty($element['#hide_help']) && isset($element['format']['help'])) {
-      $element['format']['help']['#attributes']['style'] = 'display: none';
-    }
-    else {
-      // Display tips in a modal.
-      $element['format']['help']['about']['#attributes']['class'][] = 'use-ajax';
-      $element['format']['help']['about']['#attributes'] += [
-        'data-dialog-type' => 'dialog',
-        'data-dialog-options' => Json::encode([
-          'dialogClass' => 'webform-text-format-help-dialog',
-          'width' => 800,
-        ]),
-      ];
+    // @todo Remove this once Drupal 11.4 is the minimum version, as the help
+    // link 'About text formats' was removed in Drupal 11.4.0.
+    if (isset($element['format']['help'])) {
+      if (!empty($element['#hide_help'])) {
+        $element['format']['help']['#attributes']['style'] = 'display: none';
+      }
+      else {
+        // Display tips in a modal.
+        $element['format']['help']['about']['#attributes']['class'][] = 'use-ajax';
+        $element['format']['help']['about']['#attributes'] += [
+          'data-dialog-type' => 'dialog',
+          'data-dialog-options' => Json::encode([
+            'dialogClass' => 'webform-text-format-help-dialog',
+            'width' => 800,
+          ]),
+        ];
+      }
     }
 
     // Hide filter format if the select menu and help is hidden.

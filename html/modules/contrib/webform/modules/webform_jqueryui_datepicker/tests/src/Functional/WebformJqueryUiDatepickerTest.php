@@ -21,7 +21,7 @@ class WebformJqueryUiDatepickerTest extends WebformElementBrowserTestBase {
   /**
    * Tests datepicker elements.
    */
-  public function testDatepickerElements() {
+  public function testDatepickerElements(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_datepicker');

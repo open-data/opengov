@@ -11,6 +11,14 @@ div.block-help-block {
 }
 
 /**
+ * Fix webform results table not clearing the right floated customize button.
+ *
+ * @see /admin/structure/webform/manage/contact/results
+ */
+.webform-submission-bulk-form {
+  clear: both;
+}
+/**
  * Fix webform promotion message link color.
  *
  * @see /admin/structure/webform

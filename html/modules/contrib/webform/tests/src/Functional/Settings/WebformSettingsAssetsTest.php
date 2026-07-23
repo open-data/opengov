@@ -22,7 +22,7 @@ class WebformSettingsAssetsTest extends WebformBrowserTestBase {
   /**
    * Tests webform assets.
    */
-  public function testAssets() {
+  public function testAssets(): void {
     $assert_session = $this->assertSession();
 
     $webform_assets = Webform::load('test_form_assets');

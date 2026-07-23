@@ -29,7 +29,7 @@ class WebformOptionsTest extends WebformBrowserTestBase {
   /**
    * Tests webform options entity.
    */
-  public function testWebformOptions() {
+  public function testWebformOptions(): void {
     $assert_session = $this->assertSession();
 
     $normal_user = $this->drupalCreateUser();

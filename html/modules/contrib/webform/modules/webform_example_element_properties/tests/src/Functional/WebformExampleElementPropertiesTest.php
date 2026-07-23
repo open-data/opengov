@@ -25,7 +25,7 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
   /**
    * Tests element custom properties.
    */
-  public function testCustomProperties() {
+  public function testCustomProperties(): void {
     $assert_session = $this->assertSession();
 
     // Create and login admin user.

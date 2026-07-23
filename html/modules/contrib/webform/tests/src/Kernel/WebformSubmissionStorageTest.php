@@ -36,7 +36,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
   /**
    * Test webform submission storage.
    */
-  public function testStorage() {
+  public function testStorage(): void {
     $webform = Webform::create([
       'id' => $this->randomMachineName(),
     ]);
@@ -56,7 +56,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
    *
    * @dataProvider providerPurge
    */
-  public function testPurge($webform_purging, $webform_submissions_definition, $purged) {
+  public function testPurge($webform_purging, $webform_submissions_definition, $purged): void {
     $request_time = \Drupal::time()->getRequestTime();
     $days_to_seconds = 60 * 60 * 24;
     $purge_days = 10;

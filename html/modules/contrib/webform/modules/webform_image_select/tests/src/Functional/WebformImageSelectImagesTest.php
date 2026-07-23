@@ -24,7 +24,7 @@ class WebformImageSelectImagesTest extends WebformElementBrowserTestBase {
   /**
    * Tests webform image select images entity.
    */
-  public function testWebformImageSelectImages() {
+  public function testWebformImageSelectImages(): void {
     $assert_session = $this->assertSession();
 
     $normal_user = $this->drupalCreateUser();

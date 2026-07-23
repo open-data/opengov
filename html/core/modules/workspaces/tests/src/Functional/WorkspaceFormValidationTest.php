@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\workspaces\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests Workspaces form validation.
- *
- * @group workspaces
  */
+#[Group('workspaces')]
+#[RunTestsInSeparateProcesses]
 class WorkspaceFormValidationTest extends BrowserTestBase {
 
   use WorkspaceTestUtilities;
@@ -18,7 +20,12 @@ class WorkspaceFormValidationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['block', 'form_test', 'workspaces'];
+  protected static $modules = [
+    'block',
+    'form_test',
+    'workspaces',
+    'workspaces_ui',
+  ];
 
   /**
    * {@inheritdoc}

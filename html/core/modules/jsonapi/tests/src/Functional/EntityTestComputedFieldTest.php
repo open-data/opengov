@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi\Functional;
 
-use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\entity_test\Entity\EntityTestComputedField;
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\user\Entity\User;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * JSON:API integration test for the "EntityTestComputedField" content entity type.
- *
- * @group jsonapi
  */
+#[Group('jsonapi')]
+#[RunTestsInSeparateProcesses]
 class EntityTestComputedFieldTest extends ResourceTestBase {
 
   /**
@@ -178,6 +180,9 @@ class EntityTestComputedFieldTest extends ResourceTestBase {
     if ($sparse_fieldset === NULL || in_array('computed_test_cacheable_string_field', $sparse_fieldset)) {
       $cache_contexts = Cache::mergeContexts($cache_contexts, ['url.query_args']);
     }
+    if ($sparse_fieldset === NULL || in_array('computed_test_cacheable_integer_field', $sparse_fieldset)) {
+      $cache_contexts = Cache::mergeContexts($cache_contexts, ['headers:X-computed_test_cacheable_integer_field=1']);
+    }
 
     return $cache_contexts;
   }
@@ -189,6 +194,9 @@ class EntityTestComputedFieldTest extends ResourceTestBase {
     $expected_cache_tags = parent::getExpectedCacheTags($sparse_fieldset);
     if ($sparse_fieldset === NULL || in_array('computed_test_cacheable_string_field', $sparse_fieldset)) {
       $expected_cache_tags = Cache::mergeTags($expected_cache_tags, ['field:computed_test_cacheable_string_field']);
+    }
+    if ($sparse_fieldset === NULL || in_array('computed_test_cacheable_integer_field', $sparse_fieldset)) {
+      $expected_cache_tags = Cache::mergeTags($expected_cache_tags, ['field:computed_test_cacheable_integer_field']);
     }
 
     return $expected_cache_tags;

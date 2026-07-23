@@ -8,14 +8,17 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Test\EventSubscriber\FieldStorageCreateCheckSubscriber;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Tests the field storage create check subscriber.
- *
- * @group Field
- * @group legacy
  */
+#[Group('Field')]
+#[IgnoreDeprecations]
+#[RunTestsInSeparateProcesses]
 class FieldStorageCreateCheckDeprecationTest extends KernelTestBase {
 
   /**
@@ -23,7 +26,7 @@ class FieldStorageCreateCheckDeprecationTest extends KernelTestBase {
    *
    * @var array
    */
-  protected static $modules = ['entity_test', 'field'];
+  protected static $modules = ['entity_test', 'field', 'user'];
 
   /**
    * {@inheritdoc}
@@ -43,7 +46,7 @@ class FieldStorageCreateCheckDeprecationTest extends KernelTestBase {
    * Tests the field storage create check subscriber.
    */
   public function testFieldStorageCreateCheck(): void {
-    $this->expectDeprecation('Creating the "entity_test.field_test" field storage definition without the entity schema "entity_test" being installed is deprecated in drupal:11.2.0 and will be replaced by a LogicException in drupal:12.0.0. See https://www.drupal.org/node/3493981');
+    $this->expectUserDeprecationMessage('Creating the "entity_test.field_test" field storage definition without the entity schema "entity_test" being installed is deprecated in drupal:11.2.0 and will be replaced by a LogicException in drupal:12.0.0. See https://www.drupal.org/node/3493981');
 
     FieldStorageConfig::create([
       'field_name' => 'field_test',

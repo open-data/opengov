@@ -24,7 +24,7 @@ class WebformSubmissionApiTest extends WebformBrowserTestBase {
   /**
    * Test webform API.
    */
-  public function testApi() {
+  public function testApi(): void {
     $normal_user = $this->drupalCreateUser();
 
     $contact_webform = Webform::load('contact');

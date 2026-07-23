@@ -43,7 +43,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
   /**
    * Test media file upload elements.
    */
-  public function testMediaFileUpload() {
+  public function testMediaFileUpload(): void {
     $assert_session = $this->assertSession();
 
     /* Element render */

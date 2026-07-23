@@ -5,8 +5,6 @@
  * Archived Webform update hooks.
  */
 
-use Drupal\Core\Hook\Attribute\LegacyHook;
-use Drupal\webform\Hook\WebformInstallUpdateHooks;
 use Drupal\Component\Uuid\Php as Uuid;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\FileStorage;
@@ -35,9 +33,18 @@ use Drupal\webform\WebformSubmissionStorageSchema;
 /**
  * Implements hook_update_dependencies().
  */
-#[LegacyHook]
 function webform_update_dependencies() {
-  return \Drupal::service(WebformInstallUpdateHooks::class)->updateDependencies();
+  // Ensure that system_update_8501() runs before the webform update, so that
+  // the new revision_default field is installed in the correct table.
+  // @see https://www.drupal.org/project/webform/issues/2958102
+  $dependencies['webform'][8099]['system'] = 8501;
+
+  // Ensure that system_update_8805() runs before the webform update, so that
+  // the 'path_alias' module is enabled and configured correctly.
+  // @see https://www.drupal.org/project/webform/issues/3166248
+  $dependencies['webform']['8158']['system'] = 8805;
+
+  return $dependencies;
 }
 
 /* ************************************************************************** */
@@ -4480,8 +4487,8 @@ function webform_update_8647() {
  * Issue #3487530 : New permission for filter and bulk action on overview page.
  */
 function webform_update_8648() {
-  /** @var \Drupal\user\RoleInterface $roles */
-  $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+  /** @var \Drupal\user\RoleInterface[] $roles */
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultipleOverrideFree();
   foreach ($roles as $role) {
     if ($role->hasPermission('administer webform')) {
       $role->grantPermission('administer webform overview');

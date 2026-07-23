@@ -4,12 +4,11 @@ namespace Drupal\views;
 
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\field\Entity\FieldConfig;
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
@@ -20,7 +19,7 @@ class FieldViewsDataProvider {
   use StringTranslationTrait;
 
   public function __construct(
-    protected readonly EntityTypeManager $entityTypeManager,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly FieldTypePluginManagerInterface $fieldTypePluginManager,
     protected readonly EntityFieldManagerInterface $entityFieldManager,
   ) {}
@@ -110,16 +109,9 @@ class FieldViewsDataProvider {
     $untranslatable_config_bundles = [];
 
     foreach ($bundles_names as $bundle) {
-      $fields[$bundle] = FieldConfig::loadByName($entity_type->id(), $bundle, $field_name);
-    }
-    foreach ($fields as $bundle => $config_entity) {
-      if (!empty($config_entity)) {
-        if ($config_entity->isTranslatable()) {
-          $translatable_configs[$bundle] = $config_entity;
-        }
-        else {
-          $untranslatable_configs[$bundle] = $config_entity;
-        }
+      $bundle_fields = $this->entityFieldManager->getFieldDefinitions($entity_type->id(), $bundle);
+      if (isset($bundle_fields[$field_name])) {
+        $fields[$bundle] = $bundle_fields[$field_name];
       }
       else {
         // https://www.drupal.org/node/2451657#comment-11462881
@@ -131,6 +123,14 @@ class FieldViewsDataProvider {
             '%field' => $field_name,
           ]
         );
+      }
+    }
+    foreach ($fields as $bundle => $config_entity) {
+      if ($config_entity->isTranslatable()) {
+        $translatable_configs[$bundle] = $config_entity;
+      }
+      else {
+        $untranslatable_configs[$bundle] = $config_entity;
       }
     }
 
@@ -173,22 +173,24 @@ class FieldViewsDataProvider {
       ];
     }
 
-    if ($translation_join_type === 'language_bundle') {
-      $data[$table_alias]['table']['join'][$data_table]['join_id'] = 'field_or_language_join';
-      $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
-        'left_field' => 'langcode',
-        'field' => 'langcode',
-      ];
-      $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
-        'field' => 'bundle',
-        'value' => $untranslatable_config_bundles,
-      ];
-    }
-    elseif ($translation_join_type === 'language') {
-      $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
-        'left_field' => 'langcode',
-        'field' => 'langcode',
-      ];
+    if ($data_table) {
+      if ($translation_join_type === 'language_bundle') {
+        $data[$table_alias]['table']['join'][$data_table]['join_id'] = 'field_or_language_join';
+        $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
+          'left_field' => 'langcode',
+          'field' => 'langcode',
+        ];
+        $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
+          'field' => 'bundle',
+          'value' => $untranslatable_config_bundles,
+        ];
+      }
+      elseif ($translation_join_type === 'language') {
+        $data[$table_alias]['table']['join'][$data_table]['extra'][] = [
+          'left_field' => 'langcode',
+          'field' => 'langcode',
+        ];
+      }
     }
 
     if ($supports_revisions) {
@@ -226,7 +228,7 @@ class FieldViewsDataProvider {
           'field' => 'bundle',
         ];
       }
-      elseif ($translation_join_type === 'language') {
+      elseif ($translation_join_type === 'language' && $entity_revision_data_table) {
         $data[$table_alias]['table']['join'][$entity_revision_data_table]['extra'][] = [
           'left_field' => 'langcode',
           'field' => 'langcode',
@@ -291,7 +293,10 @@ class FieldViewsDataProvider {
             'title' => $label_name,
             'help' => $this->t('This is an alias of @group: @field.', ['@group' => $group_name, '@field' => $label]),
           ];
-          $also_known[] = $this->t('@group (historical data): @field', ['@group' => $group_name, '@field' => $label_name]);
+          $also_known[] = $this->t('@group (historical data): @field', [
+            '@group' => $group_name,
+            '@field' => $label_name,
+          ]);
         }
       }
       if ($aliases) {
@@ -398,7 +403,11 @@ class FieldViewsDataProvider {
               $alias_title = $this->t('@label (@name)', ['@label' => $label_name, '@name' => $field_name]);
             }
             else {
-              $alias_title = $this->t('@label (@name:@column)', ['@label' => $label_name, '@name' => $field_name, '@column' => $column]);
+              $alias_title = $this->t('@label (@name:@column)', [
+                '@label' => $label_name,
+                '@name' => $field_name,
+                '@column' => $column,
+              ]);
             }
             $aliases[] = [
               'group' => $group_name,
@@ -509,7 +518,7 @@ class FieldViewsDataProvider {
    * @param \Drupal\field\FieldStorageConfigInterface $field_storage
    *   The field storage definition.
    *
-   * @return \Drupal\Core\Entity\Sql\SqlContentEntityStorage|bool
+   * @return \Drupal\Core\Entity\Sql\SqlContentEntityStorage|false
    *   Returns the entity type storage if supported and FALSE otherwise.
    */
   public function getSqlStorageForField(FieldStorageConfigInterface $field_storage): SqlContentEntityStorage|bool {

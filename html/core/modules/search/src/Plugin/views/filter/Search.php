@@ -8,7 +8,6 @@ use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\ViewExecutable;
-use Drupal\views\Views;
 
 /**
  * Filter handler for search keywords.
@@ -49,7 +48,7 @@ class Search extends FilterPluginBase {
   /**
    * The search score.
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $search_score;
 
   /**
@@ -169,7 +168,7 @@ class Search extends FilterPluginBase {
         'left_table' => $search_index,
         'left_field' => 'word',
       ];
-      $join = Views::pluginManager('join')->createInstance('standard', $definition);
+      $join = \Drupal::service('plugin.manager.views.join')->createInstance('standard', $definition);
       $search_total = $this->query->addRelationship('search_total', $join, $search_index);
 
       // Add the search score field to the query.

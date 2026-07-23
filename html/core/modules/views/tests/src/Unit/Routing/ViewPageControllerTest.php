@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace Drupal\Tests\views\Unit\Routing;
 
 use Drupal\Core\Routing\RouteMatch;
-use Drupal\Tests\UnitTestCase;
-use Drupal\views\Routing\ViewPageController;
 use Drupal\Core\Routing\RouteObjectInterface;
+use Drupal\Tests\UnitTestCase;
+use Drupal\views\ContextualLinksHelper;
+use Drupal\views\Routing\ViewPageController;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 
 /**
- * @coversDefaultClass \Drupal\views\Routing\ViewPageController
- * @group views
+ * Tests Drupal\views\Routing\ViewPageController.
  */
+#[CoversClass(ViewPageController::class)]
+#[Group('views')]
 class ViewPageControllerTest extends UnitTestCase {
 
   /**
@@ -42,8 +46,8 @@ class ViewPageControllerTest extends UnitTestCase {
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $this->pageController = new ViewPageController();
+    $contextual_links = $this->createStub(ContextualLinksHelper::class);
+    $this->pageController = new ViewPageController($contextual_links);
   }
 
   /**
@@ -196,20 +200,6 @@ class ViewPageControllerTest extends UnitTestCase {
     ] + $this->defaultRenderArray;
 
     $this->assertEquals($build, $result);
-  }
-
-}
-
-// @todo https://www.drupal.org/node/2571679 replace
-//   views_add_contextual_links().
-namespace Drupal\views\Routing;
-
-if (!function_exists('views_add_contextual_links')) {
-
-  /**
-   * Define method views_add_contextual_links for this test.
-   */
-  function views_add_contextual_links(&$render_element, $location, $display_id, ?array $view_element = NULL): void {
   }
 
 }

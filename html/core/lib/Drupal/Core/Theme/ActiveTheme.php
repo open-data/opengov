@@ -162,6 +162,7 @@ class ActiveTheme {
    * @see \Drupal\Core\Extension\ThemeExtensionList::doList()
    */
   public function getOwner() {
+    @trigger_error(__METHOD__ . '() is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Theme engines are now tagged services instead of extensions. See https://www.drupal.org/node/3547356', E_USER_DEPRECATED);
     return $this->owner;
   }
 
@@ -215,7 +216,8 @@ class ActiveTheme {
    * @return string[]
    *   The list of region machine names supported by the theme.
    *
-   * @see system_region_list()
+   * @see \Drupal\Core\Extension\Theme::listAllRegions()
+   * @see \Drupal\Core\Extension\Theme::listVisibleRegions()
    */
   public function getRegions() {
     return array_keys($this->regions);

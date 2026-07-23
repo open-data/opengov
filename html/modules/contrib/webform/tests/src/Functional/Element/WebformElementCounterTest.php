@@ -19,7 +19,7 @@ class WebformElementCounterTest extends WebformElementBrowserTestBase {
   /**
    * Tests text elements.
    */
-  public function testCounter() {
+  public function testCounter(): void {
     $assert_session = $this->assertSession();
 
     // Check counters.

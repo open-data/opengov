@@ -8,23 +8,28 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\menu_ui\Hook\MenuUiHooks;
 use Drupal\node\Entity\NodeType;
 use Drupal\system\Entity\Menu;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the menu_delete hook.
- *
- * @group menu_ui
  */
+#[Group('menu_ui')]
+#[RunTestsInSeparateProcesses]
 class MenuDeleteTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['node', 'menu_ui', 'system'];
+  protected static $modules = ['node', 'menu_ui', 'system', 'user'];
 
   /**
-   * @covers \Drupal\menu_ui\Hook\MenuUiHooks::menuDelete
-   * @dataProvider providerMenuDelete
+   * Tests menu delete.
+   *
+   * @legacy-covers \Drupal\menu_ui\Hook\MenuUiHooks::menuDelete
    */
+  #[DataProvider('providerMenuDelete')]
   public function testMenuDelete($settings, $expected): void {
     $menu = Menu::create([
       'id' => 'mock',
@@ -47,7 +52,7 @@ class MenuDeleteTest extends KernelTestBase {
     $this->assertEquals($settings['available_menus'], $content_type->getThirdPartySetting('menu_ui', 'available_menus'));
     $this->assertEquals($settings['parent'], $content_type->getThirdPartySetting('menu_ui', 'parent'));
 
-    $hooks = new MenuUiHooks(\Drupal::entityTypeManager());
+    $hooks = \Drupal::service(MenuUiHooks::class);
     $hooks->menuDelete($menu);
 
     $content_type = NodeType::load('test_type');

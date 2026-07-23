@@ -24,7 +24,7 @@ class WebformEntityPrintFunctionalTest extends WebformEntityPrintFunctionalTestB
   /**
    * Test entity print.
    */
-  public function testEntityPrint() {
+  public function testEntityPrint(): void {
     global $base_path, $base_url;
 
     $assert_session = $this->assertSession();

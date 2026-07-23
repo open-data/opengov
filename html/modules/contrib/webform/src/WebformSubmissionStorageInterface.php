@@ -136,7 +136,7 @@ interface WebformSubmissionStorageInterface extends ContentEntityStorageInterfac
    *   (optional) A user account.
    * @param array $options
    *   Options/conditions include:
-   *   - in_draft (boolean): NULL will return all saved submissions and drafts.
+   *   - in_draft (bool): NULL will return all saved submissions and drafts.
    *     Defaults to FALSE.
    *   - interval (int): Limit total within an seconds interval.
    *
@@ -231,9 +231,9 @@ interface WebformSubmissionStorageInterface extends ContentEntityStorageInterfac
    * @param array $options
    *   (optional) Additional options and query conditions.
    *   Options/conditions include:
-   *   - in_draft (boolean): NULL will return all saved submissions and drafts.
+   *   - in_draft (bool): NULL will return all saved submissions and drafts.
    *     Defaults to NULL
-   *   - check_source_entity (boolean): Check that a source entity is defined.
+   *   - check_source_entity (bool): Check that a source entity is defined.
    *   - interval (int): Limit total within an seconds interval.
    */
   public function addQueryConditions($query, ?WebformInterface $webform = NULL, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL, array $options = []);

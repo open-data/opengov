@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi\Functional;
 
-use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use GuzzleHttp\RequestOptions;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * JSON:API integration test for the "User" content entity type.
- *
- * @group jsonapi
  */
+#[Group('jsonapi')]
+#[RunTestsInSeparateProcesses]
 class UserTest extends ResourceTestBase {
 
   const BATCH_TEST_NODE_COUNT = 15;
@@ -129,7 +131,7 @@ class UserTest extends ResourceTestBase {
    * {@inheritdoc}
    */
   protected function doTestDeleteIndividual(): void {
-    $this->config('user.settings')->set('cancel_method', 'user_cancel_delete')->save(TRUE);
+    $this->config('user.settings')->set('cancel_method', 'user_cancel_delete')->save();
 
     parent::doTestDeleteIndividual();
   }
@@ -257,7 +259,7 @@ class UserTest extends ResourceTestBase {
     $this->assertResourceErrorResponse(405, sprintf("JSON:API is configured to accept only read operations. Site administrators can configure this at %s.", Url::fromUri('base:/admin/config/services/jsonapi')->setAbsolute()->toString(TRUE)->getGeneratedUrl()), $url, $response);
     $this->assertSame(['GET'], $response->getHeader('Allow'));
 
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     // DX: 422 when changing email without providing the password.
     $response = $this->request('PATCH', $url, $request_options);
@@ -375,7 +377,7 @@ class UserTest extends ResourceTestBase {
     $this->assertResourceErrorResponse(405, sprintf("JSON:API is configured to accept only read operations. Site administrators can configure this at %s.", Url::fromUri('base:/admin/config/services/jsonapi')->setAbsolute()->toString(TRUE)->getGeneratedUrl()), $url, $response);
     $this->assertSame(['GET'], $response->getHeader('Allow'));
 
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
 
     // Try changing user 1's email.
     $user1 = $original_normalization;
@@ -473,8 +475,18 @@ class UserTest extends ResourceTestBase {
     $this->grantPermissionsToTestedRole(['administer users']);
 
     $response = $this->request('GET', $collection_url, $request_options);
-    $expected_cache_contexts = ['url.path', 'url.query_args', 'url.site'];
-    $this->assertResourceErrorResponse(400, "Filtering on config entities is not supported by Drupal's entity API. You tried to filter on a Role config entity.", $collection_url, $response, FALSE, ['4xx-response', 'http_response'], $expected_cache_contexts, NULL, 'MISS');
+    $expected_cache_contexts = ['url.path', 'url.query_args', 'url.site', 'user.permissions'];
+    $this->assertResourceErrorResponse(
+      400,
+      "Filtering on config entities is not supported by Drupal's entity API. You tried to filter on a Role config entity.",
+      $collection_url,
+      $response,
+      FALSE,
+      ['4xx-response', 'http_response'],
+      $expected_cache_contexts,
+      NULL,
+      'MISS',
+    );
   }
 
   /**
@@ -605,7 +617,7 @@ class UserTest extends ResourceTestBase {
    * Tests users with altered display names.
    */
   public function testResaveAccountName(): void {
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
     $this->setUpAuthorization('PATCH');
 
     $original_name = $this->entity->get('name')->value;
@@ -634,8 +646,8 @@ class UserTest extends ResourceTestBase {
    */
   public function testDeleteRespectsUserCancelBlock(): void {
     $cancel_method = 'user_cancel_block';
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
-    $this->config('user.settings')->set('cancel_method', $cancel_method)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
+    $this->config('user.settings')->set('cancel_method', $cancel_method)->save();
 
     $account = $this->createAnotherEntity($cancel_method);
     $node = $this->drupalCreateNode(['uid' => $account->id()]);
@@ -664,8 +676,8 @@ class UserTest extends ResourceTestBase {
    */
   public function testDeleteRespectsUserCancelBlockUnpublish(): void {
     $cancel_method = 'user_cancel_block_unpublish';
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
-    $this->config('user.settings')->set('cancel_method', $cancel_method)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
+    $this->config('user.settings')->set('cancel_method', $cancel_method)->save();
 
     $account = $this->createAnotherEntity($cancel_method);
     $node = $this->drupalCreateNode(['uid' => $account->id()]);
@@ -691,13 +703,12 @@ class UserTest extends ResourceTestBase {
 
   /**
    * Tests if JSON:API respects user.settings.cancel_method: user_cancel_block_unpublish.
-   *
-   * @group jsonapi
    */
+  #[Group('jsonapi')]
   public function testDeleteRespectsUserCancelBlockUnpublishAndProcessesBatches(): void {
     $cancel_method = 'user_cancel_block_unpublish';
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
-    $this->config('user.settings')->set('cancel_method', $cancel_method)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
+    $this->config('user.settings')->set('cancel_method', $cancel_method)->save();
 
     $account = $this->createAnotherEntity($cancel_method);
 
@@ -742,8 +753,8 @@ class UserTest extends ResourceTestBase {
    */
   public function testDeleteRespectsUserCancelReassign(): void {
     $cancel_method = 'user_cancel_reassign';
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
-    $this->config('user.settings')->set('cancel_method', $cancel_method)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
+    $this->config('user.settings')->set('cancel_method', $cancel_method)->save();
 
     $account = $this->createAnotherEntity($cancel_method);
     $node = $this->drupalCreateNode(['uid' => $account->id()]);
@@ -773,8 +784,8 @@ class UserTest extends ResourceTestBase {
    */
   public function testDeleteRespectsUserCancelDelete(): void {
     $cancel_method = 'user_cancel_delete';
-    $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
-    $this->config('user.settings')->set('cancel_method', $cancel_method)->save(TRUE);
+    $this->config('jsonapi.settings')->set('read_only', FALSE)->save();
+    $this->config('user.settings')->set('cancel_method', $cancel_method)->save();
 
     $account = $this->createAnotherEntity($cancel_method);
     $node = $this->drupalCreateNode(['uid' => $account->id()]);

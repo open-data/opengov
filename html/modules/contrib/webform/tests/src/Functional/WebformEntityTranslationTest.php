@@ -3,6 +3,7 @@
 namespace Drupal\Tests\webform\Functional;
 
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Component\Utility\Html;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\webform\Entity\Webform;
 
@@ -36,7 +37,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
   /**
    * Tests settings translate.
    */
-  public function testSettingsTranslate() {
+  public function testSettingsTranslate(): void {
     $assert_session = $this->assertSession();
 
     // Login admin user.
@@ -46,7 +47,8 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
 
     // Check custom HTML source and translation.
     $mail_default_body_html = \Drupal::config('webform.settings')->get('mail.default_body_html');
-    $assert_session->responseContains('<span lang="en">' . $mail_default_body_html . '</span>');
+    $assert_session->responseContains('<span lang="en">' . Html::escape($mail_default_body_html) . '</span>');
+
     $this->assertCssSelect('textarea[name="translation[config_names][webform.settings][settings][default_form_open_message][value][value]"]');
 
     // Check custom YAML source and translation.
@@ -61,7 +63,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
   /**
    * Tests webform translate.
    */
-  public function testWebformTranslate() {
+  public function testWebformTranslate(): void {
     $assert_session = $this->assertSession();
 
     // Login admin user.
@@ -377,7 +379,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
   /**
    * Tests webform translate variants.
    */
-  public function testTranslateVariants() {
+  public function testTranslateVariants(): void {
     $assert_session = $this->assertSession();
 
     // Check English webform.
@@ -454,7 +456,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
   /**
    * Tests email translation.
    */
-  public function testEmailsTranslate() {
+  public function testEmailsTranslate(): void {
     // Check that the email is sent in Spanish (es).
     $this->drupalGet('/es/webform/test_translation');
     $edit = ['textfield' => 'Spanish Submission'];

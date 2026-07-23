@@ -239,7 +239,7 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
     //   cases.
     // - exposing its revision ID as an attribute will compete with any profile
     //   defined meta members used for resource object versioning.
-    // @see http://jsonapi.org/format/#document-resource-identifier-objects
+    // @see https://jsonapi.org/format/#document-resource-identifier-objects
     $id_field_name = $entity_type->getKey('id');
     $uuid_field_name = $entity_type->getKey('uuid');
     if ($uuid_field_name && $uuid_field_name !== 'id') {
@@ -266,7 +266,7 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
     // For all other fields,  use their internal field name also as their public
     // field name.  Unless they're called "id" or "type": those names are
     // reserved by the JSON:API spec.
-    // @see http://jsonapi.org/format/#document-resource-object-fields
+    // @see https://jsonapi.org/format/#document-resource-object-fields
     $reserved_field_names = ['id', 'type'];
     foreach (array_diff($field_names, array_keys($fields)) as $field_name) {
       $alias = $field_name;
@@ -492,9 +492,11 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
     /** @var \Drupal\Core\Field\TypedData\FieldItemDataDefinition $item_definition */
     $item_definition = $field_definition->getItemDefinition();
     $main_property = $item_definition->getMainPropertyName();
-    $property_definition = $item_definition->getPropertyDefinition($main_property);
+    if ($main_property !== NULL) {
+      $property_definition = $item_definition->getPropertyDefinition($main_property);
+    }
 
-    return $field_type_is_reference[$field_definition->getType()] = $property_definition instanceof DataReferenceTargetDefinition;
+    return $field_type_is_reference[$field_definition->getType()] = isset($property_definition) && $property_definition instanceof DataReferenceTargetDefinition;
   }
 
   /**

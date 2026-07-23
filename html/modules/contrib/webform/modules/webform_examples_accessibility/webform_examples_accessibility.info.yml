@@ -6,7 +6,7 @@ core_version_requirement: ^10.3 || ^11.0
 dependencies:
   - 'drupal:webform'
 
-# Information added by Drupal.org packaging script on 2025-09-22
-version: '6.3.0-beta5'
+# Information added by Drupal.org packaging script on 2026-07-07
+version: '6.3.0'
 project: 'webform'
-datestamp: 1758581732
+datestamp: 1783438707

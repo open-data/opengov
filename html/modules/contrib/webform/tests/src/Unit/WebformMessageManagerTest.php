@@ -26,7 +26,7 @@ class WebformMessageManagerTest extends UnitTestCase {
   /**
    * Test webform message manager.
    */
-  public function testMessageManager() {
+  public function testMessageManager(): void {
     // Mock webform.
     $webform = $this->createMock(WebformInterface::class);
     $webform->method('getSettings')

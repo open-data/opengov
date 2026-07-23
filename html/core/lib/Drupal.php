@@ -76,7 +76,7 @@ class Drupal {
   /**
    * The current system version.
    */
-  const VERSION = '11.2.12';
+  const VERSION = '11.4.4';
 
   /**
    * Core API compatibility.
@@ -132,12 +132,10 @@ class Drupal {
    * message, but Drupal can still be installed. Used for (e.g.) PHP versions
    * that have reached their EOL or will in the near future.
    */
-  const RECOMMENDED_PHP = '8.3.0';
+  const RECOMMENDED_PHP = '8.4';
 
   /**
    * Default location of gettext file on the translation server.
-   *
-   * @see locale_translation_default_translation_server()
    */
   const TRANSLATION_DEFAULT_SERVER_PATTERN = 'https://ftp.drupal.org/files/translations/%core/%project/%project-%version.%language.po';
 
@@ -193,17 +191,15 @@ class Drupal {
   /**
    * Retrieves a service from the container.
    *
-   * Use this method if the desired service is not one of those with a dedicated
-   * accessor method below. If it is listed below, those methods are preferred
-   * as they can return useful type hints.
-   *
-   * @param string $id
+   * @param class-string<T>|string $id
    *   The ID of the service to retrieve.
    *
-   * @return mixed
+   * @template T of object
+   *
+   * @return ($id is class-string<T> ? T : object)
    *   The specified service.
    */
-  public static function service($id) {
+  public static function service(string $id): object {
     return static::getContainer()->get($id);
   }
 

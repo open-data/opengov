@@ -6,12 +6,14 @@ namespace Drupal\Tests\standard\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\node\Entity\Node;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests Standard installation profile JavaScript expectations.
- *
- * @group standard
  */
+#[Group('standard')]
+#[RunTestsInSeparateProcesses]
 class StandardJavascriptTest extends WebDriverTestBase {
 
   /**
@@ -23,13 +25,14 @@ class StandardJavascriptTest extends WebDriverTestBase {
    * Tests BigPipe accelerates particular Standard installation profile routes.
    */
   public function testBigPipe(): void {
+    // Standard profile does not include a content type by default.
+    $this->drupalCreateContentType(['type' => 'test_content', 'name' => 'Test Content']);
+
     $this->drupalLogin($this->drupalCreateUser([
       'access content',
-      'post comments',
-      'skip comment approval',
     ]));
 
-    $node = Node::create(['type' => 'article'])
+    $node = Node::create(['type' => 'test_content'])
       ->setTitle($this->randomMachineName())
       ->setPromoted(TRUE)
       ->setPublished();
@@ -43,13 +46,13 @@ class StandardJavascriptTest extends WebDriverTestBase {
     $this->drupalGet('');
     $this->assertBigPipePlaceholderReplacementCount(0);
 
-    // Node page: Five placeholders.
+    // Node page: Four placeholders.
     $this->drupalGet($node->toUrl());
-    $this->assertBigPipePlaceholderReplacementCount(5);
+    $this->assertBigPipePlaceholderReplacementCount(4);
 
-    // Node page second request: One placeholder for the comment form.
+    // Node page second request: Zero placeholders.
     $this->drupalGet($node->toUrl());
-    $this->assertBigPipePlaceholderReplacementCount(1);
+    $this->assertBigPipePlaceholderReplacementCount(0);
   }
 
   /**

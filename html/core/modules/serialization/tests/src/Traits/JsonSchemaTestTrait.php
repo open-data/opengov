@@ -7,6 +7,7 @@ namespace Drupal\Tests\serialization\Traits;
 use Drupal\serialization\Normalizer\PrimitiveDataNormalizer;
 use JsonSchema\Validator;
 use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -48,9 +49,8 @@ trait JsonSchemaTestTrait {
    * This is in many cases an interface, which would not be normalized directly,
    * however the schema should never return an invalid type. An empty array or
    * a type with only a '$comment' member is valid.
-   *
-   * @dataProvider supportedTypesDataProvider
    */
+  #[DataProvider('supportedTypesDataProvider')]
   public function testSupportedTypesSchemaIsValid(string $type): void {
     $this->doTestJsonSchemaIsValid($type, TRUE);
   }
@@ -67,7 +67,10 @@ trait JsonSchemaTestTrait {
     $validator = $this->getValidator();
     // Ensure the schema contains a meaningful type construct.
     if (!$accept_no_schema_type) {
-      $this->assertFalse(empty(array_filter(array_keys($defined_schema), fn($key) => in_array($key, ['type', 'allOf', 'oneOf', 'anyOf', 'not', '$ref']))));
+      $this->assertFalse(empty(array_filter(
+        array_keys($defined_schema),
+        fn($key) => in_array($key, ['type', 'allOf', 'oneOf', 'anyOf', 'not', '$ref']),
+      )));
     }
     // All associative arrays must be encoded as objects.
     $schema = json_decode(json_encode($defined_schema));
@@ -111,9 +114,8 @@ trait JsonSchemaTestTrait {
 
   /**
    * Test normalized values against the JSON schema.
-   *
-   * @dataProvider jsonSchemaDataProvider
    */
+  #[DataProvider('jsonSchemaDataProvider')]
   public function testNormalizedValuesAgainstJsonSchema(mixed $value): void {
     // Explicitly test the JSON Schema's validity here, because it will depend
     // on the type of the data being normalized, e.g. a class implementing the

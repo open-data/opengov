@@ -184,7 +184,7 @@ class UrlGenerator implements UrlGeneratorInterface {
     $variables = array_flip($variables);
     $mergedParams = array_replace($defaults, $this->context->getParameters(), $parameters);
 
-    // All params must be given
+    // All params must be given.
     if ($diff = array_diff_key($variables, $mergedParams)) {
       throw new MissingMandatoryParametersException($name, array_keys($diff));
     }
@@ -197,16 +197,7 @@ class UrlGenerator implements UrlGeneratorInterface {
     // gap.
     $optional = TRUE;
     // The structure of the tokens array varies according to the compiled route.
-    // Examples:
-    // @code
-    // [
-    //  [0 => 'text', 1 => '/add-link-inline'],
-    //  [0 => 'variable', 1 => '/', 2 => '[^/]++', 3 => 'shortcut_set'],
-    //  [0 => 'text', 1 => '/admin/config/user-interface/shortcut/manage'],
-    // ]
-    // @endcode
-    // This is the structure for the "shortcut.link_add_inline" route.
-    //
+    // Example:
     // @code
     // [
     //   [ 0 => 'text', 1 => '/admin/config' ]
@@ -217,7 +208,7 @@ class UrlGenerator implements UrlGeneratorInterface {
     foreach ($tokens as $token) {
       if ('variable' === $token[0]) {
         if (!$optional || !array_key_exists($token[3], $defaults) || (isset($mergedParams[$token[3]]) && (string) $mergedParams[$token[3]] !== (string) $defaults[$token[3]])) {
-          // Check requirement
+          // Check requirement.
           if (!preg_match('#^' . $token[2] . '$#', $mergedParams[$token[3]])) {
             $message = sprintf('Parameter "%s" for route "%s" must match "%s" ("%s" given) to generate a corresponding URL.', $token[3], $name, $token[2], $mergedParams[$token[3]]);
             throw new InvalidParameterException($message);
@@ -228,7 +219,7 @@ class UrlGenerator implements UrlGeneratorInterface {
         }
       }
       else {
-        // Static text
+        // Static text.
         $url = $token[1] . $url;
         $optional = FALSE;
       }
@@ -308,9 +299,11 @@ class UrlGenerator implements UrlGeneratorInterface {
 
     $this->processRoute($name, $route, $parameters, $generated_url);
     $path = $this->getInternalPathFromRoute($name, $route, $parameters, $options['query']);
-    // Outbound path processors might need the route object for the path, e.g.
-    // to get the path pattern.
+    // Outbound path processors might need the route information for the path,
+    // e.g. to get the path pattern.
     $options['route'] = $route;
+    $options['route_name'] = $name;
+    $options['route_parameters'] = $parameters;
     if ($options['path_processing']) {
       $path = $this->processPath($path, $options, $generated_url);
     }
@@ -330,14 +323,17 @@ class UrlGenerator implements UrlGeneratorInterface {
       // http://tools.ietf.org/html/rfc3986#section-3.3 so we need to encode
       // them as they are not used for this purpose here otherwise we would
       // generate a URI that, when followed by a user agent (e.g. browser), does
-      // not match this route
-      $path = strtr($path, ['/../' => '/%2E%2E/', '/./' => '/%2E/']);
-      if (str_ends_with($path, '/..')) {
-        $path = substr($path, 0, -2) . '%2E%2E';
+      // not match this route.
+      $segments = explode('/', $path);
+      foreach ($segments as $i => $segment) {
+        if ($segment === '.') {
+          $segments[$i] = '%2E';
+        }
+        elseif ($segment === '..') {
+          $segments[$i] = '%2E%2E';
+        }
       }
-      elseif (str_ends_with($path, '/.')) {
-        $path = substr($path, 0, -1) . '%2E';
-      }
+      $path = implode('/', $segments);
     }
 
     if (!empty($options['prefix'])) {

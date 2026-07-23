@@ -3,7 +3,7 @@
 namespace Drupal\webform;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 
 /**
  * Defines a class to translate webform Lingotek integration.

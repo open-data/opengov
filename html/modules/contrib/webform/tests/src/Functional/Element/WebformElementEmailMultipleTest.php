@@ -19,7 +19,7 @@ class WebformElementEmailMultipleTest extends WebformElementBrowserTestBase {
   /**
    * Test email_multiple element.
    */
-  public function testEmailMultiple() {
+  public function testEmailMultiple(): void {
     $assert_session = $this->assertSession();
 
     // Check basic email multiple.

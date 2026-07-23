@@ -21,7 +21,7 @@ class WebformCardsDraftJavaScriptTest extends WebformWebDriverTestBase {
   /**
    * Test webform cards draft.
    */
-  public function testDraft() {
+  public function testDraft(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();

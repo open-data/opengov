@@ -91,12 +91,7 @@ hr.webform-horizontal-rule--glyph::after {
 hr.webform-horizontal-rule--gradient {
   height: 1px;
   border: 0;
-  background-image: linear-gradient(
-    to right,
-    rgb(0, 0, 0, 0),
-    rgb(0, 0, 0, 0.75),
-    rgb(0, 0, 0, 0)
-  );
+  background-image: linear-gradient(to right, rgb(0, 0, 0, 0), rgb(0, 0, 0, 0.75), rgb(0, 0, 0, 0));
 }
 
 hr.webform-horizontal-rule--gradient.webform-horizontal-rule--medium {

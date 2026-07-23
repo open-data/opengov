@@ -51,11 +51,20 @@ class EntityRouteHelper {
    *   TRUE if the content entity route condition is met, FALSE otherwise.
    */
   public function isContentEntityRoute(): bool {
-    return array_key_exists($this->routeMatch->getRouteObject()->getPath(), $this->getContentEntityPaths());
+    $route = $this->routeMatch->getRouteObject();
+    if (!$route) {
+      return FALSE;
+    }
+    return array_key_exists($route->getPath(), $this->getContentEntityPaths());
   }
 
   public function getContentEntityFromRoute(): ?ContentEntityInterface {
-    $path = $this->routeMatch->getRouteObject()->getPath();
+    $route = $this->routeMatch->getRouteObject();
+    if (!$route) {
+      return NULL;
+    }
+
+    $path = $route->getPath();
     if (!$entity_type = $this->getContentEntityPaths()[$path] ?? NULL) {
       return NULL;
     }
@@ -88,7 +97,10 @@ class EntityRouteHelper {
     }
 
     $this->contentEntityPaths = $this->doGetContentEntityPaths();
-    $this->cacheBackend->set(static::ENTITY_ROUTE_CID, $this->contentEntityPaths, CacheBackendInterface::CACHE_PERMANENT, ['entity_types', 'routes']);
+    $this->cacheBackend->set(static::ENTITY_ROUTE_CID, $this->contentEntityPaths, CacheBackendInterface::CACHE_PERMANENT, [
+      'entity_types',
+      'routes',
+    ]);
 
     return $this->contentEntityPaths;
   }

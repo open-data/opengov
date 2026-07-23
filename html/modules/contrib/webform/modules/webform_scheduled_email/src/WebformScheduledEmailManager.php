@@ -700,7 +700,22 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
 
         // Send (translated) email.
         $message = $handler->getMessage($webform_submission);
-        $status = $handler->sendMessage($webform_submission, $message);
+        // Catch any exception thrown while sending (e.g. a mail transport
+        // rejecting a malformed recipient address) so a single bad submission
+        // cannot abort the entire cron batch. An uncaught exception here skips
+        // the delete query at the end of this method, leaving every already-sent
+        // record in the 'send' state to be re-sent on every subsequent cron run.
+        try {
+          $status = $handler->sendMessage($webform_submission, $message);
+        }
+        catch (\Exception $e) {
+          $status = FALSE;
+          $this->getLogger('webform_scheduled_email')->error('Scheduled email not sent for submission @sid via the @handler handler: @message', [
+            '@sid' => $sid,
+            '@handler' => $handler_id,
+            '@message' => $e->getMessage(),
+          ]);
+        }
 
         // Switch back to original language.
         if ($switch_languages) {

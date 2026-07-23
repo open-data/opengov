@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\KernelTests\Core\Hook;
 
 /**
- * @group Hook
+ * Provides methods to support testing hooks.
  */
 trait HookOrderTestTrait {
 

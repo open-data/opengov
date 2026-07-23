@@ -26,7 +26,7 @@ class WebformWizardValidateTest extends WebformWizardTestBase {
   /**
    * Test webform wizard validation.
    */
-  public function testWizardValidate() {
+  public function testWizardValidate(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_form_wizard_validate');

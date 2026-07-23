@@ -22,7 +22,7 @@ class WebformVariantOverrideTest extends WebformBrowserTestBase {
   /**
    * Test variant override.
    */
-  public function testVariantOverride() {
+  public function testVariantOverride(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_variant_override');

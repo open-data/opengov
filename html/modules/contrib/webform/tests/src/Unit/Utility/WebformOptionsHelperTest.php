@@ -28,7 +28,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerHasOption
    */
-  public function testHasOption($value, array $options, $expected) {
+  public function testHasOption($value, array $options, $expected): void {
     $result = WebformOptionsHelper::hasOption($value, $options);
     $this->assertEquals($expected, $result);
   }
@@ -48,6 +48,94 @@ class WebformOptionsHelperTest extends UnitTestCase {
   }
 
   /**
+   * Tests WebformOptionsHelper::getOptionText().
+   *
+   * @param string $value
+   *   The value to look for in the options.
+   * @param array $options
+   *   The array of options to search for the value.
+   * @param bool $options_description
+   *   Whether to remove the description from the text.
+   * @param string $expected
+   *   The expected result from calling the function.
+   *
+   * @see WebformOptionsHelper::getOptionText()
+   *
+   * @dataProvider providerGetOptionText
+   */
+  public function testGetOptionText($value, array $options, $options_description, $expected): void {
+    $result = WebformOptionsHelper::getOptionText($value, $options, $options_description);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
+   * Data provider for testGetOptionText().
+   *
+   * @see testGetOptionText()
+   */
+  public static function providerGetOptionText() {
+    $tests = [];
+
+    // Basic test with a matching value.
+    $tests[] = [
+      'value',
+      ['value' => 'This is the text'],
+      FALSE,
+      'This is the text',
+    ];
+
+    // Test with nested options.
+    $tests[] = [
+      3,
+      [1 => 'One', 2 => 'Two', 'group' => [3 => 'Three']],
+      FALSE,
+      'Three',
+    ];
+
+    // Test with description included.
+    $tests[] = [
+      'with_description',
+      ['with_description' => 'Option Text -- Description'],
+      FALSE,
+      'Option Text -- Description',
+    ];
+
+    // Test with description removed.
+    $tests[] = [
+      'with_description',
+      ['with_description' => 'Option Text -- Description'],
+      TRUE,
+      'Option Text',
+    ];
+
+    // Test with non-matching value, returning input value.
+    $tests[] = [
+      'nonexistent_value',
+      ['value1' => 'Text1', 'value2' => 'Text2'],
+      FALSE,
+      'nonexistent_value',
+    ];
+
+    // Test with nested options where the value does not exist.
+    $tests[] = [
+      99,
+      [1 => 'One', 'group' => [2 => 'Two', 3 => 'Three']],
+      FALSE,
+      99,
+    ];
+
+    // Test with description delimiter but no description part.
+    $tests[] = [
+      'value_delimiter',
+      ['value_delimiter' => 'Option Text -- '],
+      TRUE,
+      'Option Text',
+    ];
+
+    return $tests;
+  }
+
+  /**
    * Tests WebformOptionsHelper::getOptionsText().
    *
    * @param array $values
@@ -61,7 +149,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerGetOptionsText
    */
-  public function testGetOptionsText(array $values, array $options, $expected) {
+  public function testGetOptionsText(array $values, array $options, $expected): void {
     $result = WebformOptionsHelper::getOptionsText($values, $options);
     $this->assertEquals($expected, $result);
   }
@@ -90,7 +178,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerConvertOptionsToString
    */
-  public function testConvertOptionsToString(array $options, $expected) {
+  public function testConvertOptionsToString(array $options, $expected): void {
     $result = WebformOptionsHelper::convertOptionsToString($options);
     $this->assertEquals($expected, $result);
   }
@@ -118,7 +206,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerRange
    */
-  public function testRange(array $element, $expected) {
+  public function testRange(array $element, $expected): void {
     $element += [
       '#min' => 1,
       '#max' => 100,
@@ -163,7 +251,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerEncodeConfig
    */
-  public function testEncodeConfig(array $options, $expected) {
+  public function testEncodeConfig(array $options, $expected): void {
     $result = WebformOptionsHelper::encodeConfig($options);
     $this->assertEquals($expected, $result);
   }
@@ -197,7 +285,7 @@ class WebformOptionsHelperTest extends UnitTestCase {
    *
    * @dataProvider providerDecodeConfig
    */
-  public function testDecodeConfig(array $options, $expected) {
+  public function testDecodeConfig(array $options, $expected): void {
     $result = WebformOptionsHelper::decodeConfig($options);
     $this->assertEquals($expected, $result);
   }

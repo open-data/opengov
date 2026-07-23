@@ -29,7 +29,7 @@ class WebformElementAddressTest extends WebformElementBrowserTestBase {
   /**
    * Tests address element.
    */
-  public function testAddress() {
+  public function testAddress(): void {
     $this->drupalLogin($this->rootUser);
 
     $assert_session = $this->assertSession();

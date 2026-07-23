@@ -70,91 +70,6 @@ class ViewsUiHooks {
   }
 
   /**
-   * Implements hook_theme().
-   */
-  #[Hook('theme')]
-  public function theme() : array {
-    return [
-          // Edit a view
-      'views_ui_display_tab_setting' => [
-        'variables' => [
-          'description' => '',
-          'link' => '',
-          'settings_links' => [],
-          'overridden' => FALSE,
-          'defaulted' => FALSE,
-          'description_separator' => TRUE,
-          'class' => [],
-        ],
-        'file' => 'views_ui.theme.inc',
-      ],
-      'views_ui_display_tab_bucket' => [
-        'render element' => 'element',
-        'file' => 'views_ui.theme.inc',
-      ],
-      'views_ui_rearrange_filter_form' => [
-        'render element' => 'form',
-        'file' => 'views_ui.theme.inc',
-      ],
-      'views_ui_expose_filter_form' => [
-        'render element' => 'form',
-        'file' => 'views_ui.theme.inc',
-      ],
-          // Legacy theme hook for displaying views info.
-      'views_ui_view_info' => [
-        'variables' => [
-          'view' => NULL,
-          'displays' => NULL,
-        ],
-        'file' => 'views_ui.theme.inc',
-      ],
-          // List views.
-      'views_ui_views_listing_table' => [
-        'variables' => [
-          'headers' => NULL,
-          'rows' => NULL,
-          'attributes' => [],
-        ],
-        'file' => 'views_ui.theme.inc',
-      ],
-      'views_ui_view_displays_list' => [
-        'variables' => [
-          'displays' => [],
-        ],
-      ],
-          // Group of filters.
-      'views_ui_build_group_filter_form' => [
-        'render element' => 'form',
-        'file' => 'views_ui.theme.inc',
-      ],
-          // On behalf of a plugin
-      'views_ui_style_plugin_table' => [
-        'render element' => 'form',
-        'file' => 'views_ui.theme.inc',
-      ],
-          // When previewing a view.
-      'views_ui_view_preview_section' => [
-        'variables' => [
-          'view' => NULL,
-          'section' => NULL,
-          'content' => NULL,
-          'links' => '',
-        ],
-        'file' => 'views_ui.theme.inc',
-      ],
-      // Generic container wrapper, to use instead of theme_container when an id
-      // is not desired.
-      'views_ui_container' => [
-        'variables' => [
-          'children' => NULL,
-          'attributes' => [],
-        ],
-        'file' => 'views_ui.theme.inc',
-      ],
-    ];
-  }
-
-  /**
    * Implements hook_views_plugins_display_alter().
    */
   #[Hook('views_plugins_display_alter')]
@@ -177,12 +92,7 @@ class ViewsUiHooks {
    */
   #[Hook('contextual_links_view_alter')]
   public function contextualLinksViewAlter(&$element, $items): void {
-    // Remove contextual links from being rendered, when so desired, such as
-    // within a View preview.
-    if (views_ui_contextual_links_suppress()) {
-      $element['#links'] = [];
-    }
-    elseif (!empty($element['#links']['entityviewedit-form'])) {
+    if (!empty($element['#links']['entityviewedit-form'])) {
       $display_id = $items['entity.view.edit_form']['metadata']['display_id'];
       $route_parameters = $element['#links']['entityviewedit-form']['url']->getRouteParameters() + ['display_id' => $display_id];
       $element['#links']['entityviewedit-form']['url'] = Url::fromRoute('entity.view.edit_display_form', $route_parameters);

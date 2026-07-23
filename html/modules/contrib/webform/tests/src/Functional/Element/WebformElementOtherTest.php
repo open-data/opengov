@@ -21,7 +21,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
   /**
    * Tests options with other elements.
    */
-  public function testBuildingOtherElements() {
+  public function testBuildingOtherElements(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_other');
@@ -108,7 +108,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
   /**
    * Tests value processing for other elements.
    */
-  public function testProcessingOtherElements() {
+  public function testProcessingOtherElements(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_other');
@@ -119,12 +119,14 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
 
     $this->postSubmission($webform);
     $assert_session->responseContains("select_other_basic: Four
+select_other_conditional: ''
 select_other_advanced: Four
 select_other_multiple:
   - One
   - Two
   - Four
 select_other_zero: '0'
+computed_select_other_conditional_value: ''
 checkboxes_other_basic:
   - One
   - Two
@@ -165,6 +167,14 @@ wrapper_other_container: ''");
     ];
     $this->submitForm($edit, 'Submit');
     $assert_session->responseNotContains('Select other basic field is required.');
+
+    // Check that select other computed token value is correct when element is conditionally visible.
+    $this->drupalGet('/webform/test_element_other');
+    $edit = [
+      'select_other_conditional[select]' => 'Two',
+    ];
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains('computed_select_other_conditional_value: Two');
 
     // Check select other required validation.
     $this->drupalGet('/webform/test_element_other');

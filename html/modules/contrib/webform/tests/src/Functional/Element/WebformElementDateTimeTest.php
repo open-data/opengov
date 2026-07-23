@@ -30,7 +30,7 @@ class WebformElementDateTimeTest extends WebformElementBrowserTestBase {
   /**
    * Test datetime element.
    */
-  public function testDateTime() {
+  public function testDateTime(): void {
     $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_datetime');
@@ -78,14 +78,23 @@ class WebformElementDateTimeTest extends WebformElementBrowserTestBase {
     $this->drupalGet('/webform/test_element_datetime');
     $edit = ['datetime_min_max[date]' => '2010-08-18'];
     $this->submitForm($edit, 'Submit');
-
-    $assert_session->responseContains('<em class="placeholder">datetime_min_max</em> must be on or before <em class="placeholder">2009-12-31</em>.');
+    if (version_compare(\Drupal::VERSION, '11.2.5', '<')) {
+      $assert_session->responseContains('<em class="placeholder">datetime_min_max</em> must be on or before <em class="placeholder">2009-12-31</em>.');
+    }
+    else {
+      $assert_session->responseContains('The <em class="placeholder">datetime_min_max</em> date is invalid. Date should be in the <em class="placeholder">2009</em>-<em class="placeholder">2009</em> year range.');
+    }
 
     // Check datetime #date_date_min validation.
     $this->drupalGet('/webform/test_element_datetime');
     $edit = ['datetime_min_max[date]' => '2006-08-18'];
     $this->submitForm($edit, 'Submit');
-    $assert_session->responseContains('<em class="placeholder">datetime_min_max</em> must be on or after <em class="placeholder">2009-01-01</em>.');
+    if (version_compare(\Drupal::VERSION, '11.2.5', '<')) {
+      $assert_session->responseContains('<em class="placeholder">datetime_min_max</em> must be on or after <em class="placeholder">2009-01-01</em>.');
+    }
+    else {
+      $assert_session->responseContains('The <em class="placeholder">datetime_min_max</em> date is invalid. Date should be in the <em class="placeholder">2009</em>-<em class="placeholder">2009</em> year range.');
+    }
 
     // Check datetime #date_max date validation.
     $this->drupalGet('/webform/test_element_datetime');

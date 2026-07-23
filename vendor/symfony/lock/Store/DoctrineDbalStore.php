@@ -22,11 +22,13 @@ use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\DefaultSchemaManagerFactory;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Tools\DsnParser;
 use Symfony\Component\Lock\Exception\InvalidArgumentException;
 use Symfony\Component\Lock\Exception\InvalidTtlException;
@@ -244,8 +246,8 @@ class DoctrineDbalStore implements PersistingStoreInterface
      */
     public function createTable(): void
     {
-        $schema = new Schema();
-        $this->configureSchema($schema, static fn () => true);
+        $initialSchema = new Schema();
+        $schema = $this->configureSchema($initialSchema, static fn () => true) ?? $initialSchema;
 
         foreach ($schema->toSql($this->conn->getDatabasePlatform()) as $sql) {
             $this->conn->executeStatement($sql);
@@ -254,18 +256,44 @@ class DoctrineDbalStore implements PersistingStoreInterface
 
     /**
      * Adds the Table to the Schema if it doesn't exist.
+     *
+     * @return Schema The (possibly new) schema with the table added
      */
-    public function configureSchema(Schema $schema, \Closure $isSameDatabase): void
+    public function configureSchema(Schema $schema, \Closure $isSameDatabase)
     {
         if ($schema->hasTable($this->table)) {
-            return;
+            return $schema;
         }
 
         if (!$isSameDatabase($this->conn->executeStatement(...))) {
-            return;
+            return $schema;
         }
 
-        $table = $schema->createTable($this->table);
+        if (method_exists($schema, 'edit')) {
+            return $schema->edit()->addTable($this->buildSchemaTable())->create();
+        }
+
+        $this->configureSchemaTable($schema->createTable($this->table));
+
+        return $schema;
+    }
+
+    private function buildSchemaTable(): Table
+    {
+        return Table::editor()
+            ->setUnquotedName($this->table)
+            ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName('string')->setLength(64)->create())
+            ->addColumn(Column::editor()->setUnquotedName($this->tokenCol)->setTypeName('string')->setLength(44)->create())
+            ->addColumn(Column::editor()->setUnquotedName($this->expirationCol)->setTypeName('integer')->setUnsigned(true)->create())
+            ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted($this->idCol))], true))
+            ->create();
+    }
+
+    /**
+     * To be removed when doctrine/dbal minimum is bumped to ^4.5.
+     */
+    private function configureSchemaTable(Table $table): void
+    {
         $table->addColumn($this->idCol, 'string', ['length' => 64]);
         $table->addColumn($this->tokenCol, 'string', ['length' => 44]);
         $table->addColumn($this->expirationCol, 'integer', ['unsigned' => true]);

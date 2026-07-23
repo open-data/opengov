@@ -783,7 +783,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       return FALSE;
     }
     else {
-      return (boolean) $this->getSetting('page');
+      return (bool) $this->getSetting('page');
     }
   }
 
@@ -1837,6 +1837,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * {@inheritdoc}
    */
   public function getElement($key, $include_children = FALSE) {
+    // @todo This should probably not ever be NULL. Figure out why and fix.
+    // Setting to empty string to preserve existing behavior but prevent NULL
+    // from being used as an array key.
+    $key ??= '';
+
     $elements_flattened = $this->getElementsInitializedAndFlattened();
     $element = $elements_flattened[$key] ?? NULL;
     if ($element && $include_children) {
@@ -2020,6 +2025,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * {@inheritdoc}
    */
   public function getPages($operation = 'default', ?WebformSubmissionInterface $webform_submission = NULL) {
+    // @todo This should probably not ever be NULL. Figure out why and fix.
+    // Setting to empty string to preserve existing behavior but prevent NULL
+    // from being used as an array key.
+    $operation ??= '';
+
     $pages = $this->buildPages($operation);
     if ($this->getSetting('wizard_progress_states') && $webform_submission) {
       /** @var \Drupal\webform\WebformSubmissionConditionsValidatorInterface $constraint_validator */
@@ -2120,6 +2130,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * {@inheritdoc}
    */
   public function getPage($operation, $key) {
+    // @todo This should probably not ever be NULL. Figure out why and fix.
+    // Setting to empty string to preserve existing behavior but prevent NULL
+    // from being used as an array key.
+    $key ??= '';
+
     $pages = $this->getPages($operation);
     return $pages[$key] ?? NULL;
   }

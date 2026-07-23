@@ -19,7 +19,7 @@ class WebformElementStatesTest extends WebformElementBrowserTestBase {
   /**
    * Tests element #states.
    */
-  public function testElement() {
+  public function testElement(): void {
     $assert_session = $this->assertSession();
 
     /* ********************************************************************** */

@@ -8,14 +8,15 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\field_ui\Traits\FieldUiJSTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 // cspell:ignore horserad
-
 /**
  * Tests the Field UI "Manage Fields" screens.
- *
- * @group field_ui
  */
+#[Group('field_ui')]
+#[RunTestsInSeparateProcesses]
 class ManageFieldsTest extends WebDriverTestBase {
 
   use FieldUiJSTestTrait;
@@ -206,7 +207,7 @@ class ManageFieldsTest extends WebDriverTestBase {
     $assert_session->elementExists('css', '[name="label"]');
 
     $page->fillField('label', $field_name);
-    $this->assertNotEmpty($text_plain = $page->find('xpath', '//*[text() = "Text (plain)"]')->getParent());
+    $this->assertNotEmpty($text_plain = $page->find('xpath', '//*[text() = "Short text"]')->getParent());
     $text_plain->click();
     $this->assertTrue($assert_session->elementExists('css', '[name="field_options_wrapper"][value="string"]')->isSelected());
     $buttons = $this->assertSession()->elementExists('css', '.ui-dialog-buttonpane');
@@ -268,7 +269,7 @@ class ManageFieldsTest extends WebDriverTestBase {
     $assert_session->assertWaitOnAjaxRequest();
     $assert_session->pageTextContains('Choose a field type');
 
-    $this->assertNotEmpty($number_integer = $page->find('xpath', '//*[text() = "Number (integer)"]')->getParent());
+    $this->assertNotEmpty($number_integer = $page->find('xpath', '//*[text() = "Integer"]')->getParent());
     $number_integer->click();
     $this->assertTrue($assert_session->elementExists('css', '[name="field_options_wrapper"][value="integer"]')->isSelected());
 
@@ -314,12 +315,12 @@ class ManageFieldsTest extends WebDriverTestBase {
       }
       $expected_field_types = match ($field_type_category) {
         'Selection list' => [
-          'List (text)',
-          'List (integer)',
+          'Text',
+          'Integer',
         ],
         'Number' => [
-          'Number (integer)',
-          'Number (decimal)',
+          'Integer',
+          'Decimal',
         ],
       };
       // Assert that the field type options are displayed as per their weights.

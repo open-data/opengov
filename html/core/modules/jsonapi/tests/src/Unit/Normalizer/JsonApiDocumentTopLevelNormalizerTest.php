@@ -9,21 +9,26 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
-use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Normalizer\JsonApiDocumentTopLevelNormalizer;
+use Drupal\jsonapi\ResourceType\ResourceType;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
+use Drupal\node\Entity\Node;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Prophecy\Argument;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @coversDefaultClass \Drupal\jsonapi\Normalizer\JsonApiDocumentTopLevelNormalizer
- * @group jsonapi
+ * Tests Drupal\jsonapi\Normalizer\JsonApiDocumentTopLevelNormalizer.
  *
  * @internal
  */
+#[CoversClass(JsonApiDocumentTopLevelNormalizer::class)]
+#[Group('jsonapi')]
 class JsonApiDocumentTopLevelNormalizerTest extends UnitTestCase {
 
   /**
@@ -43,7 +48,7 @@ class JsonApiDocumentTopLevelNormalizerTest extends UnitTestCase {
 
     $resource_type_repository
       ->getByTypeName(Argument::any())
-      ->willReturn(new ResourceType('node', 'article', NULL));
+      ->willReturn(new ResourceType('node', 'article', Node::class));
 
     $entity_storage = $this->prophesize(EntityStorageInterface::class);
     $self = $this;
@@ -86,9 +91,9 @@ class JsonApiDocumentTopLevelNormalizerTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::denormalize
-   * @dataProvider denormalizeProvider
+   * Tests denormalize.
    */
+  #[DataProvider('denormalizeProvider')]
   public function testDenormalize($input, $expected): void {
     $resource_type = new ResourceType('node', 'article', FieldableEntityInterface::class);
     $resource_type->setRelatableResourceTypes([]);
@@ -214,10 +219,8 @@ class JsonApiDocumentTopLevelNormalizerTest extends UnitTestCase {
    *   The input UUID. May be invalid.
    * @param bool $expect_exception
    *   Whether to expect an exception.
-   *
-   * @covers ::denormalize
-   * @dataProvider denormalizeUuidProvider
    */
+  #[DataProvider('denormalizeUuidProvider')]
   public function testDenormalizeUuid($id, $expect_exception): void {
     $data['data'] = (isset($id)) ?
       ['type' => 'node--article', 'id' => $id] :

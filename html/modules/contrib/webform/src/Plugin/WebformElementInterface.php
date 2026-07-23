@@ -564,8 +564,8 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
   /**
    * Get an element's default single value format name.
    *
-   * @return string
-   *   An element's default single value format name.
+   * @return string|null
+   *   An element's default single value format name or NULL.
    */
   public function getItemDefaultFormat();
 

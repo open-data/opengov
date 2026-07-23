@@ -17,12 +17,14 @@ use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Drupal\user\Plugin\Validation\Constraint\UserNameConstraint;
 use Drupal\user\RoleInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests validation of an entity during migration.
- *
- * @group migrate
  */
+#[Group('migrate')]
+#[RunTestsInSeparateProcesses]
 class MigrateEntityContentValidationTest extends KernelTestBase {
 
   /**
@@ -158,9 +160,9 @@ class MigrateEntityContentValidationTest extends KernelTestBase {
       '%name' => '<em class="placeholder">' . Html::escape($long_username) . '</em>',
       '%max' => '<em class="placeholder">' . 60 . '</em>',
     ]);
-    $this->assertSame(sprintf('1: [user]: name=%s||name=%s||mail=Email field is required.', $username_constraint->illegalMessage, $message), $this->messages[0], 'First message should have 3 validation errors.');
-    $this->assertSame(sprintf('2: [user]: name=%s||mail=Email field is required.', $username_constraint->illegalMessage), $this->messages[1], 'Second message should have 2 validation errors.');
-    $this->assertSame(sprintf('3: [user]: name=%s||mail=Email field is required.', $username_constraint->illegalMessage), $this->messages[2], 'Third message should have 2 validation errors.');
+    $this->assertSame(sprintf('1: [user]: name=%s||name=%s||mail=Email field is required.', $username_constraint->invalidMessage, $message), $this->messages[0], 'First message should have 3 validation errors.');
+    $this->assertSame(sprintf('2: [user]: name=%s||mail=Email field is required.', $username_constraint->invalidMessage), $this->messages[1], 'Second message should have 2 validation errors.');
+    $this->assertSame(sprintf('3: [user]: name=%s||mail=Email field is required.', $username_constraint->invalidMessage), $this->messages[2], 'Third message should have 2 validation errors.');
     $this->assertArrayNotHasKey(3, $this->messages, 'Fourth message should not exist.');
   }
 

@@ -4,9 +4,10 @@
  * @file
  */
 
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Core\Database\Query\ConditionInterface;
 
 /**
  * Adds the default body field to a block type.
@@ -18,8 +19,13 @@ use Drupal\Core\Database\Query\ConditionInterface;
  *
  * @return \Drupal\field\Entity\FieldConfig
  *   A Body field object.
+ *
+ * @deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. There is no replacement.
+ * @see https://www.drupal.org/node/3535528
  */
 function block_content_add_body_field($block_type_id, $label = 'Body') {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3535528', E_USER_DEPRECATED);
+
   // Add or remove the body field, as needed.
   $field = FieldConfig::loadByName('block_content', $block_type_id, 'body');
   if (empty($field)) {
@@ -57,45 +63,30 @@ function block_content_add_body_field($block_type_id, $label = 'Body') {
 }
 
 /**
- * Utility function to find nested conditions using the reusable field.
+ * Prepares variables for a block type creation list templates.
  *
- * @todo Replace this function with a call to the API in
- *   https://www.drupal.org/project/drupal/issues/2984930
+ * Default template: block-content-add-list.html.twig.
  *
- * @param array $condition
- *   The condition or condition group to check.
- * @param array $tables
- *   The tables from the related select query.
+ * @param array $variables
+ *   An associative array containing:
+ *   - content: An array of block types.
  *
- * @see \Drupal\Core\Database\Query\SelectInterface::getTables
- *
- * @return bool
- *   Whether the conditions contain any condition using the reusable field.
+ * @see block_content_add_page()
  */
-function _block_content_has_reusable_condition(array $condition, array $tables) {
-  // If this is a condition group call this function recursively for each nested
-  // condition until a condition is found that return TRUE.
-  if (isset($condition['#conjunction'])) {
-    foreach (array_filter($condition, 'is_array') as $nested_condition) {
-      if (_block_content_has_reusable_condition($nested_condition, $tables)) {
-        return TRUE;
-      }
-    }
-    return FALSE;
+function template_preprocess_block_content_add_list(&$variables): void {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Use entity_add_list instead. See https://www.drupal.org/node/3530643', E_USER_DEPRECATED);
+  $variables['types'] = [];
+  $query = \Drupal::request()->query->all();
+  foreach ($variables['content'] as $type) {
+    $variables['types'][$type->id()] = [
+      'link' => Link::fromTextAndUrl($type->label(), Url::fromRoute('block_content.add_form', ['block_content_type' => $type->id()], ['query' => $query]))->toString(),
+      'description' => [
+        '#markup' => $type->getDescription(),
+      ],
+      'title' => $type->label(),
+      'localized_options' => [
+        'query' => $query,
+      ],
+    ];
   }
-  if (isset($condition['field'])) {
-    $field = $condition['field'];
-    if (is_object($field) && $field instanceof ConditionInterface) {
-      return _block_content_has_reusable_condition($field->conditions(), $tables);
-    }
-    $field_parts = explode('.', $field);
-    $data_table = \Drupal::entityTypeManager()->getDefinition('block_content')->getDataTable();
-    foreach ($tables as $table) {
-      if ($table['table'] === $data_table && $field_parts[0] === $table['alias'] && $field_parts[1] === 'reusable') {
-        return TRUE;
-      }
-    }
-
-  }
-  return FALSE;
 }

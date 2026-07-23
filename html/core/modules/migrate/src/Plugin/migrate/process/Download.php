@@ -9,7 +9,6 @@ use Drupal\migrate\MigrateException;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\Row;
 use GuzzleHttp\ClientInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Downloads a file from a HTTP(S) remote location into the local file system.
@@ -102,19 +101,6 @@ class Download extends FileProcessBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('file_system'),
-      $container->get('http_client')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     // If we're stubbing a file entity, return a uri of NULL so it will get
     // stubbed by the general process.
@@ -156,6 +142,12 @@ class Download extends FileProcessBase implements ContainerFactoryPluginInterfac
       $this->httpClient->get($source, $this->configuration['guzzle_options']);
     }
     catch (\Exception $e) {
+      // Since the destination file stream was used as the sink for the Guzzle
+      // request, invalid file content from the failed request may be stored in
+      // a newly created file. Clean up the file if it exists since the request
+      // failed.
+      $this->fileSystem->delete($final_destination);
+
       throw new MigrateException("{$e->getMessage()} ($source)");
     }
 

@@ -426,6 +426,39 @@ function &drupal_static($name, $default_value = NULL, $reset = FALSE) {
  *   unit tests with a clean environment.
  */
 function drupal_static_reset($name = NULL): void {
+  switch ($name) {
+    case 'node_access_view_all_nodes':
+      @trigger_error('Calling drupal_static_reset() with "node_access_view_all_nodes" as argument is deprecated in drupal:11.3.0 and is removed from drupal:12.0.0. Use \Drupal::service(\'node.view_all_nodes_memory_cache\')->deleteAll(); instead. See https://www.drupal.org/node/3038909', E_USER_DEPRECATED);
+      \Drupal::service('node.view_all_nodes_memory_cache')->deleteAll();
+      break;
+
+    case 'locale_translation_get_projects':
+      @trigger_error('Calling drupal_static_reset() with "locale_translation_get_projects" as argument is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. Use \Drupal::service("cache.memory")->delete("locale_get_projects") instead. See https://www.drupal.org/node/3569330', E_USER_DEPRECATED);
+      if (\Drupal::hasService('cache.memory')) {
+        \Drupal::service('cache.memory')->delete('locale_get_projects');
+      }
+      break;
+
+    case 'locale_translation_project_list':
+      @trigger_error("Using drupal_static_reset() with 'locale_translation_project_list' as argument is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. See https://www.drupal.org/node/3037033", E_USER_DEPRECATED);
+      break;
+
+    case 'locale_translation_get_file_history':
+      @trigger_error('Calling drupal_static_reset() with "locale_translation_get_file_history" as argument is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. Use \Drupal::service("cache.memory")->invalidateTags(["locale_current_import"]) instead. See https://www.drupal.org/node/3037162', E_USER_DEPRECATED);
+      \Drupal::service('cache.memory')->invalidateTags(['locale_current_import']);
+      break;
+
+    case 'filter_formats':
+      @trigger_error("Using drupal_static_reset() with 'filter_formats' as argument is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. No replacement is provided. See https://www.drupal.org/node/3035368", E_USER_DEPRECATED);
+      break;
+
+    case 'file_get_file_references':
+    case 'file_get_file_references:field_columns':
+      @trigger_error("Calling drupal_static_reset() with \"$name\" as argument is deprecated in drupal:11.4.0 and is removed from drupal:13.0.0. Use \Drupal::service('cache.memory')->invalidateTags(['file_references']) instead. See https://www.drupal.org/node/3573884", E_USER_DEPRECATED);
+      \Drupal::service('cache.memory')->invalidateTags(['file_references']);
+      break;
+
+  }
   drupal_static($name, NULL, TRUE);
 }
 
@@ -456,7 +489,7 @@ function &drupal_register_shutdown_function($callback = NULL, ...$args) {
     if (empty($callbacks)) {
       register_shutdown_function('_drupal_shutdown_function');
     }
-    // Save callback and arguments
+    // Save callback and arguments.
     $callbacks[] = ['callback' => $callback, 'arguments' => $args];
   }
   return $callbacks;

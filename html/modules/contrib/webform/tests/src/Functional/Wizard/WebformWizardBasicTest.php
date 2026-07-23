@@ -21,7 +21,7 @@ class WebformWizardBasicTest extends WebformWizardTestBase {
   /**
    * Test webform basic wizard.
    */
-  public function testBasicWizard() {
+  public function testBasicWizard(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);

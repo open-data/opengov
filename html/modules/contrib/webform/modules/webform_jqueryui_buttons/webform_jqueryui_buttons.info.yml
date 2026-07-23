@@ -4,12 +4,12 @@ description: 'Provides a group of multiple buttons used for selecting a value. j
 package: 'Webform [DEPRECATED]'
 core_version_requirement: ^10.3 || ^11.0
 lifecycle: deprecated
-lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequently-asked-questions/what-to-do-about-deprecated-external-libraries-in-webform-6x'
+lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequently-asked-questions/what-to-do-about-deprecated-external-libraries-in-webform-6x#s-webform-jqueryui-buttons'
 dependencies:
   - 'webform:webform'
   - 'jquery_ui_button:jquery_ui_button'
 
-# Information added by Drupal.org packaging script on 2025-09-22
-version: '6.3.0-beta5'
+# Information added by Drupal.org packaging script on 2026-07-07
+version: '6.3.0'
 project: 'webform'
-datestamp: 1758581732
+datestamp: 1783438707

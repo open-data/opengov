@@ -12,7 +12,7 @@ class WebformParagraphsTokenTest extends WebformParagraphsTestBase {
   /**
    * Tests paragraphs.
    */
-  public function testParagraphsToken() {
+  public function testParagraphsToken(): void {
     $assert_session = $this->assertSession();
 
     $default_data = "textfield: 'default_data'

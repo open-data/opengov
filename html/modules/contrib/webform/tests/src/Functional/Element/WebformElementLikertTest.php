@@ -19,7 +19,7 @@ class WebformElementLikertTest extends WebformElementBrowserTestBase {
   /**
    * Test likert element.
    */
-  public function testLikertElement() {
+  public function testLikertElement(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('/webform/test_element_likert');
