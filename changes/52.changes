@@ -1,0 +1,9 @@
+Security updates for:
+
+- Drupal/core (SA-CORE-2026-005 to SA-CORE-2026-012)
+
+Contributed modules updates:
+
+- Redis
+- Webform
+- Drush (GuzzleHttp)
