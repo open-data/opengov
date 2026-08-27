@@ -455,6 +455,7 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -488,18 +489,18 @@ display:
           content: 'No results found.'
           tokenize: false
       sorts:
-        callback_received:
-          id: callback_received
+        created_at:
+          id: created_at
           table: gcnotify
-          field: callback_received
+          field: created_at
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: date
           order: DESC
           expose:
-            label: ''
-            field_identifier: callback_received
+            label: created_at
+            field_identifier: created_at
           exposed: false
           granularity: second
       arguments: {  }
@@ -530,13 +531,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -576,13 +570,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -620,15 +607,7 @@ display:
             required: false
             remember: false
             multiple: false
-            remember_roles:
-              authenticated: '0'
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
+            remember_roles: {  }
             placeholder: ''
           is_grouped: true
           group_info:
@@ -744,6 +723,7 @@ display:
             api_response: api_response
             id: id
             callback_received: callback_received
+            created_at: created_at
             environment: environment
             to: to
             status: status
@@ -766,6 +746,13 @@ display:
               empty_column: 0
               responsive: ''
             callback_received:
+              sortable: 1
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: 0
+              responsive: ''
+            created_at:
               sortable: 1
               default_sort_order: desc
               align: ''
@@ -814,7 +801,7 @@ display:
               separator: ''
               empty_column: 1
               responsive: ''
-          default: callback_received
+          default: created_at
           empty_table: 0
           responsive: 1
           bootstrap_styles:
@@ -967,15 +954,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        callback_received:
-          id: callback_received
+        created_at:
+          id: created_at
           table: gcnotify
-          field: callback_received
+          field: created_at
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: date
-          label: 'Callback Received'
+          label: 'Created date'
           exclude: false
           alter:
             alter_text: false
@@ -1348,13 +1335,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -1394,13 +1374,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -1440,13 +1413,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -1484,15 +1450,7 @@ display:
             required: false
             remember: false
             multiple: false
-            remember_roles:
-              authenticated: '0'
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
+            remember_roles: {  }
             placeholder: ''
           is_grouped: true
           group_info:

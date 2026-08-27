@@ -13,11 +13,9 @@ dependencies:
     - media.type.slideshow
     - node.type.app
     - node.type.article
-    - node.type.book
     - node.type.commitment
     - node.type.consultation
     - node.type.idea
-    - node.type.impact_story
     - node.type.landing_page
     - node.type.map
     - node.type.page
@@ -38,7 +36,6 @@ dependencies:
   module:
     - block
     - block_content
-    - book
     - content_moderation
     - content_translation
     - contextual
@@ -69,7 +66,6 @@ permissions:
   - 'administer block content'
   - 'administer block types'
   - 'administer blocks'
-  - 'administer book outlines'
   - 'administer menu'
   - 'administer taxonomy'
   - 'configure editable landing_page node layout overrides'
@@ -83,7 +79,6 @@ permissions:
   - 'create file media'
   - 'create idea content'
   - 'create image media'
-  - 'create impact_story content'
   - 'create landing_page content'
   - 'create media'
   - 'create page content'
@@ -107,7 +102,6 @@ permissions:
   - 'delete any commitment content'
   - 'delete any consultation content'
   - 'delete any idea content'
-  - 'delete any impact_story content'
   - 'delete any landing_page content'
   - 'delete any page content'
   - 'delete any theme_and_topic_page content'
@@ -122,7 +116,6 @@ permissions:
   - 'delete own files'
   - 'delete own idea content'
   - 'delete own image media'
-  - 'delete own impact_story content'
   - 'delete own landing_page content'
   - 'delete own page content'
   - 'delete own slideshow media'
@@ -130,13 +123,11 @@ permissions:
   - 'delete own webform content'
   - 'edit any app content'
   - 'edit any article content'
-  - 'edit any book content'
   - 'edit any commitment content'
   - 'edit any consultation content'
   - 'edit any file media'
   - 'edit any idea content'
   - 'edit any image media'
-  - 'edit any impact_story content'
   - 'edit any landing_page content'
   - 'edit any page content'
   - 'edit any slideshow media'
@@ -149,7 +140,6 @@ permissions:
   - 'edit own file media'
   - 'edit own idea content'
   - 'edit own image media'
-  - 'edit own impact_story content'
   - 'edit own landing_page content'
   - 'edit own page content'
   - 'edit own slideshow media'
@@ -168,11 +158,9 @@ permissions:
   - 'edit terms in subscriptions'
   - 'revert app revisions'
   - 'revert article revisions'
-  - 'revert book revisions'
   - 'revert commitment revisions'
   - 'revert consultation revisions'
   - 'revert idea revisions'
-  - 'revert impact_story revisions'
   - 'revert landing_page revisions'
   - 'revert map revisions'
   - 'revert page revisions'
@@ -194,7 +182,6 @@ permissions:
   - 'translate idea_freetags taxonomy_term'
   - 'translate idea_status taxonomy_term'
   - 'translate image media'
-  - 'translate impact_story node'
   - 'translate landing_page node'
   - 'translate menu_link_content'
   - 'translate page node'
@@ -218,7 +205,6 @@ permissions:
   - 'view commitment revisions'
   - 'view consultation revisions'
   - 'view idea revisions'
-  - 'view impact_story revisions'
   - 'view landing_page revisions'
   - 'view latest version'
   - 'view media'

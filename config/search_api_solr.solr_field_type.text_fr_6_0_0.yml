@@ -14,6 +14,7 @@ field_type:
   name: text_fr
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -86,11 +87,11 @@ field_type:
           language: French
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
-  storeOffsetsWithPositions: true
 unstemmed_field_type:
   name: text_unstemmed_fr
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -153,7 +154,6 @@ unstemmed_field_type:
           words: stopwords_fr.txt
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
-  storeOffsetsWithPositions: true
 spellcheck_field_type: null
 collated_field_type:
   name: collated_fr
@@ -574,5 +574,4 @@ text_files:
     "\uFB06" => "st"
   synonyms: |
     drupal, durpal
-  nouns: |
-
+  nouns: ''

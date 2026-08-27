@@ -8,3 +8,4 @@ name: 'Site Structure'
 vid: site_structure
 description: 'Hierarchical structure of Open Government.'
 weight: 0
+new_revision: false

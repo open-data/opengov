@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: fetch_from_api
 label: 'External API'
-revision: 1
+revision: true
 description: 'Fetch data from external apis (such as ckan api) to display contents'

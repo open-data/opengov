@@ -559,6 +559,7 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -675,8 +676,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -715,8 +714,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -797,6 +794,7 @@ display:
           empty_table: true
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
       query:
@@ -1632,8 +1630,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1672,8 +1668,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1720,13 +1714,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1773,13 +1760,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1821,13 +1801,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -2707,8 +2680,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2747,8 +2718,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2795,13 +2764,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -2848,13 +2810,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-              sd_moderator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''

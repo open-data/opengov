@@ -1,5 +1,6 @@
 _core:
   default_config_hash: zJS1GknUylh656CJSNXOupqKSqm6Xw200h1cq1eI970
+langcode: en
 enabled: true
 timeout: 1800
 max_timeout: 172800
@@ -7,8 +8,9 @@ padding: 60
 no_individual_logout_threshold: false
 role_logout: false
 redirect_url: /user/login
+include_destination: true
 no_dialog: true
-message: 'Your session is about to expire. Do you want to reset it?'
+message: 'We are about to log you out for inactivity. If we do, you will lose any unsaved work. Do you need more time?'
 inactivity_message: 'You have been logged out due to inactivity.'
 inactivity_message_type: status
 modal_width: 450
@@ -19,3 +21,5 @@ use_alt_logout_method: false
 use_watchdog: false
 dialog_title: 'Open Government - Government of Canada Alert'
 whitelisted_ip_addresses: ''
+cookie_secure: false
+cookie_httponly: false

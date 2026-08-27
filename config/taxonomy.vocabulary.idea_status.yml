@@ -6,3 +6,4 @@ name: 'Idea Status'
 vid: idea_status
 description: 'The status of an discussion for new custom tabulation.'
 weight: 0
+new_revision: false

@@ -12,7 +12,7 @@ third_party_settings:
 name: External
 type: external
 description: 'Placeholder nodes for external application such as datasets, visualizations, proactive disclosure etc.'
-help: ''
+help: null
 new_revision: true
 preview_mode: 1
 display_submitted: false

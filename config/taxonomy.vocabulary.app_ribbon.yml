@@ -6,3 +6,4 @@ name: 'App Ribbon'
 vid: app_ribbon
 description: 'The ribbon to use for each App.'
 weight: 0
+new_revision: false

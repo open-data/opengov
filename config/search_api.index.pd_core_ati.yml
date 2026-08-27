@@ -6,7 +6,6 @@ dependencies:
     - search_api.server.pd_core_ati
   module:
     - search_api_solr
-    - search_api
 third_party_settings:
   search_api_solr:
     finalize: false
@@ -165,6 +164,7 @@ processor_settings:
   add_url: {  }
   aggregated_field: {  }
   auto_aggregated_fulltext_field: {  }
+  custom_value: {  }
   entity_type: {  }
   language_with_fallback: {  }
   rendered_item: {  }

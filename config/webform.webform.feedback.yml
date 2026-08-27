@@ -3,7 +3,7 @@ langcode: en
 status: open
 dependencies:
   module:
-    - gcnotify
+    - og_ext_webform
 weight: 0
 open: null
 close: null
@@ -22,16 +22,15 @@ elements: |-
         Provide feedback on this dataset
       </h2>
       <details><summary class="bg-primary mrgn-bttm-md">Privacy Statement</summary>
-      
+
       <p>The collection and use of your personal information is authorized by the <em>Financial Administration Act</em>. Collection and use of your personal information for this site is in accordance with the federal <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a>. Your personal information is used to validate your use of GC datasets and for information on the development of the GC open data initiative, and may also be used to evaluate the effectiveness of the program in responding to client needs. In exceptional circumstances (e.g. network intrusion, or of individuals who make inappropriate remarks or threats, etc.), personal information may be disclosed without your consent pursuant to subsection 8(2) of the <em> Privacy Act</em>.</p>
-      
+
       <p>Any personal information that may be collected is described in the Standard Personal Information Banks entitled <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu914"> Public Communications, PSU 914</a>, and <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu938"> Outreach Activities, PSU 938</a>, which can be found in the Treasury Board of Canada Secretariat (TBS) publication: <a href="http://www.infosource.gc.ca/index-eng.asp"><em> InfoSource</em></a>.</p>
-      
+
       <p>Under the <em>Privacy Act</em>, you have the right of access to, and correction of, your personal information, if you have provided any. Note however, that to exercise either of these rights; you must make a request for access to your personal information. For more information about your right of access, please read about the <a href="http://www.infosource.gc.ca/emp/emp01-eng.asp">Access to Information Program</a>.</p>
-      
+
       <p>Any questions, comments, concerns or complaints you may have regarding this Statement, your privacy rights and the <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a> may be directed to the TBS Access to Information and Privacy Coordinator by email at <a href="mailto:atip.aiprp@tbs-sct.gc.ca"> atip.aiprp@tbs-sct.gc.ca</a> or by calling 613-946-6260 or 1-866-312-1511. If you are not satisfied with TBS' response to your privacy concern, you may wish to contact the Office of the Privacy Commissioner by email at <a href="mailto:info@priv.gc.ca">info@priv.gc.ca</a> or by telephone at 1-800-282-1376. You have the right to complain to the Office of the Privacy Commissioner about TBS' handling of your personal information.</p>
       </details>
-      
     '#format': rich_text
   user_name:
     '#type': textfield
@@ -108,7 +107,6 @@ elements: |-
     '#disabled': true
     '#readonly': true
     '#required': true
-    '#default_value': open-ouvert@tbs-sct.gc.ca
     '#private': true
     '#access_create_roles':
       - administrator
@@ -117,6 +115,9 @@ elements: |-
     '#access_view_roles':
       - administrator
     '#access': false
+  dataset_title:
+    '#type': hidden
+    '#title': Title
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
@@ -315,18 +316,6 @@ access:
     users: {  }
     permissions: {  }
 handlers:
-  gc_notify_email_handler:
-    id: gc_notify_email_handler
-    handler_id: gc_notify_email_handler
-    label: 'GC Notify Email Handler'
-    notes: ''
-    status: true
-    conditions:
-      enabled:
-        ':input[name="status"]':
-          value: helpdesk
-    weight: 0
-    settings: {  }
   notifications:
     id: email
     handler_id: notifications
@@ -370,6 +359,40 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      langcode: ''
       parameters: {  }
       debug: false
+  feedback_form_handler:
+    id: feedback_form_handler
+    handler_id: null
+    label: 'Feedback Form Handler'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: null
+    settings:
+      id: feedback_form_handler
+      handler_id: null
+      label: 'Feedback Form Handler'
+      notes: ''
+      status: true
+      conditions: {  }
+      weight: null
+      settings:
+        id: feedback_form_handler
+        handler_id: null
+        label: 'Feedback Form Handler'
+        notes: ''
+        status: true
+        conditions: {  }
+        weight: -50
+        settings:
+          id: feedback_form_handler
+          handler_id: feedback_form_handler
+          label: 'Feedback Form Handler'
+          notes: ''
+          status: true
+          conditions: {  }
+          weight: 0
+          settings: {  }
 variants: {  }

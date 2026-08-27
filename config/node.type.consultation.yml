@@ -12,7 +12,7 @@ third_party_settings:
 name: Consultation
 type: consultation
 description: 'Used to create public consultation and allows people to comment and rate content.'
-help: ''
+help: null
 new_revision: true
 preview_mode: 1
 display_submitted: false
