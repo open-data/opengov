@@ -23,17 +23,17 @@ elements: |
     '#title': Courriel
   requestor_category:
     '#title': 'Catégorie de demandeur'
-    '#description': 'Sélectionnez la catégorie qui vous décrit le mieux.'
+    '#description': '<p>Sélectionnez la catégorie qui vous décrit le mieux.</p>'
     '#options':
       1: 'Secteur universitaire'
       2: 'Secteur commercial (secteur privé)'
       3: Médias
       4: Organisation
       5: 'Membre du public'
-      6: 'Je refuse de m''identifier'
+      6: "Je refuse de m'identifier"
   delivery_method:
     '#title': 'Mode de livraison'
-    '#description': '<strong>S''il vous plaît noter</strong> L''institution devra retourner, dans la mesure du possible, les documents demandés dans le format choisi. Toutefois, il sera parfois impossible de le faire dû aux contraintes de la taille des documents électroniques.'
+    '#description': "<p><strong>S'il vous plaît noter</strong> L'institution devra retourner, dans la mesure du possible, les documents demandés dans le format choisi. Toutefois, il sera parfois impossible de le faire dû aux contraintes de la taille des documents électroniques.</p>"
     '#options':
       1: 'copie électronique'
       2: 'examen en personne'
@@ -48,28 +48,29 @@ elements: |
     '#title': 'Votre numéro de téléphone'
   additional_comments:
     '#title': 'Commentaires supplémentaires'
-    '#description': 'Expliquez la nature de votre requête ou la raison pour laquellle contactez cette organisation.'
+    '#description': '<p>Expliquez la nature de votre requête ou la raison pour laquellle contactez cette organisation.</p>'
   address_fieldset:
     '#title': Addresse
   preferred_language_of_correspondence:
     '#title': 'Langue de préférence pour communiquer avec vous'
   please_note:
-    '#markup': '<strong>S''il vous plaît noter:</strong>&nbsp;Institutions travailleront pour répondre à votre demande pour ce paquet précédemment publiée dès que possible.'
+    '#markup': "<p><strong>S'il vous plaît noter:</strong>&nbsp;Institutions travailleront pour répondre à votre demande pour ce paquet précédemment publiée dès que possible.</p>"
   consent:
-    '#title': 'Je déclare avoir lu et compris l''énoncé de confidentialité ci-dessus et je l''accepte.'
+    '#title': "Je déclare avoir lu et compris l'énoncé de confidentialité ci-dessus et je l'accepte."
   actions:
     '#title': 'Bouton(s) de soumission'
-title: "Demande informelle d'enregistrements AI précédemment publiés"
-description: '&quot;Informal Request for AI Records Previously Released&quot; webform.'
 settings:
+  form_close_message: '<p>Nous effectuons une maintenance programmée de 8h30 à 11h00, lundi le 24 mars, heure de l’Est.</p>'
   confirmation_title: "Demande informelle d'enregistrements AI précédemment publiés"
-  confirmation_message: "Votre demande informelle d'enregistrements AI précédemment publiés a été soumise."
+  confirmation_message: "<p>Votre demande informelle d'enregistrements AI précédemment publiés a été soumise.</p>"
+title: "Demande informelle d'enregistrements AI précédemment publiés"
+description: '<p>"Informal Request for AI Records Previously Released" webform.</p>'
 handlers:
   confirmation:
     label: Confirmation
     settings:
       from_name: _default
-      body: "<p>Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :</p>\r\n\r\n<p><strong>Soumis le :</strong> [webform_submission:created]</p>\r\n<p><strong>Proposé par :</strong> [webform_submission:user]</p>\r\n<p>Les valeurs soumises sont : </p>\r\n[webform_submission:values]\r\n"
+      body: '<p>Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :</p><p><strong>Soumis le :</strong> [webform_submission:created]</p><p><strong>Proposé par :</strong> [webform_submission:user]</p><p>Les valeurs soumises sont :</p><p>[webform_submission:values]</p>'
   notifications:
     settings:
       from_name: _default

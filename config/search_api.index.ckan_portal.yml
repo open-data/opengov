@@ -1,0 +1,102 @@
+uuid: adba3fd8-dcc1-4c86-af89-04dccad9c753
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.server.ckan_portal
+  module:
+    - search_api_solr
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    debug_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: gap
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    mlt:
+      mintf: 1
+      mindf: 1
+      maxdf: 0
+      maxdfpct: 0
+      minwl: 0
+      maxwl: 0
+      maxqt: 100
+      maxntp: 2000
+      boost: false
+      interestingTerms: none
+    term_modifiers:
+      slop: 3
+      fuzzy: 1
+      fuzzy_analyzer: true
+    advanced:
+      index_prefix: ''
+      collection: ''
+      timezone: ''
+    multilingual:
+      limit_to_content_language: false
+      include_language_independent: true
+      use_language_undefined_as_fallback_language: false
+      specific_languages:
+        en: '0'
+        fr: '0'
+      use_universal_collation: false
+id: ckan_portal
+name: 'CKAN Portal'
+description: 'Read-only search index for Solr ckan_portal'
+read_only: true
+field_settings:
+  extras_title_translated:
+    label: 'Extras title translated'
+    datasource_id: solr_document
+    property_path: extras_title_translated
+    type: text
+  id:
+    label: Id
+    datasource_id: solr_document
+    property_path: id
+    type: string
+  maintainer_email:
+    label: 'Maintainer email'
+    datasource_id: solr_document
+    property_path: maintainer_email
+    type: string
+datasource_settings:
+  solr_document:
+    id_field: id
+    request_handler: ''
+    default_query: '*:*'
+    label_field: ''
+    language_field: ''
+    url_field: ''
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  auto_aggregated_fulltext_field: {  }
+  custom_value: {  }
+  entity_type: {  }
+  language_with_fallback: {  }
+  rendered_item: {  }
+  solr_date_range: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  cron_limit: 50
+  delete_on_fail: true
+  index_directly: false
+  track_changes_in_references: false
+server: ckan_portal

@@ -1,6 +1,6 @@
 uuid: c2bf7f9e-9d2d-4065-92ad-046024d6bc2f
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - system.menu.main
@@ -12,7 +12,7 @@ _core:
   default_config_hash: GT_zYl7I9VAILH8OxMRe-VDvFadCDHxRcnmBc5xEmf0
 id: bootstrap_main_menu
 theme: bootstrap
-region: navigation_collapsible
+region: top_header
 weight: 10
 provider: null
 plugin: 'system_menu_block:main'

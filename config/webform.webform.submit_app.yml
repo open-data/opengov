@@ -30,7 +30,7 @@ elements: |-
   abstract:
     '#type': textarea
     '#title': Abstract
-    '#description': 'A brief narrative summary of the application. Please email application screenshots to <a href="mailto:open-ouvert@tbs-sct.gc.ca">open-ouvert@tbs-sct.gc.ca</a>.'
+    '#description': 'A brief narrative summary of the application. Please email application screenshots to <a href="mailto:PortalSupport-Soutienportail@tbs-sct.gc.ca">open-ouvert@tbs-sct.gc.ca</a>.'
     '#required': true
     '#counter_type': character
     '#counter_maximum': 2000
@@ -412,7 +412,7 @@ handlers:
     settings:
       states:
         - completed
-      to_mail: open-ouvert@tbs-sct.gc.ca
+      to_mail: PortalSupport-Soutienportail@tbs-sct.gc.ca
       to_options: {  }
       bcc_mail: ''
       bcc_options: {  }
@@ -438,6 +438,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      langcode: ''
       parameters: {  }
       debug: false
 variants: {  }

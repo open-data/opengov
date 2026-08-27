@@ -6,3 +6,4 @@ name: 'Commitment FreeTags'
 vid: commitment_freetags
 description: 'Commitment with "Free Tagging" support.'
 weight: 0
+new_revision: false

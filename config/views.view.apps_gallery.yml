@@ -436,6 +436,7 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -567,11 +568,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -616,11 +612,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -666,11 +657,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1370,11 +1356,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -1419,11 +1400,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1469,11 +1445,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1519,11 +1490,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
             reduce: false
           is_grouped: false
           group_info:

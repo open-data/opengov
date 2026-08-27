@@ -6,3 +6,4 @@ name: Subscriptions
 vid: subscriptions
 description: 'Subscriptions for Open Government.'
 weight: 0
+new_revision: false

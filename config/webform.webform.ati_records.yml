@@ -102,21 +102,20 @@ elements: |-
       <div>
       <div class="module-note">
       <p>This information is collected for statistical purposes and is published annually on the Government of Canada Info Source website. (<a href="http://www.infosource.gc.ca/" rel="external" target="_blank">www.infosource.gc.ca</a>)</p>
-      
+
       <p><strong>Academia:</strong> Those who are engaged in higher education and who require information for research purposes.</p>
-      
+
       <p><strong>Business (Private Sector):</strong> Those who are employed by the private sector, including lawyers and consultants, and who require information for their business or on behalf of another individual.</p>
-      
+
       <p><strong>Media:</strong> Those who are employed by a radio or television company, a newspaper or magazine, or any online newspaper or blog, etc., and who require information for media purposes.</p>
-      
+
       <p><strong>Organization:</strong> Those who are working or volunteering for an organization and who require information for that organization.</p>
-      
+
       <p><strong>Member of the Public:</strong>&nbsp;All other members of the public who require information for their own purposes.</p>
       </div>
       </div>
       </details>
       </div>
-      
     '#title_display': before
     '#options':
       1: Academia
@@ -162,6 +161,7 @@ elements: |-
   address_fieldset:
     '#type': webform_address
     '#title': Address
+    '#title_display': ''
     '#default_value':
       address: ''
       address_2: ''
@@ -213,10 +213,10 @@ settings:
   page_submit_path: ''
   page_confirm_path: ''
   page_theme_name: ''
-  form_title: both
+  form_title: source_entity_webform
   form_submit_once: false
   form_open_message: ''
-  form_close_message: ''
+  form_close_message: '<p>We are performing scheduled maintenance from 8:30am to 11:00am, Monday, March 24th, Eastern time.</p>'
   form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
@@ -447,6 +447,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: gcweb
+      langcode: ''
       parameters: {  }
       debug: false
   notifications:
@@ -489,6 +490,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      langcode: ''
       parameters: {  }
       debug: false
   solr_data_copy_handler:

@@ -11,7 +11,7 @@ third_party_settings:
 name: App
 type: app
 description: 'Applications (mobile/web) associated with Open Government.'
-help: ''
+help: null
 new_revision: true
 preview_mode: 1
 display_submitted: false

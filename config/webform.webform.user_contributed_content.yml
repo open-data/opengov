@@ -343,7 +343,7 @@ handlers:
         - completed
       to_mail: '[webform_submission:values:contact_email:raw]'
       to_options: {  }
-      bcc_mail: open-ouvert@tbs-sct.gc.ca
+      bcc_mail: PortalSupport-Soutienportail@tbs-sct.gc.ca
       bcc_options: {  }
       cc_mail: ''
       cc_options: {  }
@@ -365,6 +365,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      langcode: ''
       parameters: {  }
       debug: false
 variants: {  }

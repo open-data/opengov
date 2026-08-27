@@ -6,7 +6,6 @@ dependencies:
     - filter.format.rich_text
     - workflows.workflow.editorial
   module:
-    - book
     - content_moderation
     - content_translation
     - file
@@ -20,7 +19,6 @@ is_admin: null
 permissions:
   - 'access content overview'
   - 'access webform overview'
-  - 'administer book outlines'
   - 'administer webform submission'
   - 'create content translations'
   - 'delete content translations'

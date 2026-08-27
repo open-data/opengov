@@ -6,3 +6,4 @@ name: 'Dataset subjects'
 vid: app_categories
 description: 'Dataset subjects for help with organizing content as they appear on https://open.canada.ca/data/en/dataset'
 weight: 0
+new_revision: false

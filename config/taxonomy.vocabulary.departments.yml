@@ -6,3 +6,4 @@ name: Departments
 vid: departments
 description: 'Government of Canada departments listings.'
 weight: 0
+new_revision: false

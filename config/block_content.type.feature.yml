@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: feature
 label: Feature
-revision: 1
+revision: true
 description: "A feature block contains content, image and link.\r\nPreviously called Spotlight block. "

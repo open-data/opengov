@@ -6,3 +6,4 @@ name: 'App FreeTags'
 vid: app_freetags
 description: 'App with "Free Tagging" support.'
 weight: 0
+new_revision: false

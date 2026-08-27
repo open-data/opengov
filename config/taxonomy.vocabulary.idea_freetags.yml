@@ -6,3 +6,4 @@ name: 'Idea FreeTags'
 vid: idea_freetags
 description: 'Idea with "Free Tagging" support.'
 weight: 0
+new_revision: false

@@ -6,3 +6,4 @@ name: 'Device Formats'
 vid: device_formats
 description: 'Device formats for various types of applications.'
 weight: 0
+new_revision: false

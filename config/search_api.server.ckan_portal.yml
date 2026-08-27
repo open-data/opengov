@@ -1,4 +1,4 @@
-uuid: bb3940d7-8e4f-4982-a7ce-462d4b5a86b9
+uuid: e4c51f27-db97-40c4-b78e-4974df501edf
 langcode: en
 status: true
 dependencies:
@@ -29,12 +29,12 @@ dependencies:
     - search_api_solr.solr_request_handler.request_handler_tvrh_default_7_0_0
   module:
     - search_api_solr
-id: drupal_content
-name: 'Drupal: Content'
-description: 'Connector for Solr drupal_portal'
+id: ckan_portal
+name: 'CKAN Portal'
+description: 'Connector for Solr ckan_portal'
 backend: search_api_solr
 backend_config:
-  retrieve_data: false
+  retrieve_data: true
   highlight_data: false
   site_hash: true
   server_prefix: ''
@@ -46,19 +46,20 @@ backend_config:
     host: tbs-solrdb03.t1.tbs-sct.gc.ca
     port: 8983
     path: /
-    core: drupal_portal
+    core: ckan_portal
     timeout: 5
     index_timeout: 5
     optimize_timeout: 10
     finalize_timeout: 30
-    skip_schema_check: false
+    skip_schema_check: true
     solr_version: ''
     http_method: AUTO
     commit_within: 1000
     jmx: false
-    solr_install_dir: ../../..
+    jts: false
+    solr_install_dir: ''
   optimize: false
-  fallback_multiple: true
+  fallback_multiple: false
   disabled_field_types: {  }
   disabled_caches: {  }
   disabled_request_handlers:
@@ -69,3 +70,5 @@ backend_config:
     - request_dispatcher_httpcaching_default_7_0_0
   rows: 10
   index_single_documents_fallback_count: 10
+  index_empty_text_fields: false
+  suppress_missing_languages: false
