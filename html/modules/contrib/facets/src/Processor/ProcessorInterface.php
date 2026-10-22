@@ -113,9 +113,9 @@ interface ProcessorInterface extends ConfigurableInterface, DependentPluginInter
   public function getDescription();
 
   /**
-   * Checks if the facet is supported by this widget.
+   * Checks if the facet is supported by this processor.
    *
-   * Reasons why this would be unsupported can be chosen by the widget.
+   * Reasons why this would be unsupported can be chosen by the processor.
    *
    * @param \Drupal\facets\FacetInterface $facet
    *   The facet to check for.
@@ -128,7 +128,7 @@ interface ProcessorInterface extends ConfigurableInterface, DependentPluginInter
   public function supportsFacet(FacetInterface $facet);
 
   /**
-   * Picks the preferred query type for this widget.
+   * Picks the preferred query type for this processor.
    *
    * @return string|null
    *   The query type machine name to load or NULL to load the default query

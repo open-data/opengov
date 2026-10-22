@@ -29,15 +29,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class TrackingHelper implements TrackingHelperInterface {
 
-  public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
-    protected LanguageManagerInterface $languageManager,
-    protected EventDispatcherInterface $eventDispatcher,
-    protected FieldsHelperInterface $fieldsHelper,
-    #[Autowire(service: 'cache.default')]
-    protected CacheBackendInterface $cache
-  ) {}
-
   /**
    * {@inheritdoc}
    */
@@ -96,6 +87,15 @@ class TrackingHelper implements TrackingHelperInterface {
       }
     }
   }
+
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LanguageManagerInterface $languageManager,
+    protected EventDispatcherInterface $eventDispatcher,
+    protected FieldsHelperInterface $fieldsHelper,
+    #[Autowire(service: 'cache.default')]
+    protected CacheBackendInterface $cache,
+  ) {}
 
   /**
    * Analyzes the index fields and constructs a map of entity references.

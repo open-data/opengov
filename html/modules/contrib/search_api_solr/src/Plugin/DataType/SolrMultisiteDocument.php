@@ -2,19 +2,22 @@
 
 namespace Drupal\search_api_solr\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
+use Drupal\search_api_solr\TypedData\SolrDocumentDefinition;
+
 /**
  * Defines the "Solr document" data type.
  *
  * Instances of this class wrap Search API Item objects and allow to deal with
  * items based upon the Typed Data API.
- *
- * @DataType(
- *   id = "solr_multisite_document",
- *   label = @Translation("Solr multisite document"),
- *   description = @Translation("Records from a Solr multisite index."),
- *   definition_class = "\Drupal\search_api_solr\TypedData\SolrDocumentDefinition"
- * )
  */
+#[DataType(
+  id: 'solr_multisite_document',
+  label: new TranslatableMarkup('Solr multisite document'),
+  description: new TranslatableMarkup('Records from a Solr multisite index.'),
+  definition_class: SolrDocumentDefinition::class,
+)]
 class SolrMultisiteDocument extends SolrDocument {
 
   /**

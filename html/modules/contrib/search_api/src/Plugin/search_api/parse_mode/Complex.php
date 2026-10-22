@@ -242,7 +242,7 @@ class Complex extends ParseModePluginBase {
     // using the default conjunction, but force AND if any term contains
     // negation.
     if (count($terms) > 1) {
-      // Check if any term contains negation - if so, force AND conjunction
+      // Check if any term contains negation - if so, force AND conjunction.
       $conjunction = $this->containsNegation($terms) ? 'AND' : $this->getConjunction();
 
       $result = [

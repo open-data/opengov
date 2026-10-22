@@ -9,20 +9,19 @@
 
 namespace Solarium\Component\Result\TermVector;
 
+use Solarium\Component\Result\ComponentResultInterface;
+
 /**
  * Select component term vector result.
  */
-class Result implements \IteratorAggregate, \Countable, \ArrayAccess
+class Result implements ComponentResultInterface, \IteratorAggregate, \Countable, \ArrayAccess
 {
-    /**
-     * @var Warnings
-     */
-    protected $warnings;
+    protected ?Warnings $warnings;
 
     /**
      * @var Document[]
      */
-    protected $documents;
+    protected array $documents;
 
     /**
      * Constructor.

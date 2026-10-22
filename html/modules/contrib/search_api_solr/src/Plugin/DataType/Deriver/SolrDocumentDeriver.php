@@ -74,6 +74,9 @@ class SolrDocumentDeriver extends DeriverBase implements ContainerDeriverInterfa
     $indexes = $this->entityTypeManager->getStorage('search_api_index')->loadMultiple();
     /** @var \Drupal\search_api\Entity\Index $entity */
     foreach ($indexes as $index_id => $entity) {
+      if (!$entity->hasValidServer()) {
+        continue;
+      }
       $server = $entity->getServerInstance();
       if (
         $server &&

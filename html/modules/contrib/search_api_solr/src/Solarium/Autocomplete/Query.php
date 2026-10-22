@@ -27,9 +27,9 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface {
   /**
    * Default options.
    *
-   * @var array
+   * @var array<string, mixed>
    */
-  protected $options = [
+  protected array $options = [
     'handler' => 'autocomplete',
     'resultclass' => Result::class,
   ];
@@ -37,7 +37,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface {
   /**
    * Constructs a Query object.
    */
-  public function __construct($options = NULL) {
+  public function __construct(?array $options = NULL) {
     $this->componentTypes = [
       ComponentAwareQueryInterface::COMPONENT_SPELLCHECK => Spellcheck::class,
       ComponentAwareQueryInterface::COMPONENT_SUGGESTER => Suggester::class,

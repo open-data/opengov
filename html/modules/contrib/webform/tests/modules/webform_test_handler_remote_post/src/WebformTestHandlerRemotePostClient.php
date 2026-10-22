@@ -100,6 +100,9 @@ class WebformTestHandlerRemotePostClient extends Client {
           'options' => $options,
           'confirmation_number' => $random->name(20, TRUE),
         ];
+        if (isset($params['unsafe_markup'])) {
+          $json['unsafe_markup'] = $params['unsafe_markup'];
+        }
         return new Response($status, $headers, Json::encode($json));
     }
   }

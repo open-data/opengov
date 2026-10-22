@@ -9,12 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\Contrib\RowsOfMultiValueFields;
 use Drupal\search_api\Utility\CommandHelper;
-use Drush\Attributes\Argument;
-use Drush\Attributes\Command;
-use Drush\Attributes\Help;
-use Drush\Attributes\Usage;
-use Drush\Attributes\FieldLabels;
-use Drush\Attributes\DefaultFields;
+use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -117,11 +112,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    *
    * @default-fields id,name,serverName,typeNames,status,limit
    */
-  #[Command(name: 'search-api:list', aliases: ['sapi-l', 'search-api-list'])]
-  #[Help(description: 'Lists all search indexes.')]
-  #[Usage(name: 'drush search-api:list', description: 'List all search indexes.')]
-  #[FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'server' => 'Server ID', 'serverName' => 'Server name', 'types' => 'Type IDs', 'typeNames' => 'Type names', 'status' => 'Status', 'limit' => 'Limit'])]
-  #[DefaultFields(fields: ['id', 'name', 'serverName', 'typeNames', 'status', 'limit'])]
+  #[CLI\Command(name: 'search-api:list', aliases: ['sapi-l', 'search-api-list'])]
+  #[CLI\Help(description: 'Lists all search indexes.')]
+  #[CLI\Usage(name: 'drush search-api:list', description: 'List all search indexes.')]
+  #[CLI\FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'server' => 'Server ID', 'serverName' => 'Server name', 'types' => 'Type IDs', 'typeNames' => 'Type names', 'status' => 'Status', 'limit' => 'Limit'])]
+  #[CLI\DefaultFields(fields: ['id', 'name', 'serverName', 'typeNames', 'status', 'limit'])]
   public function listCommand(): RowsOfFields {
     $rows = $this->commandHelper->indexListCommand();
 
@@ -143,10 +138,10 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush search-api:enable node_index
    *   Enable the search index with the ID node_index.
    */
-  #[Command(name: 'search-api:enable', aliases: ['sapi-en', 'search-api-enable'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Enables one disabled search index.')]
-  #[Usage(name: 'drush search-api:enable node_index', description: 'Enable the search index with the ID node_index.')]
+  #[CLI\Command(name: 'search-api:enable', aliases: ['sapi-en', 'search-api-enable'])]
+  #[CLI\Help(description: 'Enables one disabled search index.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Usage(name: 'drush search-api:enable node_index', description: 'Enable the search index with the ID node_index.')]
   public function enable(string $indexId): void {
     $this->commandHelper->enableIndexCommand([$indexId]);
   }
@@ -165,10 +160,10 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-ena
    *   Alias to enable all disabled indexes.
    */
-  #[Command(name: 'search-api:enable-all', aliases: ['sapi-ena', 'search-api-enable-all'])]
-  #[Help(description: 'Enables all disabled search indexes.')]
-  #[Usage(name: 'drush search-api:enable-all', description: 'Enable all disabled indexes.')]
-  #[Usage(name: 'drush sapi-ena', description: 'Alias to enable all disabled indexes.')]
+  #[CLI\Command(name: 'search-api:enable-all', aliases: ['sapi-ena', 'search-api-enable-all'])]
+  #[CLI\Help(description: 'Enables all disabled search indexes.')]
+  #[CLI\Usage(name: 'drush search-api:enable-all', description: 'Enable all disabled indexes.')]
+  #[CLI\Usage(name: 'drush sapi-ena', description: 'Alias to enable all disabled indexes.')]
   public function enableAll(): void {
     $this->commandHelper->enableIndexCommand();
   }
@@ -190,11 +185,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-dis node_index
    *   Alias to disable the search index with the ID node_index.
    */
-  #[Command(name: 'search-api:disable', aliases: ['sapi-dis', 'search-api-disable'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Disables one or more enabled search indexes.')]
-  #[Usage(name: 'drush search-api:disable node_index', description: 'Disable the search index with the ID node_index.')]
-  #[Usage(name: 'drush sapi-dis node_index', description: 'Alias to disable the search index with the ID node_index.')]
+  #[CLI\Command(name: 'search-api:disable', aliases: ['sapi-dis', 'search-api-disable'])]
+  #[CLI\Help(description: 'Disables one or more enabled search indexes.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Usage(name: 'drush search-api:disable node_index', description: 'Disable the search index with the ID node_index.')]
+  #[CLI\Usage(name: 'drush sapi-dis node_index', description: 'Alias to disable the search index with the ID node_index.')]
   public function disable(string $indexId): void {
     $this->commandHelper->disableIndexCommand([$indexId]);
   }
@@ -213,10 +208,10 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-disa
    *   Alias to disable all enabled indexes.
    */
-  #[Command(name: 'search-api:disable-all', aliases: ['sapi-disa', 'search-api-disable-all'])]
-  #[Help(description: 'Disables all enabled search indexes.')]
-  #[Usage(name: 'drush search-api:disable-all', description: 'Disable all enabled indexes.')]
-  #[Usage(name: 'drush sapi-disa', description: 'Alias to disable all enabled indexes.')]
+  #[CLI\Command(name: 'search-api:disable-all', aliases: ['sapi-disa', 'search-api-disable-all'])]
+  #[CLI\Help(description: 'Disables all enabled search indexes.')]
+  #[CLI\Usage(name: 'drush search-api:disable-all', description: 'Disable all enabled indexes.')]
+  #[CLI\Usage(name: 'drush sapi-disa', description: 'Alias to disable all enabled indexes.')]
   public function disableAll(): void {
     $this->commandHelper->disableIndexCommand();
   }
@@ -250,13 +245,13 @@ final class SearchApiDrushCommands extends DrushCommands {
    *   indexed: Indexed
    *   total: Total
    */
-  #[Command(name: 'search-api:status', aliases: ['sapi-s', 'search-api-status'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Shows the status of one or all search indexes.')]
-  #[Usage(name: 'drush search-api:status', description: 'Show the status of all search indexes.')]
-  #[Usage(name: 'drush sapi-s', description: 'Alias to show the status of all search indexes.')]
-  #[Usage(name: 'drush sapi-s node_index', description: 'Show the status of the search index with the ID node_index.')]
-  #[FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'complete' => '% Complete', 'indexed' => 'Indexed', 'total' => 'Total'])]
+  #[CLI\Command(name: 'search-api:status', aliases: ['sapi-s', 'search-api-status'])]
+  #[CLI\Help(description: 'Shows the status of one or all search indexes.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Usage(name: 'drush search-api:status', description: 'Show the status of all search indexes.')]
+  #[CLI\Usage(name: 'drush sapi-s', description: 'Alias to show the status of all search indexes.')]
+  #[CLI\Usage(name: 'drush sapi-s node_index', description: 'Show the status of the search index with the ID node_index.')]
+  #[CLI\FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'complete' => '% Complete', 'indexed' => 'Indexed', 'total' => 'Total'])]
   public function status(?string $indexId = NULL): RowsOfFields {
     $rows = $this->commandHelper->indexStatusCommand([$indexId]);
     return new RowsOfFields($rows);
@@ -304,15 +299,18 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-i --time-limit=30 node_index
    *   Index items on the index with ID "node_index" for up to 30 seconds.
    */
-  #[Command(name: 'search-api:index', aliases: ['sapi-i', 'search-api-index'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Indexes items for one or all enabled search indexes.')]
-  #[Usage(name: 'drush search-api:index', description: 'Index all items for all enabled indexes.')]
-  #[Usage(name: 'drush sapi-i', description: 'Alias to index all items for all enabled indexes.')]
-  #[Usage(name: 'drush sapi-i node_index', description: 'Index all items for the index with the ID node_index.')]
-  #[Usage(name: 'drush sapi-i --limit=100 node_index', description: 'Index a maximum number of 100 items for the index with the ID node_index.')]
-  #[Usage(name: 'drush sapi-i --limit=100 --batch-size=10 node_index', description: 'Index a maximum number of 100 items (10 items per batch run) for the index with the ID node_index.')]
-  #[Usage(name: 'drush sapi-i --time-limit=30 node_index', description: 'Index items on the index with ID "node_index" for up to 30 seconds.')]
+  #[CLI\Command(name: 'search-api:index', aliases: ['sapi-i', 'search-api-index'])]
+  #[CLI\Help(description: 'Indexes items for one or all enabled search indexes.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Option(name: 'limit', description: 'The maximum number of items to index. Set to 0 to index all items. Defaults to 0 (index all).')]
+  #[CLI\Option(name: 'batch-size', description: 'The maximum number of items to index per batch run. Defaults to the "Cron batch size" setting of the index if omitted or explicitly set to 0. Set to a negative value to index all items in a single batch (not recommended).')]
+  #[CLI\Option(name: 'time-limit', description: 'The maximum number of seconds allowed to run indexing per index. Batches that were started before the limit was reached will run to completion and may therefore slightly exceed the limit. Defaults to -1 (no limit).')]
+  #[CLI\Usage(name: 'drush search-api:index', description: 'Index all items for all enabled indexes.')]
+  #[CLI\Usage(name: 'drush sapi-i', description: 'Alias to index all items for all enabled indexes.')]
+  #[CLI\Usage(name: 'drush sapi-i node_index', description: 'Index all items for the index with the ID node_index.')]
+  #[CLI\Usage(name: 'drush sapi-i --limit=100 node_index', description: 'Index a maximum number of 100 items for the index with the ID node_index.')]
+  #[CLI\Usage(name: 'drush sapi-i --limit=100 --batch-size=10 node_index', description: 'Index a maximum number of 100 items (10 items per batch run) for the index with the ID node_index.')]
+  #[CLI\Usage(name: 'drush sapi-i --time-limit=30 node_index', description: 'Index items on the index with ID "node_index" for up to 30 seconds.')]
   public function index(
     ?string $indexId = NULL,
     array $options = [
@@ -356,12 +354,13 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-r node_index
    *   Schedule the search index with the ID node_index for reindexing.
    */
-  #[Command(name: 'search-api:reset-tracker', aliases: ['search-api-mark-all', 'search-api-reindex', 'sapi-r', 'search-api-reset-tracker'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Marks one or all indexes for reindexing without deleting existing data.')]
-  #[Usage(name: 'drush search-api:reset-tracker', description: 'Schedule all search indexes for reindexing.')]
-  #[Usage(name: 'drush sapi-r', description: 'Alias to schedule all search indexes for reindexing .')]
-  #[Usage(name: 'drush sapi-r node_index', description: 'Schedule the search index with the ID node_index for reindexing.')]
+  #[CLI\Command(name: 'search-api:reset-tracker', aliases: ['search-api-mark-all', 'search-api-reindex', 'sapi-r', 'search-api-reset-tracker'])]
+  #[CLI\Help(description: 'Marks one or all indexes for reindexing without deleting existing data.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Option(name: 'entity-types', description: 'List of entity type ids to reset tracker for.')]
+  #[CLI\Usage(name: 'drush search-api:reset-tracker', description: 'Schedule all search indexes for reindexing.')]
+  #[CLI\Usage(name: 'drush sapi-r', description: 'Alias to schedule all search indexes for reindexing .')]
+  #[CLI\Usage(name: 'drush sapi-r node_index', description: 'Schedule the search index with the ID node_index for reindexing.')]
   public function resetTracker(?string $indexId = NULL, array $options = ['entity-types' => []]): void {
     $this->commandHelper->resetTrackerCommand([$indexId], $options['entity-types']);
   }
@@ -383,12 +382,12 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-rt node_index
    *   Rebuild the tracker of the search index with the ID node_index.
    */
-  #[Command(name: 'search-api:rebuild-tracker', aliases: ['sapi-rt', 'search-api-rebuild-tracker'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Rebuilds the trackers for one or all indexes.')]
-  #[Usage(name: 'drush search-api:rebuild-tracker', description: 'Rebuild the trackers of all search indexes.')]
-  #[Usage(name: 'drush sapi-rt', description: 'Alias for rebuilding the trackers of all search indexes.')]
-  #[Usage(name: 'drush sapi-rt node_index', description: 'Rebuild the tracker of the search index with the ID node_index.')]
+  #[CLI\Command(name: 'search-api:rebuild-tracker', aliases: ['sapi-rt', 'search-api-rebuild-tracker'])]
+  #[CLI\Help(description: 'Rebuilds the trackers for one or all indexes.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Usage(name: 'drush search-api:rebuild-tracker', description: 'Rebuild the trackers of all search indexes.')]
+  #[CLI\Usage(name: 'drush sapi-rt', description: 'Alias for rebuilding the trackers of all search indexes.')]
+  #[CLI\Usage(name: 'drush sapi-rt node_index', description: 'Rebuild the tracker of the search index with the ID node_index.')]
   public function rebuildTracker(?string $indexId = NULL): void {
     $this->commandHelper->rebuildTrackerCommand([$indexId]);
   }
@@ -414,12 +413,12 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-c node_index
    *   Clear the search index with the ID node_index.
    */
-  #[Command(name: 'search-api:clear', aliases: ['sapi-c', 'search-api-clear'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Help(description: 'Clears one or all search indexes and marks them for reindexing.')]
-  #[Usage(name: 'drush search-api:clear', description: 'Clear all search indexes.')]
-  #[Usage(name: 'drush sapi-c', description: 'Alias to clear all search indexes.')]
-  #[Usage(name: 'drush search-api:clear node_index', description: 'Clear the search index with the ID node_index.')]
+  #[CLI\Command(name: 'search-api:clear', aliases: ['sapi-c', 'search-api-clear'])]
+  #[CLI\Help(description: 'Clears one or all search indexes and marks them for reindexing.')]
+  #[CLI\Argument(name: 'indexId', description: 'The ID of the search index')]
+  #[CLI\Usage(name: 'drush search-api:clear', description: 'Clear all search indexes.')]
+  #[CLI\Usage(name: 'drush sapi-c', description: 'Alias to clear all search indexes.')]
+  #[CLI\Usage(name: 'drush search-api:clear node_index', description: 'Clear the search index with the ID node_index.')]
   public function clear(?string $indexId = NULL): void {
     $this->commandHelper->clearIndexCommand([$indexId]);
   }
@@ -453,13 +452,12 @@ final class SearchApiDrushCommands extends DrushCommands {
    *   id: ID
    *   label: Label
    */
-  #[Command(name: 'search-api:search', aliases: ['sapi-search', 'search-api-search'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Argument(name: 'keyword', description: 'The keyword(s) to search for')]
-  #[Help(description: 'Searches for a keyword or phrase in a given index.')]
-  #[Usage(name: 'drush search-api:search node_index title', description: 'Search for "title" inside the "node_index" index.')]
-  #[Usage(name: 'drush sapi-search node_index title', description: 'Alias to search for "title" inside the "node_index" index.')]
-  #[FieldLabels(labels: ['id' => 'ID', 'label' => 'Label'])]
+  #[CLI\Command(name: 'search-api:search', aliases: ['sapi-search', 'search-api-search'])]
+  #[CLI\Help(description: 'Searches for a keyword or phrase in a given index.')]
+  #[CLI\Argument(name: 'keyword', description: 'The keyword(s) to search for')]
+  #[CLI\Usage(name: 'drush search-api:search node_index title', description: 'Search for "title" inside the "node_index" index.')]
+  #[CLI\Usage(name: 'drush sapi-search node_index title', description: 'Alias to search for "title" inside the "node_index" index.')]
+  #[CLI\FieldLabels(labels: ['id' => 'ID', 'label' => 'Label'])]
   public function search(string $indexId, string $keyword): RowsOfFields {
     $rows = $this->commandHelper->searchIndexCommand($indexId, $keyword);
 
@@ -488,11 +486,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    *   name: Name
    *   status: Status
    */
-  #[Command(name: 'search-api:server-list', aliases: ['sapi-sl', 'search-api-server-list'])]
-  #[Help(description: 'Lists all search servers.')]
-  #[Usage(name: 'drush search-api:server-list', description: 'List all search servers.')]
-  #[Usage(name: 'drush sapi-sl', description: 'Alias to list all search servers.')]
-  #[FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'status' => 'Status'])]
+  #[CLI\Command(name: 'search-api:server-list', aliases: ['sapi-sl', 'search-api-server-list'])]
+  #[CLI\Help(description: 'Lists all search servers.')]
+  #[CLI\Usage(name: 'drush search-api:server-list', description: 'List all search servers.')]
+  #[CLI\Usage(name: 'drush sapi-sl', description: 'Alias to list all search servers.')]
+  #[CLI\FieldLabels(labels: ['id' => 'ID', 'name' => 'Name', 'status' => 'Status'])]
   public function serverList(): RowsOfFields {
     $rows = $this->commandHelper->serverListCommand();
 
@@ -518,11 +516,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-se my_solr_server
    *   Alias to enable the my_solr_server search server.
    */
-  #[Command(name: 'search-api:server-enable', aliases: ['sapi-se', 'search-api-server-enable'])]
-  #[Argument(name: 'serverId', description: 'The ID of the search server')]
-  #[Help(description: 'Enables a search server.')]
-  #[Usage(name: 'drush search-api:server-enable my_solr_server', description: 'Enable the my_solr_server search server.')]
-  #[Usage(name: 'drush sapi-se my_solr_server', description: 'Alias to enable the my_solr_server search server.')]
+  #[CLI\Command(name: 'search-api:server-enable', aliases: ['sapi-se', 'search-api-server-enable'])]
+  #[CLI\Help(description: 'Enables a search server.')]
+  #[CLI\Argument(name: 'serverId', description: 'The ID of the search server')]
+  #[CLI\Usage(name: 'drush search-api:server-enable my_solr_server', description: 'Enable the my_solr_server search server.')]
+  #[CLI\Usage(name: 'drush sapi-se my_solr_server', description: 'Alias to enable the my_solr_server search server.')]
   public function serverEnable(string $serverId): void {
     $this->commandHelper->enableServerCommand($serverId);
   }
@@ -546,11 +544,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-sd
    *   Alias to disable the my_solr_server search server.
    */
-  #[Command(name: 'search-api:server-disable', aliases: ['sapi-sd', 'search-api-server-disable'])]
-  #[Argument(name: 'serverId', description: 'The ID of the search server')]
-  #[Help(description: 'Disables a search server.')]
-  #[Usage(name: 'drush search-api:server-disable', description: 'Disable the my_solr_server search server.')]
-  #[Usage(name: 'drush sapi-sd', description: 'Alias to disable the my_solr_server search server.')]
+  #[CLI\Command(name: 'search-api:server-disable', aliases: ['sapi-sd', 'search-api-server-disable'])]
+  #[CLI\Help(description: 'Disables a search server.')]
+  #[CLI\Argument(name: 'serverId', description: 'The ID of the search server')]
+  #[CLI\Usage(name: 'drush search-api:server-disable', description: 'Disable the my_solr_server search server.')]
+  #[CLI\Usage(name: 'drush sapi-sd', description: 'Alias to disable the my_solr_server search server.')]
   public function serverDisable(string $serverId): void {
     $this->commandHelper->disableServerCommand($serverId);
   }
@@ -575,11 +573,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    * @usage drush sapi-sc my_solr_server
    *   Alias to clear all search indexes on the search server my_solr_server.
    */
-  #[Command(name: 'search-api:server-clear', aliases: ['sapi-sc', 'search-api-server-clear'])]
-  #[Argument(name: 'serverId', description: 'The ID of the search server')]
-  #[Help(description: 'Clears all search indexes on the given search server.')]
-  #[Usage(name: 'drush search-api:server-clear my_solr_server', description: 'Clear all search indexes on the search server my_solr_server.')]
-  #[Usage(name: 'drush sapi-sc my_solr_server', description: 'Alias to clear all search indexes on the search server my_solr_server.')]
+  #[CLI\Command(name: 'search-api:server-clear', aliases: ['sapi-sc', 'search-api-server-clear'])]
+  #[CLI\Help(description: 'Clears all search indexes on the given search server.')]
+  #[CLI\Argument(name: 'serverId', description: 'The ID of the search server')]
+  #[CLI\Usage(name: 'drush search-api:server-clear my_solr_server', description: 'Clear all search indexes on the search server my_solr_server.')]
+  #[CLI\Usage(name: 'drush sapi-sc my_solr_server', description: 'Alias to clear all search indexes on the search server my_solr_server.')]
   public function serverClear(string $serverId): void {
     $this->commandHelper->clearServerCommand($serverId);
   }
@@ -604,12 +602,11 @@ final class SearchApiDrushCommands extends DrushCommands {
    *   Alias to set the default_node_index index to used the my_solr_server
    *   server.
    */
-  #[Command(name: 'search-api:set-index-server', aliases: ['sapi-sis', 'search-api-set-index-server'])]
-  #[Argument(name: 'indexId', description: 'The ID of the search index')]
-  #[Argument(name: 'serverId', description: 'The ID of the search server')]
-  #[Help(description: 'Sets the search server used by a given index.')]
-  #[Usage(name: 'drush search-api:set-index-server default_node_index my_solr_server', description: 'Set the default_node_index index to used the my_solr_server server.')]
-  #[Usage(name: 'drush sapi-sis default_node_index my_solr_server', description: 'Alias to set the default_node_index index to used the my_solr_server server.')]
+  #[CLI\Command(name: 'search-api:set-index-server', aliases: ['sapi-sis', 'search-api-set-index-server'])]
+  #[CLI\Help(description: 'Sets the search server used by a given index.')]
+  #[CLI\Argument(name: 'serverId', description: 'The ID of the search server')]
+  #[CLI\Usage(name: 'drush search-api:set-index-server default_node_index my_solr_server', description: 'Set the default_node_index index to used the my_solr_server server.')]
+  #[CLI\Usage(name: 'drush sapi-sis default_node_index my_solr_server', description: 'Alias to set the default_node_index index to used the my_solr_server server.')]
   public function setIndexServer(string $indexId, string $serverId): void {
     $this->commandHelper->setIndexServerCommand($indexId, $serverId);
   }

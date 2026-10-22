@@ -9,17 +9,19 @@
 
 namespace Solarium\Component\Result\Stats;
 
+use Solarium\Component\Result\ComponentResultInterface;
+
 /**
  * Select component stats result.
  */
-class Stats implements \IteratorAggregate, \Countable
+class Stats implements ComponentResultInterface, \IteratorAggregate, \Countable
 {
     /**
      * Result array.
      *
      * @var Result[]
      */
-    protected $results;
+    protected array $results;
 
     /**
      * Constructor.
@@ -47,7 +49,7 @@ class Stats implements \IteratorAggregate, \Countable
      * @param string $key
      * @param Result $result
      *
-     * @return $this
+     * @return self Provides fluent interface
      */
     public function setResult(string $key, Result $result): self
     {
@@ -61,7 +63,7 @@ class Stats implements \IteratorAggregate, \Countable
      *
      * @param string $key
      *
-     * @return $this
+     * @return self Provides fluent interface
      */
     public function removeResult(string $key): self
     {

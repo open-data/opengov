@@ -67,9 +67,13 @@ class SearchApiMoreLikeThis extends SearchApiStandard {
    */
   public function query($group_by = FALSE) {
     try {
-      $server = $this->query->getIndex()->getServerInstance();
-      if (!$server->supportsFeature('search_api_mlt')) {
-        $backend_id = $server->getBackendId();
+      $index = $this->query->getIndex();
+      if (!$index->status()) {
+        return;
+      }
+      $server = $index->getServerInstanceIfAvailable();
+      if (!$server?->supportsFeature('search_api_mlt')) {
+        $backend_id = $server?->getBackendId();
         $this->getLogger()->error('The search backend "@backend_id" does not offer "More like this" functionality.',
           ['@backend_id' => $backend_id]);
         $this->query->abort();

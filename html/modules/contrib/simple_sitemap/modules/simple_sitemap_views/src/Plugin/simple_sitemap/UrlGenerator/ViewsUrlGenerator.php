@@ -246,7 +246,7 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
    * @param array $args
    *   Array of arguments.
    *
-   * @throws \UnexpectedValueException.
+   * @throws \UnexpectedValueException
    *   If this is a URI with no corresponding route.
    */
   protected function cleanRouteParameters(Url $url, array $args): void {

@@ -31,22 +31,23 @@ class HideInactiveSiblingsProcessor extends ProcessorPluginBase implements Build
     $active_items = $facet->getActiveItems();
 
     if ($facet->getUseHierarchy()) {
+      $hierarchy_active_items = $this->filterHierarchyValues($active_items);
       $hierarchy = $facet->getHierarchyInstance();
       $facet->addCacheableDependency($hierarchy);
 
       if (!$facet->getKeepHierarchyParentsActive()) {
         $parents_of_active_items = [];
-        foreach ($active_items as $active_item) {
+        foreach ($hierarchy_active_items as $active_item) {
           $parents_of_active_items = array_merge($parents_of_active_items, $hierarchy->getParentIds($active_item));
         }
-        $active_items = array_unique(array_merge($active_items, $parents_of_active_items));
+        $hierarchy_active_items = array_unique(array_merge($hierarchy_active_items, $parents_of_active_items));
       }
 
-      $siblings = $hierarchy->getSiblingIds($active_items);
+      $siblings = $hierarchy->getSiblingIds($hierarchy_active_items);
       $siblings_and_their_childs = array_merge($siblings, array_merge(...array_values($hierarchy->getChildIds($siblings))));
 
       foreach ($facet_results as $id => $result) {
-        if (in_array($result->getRawValue(), $siblings_and_their_childs, FALSE) && !$result->isActive()) {
+        if (in_array($result->getRawValue(), $siblings_and_their_childs, FALSE) && !$result->isActive() && !$result->hasActiveChildren()) {
           unset($results[$id]);
         }
       }
@@ -63,10 +64,31 @@ class HideInactiveSiblingsProcessor extends ProcessorPluginBase implements Build
   }
 
   /**
+   * Filters active items to values that can be resolved by hierarchy plugins.
+   *
+   * Range facets store active values as arrays. Taxonomy hierarchy expects
+   * scalar term IDs, so passing arrays through can crash when the hierarchy
+   * plugin uses the active value as a cache key.
+   *
+   * @param array $active_items
+   *   Active facet values.
+   *
+   * @return array
+   *   Active values that are safe to pass to hierarchy plugins.
+   */
+  protected function filterHierarchyValues(array $active_items): array {
+    return array_values(array_filter($active_items, static fn($item): bool => \is_scalar($item)));
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function supportsFacet(FacetInterface $facet) {
-    return $facet->getFacetType() == 'facet_entity';
+    if (!method_exists($facet, 'getFacetType')) {
+      return FALSE;
+    }
+
+    return in_array($facet->getFacetType(), ['facet_entity', 'facets_exposed_filter'], TRUE);
   }
 
 }

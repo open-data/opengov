@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Controller;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
@@ -124,9 +125,9 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
    *
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  public function getDefaultOperations(EntityInterface $solr_entity) {
+  public function getDefaultOperations(EntityInterface $solr_entity, ?CacheableMetadata $cacheability = NULL) {
     /** @var \Drupal\search_api_solr\SolrConfigInterface $solr_entity */
-    $operations = parent::getDefaultOperations($solr_entity);
+    $operations = parent::getDefaultOperations($solr_entity, $cacheability);
     unset($operations['delete']);
 
     if (!$solr_entity->isDisabledOnServer() && $solr_entity->access('view') && $solr_entity->hasLinkTemplate('disable-for-server')) {
@@ -153,11 +154,13 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
    */
   abstract protected function getDisabledEntities(): array;
 
-  /** @var \Drupal\search_api_solr\Entity\AbstractSolrEntity[] $entities /**
+  /**
+   * Loads all Solr entities for the current list context.
+   *
    * {@inheritdoc}
    *
    * @return \Drupal\search_api_solr\Entity\AbstractSolrEntity[]
-   *  Solr entities.
+   *   Solr entities.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
@@ -181,7 +184,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
           throw new SearchApiSolrException();
         }
       }
-      catch (SearchApiSolrException $e) {
+      catch (SearchApiSolrException) {
         $operator = '<=';
         $warning = TRUE;
       }
@@ -250,7 +253,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
           return $version;
         }, $solr_version);
 
-        \Drupal::messenger()->addWarning(
+        $this->messenger()->addWarning(
           $this->t(
             'Unable to reach the Solr server (yet). Therefore the lowest supported Solr version %version is assumed. Once the connection works and the real Solr version could be detected it might be necessary to deploy an adjusted config to the server to get the best search results. If the server does not start using the downloadable config, you should edit the server and manually set the Solr version override temporarily that fits your server best and download the config again. But it is recommended to remove this override once the server is running.',
             ['%version' => $this->assumedMinimumVersion])

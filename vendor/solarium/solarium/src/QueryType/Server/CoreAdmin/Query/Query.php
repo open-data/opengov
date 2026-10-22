@@ -24,7 +24,6 @@ use Solarium\QueryType\Server\CoreAdmin\Query\Action\Status;
 use Solarium\QueryType\Server\CoreAdmin\Query\Action\Swap;
 use Solarium\QueryType\Server\CoreAdmin\Query\Action\Unload;
 use Solarium\QueryType\Server\CoreAdmin\ResponseParser;
-use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use Solarium\QueryType\Server\Query\RequestBuilder;
 
 /**
@@ -86,10 +85,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Action types.
-     *
-     * @var array
      */
-    protected $actionTypes = [
+    protected array $actionTypes = [
         self::ACTION_CREATE => Create::class,
         self::ACTION_MERGE_INDEXES => MergeIndexes::class,
         self::ACTION_RELOAD => Reload::class,
@@ -104,10 +101,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'admin/cores',
     ];
 
@@ -144,9 +139,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Create|ActionInterface
+     * @return Create
      */
-    public function createCreate($options = []): Create
+    public function createCreate(array $options = []): Create
     {
         return $this->createAction(self::ACTION_CREATE, $options);
     }
@@ -154,9 +149,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return MergeIndexes|ActionInterface
+     * @return MergeIndexes
      */
-    public function createMergeIndexes($options = []): MergeIndexes
+    public function createMergeIndexes(array $options = []): MergeIndexes
     {
         return $this->createAction(self::ACTION_MERGE_INDEXES, $options);
     }
@@ -164,9 +159,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Reload|ActionInterface
+     * @return Reload
      */
-    public function createReload($options = []): Reload
+    public function createReload(array $options = []): Reload
     {
         return $this->createAction(self::ACTION_RELOAD, $options);
     }
@@ -174,9 +169,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Rename|ActionInterface
+     * @return Rename
      */
-    public function createRename($options = []): Rename
+    public function createRename(array $options = []): Rename
     {
         return $this->createAction(self::ACTION_RENAME, $options);
     }
@@ -184,9 +179,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return RequestRecovery|ActionInterface
+     * @return RequestRecovery
      */
-    public function createRequestRecovery($options = []): RequestRecovery
+    public function createRequestRecovery(array $options = []): RequestRecovery
     {
         return $this->createAction(self::ACTION_REQUEST_RECOVERY, $options);
     }
@@ -194,9 +189,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return RequestStatus|ActionInterface
+     * @return RequestStatus
      */
-    public function createRequestStatus($options = []): RequestStatus
+    public function createRequestStatus(array $options = []): RequestStatus
     {
         return $this->createAction(self::ACTION_REQUEST_STATUS, $options);
     }
@@ -204,9 +199,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Split|ActionInterface
+     * @return Split
      */
-    public function createSplit($options = []): Split
+    public function createSplit(array $options = []): Split
     {
         return $this->createAction(self::ACTION_SPLIT, $options);
     }
@@ -214,9 +209,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Status|ActionInterface
+     * @return Status
      */
-    public function createStatus($options = []): Status
+    public function createStatus(array $options = []): Status
     {
         return $this->createAction(self::ACTION_STATUS, $options);
     }
@@ -224,9 +219,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Swap|ActionInterface
+     * @return Swap
      */
-    public function createSwap($options = []): Swap
+    public function createSwap(array $options = []): Swap
     {
         return $this->createAction(self::ACTION_SWAP, $options);
     }
@@ -234,9 +229,9 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Unload|ActionInterface
+     * @return Unload
      */
-    public function createUnload($options = []): Unload
+    public function createUnload(array $options = []): Unload
     {
         return $this->createAction(self::ACTION_UNLOAD, $options);
     }

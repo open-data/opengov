@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api_solr_legacy_test\Plugin\SolrConnector;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api_solr\Attribute\SolrConnector;
 use Drupal\search_api_solr\Utility\Utility;
 use Drupal\search_api_solr_legacy\Plugin\SolrConnector\Solr36Connector;
 use Solarium\Core\Client\Endpoint;
@@ -12,13 +14,12 @@ use Solarium\Core\Query\Result\Result;
 
 /**
  * Solr 36 test connector.
- *
- * @SolrConnector(
- *   id = "solr_36_test",
- *   label = @Translation("Solr 3.6 Test"),
- *   description = @Translation("Index items using a Solr 3.6 server.")
- * )
  */
+#[SolrConnector(
+  id: 'solr_36_test',
+  label: new TranslatableMarkup('Solr 3.6 Test'),
+  description: new TranslatableMarkup('Index items using a Solr 3.6 server.'),
+)]
 class Solr36TestConnector extends Solr36Connector {
 
   /**

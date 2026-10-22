@@ -16,9 +16,9 @@ backend_config:
     port: 8983
     path: /
     core: drupal
-    timeout: 5
-    index_timeout: 20
-    optimize_timeout: 5
+    timeout: 30
+    index_timeout: 60
+    optimize_timeout: 10
     finalize_timeout: 30
     solr_version: ''
     http_method: AUTO

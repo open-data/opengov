@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Form\IndexForm;
 use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -19,6 +20,11 @@ class IndexSolrMultisiteCloneForm extends IndexForm {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function form(array $form, FormStateInterface $form_state) {
+    /** @var \Drupal\search_api\IndexInterface $index */
+    $index = $this->entity;
+    $target_index = '';
+    $target_index_machine_name = '';
+
     // If the form is being rebuilt, rebuild the entity with the current form
     // values.
     if ($form_state->isRebuilding()) {
@@ -32,12 +38,13 @@ class IndexSolrMultisiteCloneForm extends IndexForm {
     }
 
     if (!$this->entity->isNew()) {
+      assert($this->entity instanceof IndexInterface);
+
       /** @var \Drupal\search_api\ServerInterface $server */
       $server = $this->entity->getServerInstance();
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $server->getBackend();
 
-      /** @var \Drupal\search_api\IndexInterface $index */
       $index = $this->entity->createDuplicate();
 
       $fields = $index->getFields();

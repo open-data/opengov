@@ -2,10 +2,13 @@
 
 namespace Drupal\search_api_solr\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\Exception\MissingDataException;
 use Drupal\Core\TypedData\TypedData;
 use Drupal\search_api\Item\ItemInterface;
+use Drupal\search_api_solr\Plugin\DataType\Deriver\SolrDocumentDeriver;
 use Drupal\search_api_solr\TypedData\SolrDocumentDefinition;
 use Solarium\Core\Query\DocumentInterface;
 
@@ -14,15 +17,13 @@ use Solarium\Core\Query\DocumentInterface;
  *
  * Instances of this class wrap Search API Item objects and allow to deal with
  * items based upon the Typed Data API.
- *
- * @DataType(
- *   id = "solr_document",
- *   label = @Translation("Solr document"),
- *   description = @Translation("Records from a Solr index."),
- *   deriver = "\Drupal\search_api_solr\Plugin\DataType\Deriver\SolrDocumentDeriver",
- *   definition_class = "\Drupal\search_api_solr\TypedData\SolrDocumentDefinition"
- * )
  */
+#[DataType(
+  id: 'solr_document',
+  label: new TranslatableMarkup('Record from a Solr index'),
+  definition_class: SolrDocumentDefinition::class,
+  deriver: SolrDocumentDeriver::class
+)]
 class SolrDocument extends TypedData implements \IteratorAggregate, ComplexDataInterface {
 
   /**
@@ -49,7 +50,7 @@ class SolrDocument extends TypedData implements \IteratorAggregate, ComplexDataI
   /**
    * Creates an instance wrapping the given Item.
    *
-   * @param \Drupal\search_api\Item\ItemInterface|null $item
+   * @param \Drupal\search_api\Item\ItemInterface $item
    *   The Item object to wrap.
    *
    * @return static
@@ -138,14 +139,34 @@ class SolrDocument extends TypedData implements \IteratorAggregate, ComplexDataI
    * {@inheritdoc}
    */
   public function getProperties($include_computed = FALSE) {
-    // @todo Implement this.
+    if (!isset($this->item)) {
+      return [];
+    }
+
+    $properties = [];
+    /** @var \Drupal\search_api_solr\Plugin\DataType\SolrField $plugin */
+    $plugin = \Drupal::typedDataManager()->getDefinition($this->solrField)['class'];
+    $field_manager = \Drupal::getContainer()->get($this->solrField . '.manager');
+    $fields = $field_manager->getFieldDefinitions($this->item->getIndex());
+
+    foreach ($fields as $property_name => $definition) {
+      $properties[$property_name] = $plugin::createInstance($definition, $property_name, $this);
+    }
+
+    return $properties;
   }
 
   /**
    * {@inheritdoc}
    */
   public function toArray() {
-    // @todo Implement this.
+    $values = [];
+
+    foreach ($this->getProperties() as $property_name => $property) {
+      $values[$property_name] = $property->getValue();
+    }
+
+    return $values;
   }
 
   /**
@@ -167,7 +188,7 @@ class SolrDocument extends TypedData implements \IteratorAggregate, ComplexDataI
    * {@inheritdoc}
    */
   public function getIterator(): \Traversable {
-    return isset($this->item) ? $this->item->getIterator() : new \ArrayIterator([]);
+    return new \ArrayIterator($this->toArray());
   }
 
 }

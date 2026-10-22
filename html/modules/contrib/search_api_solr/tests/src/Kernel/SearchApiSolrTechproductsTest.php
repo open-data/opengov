@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:ignoreFile SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace Drupal\Tests\search_api_solr\Kernel;
 
 /**
@@ -37,7 +39,7 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     try {
       $this->firstSearch();
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 
@@ -118,7 +120,7 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     try {
       $this->firstSearch();
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 
@@ -196,9 +198,9 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
    * Executes a test search on the Solr server and assert the response data.
    */
   protected function firstSearch() {
-    /** @var \Drupal\search_api\Query\ResultSet $result */
     $query = $this->buildSearch(NULL, [], NULL, FALSE)
       ->sort('search_api_id');
+    /** @var \Drupal\search_api\Query\ResultSet $result */
     $result = $query->execute();
     $this->assertEquals([
       "solr_document/0579B002",

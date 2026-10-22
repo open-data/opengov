@@ -3,6 +3,8 @@
 namespace Drupal\search_api_solr\Plugin\search_api\processor;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface;
 use Drupal\search_api\Processor\FieldsProcessorPluginBase;
 use Drupal\search_api\Query\ResultSetInterface;
@@ -15,18 +17,17 @@ use Drupal\search_api_solr\SolrProcessorInterface;
  *
  * (see https://issues.apache.org/jira/browse/SOLR-10894 and
  * https://mail-archives.apache.org/mod_mbox/lucene-solr-user/201805.mbox/%3cCAE4tqLPXMDA8y3hzXXkJUtTm6jvUX8XZ0H6P5itcFPgmr1bQZA@mail.gmail.com%3e)
- *
- * @SearchApiProcessor(
- *   id = "double_quote_workaround",
- *   label = @Translation("Double Quote Workaround"),
- *   description = @Translation("Replaces double quotes in field values and query to work around a bug in Solr streaming expressions."),
- *   stages = {
- *     "preprocess_index" = -15,
- *     "preprocess_query" = -15,
- *     "postprocess_query" = 0,
- *   },
- * )
  */
+#[SearchApiProcessor(
+  id: 'double_quote_workaround',
+  label: new TranslatableMarkup('Double Quote Workaround'),
+  description: new TranslatableMarkup('Replaces double quotes in field values and query to work around a bug in Solr streaming expressions.'),
+  stages: [
+    'preprocess_index' => -15,
+    'preprocess_query' => -15,
+    'postprocess_query' => 0,
+  ],
+)]
 class DoubleQuoteWorkaround extends FieldsProcessorPluginBase implements SolrProcessorInterface {
 
   /**

@@ -5,37 +5,41 @@
  * Custom functions for Views Bootstrap.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\views_bootstrap\Hook\ViewsBootstrapHooks;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\views_bootstrap\ViewsBootstrap;
 
 /**
  * Implements hook_help().
  */
+#[LegacyHook]
 function views_bootstrap_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
-    case 'help.page.views_bootstrap':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('The <a href="https://www.drupal.org/project/views_bootstrap">Views Bootstrap module</a> adds styles to Views to output the results of a view as several common <a href="http://getbootstrap.com/components/">Twitter Bootstrap</a> components.') . '</p>';
-      $output .= '<h3>' . t('Uses') . '</h3>';
-      $output .= '<p>' . t('<a href="/admin/structure/views/add">Create a view</a> using one of the following styles:') . '</p>';
-      $output .= '<ul>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/components/card/">Card</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/layout/grid/">Grid</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/content/tables/">Tables</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/components/media-object/">Media object</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/components/collapse/#accordion-example">Accordion</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/components/carousel/">Carousel</a>') . '</li>';
-      $output .= '<li>' . t('<a href="https://getbootstrap.com/docs/4.2/components/list-group/">List group</a>') . '</li>';
-      $output .= '<ul>';
-
-      return $output;
-  }
+  return \Drupal::service(ViewsBootstrapHooks::class)->help($route_name, $route_match);
 }
 
 /**
  * Implements hook_theme().
  */
+#[LegacyHook]
 function views_bootstrap_theme() {
-  return ViewsBootstrap::getThemeHooks();
+  return \Drupal::service(ViewsBootstrapHooks::class)->theme();
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ *
+ * Add views styles template suggestions.
+ *
+ * {@inheritdoc}
+ */
+function views_bootstrap_theme_suggestions_alter(array &$suggestions, array &$variables, $hook): void {
+  if (isset($variables['view']) && str_starts_with($hook, 'views_bootstrap_')) {
+    $view = $variables['view'];
+    $style_name = $view->style_plugin->getPluginId();
+
+    // Add custom theme suggestions.
+    $suggestions[] = $style_name . '__' . $view->id();
+    $suggestions[] = $style_name . '__' . $view->current_display;
+    $suggestions[] = $style_name . '__' . $view->id() . '__' . $view->current_display;
+  }
 }

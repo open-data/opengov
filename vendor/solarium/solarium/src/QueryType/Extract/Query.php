@@ -39,10 +39,8 @@ class Query extends BaseQuery
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'update/extract',
         'resultclass' => Result::class,
         'documentclass' => Document::class,
@@ -52,17 +50,13 @@ class Query extends BaseQuery
 
     /**
      * Field name mappings.
-     *
-     * @var array
      */
-    protected $fieldMappings = [];
+    protected array $fieldMappings = [];
 
     /**
      * Resource name that was added to the request.
-     *
-     * @var string
      */
-    protected $resourceName;
+    protected string $resourceName;
 
     /**
      * Get type for this query.
@@ -143,6 +137,30 @@ class Query extends BaseQuery
     public function getFile()
     {
         return $this->getOption('file');
+    }
+
+    /**
+     * Set an explicit MIME type for Tika.
+     *
+     * @param string $type
+     *
+     * @return self Provides fluent interface
+     */
+    public function setStreamType(string $type): self
+    {
+        $this->setOption('stream.type', $type);
+
+        return $this;
+    }
+
+    /**
+     * Get the explicit MIME type for Tika.
+     *
+     * @return string|null
+     */
+    public function getStreamType(): ?string
+    {
+        return $this->getOption('stream.type');
     }
 
     /**
@@ -360,7 +378,7 @@ class Query extends BaseQuery
      *
      * This class should implement the document interface
      *
-     * @param string $value classname
+     * @param class-string<DocumentInterface> $value classname
      *
      * @return self Provides fluent interface
      */
@@ -376,7 +394,7 @@ class Query extends BaseQuery
      *
      * The value is a classname, not an instance
      *
-     * @return string|null
+     * @return class-string<DocumentInterface>|null
      */
     public function getDocumentClass(): ?string
     {
@@ -412,7 +430,7 @@ class Query extends BaseQuery
      *
      * This parameter is valid only if 'extractonly' is set to true.
      *
-     * @param string $format Use one of the EXTRACT_FORMAT_* constants
+     * @param self::EXTRACT_FORMAT_* $format
      *
      * @return self Provides fluent interface
      *
@@ -486,7 +504,7 @@ class Query extends BaseQuery
      *
      * {@internal The 'fmap' option needs additional setup work.}
      */
-    protected function init()
+    protected function init(): void
     {
         if (isset($this->options['fmap'])) {
             $this->setFieldMappings($this->options['fmap']);

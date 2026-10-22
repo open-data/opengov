@@ -38,34 +38,28 @@ class Grouping extends AbstractComponent
 
     /**
      * Component type.
-     *
-     * @var string
      */
-    protected $type = ComponentAwareQueryInterface::COMPONENT_GROUPING;
+    protected string $type = ComponentAwareQueryInterface::COMPONENT_GROUPING;
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'resultquerygroupclass' => QueryGroup::class,
         'resultvaluegroupclass' => ValueGroup::class,
     ];
 
     /**
      * Fields for grouping.
-     *
-     * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Queries for grouping.
      *
-     * @var array
+     * @var string[]
      */
-    protected $queries = [];
+    protected array $queries = [];
 
     /**
      * Get component type.
@@ -118,11 +112,11 @@ class Grouping extends AbstractComponent
      *
      * You can use an array or a comma separated string as input
      *
-     * @param array|string $fields
+     * @param string|string[] $fields
      *
      * @return self Provides fluent interface
      */
-    public function addFields($fields): self
+    public function addFields(string|array $fields): self
     {
         if (\is_string($fields)) {
             $fields = explode(',', $fields);
@@ -161,11 +155,11 @@ class Grouping extends AbstractComponent
      *
      * This overwrites any existing fields
      *
-     * @param string|array $fields
+     * @param string|string[] $fields
      *
      * @return self Provides fluent interface
      */
-    public function setFields($fields): self
+    public function setFields(string|array $fields): self
     {
         $this->clearFields();
         $this->addFields($fields);
@@ -192,11 +186,11 @@ class Grouping extends AbstractComponent
     /**
      * Add multiple grouping queries.
      *
-     * @param array|string $queries
+     * @param string|string[] $queries
      *
      * @return self Provides fluent interface
      */
-    public function addQueries($queries): self
+    public function addQueries(string|array $queries): self
     {
         if (!\is_array($queries)) {
             $queries = [$queries];
@@ -210,7 +204,7 @@ class Grouping extends AbstractComponent
     /**
      * Get all queries.
      *
-     * @return array
+     * @return string[]
      */
     public function getQueries(): array
     {
@@ -234,11 +228,11 @@ class Grouping extends AbstractComponent
      *
      * This overwrites any existing queries
      *
-     * @param array $queries
+     * @param string[] $queries
      *
      * @return self Provides fluent interface
      */
-    public function setQueries($queries): self
+    public function setQueries(array $queries): self
     {
         $this->clearQueries();
         $this->addQueries($queries);
@@ -495,7 +489,7 @@ class Grouping extends AbstractComponent
      * If simple, the grouped documents are presented in a single flat list.
      * The start and rows parameters refer to numbers of documents instead of numbers of groups.
      *
-     * @param string $value
+     * @param self::FORMAT_* $value
      *
      * @return self Provides fluent interface
      */
@@ -509,7 +503,7 @@ class Grouping extends AbstractComponent
     /**
      * Get format option.
      *
-     * @return string|null
+     * @return self::FORMAT_*|null
      */
     public function getFormat(): ?string
     {
@@ -519,7 +513,7 @@ class Grouping extends AbstractComponent
     /**
      * Set the query group result class.
      *
-     * @param string $value classname
+     * @param class-string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -535,7 +529,7 @@ class Grouping extends AbstractComponent
      *
      * The value is a classname, not an instance
      *
-     * @return string|null
+     * @return class-string|null
      */
     public function getResultQueryGroupClass(): ?string
     {
@@ -545,7 +539,7 @@ class Grouping extends AbstractComponent
     /**
      * Set the value group result class.
      *
-     * @param string $value classname
+     * @param class-string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -561,7 +555,7 @@ class Grouping extends AbstractComponent
      *
      * The value is a classname, not an instance
      *
-     * @return string|null
+     * @return class-string|null
      */
     public function getResultValueGroupClass(): ?string
     {
@@ -575,7 +569,7 @@ class Grouping extends AbstractComponent
      *            Options that set a list of fields need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init()
+    protected function init(): void
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

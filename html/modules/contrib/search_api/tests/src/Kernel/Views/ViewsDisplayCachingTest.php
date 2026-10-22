@@ -12,12 +12,14 @@ use Drupal\search_api\Entity\Index;
 use Drupal\Tests\search_api\Kernel\TestTimeService;
 use Drupal\views\Tests\AssertViewsCacheTagsTrait;
 use Drupal\views\ViewExecutable;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the Search API caching plugins for Views.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class ViewsDisplayCachingTest extends KernelTestBase {
 
   use AssertViewsCacheTagsTrait;
@@ -61,6 +63,7 @@ class ViewsDisplayCachingTest extends KernelTestBase {
   protected static $modules = [
     'entity_test',
     'field',
+    'filter',
     'rest',
     'search_api',
     'search_api_db',
@@ -95,6 +98,11 @@ class ViewsDisplayCachingTest extends KernelTestBase {
 
     $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->viewExecutableFactory = $this->container->get('views.executable');
+
+    // Re-save the test view to ensure it has the correct cache metadata set.
+    $this->entityTypeManager->getStorage('view')
+      ->load('search_api_test_cache')
+      ->save();
 
     // Use the test search index from the search_api_test_db module.
     $this->index = Index::load('database_search_index');
@@ -145,8 +153,8 @@ class ViewsDisplayCachingTest extends KernelTestBase {
     // Execute the search and assert the cacheability metadata.
     $this->assertViewsCacheability($view, $expected_cache_tags, $expected_cache_contexts, $expected_max_age);
 
-    // AssertViewsCache() destroys the view, get a fresh copy to continue the
-    // test.
+    // assertViewsCacheability() destroys the view, get a fresh copy to continue
+    // the test.
     $view = $this->getView('search_api_test_cache', $display_id);
 
     // The query has been executed. The query should now be cached if the test
@@ -342,8 +350,13 @@ class ViewsDisplayCachingTest extends KernelTestBase {
         // Cache tags for index and view config are included at the query level,
         // so should still be present even when disabling caching.
         [
+          // The cache should be invalidated when either index or view are
+          // modified.
           'config:search_api.index.database_search_index',
           'config:views.view.search_api_test_cache',
+          // The view shows an entity, so it should be invalidated when that
+          // entity changes.
+          'entity_test_mulrev_changed:1',
           // Caches should also be invalidated if any items on the index are
           // indexed or deleted.
           'search_api_list:database_search_index',
@@ -389,9 +402,13 @@ class ViewsDisplayCachingTest extends KernelTestBase {
         'time',
         [
           // The cache should be invalidated when either index or view are
-          // modified.
+          // modified, not otherwise.
           'config:search_api.index.database_search_index',
           'config:views.view.search_api_test_cache',
+          // Even though the cache should not be invalidated when items are
+          // indexed or deleted, the cache tag should still be set on the Views
+          // render array.
+          'search_api_list:database_search_index',
         ],
         // No specific cache contexts are expected to be present.
         [],

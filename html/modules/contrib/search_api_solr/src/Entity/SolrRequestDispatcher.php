@@ -45,6 +45,7 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    *
    * @var array
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $request_dispatcher;
 
   /**

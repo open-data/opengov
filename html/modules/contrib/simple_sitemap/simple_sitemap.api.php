@@ -5,7 +5,9 @@
  * Hooks provided by the Simple XML Sitemap module.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\simple_sitemap\Entity\SimpleSitemapInterface;
+use Drupal\simple_sitemap\Exception\SkipElementException;
 
 /**
  * @file
@@ -16,6 +18,29 @@ use Drupal\simple_sitemap\Entity\SimpleSitemapInterface;
  * @addtogroup hooks
  * @{
  */
+
+/**
+ * Act on an entity before it is processed.
+ *
+ * You can exclude entities from the sitemap by throwing a SkipElementException.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+ *   The entity to process.
+ *
+ * @see \Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator::processEntity()
+ * @see \Drupal\simple_sitemap\Exception\SkipElementException
+ */
+function hook_simple_sitemap_entity_process(ContentEntityInterface $entity): void {
+  // Exclude entities that are not translated into German.
+  if (!$entity->hasTranslation('de')) {
+    throw new SkipElementException();
+  }
+
+  // Unset the image field.
+  if ($entity->hasField('field_image')) {
+    $entity->set('field_image', NULL);
+  }
+}
 
 /**
  * Alter the generated link data before a sitemap is saved.

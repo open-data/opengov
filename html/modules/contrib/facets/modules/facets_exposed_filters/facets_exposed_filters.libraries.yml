@@ -1,5 +1,21 @@
+dependent_filters:
+  js:
+    js/dependent-filters.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 edit_filter:
   js:
     js/edit-filter.js: {}
   dependencies:
     - core/jquery
+
+exposed_range_slider:
+  js:
+    js/exposed-range-slider.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - better_exposed_filters/nouislider

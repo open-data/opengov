@@ -15,11 +15,6 @@ final class GeneratedServiceProviderData {
     public static function providers(string $service): array {
         return match ($service) {
             default => [],
-            \OpenTelemetry\API\Instrumentation\AutoInstrumentation\HookManagerInterface::class => [
-                ...((true && (($r = new \Nevay\SPI\ServiceProviderDependency\ExtensionDependency('opentelemetry', '^1.0'))->hash() !== false && $r->isSatisfied())) ? [
-                \OpenTelemetry\API\Instrumentation\AutoInstrumentation\ExtensionHookManager::class, // open-telemetry/api 1.10.0 (extra.spi)
-                ] : []),
-            ],
             \OpenTelemetry\API\Configuration\ConfigEnv\EnvComponentLoader::class => [
                 \OpenTelemetry\API\Instrumentation\Configuration\General\ConfigEnv\EnvComponentLoaderHttpConfig::class, // open-telemetry/sdk 1.15.0 (extra.spi)
                 \OpenTelemetry\API\Instrumentation\Configuration\General\ConfigEnv\EnvComponentLoaderPeerConfig::class, // open-telemetry/sdk 1.15.0 (extra.spi)
@@ -28,6 +23,11 @@ final class GeneratedServiceProviderData {
                 \OpenTelemetry\SDK\ConfigEnv\Distribution\DistributionConfigurationSdk::class, // open-telemetry/sdk 1.15.0 (extra.spi)
             ],
             \OpenTelemetry\SDK\Common\Configuration\Resolver\ResolverInterface::class => [
+            ],
+            \OpenTelemetry\API\Instrumentation\AutoInstrumentation\HookManagerInterface::class => [
+                ...((true && (($r = new \Nevay\SPI\ServiceProviderDependency\ExtensionDependency('opentelemetry', '^1.0'))->hash() !== false && $r->isSatisfied())) ? [
+                \OpenTelemetry\API\Instrumentation\AutoInstrumentation\ExtensionHookManager::class, // open-telemetry/sdk 1.15.0 (extra.spi)
+                ] : []),
             ],
         };
     }

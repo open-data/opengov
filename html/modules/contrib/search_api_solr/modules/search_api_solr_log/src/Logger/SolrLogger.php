@@ -2,13 +2,14 @@
 
 namespace Drupal\search_api_solr_log\Logger;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\Core\Logger\RfcLoggerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api\Entity\Index;
-use Drupal\search_api\SearchApiException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Drupal\search_api_solr\Utility\Utility;
@@ -58,11 +59,14 @@ class SolrLogger implements LoggerInterface {
    * @param \Drupal\Core\Logger\LogMessageParserInterface $parser
    *   The parser to use when extracting message variables.
    * @param \Solarium\Core\Query\Helper $helper
-   *   The solarium query helper
+   *   The solarium query helper.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    */
   public function __construct(
     protected LogMessageParserInterface $parser,
     protected Helper $helper,
+    protected ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -79,12 +83,12 @@ class SolrLogger implements LoggerInterface {
     if (!$connector) {
       return;
     }
-    $config = \Drupal::config('search_api_solr_log.settings');
+    $config = $this->configFactory->get('search_api_solr_log.settings');
     // Convert PSR3-style messages to \Drupal\Component\Render\FormattableMarkup
     // style, so they can be translated too in runtime.
     $message_placeholders = $this->parser->parseMessagePlaceholders($message, $context);
     $channel = mb_substr($context['channel'], 0, 64);
-    $message_en = $this->t(Xss::filterAdmin((string) $message), $message_placeholders)->render();
+    $message_en = (string) new FormattableMarkup(Xss::filterAdmin((string) $message), $message_placeholders);
     $message_facet = mb_substr($message_en, 0, 255);
     if ('page not found' === $channel || 'access denied' === $channel) {
       $message_facet = $message_placeholders['@uri'] ?? $message_facet;
@@ -116,7 +120,7 @@ class SolrLogger implements LoggerInterface {
     try {
       $connector->update($query);
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       // Prevent infinite loop trying to log the message.
       $this->serviceFunctional = FALSE;
     }
@@ -140,7 +144,7 @@ class SolrLogger implements LoggerInterface {
         }
       }
     }
-    catch (\Throwable $e) {
+    catch (\Throwable) {
       return NULL;
     }
 
@@ -150,7 +154,8 @@ class SolrLogger implements LoggerInterface {
   /**
    * Delete old log events.
    *
-   * @param int|null $days Days to keep log entries.
+   * @param int|null $days
+   *   Days to keep log entries.
    *
    * @throws \DateMalformedStringException
    * @throws \Drupal\search_api\SearchApiException
@@ -181,8 +186,9 @@ class SolrLogger implements LoggerInterface {
         $connector->update($query);
       }
     }
-    catch (\Throwable $e) {
+    catch (\Throwable) {
       // Fall back to Solr's auto commit handling.
     }
   }
+
 }

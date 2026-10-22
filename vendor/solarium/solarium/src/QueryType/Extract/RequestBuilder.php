@@ -13,6 +13,7 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Query\AbstractRequestBuilder as BaseRequestBuilder;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\RuntimeException;
+use Solarium\QueryType\Update\Query\Document;
 
 /**
  * Build an extract request.
@@ -22,7 +23,7 @@ class RequestBuilder extends BaseRequestBuilder
     /**
      * Build the request.
      *
-     * @param QueryInterface|Query $query
+     * @param QueryInterface&Query $query
      *
      * @throws RuntimeException
      *
@@ -41,16 +42,17 @@ class RequestBuilder extends BaseRequestBuilder
         $request->addParam('defaultField', $query->getDefaultField());
         $request->addParam('extractOnly', $query->getExtractOnly());
         $request->addParam('extractFormat', $query->getExtractFormat());
+        $request->addParam('stream.type', $query->getStreamType());
 
         foreach ($query->getFieldMappings() as $fromField => $toField) {
             $request->addParam('fmap.'.$fromField, $toField);
         }
 
         // add document settings to request
-        /** @var \Solarium\QueryType\Update\Query\Document $doc */
+        /** @var Document $doc */
         $doc = $query->getDocument();
         if (null !== $doc) {
-            // @phpstan-ignore-next-line we're calling a deprecated method on purpose
+            // @phpstan-ignore method.deprecated (we're calling a deprecated method on purpose)
             if (null !== $doc->getBoost()) {
                 throw new RuntimeException('Extract does not support document-level boosts, use field boosts instead.');
             }

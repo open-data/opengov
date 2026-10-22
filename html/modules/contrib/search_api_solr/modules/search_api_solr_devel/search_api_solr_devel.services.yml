@@ -1,3 +1,6 @@
+parameters:
+  search_api_solr_devel.skip_procedural_hook_scan: true
+
 services:
   search_api_solr_devel.route_subscriber:
     class: Drupal\search_api_solr_devel\Routing\DevelRouteSubscriber

@@ -141,7 +141,7 @@ solr_configset.solrconfig_query:
     _search_api_solr_local_action_access_check: 'TRUE'
 
 solr_configset.solrconfig_requestdispatcher:
-  path: '/admin/config/search/search-api/server/{search_api_server}/solr_cconfigset/solrconfig-requestdispatcher'
+  path: '/admin/config/search/search-api/server/{search_api_server}/solr_configset/solrconfig-requestdispatcher'
   defaults:
     _title: 'solrconfig_requestdispatcher.xml'
     _controller: '\Drupal\search_api_solr\Controller\SolrConfigSetController::streamSolrconfigRequestDispatcherXml'

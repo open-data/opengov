@@ -5,10 +5,11 @@ namespace Drupal\search_api;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\NodeType;
@@ -19,27 +20,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class IndexListBuilder extends ConfigEntityListBuilder {
 
-  /**
-   * The entity storage class for the 'search_api_server' entity type.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $serverStorage;
-
-  /**
-   * Constructs an IndexListBuilder object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The entity storage class.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $server_storage
-   *   The entity storage class for the 'search_api_server' entity type.
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityStorageInterface $server_storage) {
-    parent::__construct($entity_type, $storage);
-
-    $this->serverStorage = $server_storage;
+  public function __construct(
+    EntityTypeInterface $entity_type,
+    protected EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    parent::__construct($entity_type, $entityTypeManager->getStorage($entity_type->id()));
   }
 
   /**
@@ -48,8 +33,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('entity_type.manager')->getStorage($entity_type->id()),
-      $container->get('entity_type.manager')->getStorage('search_api_server')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -131,8 +115,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultOperations(EntityInterface $entity/* , ?CacheableMetadata $cacheability = NULL */) {
-    $cacheability = func_num_args() > 1 ? func_get_arg(1) : NULL;
+  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
     $operations = parent::getDefaultOperations($entity, $cacheability);
 
     if ($entity instanceof IndexInterface) {
@@ -288,7 +271,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
   public function loadGroups() {
     $indexes = $this->storage->loadMultiple();
     /** @var \Drupal\search_api\ServerInterface[] $servers */
-    $servers = $this->serverStorage->loadMultiple();
+    $servers = $this->entityTypeManager->getStorage('search_api_server')->loadMultiple();
 
     $this->sortByStatusThenAlphabetically($indexes);
     $this->sortByStatusThenAlphabetically($servers);

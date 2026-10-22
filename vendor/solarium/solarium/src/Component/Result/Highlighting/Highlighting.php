@@ -9,17 +9,19 @@
 
 namespace Solarium\Component\Result\Highlighting;
 
+use Solarium\Component\Result\ComponentResultInterface;
+
 /**
  * Select component highlighting result.
  */
-class Highlighting implements \IteratorAggregate, \Countable
+class Highlighting implements ComponentResultInterface, \IteratorAggregate, \Countable
 {
     /**
      * Result array.
      *
-     * @var array
+     * @var Result[]
      */
-    protected $results;
+    protected array $results;
 
     /**
      * Constructor.

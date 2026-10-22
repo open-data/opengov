@@ -45,7 +45,7 @@ trait TestItemsTrait {
    *   The field type to set for the field.
    * @param mixed $fieldValue
    *   A field value to add to the field.
-   * @param \Drupal\search_api\Item\FieldInterface $field
+   * @param \Drupal\search_api\Item\FieldInterface|null $field
    *   (optional) A variable, passed by reference, into which the created field
    *   will be saved.
    * @param string $fieldId
@@ -55,7 +55,8 @@ trait TestItemsTrait {
    *   An array containing a single item with the specified field.
    */
   public function createSingleFieldItem(IndexInterface $index, $fieldType, $fieldValue, ?FieldInterface &$field = NULL, $fieldId = 'field_test') {
-    $this->itemIds[0] = $itemId = Utility::createCombinedId('entity:node', '1:en');
+    $id = count($this->itemIds) + 1;
+    $this->itemIds[] = $itemId = Utility::createCombinedId('entity:node', "$id:en");
     $item = new Item($index, $itemId);
     $field = new Field($index, $fieldId);
     $field->setType($fieldType);

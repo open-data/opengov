@@ -35,9 +35,9 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      *
-     * @throws \Solarium\Exception\HttpException
+     * @throws HttpException
      */
-    public function preExecuteRequest($event): self
+    public function preExecuteRequest(object $event): self
     {
         // We need to accept event proxies or decorators.
         /** @var PreExecuteRequest $event */
@@ -77,6 +77,17 @@ class NoWaitForResponseRequest extends AbstractPlugin
         $exception = null;
         $microtime1 = microtime(true);
         try {
+            // Avoid error:
+            //   Failed to start the session because headers have already been sent by
+            //   "vendor/solarium/solarium/src/Core/Client/Adapter/Curl.php"
+            // This fireAndForget() method invokes nowaitforresponserequest type solarium client plugin.
+            // The nowaitforresponserequest type plugin
+            //   - sets "return_transfer" option to false
+            //   - sets timeout to TimeoutAwareInterface::FAST_TIMEOUT
+            // before executing Solr command.
+            // But it could cause error when solr is fast (or data is small) enought to send response before TimeoutAwareInterface::FAST_TIMEOUT.
+            // So just buffer and discard.
+            ob_start();
             $this->client->getAdapter()->execute($request, $event->getEndpoint());
         } catch (HttpException $e) {
             // We expect to run into a timeout.
@@ -94,6 +105,8 @@ class NoWaitForResponseRequest extends AbstractPlugin
             }
         } catch (\Exception $exception) {
             // Throw this exception after resetting the adapter.
+        } finally {
+            ob_end_clean();
         }
 
         if ($this->client->getAdapter() instanceof TimeoutAwareInterface) {
@@ -120,7 +133,7 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -135,7 +148,7 @@ class NoWaitForResponseRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

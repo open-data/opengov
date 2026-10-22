@@ -522,17 +522,20 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function postDelete(WebformSubmissionInterface $webform_submission);
 
   /**
-   * Controls entity operation access to webform submission.
+   * Controls access to operations on a webform submission.
+   *
+   * This method is used to alter access for operations performed on an existing
+   * webform submission, such as viewing, updating, or deleting a submission.
    *
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
+   *   The webform submission.
    * @param string $operation
-   *   The operation that is to be performed on $entity.
+   *   The operation that is to be performed on the webform submission.
    * @param \Drupal\Core\Session\AccountInterface|null $account
-   *   The account trying to access the entity.
+   *   The account trying to access the webform submission.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
-   *   The result of the access check. No option returns a neutral result.
+   *   The result of the access check. A neutral result does not alter access.
    */
   public function access(WebformSubmissionInterface $webform_submission, $operation, ?AccountInterface $account = NULL);
 

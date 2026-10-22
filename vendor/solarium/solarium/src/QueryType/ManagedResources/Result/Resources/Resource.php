@@ -24,20 +24,11 @@ class Resource
      */
     const TYPE_SYNONYMS = 'synonyms';
 
-    /**
-     * @var string
-     */
-    protected $resourceId;
+    protected string $resourceId;
 
-    /**
-     * @var int
-     */
-    protected $numObservers;
+    protected int $numObservers;
 
-    /**
-     * @var string
-     */
-    protected $class;
+    protected string $class;
 
     /**
      * Resource constructor.
@@ -114,7 +105,7 @@ class Resource
     /*
      * Returns the type: 'stopwords', 'synonyms' or '' if unknown.
      *
-     * @return string
+     * @return self::TYPE_*|''
      */
     public function getType(): string
     {

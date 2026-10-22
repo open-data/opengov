@@ -1,9 +1,10 @@
 <?php
 
+// phpcs:ignoreFile SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace Drupal\Tests\search_api_solr\Unit;
 
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\search_api_solr\Plugin\SolrConnector\StandardSolrConnector;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Drupal\Core\Config\Config;
@@ -14,6 +15,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\State\StateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextToken;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
@@ -41,14 +43,14 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   /**
    * Provides the Solr entities list builder.
    *
-   * @var \Drupal\search_api_solr\Controller\AbstractSolrEntityListBuilder|\Prophecy\Prophecy\ObjectProphecy
+   * @var \Drupal\search_api_solr\Controller\AbstractSolrEntityListBuilder
    */
   protected $listBuilder;
 
   /**
    * The entity type manager object.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\Prophecy\Prophecy\ObjectProphecy
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -72,35 +74,33 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   public function setUp(): void {
     parent::setUp();
 
-    $this->listBuilder = $this->prophesize(AbstractSolrEntityListBuilder::class);
-    $this->listBuilder->getAllNotRecommendedEntities()->willReturn([]);
-    $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
-    $this->entityTypeManager->getListBuilder('solr_field_type')->willReturn($this->listBuilder->reveal());
-    $this->entityTypeManager->getListBuilder('solr_cache')->willReturn($this->listBuilder->reveal());
-    $this->entityTypeManager->getListBuilder('solr_request_handler')->willReturn($this->listBuilder->reveal());
-    $this->entityTypeManager->getListBuilder('solr_request_dispatcher')->willReturn($this->listBuilder->reveal());
+    $this->listBuilder = $this->createMock(AbstractSolrEntityListBuilder::class);
+    $this->listBuilder->method('getAllNotRecommendedEntities')->willReturn([]);
+    $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
+    $this->entityTypeManager->method('getListBuilder')->willReturn($this->listBuilder);
 
     // This helper is actually used.
     $this->queryHelper = new Helper();
 
-    $connector_manager = $this->prophesize(SolrConnectorPluginManager::class);
-    $connector_manager->createInstance(NULL, [])->willThrow(new SearchApiSolrException('no connector'));
+    $connector_manager = $this->createMock(SolrConnectorPluginManager::class);
+    $connector_manager->method('createInstance')->with(NULL, [])->willThrowException(new SearchApiSolrException('no connector'));
 
     $this->backend = new SearchApiSolrBackend([], NULL, [],
       $this->prophesize(ModuleHandlerInterface::class)->reveal(),
       $this->prophesize(Config::class)->reveal(),
       $this->prophesize(LanguageManagerInterface::class)->reveal(),
-      $connector_manager->reveal(),
+      $connector_manager,
       $this->prophesize(FieldsHelperInterface::class)->reveal(),
       $this->prophesize(DataTypeHelperInterface::class)->reveal(),
       $this->queryHelper,
-      $this->entityTypeManager->reveal(),
+      $this->entityTypeManager,
       $this->prophesize(EventDispatcher::class)->reveal(),
       $this->prophesize(TimeInterface::class)->reveal(),
       $this->prophesize(StateInterface::class)->reveal(),
       $this->prophesize(MessengerInterface::class)->reveal(),
       $this->prophesize(LockBackendInterface::class)->reveal(),
-      $this->prophesize(ModuleExtensionList::class)->reveal()
+      $this->prophesize(ModuleExtensionList::class)->reveal(),
+      $this->createMock(ContainerInterface::class)
     );
   }
 
@@ -120,29 +120,28 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
    */
   public function testIndexField($input, $type, $expected) {
     $field = 'testField';
-    $document = $this->prophesize(Document::class);
+    $document = $this->createMock(Document::class);
 
     if (NULL !== $expected) {
       if (is_array($expected)) {
-        $document
-          ->addField($field, $expected[0], $expected[1])
-          ->shouldBeCalled();
+        $document->expects($this->once())
+          ->method('addField')
+          ->with($field, $expected[0], $expected[1]);
       }
       else {
-        $document
-          ->addField($field, $expected)
-          ->shouldBeCalled();
+        $document->expects($this->once())
+          ->method('addField')
+          ->with($field, $expected);
       }
     }
     else {
-      $document
-        ->addField($field, $expected)
-        ->shouldNotBeCalled();
+      $document->expects($this->never())
+        ->method('addField');
     }
 
     $boost_terms = [];
     $args = [
-      $document->reveal(),
+      $document,
       $field,
       [$input],
       $type,
@@ -175,15 +174,15 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
    */
   public function testIndexEmptyField($input, $type, $expected) {
     $field = 'testField';
-    $document = $this->prophesize(Document::class);
+    $document = $this->createMock(Document::class);
 
-    $document
-      ->addField($field, $expected)
-      ->shouldBeCalled();
+    $document->expects($this->once())
+      ->method('addField')
+      ->with($field, $expected);
 
     $boost_terms = [];
     $args = [
-      $document->reveal(),
+      $document,
       $field,
       [$input],
       $type,

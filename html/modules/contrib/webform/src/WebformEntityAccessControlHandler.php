@@ -204,7 +204,7 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
         }
 
         // Allow (secure) token to bypass submission page and create access controls.
-        $token = $this->requestStack->getCurrentRequest()->query->get('token');
+        $token = $this->requestStack->getCurrentRequest()->query->all()['token'] ?? '';
         if ($token && $entity->isOpen()) {
           $source_entity = $this->webformSourceEntityManager->getSourceEntity('webform');
           if ($submission = $this->getSubmissionStorage()->loadFromToken($token, $entity, $source_entity)) {

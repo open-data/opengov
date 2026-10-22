@@ -40,8 +40,7 @@ class ShowOnlyDeepestLevelItemsProcessor extends ProcessorPluginBase implements 
    * {@inheritdoc}
    */
   public function supportsFacet(FacetInterface $facet) {
-    // @todo Support "facets_exposed_filter".
-    return $facet->getFacetType() == 'facet_entity';
+    return in_array($facet->getFacetType(), ['facet_entity', 'facets_exposed_filter'], TRUE);
   }
 
 }

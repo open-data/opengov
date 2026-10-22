@@ -4,12 +4,16 @@ namespace Drupal\search_api_solr\Plugin\SolrConnector;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api_solr\Attribute\SolrConnector;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
 use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\State\ClusterState;
+use Solarium\QueryType\Server\Collections\Result\ClusterStatusResult;
+use Solarium\QueryType\Server\Query\AbstractResult;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Graph\Query as GraphQuery;
@@ -18,13 +22,12 @@ use Solarium\QueryType\Stream\Query as StreamQuery;
 
 /**
  * Standard Solr Cloud connector.
- *
- * @SolrConnector(
- *   id = "solr_cloud",
- *   label = @Translation("Solr Cloud"),
- *   description = @Translation("A standard connector for a Solr Cloud.")
- * )
  */
+#[SolrConnector(
+  id: 'solr_cloud',
+  label: new TranslatableMarkup('Solr Cloud'),
+  description: new TranslatableMarkup('A standard connector for a Solr Cloud.'),
+)]
 class StandardSolrCloudConnector extends SolrConnectorPluginBase implements SolrCloudConnectorInterface {
 
   use StringTranslationTrait;
@@ -123,7 +126,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
     $summary['@collection_name'] = '';
 
     $query = $this->solr->createPing();
-    $query->setResponseWriter(PingQuery::WT_PHPS);
+    $query->setResponseWriter(PingQuery::WT_JSON);
+    $query->addParam('json.nl', 'map');
     $query->setHandler('admin/mbeans?stats=true');
     $stats = $this->execute($query)->getData();
     if (!empty($stats)) {
@@ -169,7 +173,7 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       try {
         return $this->getEndpoint($checkpoints_collection);
       }
-      catch (OutOfBoundsException $e) {
+      catch (OutOfBoundsException) {
         $additional_config['core'] = $checkpoints_collection;
         return $this->createEndpoint($checkpoints_collection, $additional_config);
       }
@@ -218,7 +222,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       $action->setCollection($this->configuration['core']);
       $query->setAction($action);
 
-      $response = $this->solr->collections($query);
+      $response = $this->solr->execute($query);
+      assert($response instanceof ClusterStatusResult);
       return $response->getWasSuccessful() ? $response->getClusterState() : NULL;
     }
     catch (HttpException $e) {
@@ -257,7 +262,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
         ->setName($name)
         ->setOverwrite(TRUE);
       $configsetsQuery->setAction($action);
-      $response = $this->solr->configsets($configsetsQuery);
+      $response = $this->solr->execute($configsetsQuery);
+      assert($response instanceof AbstractResult);
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {
@@ -380,7 +386,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       $action = $query->createReload(['name' => $collection]);
       $query->setAction($action);
 
-      $response = $this->solr->collections($query);
+      $response = $this->solr->execute($query);
+      assert($response instanceof AbstractResult);
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {
@@ -402,7 +409,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       $action = $query->createCreate(['name' => $collection] + $options);
       $query->setAction($action);
 
-      $response = $this->solr->collections($query);
+      $response = $this->solr->execute($query);
+      assert($response instanceof AbstractResult);
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {
@@ -424,7 +432,8 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       $action = $query->createDelete(['name' => $collection]);
       $query->setAction($action);
 
-      $response = $this->solr->collections($query);
+      $response = $this->solr->execute($query);
+      assert($response instanceof AbstractResult);
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {

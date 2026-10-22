@@ -315,7 +315,7 @@
           }
 
           var tooltipOptions = $.extend({
-            content: content,
+            content: Drupal.webform.xss.filter(content),
           }, Drupal.webformOptionsCustom.tippy.options);
           tippy($templateOption[0], tooltipOptions);
         }

@@ -3,7 +3,7 @@
 namespace Drupal\search_api\Plugin\views\argument;
 
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\taxonomy\TermStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,22 +29,18 @@ class SearchApiTerm extends SearchApiStandard {
   protected $entityRepository;
 
   /**
-   * The term storage.
-   *
-   * @var \Drupal\taxonomy\TermStorageInterface
+   * The entity type manager.
    */
-  protected $termStorage;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    /** @var static $plugin */
     $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
     $plugin->setEntityRepository($container->get('entity.repository'));
-    $plugin->setTermStorage($container->get('entity_type.manager')
-      ->getStorage('taxonomy_term'));
+    $plugin->setEntityTypeManager($container->get('entity_type.manager'));
 
     return $plugin;
   }
@@ -79,20 +75,22 @@ class SearchApiTerm extends SearchApiStandard {
    *   The term storage.
    */
   public function getTermStorage() {
-    return $this->termStorage ?: \Drupal::service('entity_type.manager')
-      ->getStorage('taxonomy_term');
+    if (isset($this->entityTypeManager)) {
+      return $this->entityTypeManager->getStorage('taxonomy_term');
+    }
+    return \Drupal::entityTypeManager()->getStorage('taxonomy_term');
   }
 
   /**
-   * Sets the term storage.
+   * Sets the entity type manager.
    *
-   * @param \Drupal\taxonomy\TermStorageInterface $term_storage
-   *   The term storage.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    *
    * @return $this
    */
-  public function setTermStorage(TermStorageInterface $term_storage) {
-    $this->termStorage = $term_storage;
+  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager): static {
+    $this->entityTypeManager = $entity_type_manager;
     return $this;
   }
 

@@ -41,7 +41,7 @@ class ViewsBootstrapGrid extends StylePluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    $options['grid_class'] = ['default' => ''];
+    $options['grid_class'] = ['default' => NULL];
     foreach (ViewsBootstrap::getBreakpoints() as $breakpoint) {
       $breakpoint_option = "col_$breakpoint";
       $options[$breakpoint_option] = ['default' => 'none'];
@@ -54,6 +54,12 @@ class ViewsBootstrapGrid extends StylePluginBase {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
+
+    $form['help'] = [
+      '#markup' => $this->t('The Bootstrap grid displays content in a responsive, mobile first fluid grid (<a href=":docs">see documentation</a>).',
+        [':docs' => 'https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/views-bootstrap-for-bootstrap-5/grid']),
+      '#weight' => -99,
+    ];
 
     $form['grid_class'] = [
       '#title' => $this->t('Grid row custom class'),
@@ -69,18 +75,21 @@ class ViewsBootstrapGrid extends StylePluginBase {
 
     foreach (ViewsBootstrap::getBreakpoints() as $breakpoint) {
       $breakpoint_option = "col_$breakpoint";
-      $prefix = 'col' . ($breakpoint != 'xs' ? '-' . $breakpoint : '');
+      $prefix = ViewsBootstrap::getColumnPrefix($breakpoint);
+
       $form[$breakpoint_option] = [
         '#type' => 'select',
         '#title' => $this->t("Column width of items at @breakpoint breakpoint", ['@breakpoint' => $breakpoint]),
         '#default_value' => $this->options[$breakpoint_option] ?? NULL,
         '#description' => $this->t("Set the number of columns each item should take up at the @breakpoint breakpoint and higher.", ['@breakpoint' => $breakpoint]),
+        '#weight' => 3,
         '#options' => [
           'none' => $this->t('None (or inherit from previous)'),
           $prefix => $this->t('Equal'),
           $prefix . '-auto' => $this->t('Fit to content'),
         ],
       ];
+
       foreach ([1, 2, 3, 4, 6, 12] as $width) {
         $form[$breakpoint_option]['#options'][$prefix . "-$width"] = $this->formatPlural(12 / $width, '@width (@count column per row)', '@width (@count columns per row)', ['@width' => $width]);
       }

@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Contains install hooks for the advanced_email_validation_test module.
+ */
+
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\advanced_email_validation_test\TestFieldNames;
+
+/**
+ * Implements hook_install().
+ */
+function advanced_email_validation_test_install() {
+  foreach (TestFieldNames::all() as $field_name) {
+    // Create field storage if it doesn't exist.
+    if (!FieldStorageConfig::loadByName('user', $field_name)) {
+      FieldStorageConfig::create([
+        'field_name' => $field_name,
+        'entity_type' => 'user',
+        'type' => 'email',
+        'cardinality' => 1,
+        'settings' => [],
+      ])->save();
+    }
+
+    // Create a field config if it doesn't exist.
+    if (!FieldConfig::loadByName('user', 'user', $field_name)) {
+      FieldConfig::create([
+        'field_name' => $field_name,
+        'entity_type' => 'user',
+        'bundle' => 'user',
+        'label' => 'Alternate email',
+        'required' => FALSE,
+        'settings' => [],
+      ])->save();
+    }
+  }
+}

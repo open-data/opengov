@@ -49,7 +49,7 @@ class Generator implements SitemapGetterInterface {
   protected $logger;
 
   /**
-   * Simplesitemap constructor.
+   * Generator constructor.
    *
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
@@ -180,7 +180,7 @@ class Generator implements SitemapGetterInterface {
     }
     switch ($from) {
       case QueueWorker::GENERATE_TYPE_FORM:
-      case QueueWorker::GENERATE_TYPE_DRUSH;
+      case QueueWorker::GENERATE_TYPE_DRUSH:
         $this->queueWorker->batchGenerate($from);
         break;
 

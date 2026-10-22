@@ -206,7 +206,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
    */
   public function loadFromToken($token, WebformInterface $webform, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL) {
     // Check token.
-    if (!$token) {
+    if (!$token || !is_string($token)) {
       return NULL;
     }
 

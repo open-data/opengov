@@ -28,6 +28,121 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
   protected static $testWebforms = ['test_exporter_archive'];
 
   /**
+   * Tests export file access, directory isolation, and filename validation.
+   */
+  public function testDownloadFileAccess(): void {
+    $assert_session = $this->assertSession();
+
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_exporter_archive');
+
+    $root_directory = \Drupal::service('file_system')->getTempDirectory() . '/webform-export-' . $this->randomMachineName();
+
+    // Check that the configured temporary root can be created.
+    $this->assertTrue(mkdir($root_directory));
+    $config = \Drupal::configFactory()->getEditable('webform.settings');
+    $original_directory = $config->get('export.temp_directory');
+    $config->set('export.temp_directory', $root_directory)->save();
+
+    /** @var \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter */
+    $submission_exporter = \Drupal::service('webform_submission.exporter');
+    $submission_exporter->setWebform($webform);
+    $exporter = $submission_exporter->setExporter();
+    $export_directory = $submission_exporter->getFileTempDirectory();
+
+    // Check that both exporters use the created Webform subdirectory.
+    $this->assertSame($root_directory . '/webform', $export_directory);
+    $this->assertSame($export_directory, $exporter->getFileTempDirectory());
+    $this->assertDirectoryExists($export_directory);
+
+    // Check that files can be written inside and outside the export directory.
+    $filename = $webform->id() . '.node.1.csv';
+    $file_path = $export_directory . '/' . $filename;
+    $file_contents = 'Unrelated file contents.';
+    $this->assertNotFalse(file_put_contents($file_path, $file_contents));
+
+    $export_filename = $webform->id() . '.csv';
+    $export_file_path = $export_directory . '/' . $export_filename;
+    $export_file_contents = 'Webform export file contents.';
+    $this->assertNotFalse(file_put_contents($export_file_path, $export_file_contents));
+
+    $outside_file_path = $root_directory . '/' . $export_filename;
+    $outside_file_contents = 'File outside the Webform export directory.';
+    $this->assertNotFalse(file_put_contents($outside_file_path, $outside_file_contents));
+
+    $archive_filename = $webform->id() . '.tar.gz';
+    $archive_file_path = $export_directory . '/' . $archive_filename;
+    $archive_file_contents = 'Webform archive file contents.';
+    $this->assertNotFalse(file_put_contents($archive_file_path, $archive_file_contents));
+
+    $missing_filename = $webform->id() . '.json';
+
+    try {
+      /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
+      $access_rules_manager = \Drupal::service('webform.access_rules_manager');
+      $access_rules = [
+        'view_any' => [
+          'roles' => [],
+          'users' => [],
+          'permissions' => ['access content'],
+        ],
+      ] + $access_rules_manager->getDefaultAccessRules();
+      $webform->setAccessRules($access_rules)->save();
+
+      $account = $this->drupalCreateUser(['access content']);
+      $this->drupalLogin($account);
+      $this->drupalGet("/admin/structure/webform/manage/{$webform->id()}/results/download/file/$filename");
+
+      // Check that a file for another source entity is denied and retained.
+      $assert_session->statusCodeEquals(404);
+      $assert_session->responseNotContains($file_contents);
+      $this->assertFileExists($file_path);
+
+      $this->drupalGet("/admin/structure/webform/manage/{$webform->id()}/results/download/file/$missing_filename");
+
+      // Check that a missing valid export keeps the existing guidance.
+      $assert_session->statusCodeEquals(200);
+      $assert_session->responseContains('No export file ready for download.');
+
+      $this->drupalGet("/admin/structure/webform/manage/{$webform->id()}/results/download/file/$export_filename");
+
+      // Check that the matching export can be downloaded.
+      $assert_session->statusCodeEquals(200);
+      $assert_session->responseContains($export_file_contents);
+
+      $this->drupalGet("/admin/structure/webform/manage/{$webform->id()}/results/download/file/$archive_filename");
+
+      // Check that a matching archive can be downloaded.
+      $assert_session->statusCodeEquals(200);
+      $assert_session->responseContains($archive_file_contents);
+
+      $download_url = "/admin/structure/webform/manage/{$webform->id()}/results/download";
+
+      // Check that the export page rejects both path separator styles.
+      foreach (['../' . $export_filename, '..\\' . $export_filename] as $invalid_filename) {
+        $this->drupalGet($download_url, ['query' => ['filename' => $invalid_filename]]);
+        $assert_session->statusCodeEquals(404);
+      }
+      $this->drupalGet($download_url . '/file/..%2F' . $export_filename);
+
+      // Check that a route traversal cannot read or change files on either side.
+      $this->assertContains($this->getSession()->getStatusCode(), [403, 404]);
+      $assert_session->responseNotContains($outside_file_contents);
+      $this->assertSame($outside_file_contents, file_get_contents($outside_file_path));
+      $this->assertSame($export_file_contents, file_get_contents($export_file_path));
+    }
+    finally {
+      $config->set('export.temp_directory', $original_directory)->save();
+      @unlink($file_path);
+      @unlink($export_file_path);
+      @unlink($archive_file_path);
+      @unlink($outside_file_path);
+      @rmdir($export_directory);
+      @rmdir($root_directory);
+    }
+  }
+
+  /**
    * Tests download files.
    */
   public function testDownloadFiles(): void {

@@ -8,7 +8,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\simple_sitemap\Manager\Generator as SimplesitemapOld;
+use Drupal\simple_sitemap\Manager\Generator as SimpleSitemapOld;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\simple_sitemap\Settings;
 
@@ -70,7 +70,7 @@ class StatusForm extends SimpleSitemapFormBase {
   public function __construct(
     ConfigFactoryInterface $config_factory,
     TypedConfigManagerInterface $typedConfigManager,
-    SimplesitemapOld $generator,
+    SimpleSitemapOld $generator,
     Settings $settings,
     FormHelper $form_helper,
     Connection $database,

@@ -1,0 +1,317 @@
+<?php
+
+namespace Drupal\search_api_solr_admin\Drush\Commands;
+
+use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
+use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
+use Drupal\search_api\SearchApiException;
+use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper;
+use Drush\Attributes\Argument;
+use Drush\Attributes\Command;
+use Drush\Attributes\Help;
+use Drush\Attributes\Option;
+use Drush\Attributes\Usage;
+use Drush\Commands\DrushCommands;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+
+/**
+ * Defines Drush commands for the Search API Solr Admin.
+ */
+class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInterface {
+
+  use StdinAwareTrait;
+
+  /**
+   * Constructs a SearchApiSolrCommands object.
+   *
+   * @param \Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper $commandHelper
+   *   The command helper.
+   */
+  public function __construct(protected SolrAdminCommandHelper $commandHelper) {
+    parent::__construct();
+  }
+
+  /**
+   * Instantiates a new instance of this class.
+   *
+   * @param \Psr\Container\ContainerInterface $container
+   *   The service container this instance should use.
+   *
+   * @return static
+   *   A new class instance.
+   *
+   * @throws \Psr\Container\ContainerExceptionInterface
+   *   Thrown if some required services are not registered.
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+      $container->get('search_api_solr_admin.command_helper'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setLogger(LoggerInterface $logger): void {
+    parent::setLogger($logger);
+    $this->commandHelper->setLogger($logger);
+  }
+
+  /**
+   * Reload Solr core or collection.
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   *
+   * @command search-api-solr:reload
+   *
+   * @usage drush search-api-solr:reload server_id
+   *   Forces the Solr server to reload the core or collection to apply config
+   *   changes.
+   *
+   * @aliases solr-reload
+   */
+  #[Command(name: 'search-api-solr:reload', aliases: ['solr-reload'])]
+  #[Argument(name: 'server_id', description: 'The ID of the server.')]
+  #[Help(description: 'Reload Solr core or collection.')]
+  #[Usage(name: 'drush search-api-solr:reload server_id', description: 'Forces the Solr server to reload the core or collection to apply config changes.')]
+  public function reload(string $server_id): void {
+    $this->commandHelper->reload($server_id);
+    $this->logger()->success(dt('Solr core/collection of %server_id reloaded.', ['%server_id' => $server_id]));
+  }
+
+  /**
+   * Delete Solr collection.
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   *
+   * @command search-api-solr:delete-collection
+   *
+   * @usage drush search-api-solr:delete-collection server_id
+   *   Forces the Solr server to delete the collection.
+   *
+   * @aliases solr-delete-collection
+   */
+  #[Command(name: 'search-api-solr:delete-collection', aliases: ['solr-delete-collection'])]
+  #[Argument(name: 'server_id', description: 'The ID of the server.')]
+  #[Help(description: 'Delete Solr collection.')]
+  #[Usage(name: 'drush search-api-solr:delete-collection server_id', description: 'Forces the Solr server to delete the collection.')]
+  public function deleteCollection(string $server_id): void {
+    $this->commandHelper->deleteCollection($server_id);
+    $this->logger()->success(dt('Solr collection of %server_id deleted.', ['%server_id' => $server_id]));
+  }
+
+  /**
+   * Deletes *all* documents on a Solr search server (including all indexes).
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   *
+   * @command search-api-solr:delete-all
+   *
+   * @usage drush search-api-solr:delete-all server_id
+   *   Deletes *all* documents on server_id.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  #[Command(name: 'search-api-solr:delete-all')]
+  #[Argument(name: 'server_id', description: 'The ID of the server.')]
+  #[Help(description: 'Deletes *all* documents on a Solr search server (including all indexes).')]
+  #[Usage(name: 'drush search-api-solr:delete-all server_id', description: 'Deletes *all* documents on server_id.')]
+  public function deleteAll(string $server_id): void {
+    $servers = $this->commandHelper->loadServers([$server_id]);
+    if ($server = reset($servers)) {
+      $backend = $server->getBackend();
+      if ($backend instanceof SolrBackendInterface) {
+        $connector = $backend->getSolrConnector();
+        $update_query = $connector->getUpdateQuery();
+        $update_query->addDeleteQuery('*:*');
+        $connector->update($update_query);
+
+        foreach ($server->getIndexes() as $index) {
+          if ($index->status() && !$index->isReadOnly()) {
+            if ($connector->isCloud()) {
+              $connector->update($update_query, $backend->getCollectionEndpoint($index));
+            }
+            $index->reindex();
+          }
+        }
+      }
+      else {
+        throw new SearchApiSolrException("The given server ID doesn't use the Solr backend.");
+      }
+    }
+    else {
+      throw new SearchApiException("The given server ID doesn't exist.");
+    }
+  }
+
+  /**
+   * Uploads a configset and reloads the collection or creates it.
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   * @param int|null $numShards
+   *   The number of shards to be created as part of the collection.
+   * @param int|null $maxShardsPerNode
+   *   The maximum number of shards that may be placed on one node.
+   * @param int|null $replicationFactor
+   *   The replication factor to use when creating the collection.
+   * @param int|null $nrtReplicas
+   *   The number of NRT replicas to create.
+   * @param int|null $tlogReplicas
+   *   The number of TLOG replicas to create.
+   * @param int|null $pullReplicas
+   *   The number of PULL replicas to create.
+   * @param bool|null $autoAddReplicas
+   *   Whether Solr should automatically add replicas.
+   * @param string|null $alias
+   *   The alias to create for the collection, if any.
+   * @param bool|null $waitForFinalState
+   *   Whether to wait until all replicas reach the final state.
+   * @param string|null $createNodeSet
+   *   The comma-separated list of nodes to use for the collection.
+   *
+   * @option numShards
+   *   The number of shards to be created as part of the collection. This option
+   *   is ignored if the collection already exists.
+   * @option maxShardsPerNode
+   *   When creating collections, the shards and/or replicas are spread across
+   *   all available (i.e., live) nodes, and two replicas of the same shard will
+   *   never be on the same node. If a node is not live when the CREATE action
+   *   is called, it will not get any parts of the new collection, which could
+   *   lead to too many replicas being created on a single live node. Defining
+   *   maxShardsPerNode sets a limit on the number of replicas the CREATE action
+   *   will spread to each node. If the entire collection can not be fit into
+   *   the live nodes, no collection will be created at all. The default
+   *   maxShardsPerNode value is 1. A value of -1 means unlimited. If a policy
+   *   is also specified then the stricter of maxShardsPerNode and policy rules
+   *   apply. This option is ignored if the collection already exists.
+   * @option replicationFactor
+   *   The number of replicas to be created for each shard. The default is 1.
+   *   This will create a NRT type of replica. If you want another type of
+   *   replica, see the tlogReplicas and pullReplica parameters below. This
+   *   option is ignored if the collection already exists.
+   * @option nrtReplicas
+   *   The number of NRT (Near-Real-Time) replicas to create for this
+   *   collection. This type of replica maintains a transaction log and updates
+   *   its index locally. If you want all of your replicas to be of this type,
+   *   you can simply use replicationFactor instead. This option is ignored if
+   *   the collection already exists.
+   * @option tlogReplicas
+   *   The number of TLOG replicas to create for this collection. This type of
+   *   replica maintains a transaction log but only updates its index via
+   *   replication from a leader. This option is ignored if the collection
+   *   already exists.
+   * @option pullReplicas
+   *   The number of PULL replicas to create for this collection. This type of
+   *   replica does not maintain a transaction log and only updates its index
+   *   via replication from a leader. This type is not eligible to become a
+   *   leader and should not be the only type of replicas in the collection.
+   * @option autoAddReplicas
+   *   When set to true, enables automatic addition of replicas when the number
+   *   of active replicas falls below the value set for replicationFactor. This
+   *   may occur if a replica goes down, for example. The default is false,
+   *   which means new replicas will not be added. This option is ignored if the
+   *   collection already exists.
+   * @option alias
+   *   Starting with Solr version 8.1 when a collection is created additionally
+   *   an alias can be created that points to this collection. This parameter
+   *   allows specifying the name of this alias, effectively combining this
+   *   operation with CREATEALIAS. This option is ignored if the collection
+   *   already exists.
+   * @option waitForFinalState
+   *   If true, the request will complete only when all affected replicas become
+   *   active. The default is false, which means that the API will return the
+   *   status of the single action, which may be before the new replica is
+   *   online and active.
+   * @option createNodeSet
+   *   Allows defining the nodes to spread the new collection across. The format
+   *   is a comma-separated list of node_names, such as
+   *   localhost:8983_solr,localhost:8984_solr,localhost:8985_solr. If not
+   *   provided, the CREATE operation will create shard-replicas spread across
+   *   all live Solr nodes. Alternatively, use the special value of EMPTY to
+   *   initially create no shard-replica within the new collection and then
+   *   later use the ADDREPLICA operation to add shard-replicas when and where
+   *   required. This option is ignored if the collection already exists.
+   *
+   * @default $options []
+   *
+   * @see https://solr.apache.org/guide/8_11/collection-management.html
+   *
+   * @command search-api-solr:upload-configset Json array of arguments to pass to the Collections API
+   *
+   * @usage drush search-api-solr:upload-configset --numShards=3 --replicationFactor=2 SERVER_ID
+   *   Upload a configset and reload the collection or create it with 3 shards
+   *   and a replication factor of 2 for Search API Server SERVER_ID.
+   *
+   * @aliases solr-upload-conf
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   * @throws \ZipStream\Exception\FileNotFoundException
+   * @throws \ZipStream\Exception\FileNotReadableException
+   * @throws \ZipStream\Exception\OverflowException
+   */
+  #[Command(name: 'search-api-solr:upload-configset', aliases: ['solr-upload-conf'])]
+  #[Argument(name: 'server_id', description: 'The ID of the server.')]
+  #[Option(name: 'numShards', description: 'The number of shards to be created as part of the collection. This option is ignored if the collection already exists.')]
+  #[Option(name: 'maxShardsPerNode', description: 'When creating collections, the shards and/or replicas are spread across all available (i.e., live) nodes, and two replicas of the same shard will never be on the same node. If a node is not live when the CREATE action is called, it will not get any parts of the new collection, which could lead to too many replicas being created on a single live node. Defining maxShardsPerNode sets a limit on the number of replicas the CREATE action will spread to each node. If the entire collection can not be fit into the live nodes, no collection will be created at all. The default maxShardsPerNode value is 1. A value of -1 means unlimited. If a policy is also specified then the stricter of maxShardsPerNode and policy rules apply. This option is ignored if the collection already exists.')]
+  #[Option(name: 'replicationFactor', description: 'The number of replicas to be created for each shard. The default is 1. This will create a NRT type of replica. If you want another type of replica, see the tlogReplicas and pullReplica parameters below. This option is ignored if the collection already exists.')]
+  #[Option(name: 'nrtReplicas', description: 'The number of NRT (Near-Real-Time) replicas to create for this collection. This type of replica maintains a transaction log and updates its index locally. If you want all of your replicas to be of this type, you can simply use replicationFactor instead. This option is ignored if the collection already exists.')]
+  #[Option(name: 'tlogReplicas', description: 'The number of TLOG replicas to create for this collection. This type of replica maintains a transaction log but only updates its index via replication from a leader. This option is ignored if the collection already exists.')]
+  #[Option(name: 'pullReplicas', description: 'The number of PULL replicas to create for this collection. This type of replica does not maintain a transaction log and only updates its index via replication from a leader. This type is not eligible to become a leader and should not be the only type of replicas in the collection.')]
+  #[Option(name: 'autoAddReplicas', description: 'When set to true, enables automatic addition of replicas when the number of active replicas falls below the value set for replicationFactor. This may occur if a replica goes down, for example. The default is false, which means new replicas will not be added. This option is ignored if the collection already exists.')]
+  #[Option(name: 'alias', description: 'Starting with Solr version 8.1 when a collection is created additionally an alias can be created that points to this collection. This parameter allows specifying the name of this alias, effectively combining this operation with CREATEALIAS. This option is ignored if the collection already exists.')]
+  #[Option(name: 'waitForFinalState', description: 'If true, the request will complete only when all affected replicas become active. The default is false, which means that the API will return the status of the single action, which may be before the new replica is online and active.')]
+  #[Option(name: 'createNodeSet', description: 'Allows defining the nodes to spread the new collection across. The format is a comma-separated list of node_names, such as localhost:8983_solr,localhost:8984_solr,localhost:8985_solr. If not provided, the CREATE operation will create shard-replicas spread across all live Solr nodes. Alternatively, use the special value of EMPTY to initially create no shard-replica within the new collection and then later use the ADDREPLICA operation to add shard-replicas when and where required. This option is ignored if the collection already exists.')]
+  #[Help(description: 'Deletes *all* documents on a Solr search server (including all indexes).')]
+  #[Usage(name: 'drush search-api-solr:delete-all server_id', description: 'Deletes *all* documents on server_id.')]
+
+  public function uploadConfigset(
+    string $server_id,
+    ?int $numShards = 3,
+    ?int $maxShardsPerNode = 1,
+    ?int $replicationFactor = 1,
+    // @todo Real default is 0.
+    ?int $nrtReplicas = -1,
+    // @todo Real default is 0.
+    ?int $tlogReplicas = -1,
+    // @todo Real default is 0.
+    ?int $pullReplicas = -1,
+    ?bool $autoAddReplicas = FALSE,
+    // @todo Real default is NULL.
+    ?string $alias = '-1',
+    ?bool $waitForFinalState = FALSE,
+    // @todo Real default is NULL.
+    ?string $createNodeSet = '-1',
+  ): void {
+    $options = [
+      'numShards' => $numShards,
+      'maxShardsPerNode' => $maxShardsPerNode,
+      'replicationFactor' => $replicationFactor,
+      'nrtReplicas' => $nrtReplicas === -1 ? 0 : $nrtReplicas,
+      'tlogReplicas' => $tlogReplicas === -1 ? 0 : $tlogReplicas,
+      'pullReplicas' => $pullReplicas === -1 ? 0 : $pullReplicas,
+      'autoAddReplicas' => $autoAddReplicas,
+      'alias' => $alias === '-1' ? NULL : $alias,
+      'waitForFinalState' => $waitForFinalState,
+      'createNodeSet' => $createNodeSet === '-1' ? NULL : $createNodeSet,
+    ];
+    $this->commandHelper->uploadConfigset($server_id, $options, $this->output()->isVerbose());
+    $this->logger()->success(dt('Solr configset for %server_id uploaded.', ['%server_id' => $server_id]));
+  }
+
+}

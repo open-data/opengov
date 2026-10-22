@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Form\IndexForm;
 
 /**
@@ -17,6 +18,8 @@ class IndexSolrMultisiteUpdateForm extends IndexSolrMultisiteCloneForm {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public function form(array $form, FormStateInterface $form_state) {
+    $target_index_prefixed = '';
+
     // If the form is being rebuilt, rebuild the entity with the current form
     // values.
     if ($form_state->isRebuilding()) {
@@ -30,6 +33,8 @@ class IndexSolrMultisiteUpdateForm extends IndexSolrMultisiteCloneForm {
     }
 
     if (!$this->entity->isNew()) {
+      assert($this->entity instanceof IndexInterface);
+
       /** @var \Drupal\search_api\ServerInterface $server */
       $server = $this->entity->getServerInstance();
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
@@ -38,10 +43,11 @@ class IndexSolrMultisiteUpdateForm extends IndexSolrMultisiteCloneForm {
       /** @var \Drupal\search_api\Datasource\DatasourceInterface $datasource */
       $datasource = $this->entity->getDatasource('solr_multisite_document');
 
-      /** @var \Drupal\search_api\IndexInterface $target_index */
+      /** @var \Drupal\search_api\IndexInterface|null $target_index */
       $target_index = $this->entityTypeManager->getStorage('search_api_index')->load(
         $datasource->getConfiguration()['target_index_machine_name']
       );
+      assert($target_index instanceof IndexInterface);
 
       $fields = $target_index->getFields();
       $solr_field_names = $backend->getSolrFieldNames($target_index);

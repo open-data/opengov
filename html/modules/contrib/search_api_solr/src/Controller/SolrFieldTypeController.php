@@ -5,7 +5,6 @@ namespace Drupal\search_api_solr\Controller;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use ZipStream\Option\Archive;
 
 /**
  * Provides different listings of SolrFieldType.
@@ -30,12 +29,6 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    */
   public function getConfigZip(ServerInterface $search_api_server) {
     try {
-      $archive_options = NULL;
-      if (class_exists('\ZipStream\Option\Archive')) {
-        // Version 2.x. Version 3.x uses named parameters instead of options.
-        $archive_options = new Archive();
-        $archive_options->setSendHttpHeaders(TRUE);
-      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
@@ -43,7 +36,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
       header('X-Accel-Buffering: no');
       /** @var SolrConfigSetController $solrConfigSetController */
       $solrConfigSetController = $this->getListBuilder($search_api_server);
-      $zip = $solrConfigSetController->getConfigZip($archive_options);
+      $zip = $solrConfigSetController->getConfigZip();
       $zip->finish();
       @ob_end_flush();
 
@@ -51,7 +44,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $this->messenger->addError($this->t('An error occured during the creation of the config.zip. Look at the logs for details.'));
+      $this->messenger->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
     return [];

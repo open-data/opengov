@@ -69,6 +69,45 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
   }
 
   /**
+   * Flattens nested values and returns non-empty string values only.
+   *
+   * @param mixed $values
+   *   A scalar, array or mixed nested structure.
+   *
+   * @return string[]
+   *   Normalized strings.
+   */
+  protected function normalizeStringValues($values): array {
+    if (!is_array($values)) {
+      $values = [$values];
+    }
+
+    $normalized = [];
+    $queue = $values;
+
+    while ($queue) {
+      $current = array_shift($queue);
+
+      if (is_array($current)) {
+        foreach ($current as $nested) {
+          $queue[] = $nested;
+        }
+
+        continue;
+      }
+
+      if (is_scalar($current)) {
+        $string = trim((string) $current);
+        if ($string !== '') {
+          $normalized[] = $string;
+        }
+      }
+    }
+
+    return $normalized;
+  }
+
+  /**
    * Get highlighted field item value based on latest search results.
    *
    * @param \Drupal\Core\Field\FieldItemInterface $item
@@ -105,10 +144,15 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
 
     foreach ($queryHelper->getAllResults() as $resultSet) {
       $cacheableMetadata->addCacheableDependency($resultSet->getQuery());
-      $query_keys = $resultSet->getQuery()->getKeys() ?: [];
+      $query_keys = $resultSet->getQuery()->getKeys();
+      if (!is_array($query_keys)) {
+        $query_keys = $this->normalizeStringValues($query_keys);
+      }
       foreach ($query_keys as $index => $key) {
         if (is_numeric($index)) {
-          $strict_keys[] = mb_strtolower($key);
+          foreach ($this->normalizeStringValues($key) as $normalized_key) {
+            $strict_keys[] = mb_strtolower($normalized_key);
+          }
         }
       }
 
@@ -119,7 +163,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
       foreach ($resultSet->getResultItems() as $resultItem) {
         if ($resultItem->getId() === $item_id) {
           if ($highlighted_keys_tmp = $resultItem->getExtraData('highlighted_keys')) {
-            $highlighted_keys = array_merge($highlighted_keys, $highlighted_keys_tmp);
+            $highlighted_keys = array_merge($highlighted_keys, $this->normalizeStringValues($highlighted_keys_tmp));
           }
         }
       }

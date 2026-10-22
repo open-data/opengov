@@ -1,0 +1,6 @@
+webform_submission_export_import_test.redirect:
+  path: '/webform-submission-export-import-test/redirect'
+  defaults:
+    _controller: '\Drupal\webform_submission_export_import_test\Controller\WebformSubmissionExportImportTestController::redirect'
+  requirements:
+    _access: 'TRUE'

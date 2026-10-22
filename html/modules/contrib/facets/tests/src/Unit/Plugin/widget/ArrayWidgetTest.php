@@ -25,7 +25,7 @@ class ArrayWidgetTest extends WidgetTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->widget = new ArrayWidget(['show_numbers' => 1], 'array_widget', []);
+    $this->widget = new ArrayWidget(['show_numbers' => 1], 'array_widget', [], $this->urlProcessorManager);
   }
 
   /**

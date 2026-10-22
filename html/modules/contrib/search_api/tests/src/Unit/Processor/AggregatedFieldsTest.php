@@ -3,7 +3,6 @@
 namespace Drupal\Tests\search_api\Unit\Processor;
 
 use Drupal\Core\Form\FormState;
-use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\TypedDataInterface;
@@ -333,7 +332,7 @@ class AggregatedFieldsTest extends UnitTestCase {
     $this->assertTrue($properties['aggregated_field']->isList());
 
     // Verify that the property configuration form works correctly.
-    $property->setStringTranslation($this->createMock(TranslationInterface::class));
+    $property->setStringTranslation($translation);
     $field = $this->createMock(FieldInterface::class);
     $field->method('getIndex')->willReturn($this->processor->getIndex());
     $field->method('getConfiguration')->willReturn([

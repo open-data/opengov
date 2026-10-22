@@ -3,10 +3,10 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
-    - field.field.node.movie.body
     - field.field.node.movie.field_country_of_origin
     - field.field.node.movie.field_genre
     - field.field.node.movie.field_imdb_rating
+    - field.field.node.movie.field_movie_body
     - field.field.node.movie.field_release_date
     - node.type.movie
   module:
@@ -41,7 +41,7 @@ content:
     weight: 2
     region: content
 hidden:
-  body: true
   field_country_of_origin: true
+  field_movie_body: true
   field_release_date: true
   links: true

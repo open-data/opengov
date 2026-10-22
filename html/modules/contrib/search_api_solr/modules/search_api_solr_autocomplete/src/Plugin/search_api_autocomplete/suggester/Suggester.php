@@ -4,11 +4,14 @@ namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\sug
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\SearchApiException;
+use Drupal\search_api_autocomplete\Attribute\SearchApiAutocompleteSuggester;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
@@ -19,25 +22,52 @@ use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
 use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
 use Solarium\Component\ComponentAwareQueryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a suggester plugin that retrieves suggestions from the server.
  *
  * The server needs to support the "search_api_autocomplete" feature for this to
  * work.
- *
- * @SearchApiAutocompleteSuggester(
- *   id = "search_api_solr_suggester",
- *   label = @Translation("Solr Suggester"),
- *   description = @Translation("Suggest complete phrases for the entered string based on Solr's suggest component."),
- * )
  */
+#[SearchApiAutocompleteSuggester(
+  id: 'search_api_solr_suggester',
+  label: new TranslatableMarkup('Solr Suggester'),
+  description: new TranslatableMarkup("Suggest complete phrases for the entered string based on Solr's suggest component."),
+)]
 class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
   use PluginFormTrait;
   use BackendTrait;
   use SolrAutocompleteBackendTrait;
   use LoggerTrait;
+
+  /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected LanguageManagerInterface $languageManager;
+
+  /**
+   * Constructs the Solr suggester plugin.
+   */
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, LanguageManagerInterface $language_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->languageManager = $language_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('language_manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -94,7 +124,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
     $langcode_options['any'] = $this->t('Any language');
     $langcode_options['multilingual'] = $this->t('Let the Solr server handle it dynamically.');
-    foreach (\Drupal::languageManager()->getLanguages() as $language) {
+    foreach ($this->languageManager->getLanguages() as $language) {
       $langcode_options[$language->getId()] = $language->getName();
     }
     $langcode_options[LanguageInterface::LANGCODE_NOT_SPECIFIED] = $this->t('Undefined');

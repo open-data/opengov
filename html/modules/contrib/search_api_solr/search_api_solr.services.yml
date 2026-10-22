@@ -1,11 +1,19 @@
+parameters:
+  search_api_solr.skip_procedural_hook_scan: true
+
 services:
   plugin.manager.search_api_solr.connector:
     class: Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager
     parent: default_plugin_manager
+    calls:
+      - [setConnectorServices, ['@state', '@date.formatter', '@solarium.query_helper']]
 
   search_api_solr.config_subscriber:
     class: Drupal\search_api_solr\EventSubscriber\ConfigSubscriber
-    arguments: ['@config.installer']
+    arguments:
+      - '@config.installer'
+      - '@messenger'
+      - '@language_manager'
     tags:
       - {name: event_subscriber}
 
@@ -27,7 +35,7 @@ services:
 
   solr_field.manager:
     class: Drupal\search_api_solr\SolrFieldManager
-    arguments: ['@cache.discovery', '@entity_type.manager', '@logger.channel.search_api']
+    arguments: ['@cache.discovery', '@logger.channel.search_api']
 
   solr_multisite_document.factory:
     class: Drupal\search_api_solr\SolrMultisiteDocumentFactory
@@ -35,14 +43,15 @@ services:
 
   solr_multisite_field.manager:
     class: Drupal\search_api_solr\SolrMultisiteFieldManager
-    arguments: ['@cache.discovery', '@entity_type.manager', '@logger.channel.search_api']
+    arguments: ['@cache.discovery', '@logger.channel.search_api']
 
   solarium.query_helper:
     class: Solarium\Core\Query\Helper
 
   search_api_solr.streaming_expression_query_helper:
     class: Drupal\search_api_solr\Utility\StreamingExpressionQueryHelper
-    arguments: ['@request_stack', '@module_handler', '@plugin.manager.search_api.parse_mode']
+    arguments: ['@request_stack', '@module_handler', '@plugin.manager.search_api.parse_mode', '@language_manager', '@datetime.time', '@state']
+  Drupal\search_api_solr\Utility\StreamingExpressionQueryHelper: '@search_api_solr.streaming_expression_query_helper'
 
   search_api_solr.configset_controller:
     class: Drupal\search_api_solr\Controller\SolrConfigSetController
@@ -51,3 +60,14 @@ services:
   search_api_solr.command_helper:
     class: Drupal\search_api_solr\Utility\SolrCommandHelper
     arguments: ['@entity_type.manager', '@module_handler', '@event_dispatcher', '@search_api_solr.configset_controller']
+    calls:
+      - [setSupportingServices, ['@state', '@datetime.time', '@config.factory', '@service_container']]
+
+  search_api_solr.index_parallel_batch_helper:
+    class: Drupal\search_api_solr\Utility\IndexParallelBatchHelper
+    parent: search_api.indexing_batch_helper
+    calls:
+      - [setBatchStorage, ['@batch.storage']]
+  Drupal\search_api_solr\Hook\SearchApiSolrHooks:
+    class: Drupal\search_api_solr\Hook\SearchApiSolrHooks
+    autowire: true

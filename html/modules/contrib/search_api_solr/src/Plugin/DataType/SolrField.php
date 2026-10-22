@@ -2,23 +2,25 @@
 
 namespace Drupal\search_api_solr\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
 use Drupal\Core\TypedData\TypedData;
 use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\search_api\Item\FieldInterface;
+use Drupal\search_api_solr\TypedData\SolrFieldDefinition;
 
 /**
  * Defines the "Solr field" data type.
  *
  * Instances of this class wrap Search API Field objects and allow to deal with
  * fields based upon the Typed Data API.
- *
- * @DataType(
- *   id = "solr_field",
- *   label = @Translation("Solr field"),
- *   description = @Translation("Fields from a Solr document."),
- *   definition_class = "\Drupal\search_api_solr\TypedData\SolrFieldDefinition"
- * )
  */
+#[DataType(
+  id: 'solr_field',
+  label: new TranslatableMarkup('Solr field'),
+  description: new TranslatableMarkup('Fields from a Solr document.'),
+  definition_class: SolrFieldDefinition::class,
+)]
 class SolrField extends TypedData implements \IteratorAggregate {
 
   /**

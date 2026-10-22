@@ -3,14 +3,48 @@
 namespace Drupal\search_api_solr\Controller;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a listing of SolrFieldType.
  */
 class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
+
+  /**
+   * Constructs a new list builder instance.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager.
+   */
+  public function __construct(
+    EntityTypeInterface $entity_type,
+    EntityTypeManagerInterface $entityTypeManager,
+    protected LanguageManagerInterface $languageManager,
+  ) {
+    $storage = $entityTypeManager->getStorage($entity_type->id());
+    parent::__construct($entity_type, $storage);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+      $entity_type,
+      $container->get('entity_type.manager'),
+      $container->get('language_manager'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -74,7 +108,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
   public function load(): array {
     static $entities;
 
-    $active_languages = array_keys(\Drupal::languageManager()->getLanguages());
+    $active_languages = array_keys($this->languageManager->getLanguages());
     // Ignore region and variant of the locale string the language manager
     // returns as we provide language fallbacks. For example, 'de' should be
     // used for 'de-at' if there's no dedicated 'de-at' field type.
@@ -100,7 +134,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
           throw new SearchApiSolrException();
         }
       }
-      catch (SearchApiSolrException $e) {
+      catch (SearchApiSolrException) {
         $operator = '<=';
         $warning = TRUE;
       }
@@ -172,7 +206,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
           return $version;
         }, $solr_version);
 
-        \Drupal::messenger()->addWarning(
+        $this->messenger()->addWarning(
           $this->t(
             'Unable to reach the Solr server (yet). Therefore the lowest supported Solr version %version is assumed. Once the connection works and the real Solr version could be detected it might be necessary to deploy an adjusted config to the server to get the best search results. If the server does not start using the downloadable config, you should edit the server and manually set the Solr version override temporarily that fits your server best and download the config again. But it is recommended to remove this override once the server is running.',
             ['%version' => $this->assumedMinimumVersion])

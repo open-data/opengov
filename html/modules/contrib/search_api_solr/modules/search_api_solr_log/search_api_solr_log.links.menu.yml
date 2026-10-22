@@ -3,4 +3,3 @@ search_api_solr_log.settings:
   description: 'Configure logging details.'
   parent: system.admin_config_search
   route_name: search_api_solr_log.settings
-

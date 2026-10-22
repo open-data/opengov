@@ -1,0 +1,21 @@
+.facets-demo--inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+
+  .view-filters {
+    width: 386px;
+  }
+  .view-header {
+    padding-top: 23px;
+    padding-bottom: 14px;
+  }
+  .view-content {
+    display: block;
+    width: 100%;
+  }
+  .views-row {
+    margin-bottom: 15px;
+  }
+}

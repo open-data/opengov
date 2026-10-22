@@ -4,6 +4,8 @@ namespace Drupal\search_api_solr\Plugin\search_api\processor;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 use Drupal\search_api\Query\QueryInterface;
@@ -12,16 +14,15 @@ use Drupal\search_api_solr\SolrBackendInterface;
 
 /**
  * Adds a boost for more recent dates.
- *
- * @SearchApiProcessor(
- *   id = "solr_boost_more_recent",
- *   label = @Translation("Boost more recent dates"),
- *   description = @Translation("Boost more recent documents and penalize older documents."),
- *   stages = {
- *     "preprocess_query" = 0,
- *   }
- * )
  */
+#[SearchApiProcessor(
+  id: 'solr_boost_more_recent',
+  label: new TranslatableMarkup('Boost more recent dates'),
+  description: new TranslatableMarkup('Boost more recent documents and penalize older documents.'),
+  stages: [
+    'preprocess_query' => 0,
+  ],
+)]
 class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface {
 
   use PluginFormTrait;

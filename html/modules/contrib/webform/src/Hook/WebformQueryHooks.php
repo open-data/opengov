@@ -88,6 +88,13 @@ class WebformQueryHooks {
     if ($account->hasPermission('administer webform submission') || $account->hasPermission('administer webform')) {
       return;
     }
+    // JSON:API executes entity queries inside a render context to capture
+    // cacheability from query access hooks.
+    $renderer = \Drupal::service('renderer');
+    if ($renderer->hasRenderContext()) {
+      $build = ['#cache' => ['contexts' => $entity_type->getListCacheContexts()]];
+      $renderer->render($build);
+    }
     // Apply operation specific any and own permissions.
     if (in_array($op, ['view', 'edit', 'delete'])) {
       $permission_any = "{$op} any webform submission";

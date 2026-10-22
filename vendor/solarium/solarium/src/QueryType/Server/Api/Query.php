@@ -22,10 +22,8 @@ class Query extends AbstractQuery
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'version' => Request::API_V1,
         'method' => Request::METHOD_GET,
         'resultclass' => Result::class,
@@ -116,12 +114,10 @@ class Query extends AbstractQuery
     /**
      * Set request Content-Type.
      *
-     * Use one of the Request::CONTENT_TYPE_* constants as value.
-     *
      * Content-Type parameters can be passed in $params or set with {@see setContentTypeParams()}.
      *
-     * @param string|null $contentType
-     * @param array|null  $params
+     * @param Request::CONTENT_TYPE_*|null $contentType
+     * @param array|null                   $params
      *
      * @return self Provides fluent interface
      */

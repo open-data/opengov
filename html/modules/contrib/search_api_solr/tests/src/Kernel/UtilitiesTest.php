@@ -2,7 +2,11 @@
 
 namespace Drupal\Tests\search_api_solr\Kernel;
 
+use Drupal\Core\Form\FormInterface;
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\search_api\Entity\Index;
 use Drupal\search_api_solr\Utility\Utility;
 
 /**
@@ -165,6 +169,103 @@ class UtilitiesTest extends KernelTestBase {
     $highlighted_keys = Utility::getHighlightedKeys($snippet);
 
     $this->assertEquals([], $highlighted_keys);
+  }
+
+  /**
+   * Tests preserving third-party settings missing from the index form.
+   */
+  public function testSearchApiIndexFormEntityBuilderPreservesThirdPartySettings() {
+    $original_index = Index::create([
+      'id' => 'test_index',
+      'name' => 'Test index',
+    ]);
+    $original_index->setThirdPartySetting('search_api_solr', 'finalize', FALSE);
+    $original_index->setThirdPartySetting('other_module', 'existing', 'preserved');
+    $original_index->setThirdPartySetting('submitted_module', 'existing', 'old');
+
+    $submitted_settings = [
+      'search_api_solr' => [
+        'finalize' => TRUE,
+      ],
+      'submitted_module' => [
+        'changed' => 'new',
+      ],
+    ];
+
+    $index = Index::create([
+      'id' => 'test_index',
+      'name' => 'Test index',
+    ]);
+    foreach ($submitted_settings as $provider => $settings) {
+      foreach ($settings as $key => $value) {
+        $index->setThirdPartySetting($provider, $key, $value);
+      }
+    }
+
+    $form_state = (new FormState())
+      ->setFormObject(new class($original_index) implements FormInterface {
+
+        /**
+         * The original index entity.
+         *
+         * @var \Drupal\search_api\Entity\Index
+         */
+        protected $index;
+
+        /**
+         * Constructs a new test form object.
+         *
+         * @param \Drupal\search_api\Entity\Index $index
+         *   The original index entity.
+         */
+        public function __construct(Index $index) {
+          $this->index = $index;
+        }
+
+        /**
+         * Gets the original index entity.
+         *
+         * @return \Drupal\search_api\Entity\Index
+         *   The original index entity.
+         */
+        public function getEntity() {
+          return $this->index;
+        }
+
+        /**
+         * {@inheritdoc}
+         */
+        public function getFormId() {
+          return 'search_api_index_edit_form';
+        }
+
+        /**
+         * {@inheritdoc}
+         */
+        public function buildForm(array $form, FormStateInterface $form_state) {
+          return $form;
+        }
+
+        /**
+         * {@inheritdoc}
+         */
+        public function validateForm(array &$form, FormStateInterface $form_state) {}
+
+        /**
+         * {@inheritdoc}
+         */
+        public function submitForm(array &$form, FormStateInterface $form_state) {}
+
+      })
+      ->setValue('third_party_settings', $submitted_settings);
+    $form = [];
+
+    search_api_solr_search_api_index_form_entity_builder('search_api_index', $index, $form, $form_state);
+
+    $this->assertTrue($index->getThirdPartySetting('search_api_solr', 'finalize'));
+    $this->assertSame('preserved', $index->getThirdPartySetting('other_module', 'existing'));
+    $this->assertNull($index->getThirdPartySetting('submitted_module', 'existing'));
+    $this->assertSame('new', $index->getThirdPartySetting('submitted_module', 'changed'));
   }
 
 }

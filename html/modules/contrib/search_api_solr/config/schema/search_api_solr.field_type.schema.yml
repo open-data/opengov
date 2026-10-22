@@ -122,9 +122,8 @@ search_api_solr.solr_field_type_filter:
       label: 'WordDelimiterGraphFilter:: WordDelimiterFilter::generateWordParts'
       nullable: true
     preserveOriginal:
-      # ASCIIFoldingFilter and EdgeNGramFilterFactory expect a boolean
       type: integer
-      label: 'WordDelimiterGraphFilter:: ASCIIFoldingFilter:: EdgeNGramFilterFactory:: WordDelimiterFilter::preserveOriginal'
+      label: 'WordDelimiterGraphFilter:: ASCIIFoldingFilter:: NGramFilter:: EdgeNGramFilter:: WordDelimiterFilter::preserveOriginal'
       nullable: true
     catenateAll:
       type: integer
@@ -190,6 +189,7 @@ search_api_solr.solr_field_type_filter:
       type: string
       label: 'WordDelimiterGraphFilter:: TypeTokenFilter::types'
       nullable: true
+    # cspell:ignore useWhitelist
     useWhitelist:
       type: boolean
       label: 'TypeTokenFilter::useWhitelist'

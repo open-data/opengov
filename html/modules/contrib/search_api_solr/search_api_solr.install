@@ -224,15 +224,34 @@ function search_api_solr_requirements($phase) {
     }
 
     $filename = __DIR__ . '/composer.json';
-    $composer = json_decode(file_get_contents($filename), TRUE);
-    if (
-      !preg_match('/([0123456789.]+)/', $composer['require']['solarium/solarium'], $matches) ||
+    $composer = NULL;
+    if (is_readable($filename)) {
+      $composer = json_decode(file_get_contents($filename), TRUE);
+    }
+
+    $required_solarium_version = $composer['require']['solarium/solarium'] ?? NULL;
+    if ($required_solarium_version === NULL) {
+      $requirements['search_api_solr_solarium'] = [
+        'title' => t('Solarium library'),
+        'value' => t('Solarium library'),
+        'description' => t('Unable to verify the required Solarium version because the Search API Solr composer.json file is missing or unreadable.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    elseif (
+      !preg_match('/([0123456789.]+)/', $required_solarium_version, $matches) ||
       !Client::checkMinimal($matches[1])
     ) {
       $requirements['search_api_solr_solarium'] = [
         'title' => t('Solarium library'),
         'value' => t('Solarium library'),
-        'description' => t('Solarium @version is too old! Version required: @required', ['@version' => Client::getVersion(), '@required' => $matches[1] ?? t('Error reading composer.json')]),
+        'description' => t(
+          'Solarium @version is too old! Version required: @required',
+          [
+            '@version' => Client::getVersion(),
+            '@required' => $matches[1] ?? t('Error reading composer.json'),
+          ],
+        ),
         'severity' => REQUIREMENT_ERROR,
       ];
     }
@@ -1307,9 +1326,12 @@ function search_api_solr_update_8313() {
         }
       }
       if (!empty($field_type_config['spellcheck_field_type'])) {
-        foreach ($field_type_config['spellcheck_field_type'] as &$components) {
-          if (is_array($components) && 'org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer' !== $components['tokenizer']['class']) {
-            $components['tokenizer']['class'] = 'org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer';
+        foreach (array_keys($field_type_config['spellcheck_field_type']) as $key) {
+          if (
+            is_array($field_type_config['spellcheck_field_type'][$key]) &&
+            'org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer' !== $field_type_config['spellcheck_field_type'][$key]['tokenizer']['class']
+          ) {
+            $field_type_config['spellcheck_field_type'][$key]['tokenizer']['class'] = 'org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer';
           }
         }
       }
@@ -1668,13 +1690,13 @@ function search_api_solr_update_8322() {
         }
       }
       if ('tr' === $field_type_config['field_type_language_code']) {
-        foreach ($field_type_config['field_type'] as &$components) {
-          if (is_array($components)) {
-            foreach ($components as &$analyzers) {
-              if (is_array($analyzers)) {
-                foreach ($analyzers['filters'] as &$filter) {
-                  if ('stopwords_tr.tx' === $filter['words']) {
-                    $filter['words'] = 'stopwords_tr.txt';
+        foreach (array_keys($field_type_config['field_type']) as $components_key) {
+          if (is_array($field_type_config['field_type'][$components_key])) {
+            foreach (array_keys($field_type_config['field_type'][$components_key]) as $analyzers_key) {
+              if (is_array($field_type_config['field_type'][$components_key][$analyzers_key])) {
+                foreach (array_keys($field_type_config['field_type'][$components_key][$analyzers_key]['filters']) as $filter_key) {
+                  if ('stopwords_tr.tx' === $field_type_config['field_type'][$components_key][$analyzers_key]['filters'][$filter_key]['words']) {
+                    $field_type_config['field_type'][$components_key][$analyzers_key]['filters'][$filter_key]['words'] = 'stopwords_tr.txt';
                     $save = TRUE;
                   }
                 }
@@ -1960,6 +1982,9 @@ function search_api_solr_update_8332() {
 
   foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
     if (strpos($field_type_name, 'search_api_solr.solr_field_type.text_fr') === 0) {
+      $index_analyzer = NULL;
+      $query_analyzer = NULL;
+      $query_analyzer_key = NULL;
       foreach ($field_type_config['field_type']['analyzers'] as $key => $analyzer) {
         if ($analyzer['type'] === 'index') {
           $index_analyzer = $analyzer;
@@ -1969,12 +1994,21 @@ function search_api_solr_update_8332() {
           $query_analyzer_key = $key;
         }
       }
+      if ($index_analyzer === NULL || $query_analyzer === NULL || $query_analyzer_key === NULL) {
+        continue;
+      }
+
+      $elision_filter_position = NULL;
       // Retrieve the filter position in the index analyzer:
       foreach ($index_analyzer['filters'] as $filter_position => $filter) {
         if ($filter['class'] === 'solr.ElisionFilterFactory') {
           $elision_filter_position = $filter_position;
         }
       }
+      if ($elision_filter_position === NULL) {
+        continue;
+      }
+
       $proceed_update = TRUE;
       foreach ($query_analyzer['filters'] as $filter_position => $filter) {
         if ($filter['class'] === 'solr.ElisionFilterFactory') {
@@ -2251,7 +2285,7 @@ function search_api_solr_update_8419() {
 }
 
 /**
- * Add Solr 9 configs, don't build suggesters on commit, add offsets for unified highlighter.
+ * Add Solr 9 configs and unified highlighter offsets.
  */
 function search_api_solr_update_8420() {
   foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {

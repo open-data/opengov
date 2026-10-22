@@ -8,3 +8,4 @@ drupal.search_api.processors:
   dependencies:
     - core/drupal
     - core/jquery
+    - core/drupal.vertical-tabs

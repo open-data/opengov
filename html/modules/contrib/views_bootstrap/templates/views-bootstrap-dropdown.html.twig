@@ -1,0 +1,15 @@
+{#
+  Render a view containing a list of rows as a drop-down.
+  @see http://getbootstrap.com/javascript/#dropdowns
+#}
+<div id="{{ id }}" {{ attributes.addClass(classes) }}>
+  <button{{ button.attributes }} type="button" id="{{ id }}-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ button.text }}
+    <span class="caret"></span>
+  </button>
+  <ul{{ list.attributes }} role="menu" aria-labelledby="{{ id }}-dropdown">
+  {% for key, row in rows %}
+    <li{{ row.attributes }}>{{- row.content|render|striptags('<a><img>')|trim|raw -}}</li>
+  {% endfor %}
+  </ul>
+</div>

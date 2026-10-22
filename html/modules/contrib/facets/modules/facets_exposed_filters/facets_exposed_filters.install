@@ -112,10 +112,8 @@ function facets_exposed_filters_update_8001() {
 
 }
 
-
-
 /**
- * 3544226: Fix schema validation for Facets exposed filters.
+ * Issue: 3544226: Fix schema validation for Facets exposed filters.
  */
 function facets_exposed_filters_update_8002() {
 
@@ -139,7 +137,7 @@ function facets_exposed_filters_update_8002() {
           }
 
           // Add processor_id to processor_configs on all facet filters.
-          foreach($filter['facet']['processor_configs'] as $processor_config_id => $processor_configs) {
+          foreach ($filter['facet']['processor_configs'] as $processor_config_id => $processor_configs) {
             $filter['facet']['processor_configs'][$processor_config_id]['processor_id'] = $processor_config_id;
             $changed = TRUE;
           }
@@ -148,7 +146,7 @@ function facets_exposed_filters_update_8002() {
       }
     }
 
-    if($changed) {
+    if ($changed) {
       $view->set('display', $displays);
       $view->save();
     }

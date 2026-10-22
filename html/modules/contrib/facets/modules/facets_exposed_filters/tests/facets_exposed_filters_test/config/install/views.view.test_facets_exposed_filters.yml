@@ -155,6 +155,8 @@ display:
           facet:
             query_operator: or
             min_count: 1
+            missing: false
+            missing_label: others
             show_numbers: false
             processor_configs: {  }
         facets_keywords:
@@ -202,6 +204,8 @@ display:
           facet:
             query_operator: or
             min_count: 1
+            missing: false
+            missing_label: others
             show_numbers: false
             processor_configs: {  }
       style:

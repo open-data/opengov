@@ -44,7 +44,8 @@ class ClearLogConfirmForm extends ConfirmFormBase {
       SolrLogger::delete();
       $this->messenger()->addStatus($this->t('Solr log cleared.'));
       $form_state->setRedirectUrl($this->getCancelUrl());
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger()->addError($this->t('An error occurred while clearing the log: %message', ['%message' => $e->getMessage()]));
     }
   }

@@ -21,7 +21,7 @@ abstract class BootstrapLayoutsHandlerBase extends PluginBase implements Bootstr
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ContainerInterface $container = NULL) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ?ContainerInterface $container = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     if (!isset($container)) {
       $container = \Drupal::getContainer();

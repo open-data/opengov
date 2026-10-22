@@ -9,31 +9,31 @@
 
 namespace Solarium\Component\Result\Spellcheck;
 
+use Solarium\Component\Result\ComponentResultInterface;
+
 /**
  * Select component spellcheck result.
  */
-class Result implements \IteratorAggregate, \Countable
+class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
 {
     /**
      * Suggestions array.
      *
-     * @var array
+     * @var Suggestion[]
      */
-    protected $suggestions;
+    protected array $suggestions;
 
     /**
      * Collation object array.
      *
-     * @var array
+     * @var Collation[]
      */
-    protected $collations;
+    protected array $collations;
 
     /**
      * Correctly spelled?
-     *
-     * @var bool
      */
-    protected $correctlySpelled;
+    protected bool $correctlySpelled;
 
     /**
      * Constructor.

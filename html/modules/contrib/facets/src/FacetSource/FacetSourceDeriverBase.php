@@ -66,7 +66,7 @@ abstract class FacetSourceDeriverBase implements ContainerDeriverInterface {
    *   The entity manager.
    */
   public function getEntityTypeManager() {
-    return $this->entityTypeManager ?: \Drupal::service('entity_type.manager');
+    return $this->entityTypeManager;
   }
 
   /**

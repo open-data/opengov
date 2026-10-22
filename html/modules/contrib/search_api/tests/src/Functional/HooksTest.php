@@ -4,12 +4,14 @@ namespace Drupal\Tests\search_api\Functional;
 
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api_test\PluginTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests integration of hooks.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class HooksTest extends SearchApiBrowserTestBase {
 
   use PluginTestTrait;

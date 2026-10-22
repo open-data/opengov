@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:ignoreFile SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace Drupal\Tests\search_api_solr\Kernel;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -454,7 +456,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         'edismax'
       );
     }
-    catch (SearchApiSolrException $e) {
+    catch (SearchApiSolrException) {
       $exception = TRUE;
     }
     $this->assertTrue($exception);
@@ -468,7 +470,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         'direct'
       );
     }
-    catch (SearchApiSolrException $e) {
+    catch (SearchApiSolrException) {
       $exception = TRUE;
     }
     $this->assertTrue($exception);
@@ -662,7 +664,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     // Test tagging of a single filter query of a facet query.
     $query = $this->buildSearch();
     $query->setLanguages([LanguageInterface::LANGCODE_NOT_SPECIFIED]);
-    $conditions = $query->createConditionGroup('OR', ['facet:' . 'tagtosearchfor']);
+    $conditions = $query->createConditionGroup('OR', ['facet:tagtosearchfor']);
     $conditions->addCondition('category', 'article_category');
     $query->addConditionGroup($conditions);
     $conditions = $query->createConditionGroup('AND');
@@ -968,10 +970,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     foreach ($results as $result) {
       $this->assertStringContainsString('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
       $this->assertEquals(['foobar'], $result->getExtraData('highlighted_keys', []));
-      $this->assertEquals('… bar … test <strong>foobar</strong> Case …', $result->getExcerpt());
+      $this->assertEquals('… test <strong>foobar</strong> Case …', $result->getExcerpt());
     }
 
-    // Test highlghting with stemming.
+    // Test highlighting with stemming.
     $query = $this->buildSearch('foobars');
     $results = $query->execute();
     $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
@@ -979,7 +981,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     foreach ($results as $result) {
       $this->assertStringContainsString('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
       $this->assertEquals(['foobar'], $result->getExtraData('highlighted_keys', []));
-      $this->assertEquals('… bar … test <strong>foobar</strong> Case …', $result->getExcerpt());
+      $this->assertEquals('… test <strong>foobar</strong> Case …', $result->getExcerpt());
     }
   }
 
@@ -1277,7 +1279,13 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->indexItems($this->indexId);
 
     $index = $this->getIndex();
-    $connector = $index->getServerInstance()->getBackend()->getSolrConnector();
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $index->getServerInstance()->getBackend();
+    $connector = $backend->getSolrConnector();
+    assert(
+      $connector instanceof \Drupal\search_api_solr_test\Plugin\SolrConnector\BasicAuthTestSolrConnector
+      || $connector instanceof \Drupal\search_api_solr_test\Plugin\SolrConnector\BasicAuthTestSolrCloudConnector
+    );
 
     $results = $this->buildSearch()->execute();
     $this->assertEquals(6, $results->getResultCount(), 'Number of indexed entities is correct.');
@@ -1406,6 +1414,51 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertFalse($this->getIndex()->isReindexing());
     ConfigurableLanguage::createFromLangcode('de-ch')->save();
     $this->assertTrue($this->getIndex()->isReindexing());
+  }
+
+  /**
+   * Tests language undefined fallback fulltext values are indexed once.
+   */
+  public function testLanguageUndefinedFallbackFulltextValuesIndexedOnce() {
+    $index = $this->getIndex();
+    $settings = $index->getThirdPartySettings('search_api_solr');
+    $settings['multilingual']['use_language_undefined_as_fallback_language'] = TRUE;
+    $index->setThirdPartySetting('search_api_solr', 'multilingual', $settings['multilingual']);
+
+    $processor = \Drupal::getContainer()
+      ->get('search_api.plugin_helper')
+      ->createProcessorPlugin($index, 'language_with_fallback');
+    $index->addProcessor($processor);
+
+    $language_with_fallback_field = $this->fieldsHelper->createField($index, 'language_with_fallback', [
+      'label' => 'Language (with fallback)',
+      'property_path' => 'language_with_fallback',
+      'type' => 'string',
+    ]);
+    $index->addField($language_with_fallback_field);
+    $index->save();
+
+    $this->addTestEntity(1, [
+      'name' => 'English fallback title',
+      'body' => 'English fallback body',
+      'type' => 'item',
+      'langcode' => 'en',
+    ]);
+
+    $item_id = $this->getItemIds([1 => 'en'])[0];
+    $object = $index->loadItem($item_id);
+    $this->assertNotNull($object);
+    $item = $this->fieldsHelper->createItemFromObject($index, $object, $item_id);
+    $item->getFields();
+    $this->assertGreaterThan(2, count($item->getField('language_with_fallback')->getValues()));
+
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $index->getServerInstance()->getBackend();
+    $backend->getSolrFieldNames($index, TRUE);
+    $documents = $backend->getDocuments($index, [$item_id => $item]);
+    $document = reset($documents);
+
+    $this->assertSame('English fallback title', $document->getFields()['tm_X3b_und_name']);
   }
 
   /**
@@ -1689,6 +1742,32 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       ],
     ]]];
     // @codingStandardsIgnoreEnd
+  }
+
+  /**
+   * Test index status is not reset on config save.
+   */
+  public function testIndexStatusOnConfigSave() {
+    // Make sure the index is not reindexing.
+    $this->setHasReindexed($this->indexId, FALSE);
+    $this->assertEquals(FALSE, $this->getIndex()->isReindexing());
+    // Make a config save.
+    \Drupal::configFactory()->getEditable("language.entity.en")->save();
+    // Check that the index is still not reindexing.
+    $this->assertEquals(FALSE, $this->getIndex()->isReindexing());
+  }
+
+  /**
+   * Sets the index status to reindexed or not reindexed.
+   *
+   * @param string $indexId
+   *   The index ID.
+   * @param bool $value
+   *   The value to set.
+   */
+  protected function setHasReindexed($indexId, bool $value = TRUE) {
+    $key = "search_api.index.{$indexId}.has_reindexed";
+    \Drupal::state()->set($key, $value);
   }
 
 }

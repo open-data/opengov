@@ -2,8 +2,7 @@
 
 namespace Drupal\Tests\facets\Functional;
 
-use Drupal\facets\Entity\Facet;
-use Drupal\facets\Processor\SortProcessorInterface;
+use Drupal\entity_test\EntityTestHelper;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\search_api\Item\Field;
@@ -158,7 +157,7 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $index->save();
     $this->indexItems($this->indexId);
 
-    $entity_test_storage = \Drupal::entityTypeManager()
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
     $entity_test_storage->create([
       'name' => 'foo bar baz',
@@ -265,7 +264,7 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $index->save();
     $this->indexItems($this->indexId);
 
-    $entity_test_storage = \Drupal::entityTypeManager()
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
 
     foreach ([30, 35, 40, 100] as $val) {
@@ -724,7 +723,6 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $this->submitForm($settings, 'Save');
   }
 
-
   /**
    * Test pre query processor.
    */
@@ -759,7 +757,7 @@ class ProcessorIntegrationTest extends FacetsTestBase {
     $this->assertSession()->pageTextContains('test pre query');
 
     // Make the ::supportsFacet method on the custom processor return false.
-    \Drupal::state()->set('facets_test_supports_facet', FALSE);
+    $this->container->get('state')->set('facets_test_supports_facet', FALSE);
 
     // Go to the facet edit page and check to see if the custom processor is
     // now hidden.
@@ -774,7 +772,7 @@ class ProcessorIntegrationTest extends FacetsTestBase {
    * longer shows.
    */
   public function testHideOnlyOneItemProcessor() {
-    $entity_test_storage = \Drupal::entityTypeManager()
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
 
     // Load all items and delete them.
@@ -826,8 +824,8 @@ class ProcessorIntegrationTest extends FacetsTestBase {
    * Tests the list item processor with underscores in the bundle.
    */
   public function testEntityTranslateWithUnderScores() {
-    entity_test_create_bundle('test_with_underscore', "Test with underscore", 'entity_test_mulrev_changed');
-    $entity_test_storage = \Drupal::entityTypeManager()
+    EntityTestHelper::createBundle('test_with_underscore', "Test with underscore", 'entity_test_mulrev_changed');
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
 
     // Add an entity with basic page content type.

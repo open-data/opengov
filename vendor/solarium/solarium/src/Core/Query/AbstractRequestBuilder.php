@@ -20,19 +20,17 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
 {
     /**
      * Helper instance.
-     *
-     * @var Helper
      */
-    protected $helper;
+    protected ?Helper $helper = null;
 
     /**
      * Build request for a generic query.
      *
-     * @param QueryInterface|AbstractQuery $query
+     * @param QueryInterface&AbstractQuery $query
      *
      * @return Request
      */
-    public function build(QueryInterface|AbstractQuery $query): Request
+    public function build(QueryInterface $query): Request
     {
         $request = new Request();
         $request->setHandler($query->getHandler());

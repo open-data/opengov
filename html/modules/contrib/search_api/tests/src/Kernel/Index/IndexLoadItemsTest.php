@@ -6,12 +6,14 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_test\PluginTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests whether loading items works correctly.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class IndexLoadItemsTest extends KernelTestBase {
 
   use PluginTestTrait;
@@ -44,7 +46,9 @@ class IndexLoadItemsTest extends KernelTestBase {
       'id' => 'test',
       'backend' => 'search_api_test',
     ]);
+    $server->save();
     $this->index = Index::create([
+      'id' => 'test',
       'tracker_settings' => [
         'search_api_test' => [],
       ],
@@ -53,6 +57,7 @@ class IndexLoadItemsTest extends KernelTestBase {
       ],
     ]);
     $this->index->setServer($server);
+    $this->index->save();
   }
 
   /**

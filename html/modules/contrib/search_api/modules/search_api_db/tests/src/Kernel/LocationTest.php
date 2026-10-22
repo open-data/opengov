@@ -9,6 +9,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api_db\DatabaseCompatibility\LocationAwareDatabaseInterface;
 use Drupal\Tests\search_api\Kernel\BackendTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests location searches using the Database Search API backend.
@@ -17,6 +18,7 @@ use Drupal\Tests\search_api\Kernel\BackendTestBase;
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class LocationTest extends BackendTestBase {
 
   /**

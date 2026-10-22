@@ -315,6 +315,16 @@ class WebformUiElementTest extends WebformBrowserTestBase {
 
     $webform = Webform::load('contact');
 
+    // Check build page access is visible to user with edit access and without
+    // 'edit webform source' permission.
+    $account = $this->drupalCreateUser(['edit any webform']);
+    $this->drupalLogin($account);
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id());
+    $assert_session->statusCodeEquals(200);
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/source');
+    $assert_session->statusCodeEquals(403);
+    $this->drupalLogout();
+
     // Check source page access not visible to user with 'administer webform'
     // permission.
     $account = $this->drupalCreateUser(['administer webform']);

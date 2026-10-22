@@ -28,7 +28,7 @@ search_api_solr.solr_request_handler.*:
           label: 'The Solr request handler class'
         startup:
           type: string
-          label: 'The startup behaviour'
+          label: 'The startup behavior'
           nullable: true
         lst:
           type: search_api_solr.list

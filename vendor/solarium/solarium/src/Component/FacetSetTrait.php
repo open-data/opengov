@@ -23,18 +23,16 @@ trait FacetSetTrait
      *
      * @var FacetInterface[]
      */
-    protected $facets = [];
+    protected array $facets = [];
 
     /**
      * Add a facet.
      *
-     * @param \Solarium\Component\Facet\FacetInterface|array $facet
+     * @param FacetInterface|array $facet
      *
      * @throws InvalidArgumentException
-     *
-     * @return self Provides fluent interface
      */
-    public function addFacet($facet): self
+    public function addFacet(FacetInterface|array $facet): static
     {
         if (\is_array($facet)) {
             $facet = $this->createFacet($facet['type'], $facet, false);
@@ -59,11 +57,9 @@ trait FacetSetTrait
     /**
      * Add multiple facets.
      *
-     * @param array $facets
-     *
-     * @return self Provides fluent interface
+     * @param FacetInterface[]|array[] $facets
      */
-    public function addFacets(array $facets): self
+    public function addFacets(array $facets): static
     {
         foreach ($facets as $key => $facet) {
             // in case of a config array: add key to config
@@ -104,11 +100,9 @@ trait FacetSetTrait
      *
      * You can remove a facet by passing its key or the facet instance
      *
-     * @param string|\Solarium\Component\Facet\FacetInterface $facet
-     *
-     * @return self Provides fluent interface
+     * @param string|FacetInterface $facet
      */
-    public function removeFacet($facet): self
+    public function removeFacet(string|FacetInterface $facet): static
     {
         if (\is_object($facet)) {
             $facet = $facet->getKey();
@@ -123,10 +117,8 @@ trait FacetSetTrait
 
     /**
      * Remove all facets.
-     *
-     * @return self Provides fluent interface
      */
-    public function clearFacets(): self
+    public function clearFacets(): static
     {
         $this->facets = [];
 
@@ -138,11 +130,9 @@ trait FacetSetTrait
      *
      * This overwrites any existing facets
      *
-     * @param array $facets
-     *
-     * @return self Provides fluent interface
+     * @param FacetInterface[]|array[] $facets
      */
-    public function setFacets(array $facets): self
+    public function setFacets(array $facets): static
     {
         $this->clearFacets();
         $this->addFacets($facets);
@@ -166,7 +156,7 @@ trait FacetSetTrait
      *
      * @throws OutOfBoundsException
      *
-     * @return \Solarium\Component\Facet\FacetInterface
+     * @return FacetInterface
      */
     public function createFacet(string $type, string|array|null $options = null, bool $add = true): FacetInterface
     {
@@ -198,7 +188,7 @@ trait FacetSetTrait
      *
      * {@internal The 'facet' option needs additional setup work.}
      */
-    protected function init()
+    protected function init(): void
     {
         if (isset($this->options['facet'])) {
             foreach ($this->options['facet'] as $key => $config) {

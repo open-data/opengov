@@ -32,7 +32,7 @@ function search_api_solr_post_update_8204_replace_solr_4_field_types() {
       'text_uk_4_5_0',
     ]));
   }
-  catch (\Exception $e) {
+  catch (\Exception) {
     // Don't break the upgrade, ignore the error because it is just nice to have
     // cleanup.
   }

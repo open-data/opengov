@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\ServerInterface;
-use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Solarium\Core\Query\Result\ResultInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -84,9 +83,10 @@ class SolrFieldAnalysisForm extends FormBase {
     ];
 
     // Get solr field lists.
+    /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
     $list_builder = $this->entityTypeManager->getListBuilder('solr_field_type');
     $list_builder->setServer($search_api_server);
-    /** @var SolrFieldTypeInterface[] $solr_field_types */
+    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface[] $solr_field_types */
     $solr_field_types = $list_builder->load();
 
     $solr_fields = [];

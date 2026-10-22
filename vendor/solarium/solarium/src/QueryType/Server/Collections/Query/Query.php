@@ -17,7 +17,6 @@ use Solarium\QueryType\Server\Collections\Query\Action\ClusterStatus;
 use Solarium\QueryType\Server\Collections\Query\Action\Create;
 use Solarium\QueryType\Server\Collections\Query\Action\Delete;
 use Solarium\QueryType\Server\Collections\Query\Action\Reload;
-use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use Solarium\QueryType\Server\Query\RequestBuilder;
 use Solarium\QueryType\Server\Query\ResponseParser;
 
@@ -210,10 +209,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Action types.
-     *
-     * @var array
      */
-    protected $actionTypes = [
+    protected array $actionTypes = [
         self::ACTION_CREATE => Create::class,
         /*
         self::ACTION_MODIFYCOLLECTION => 'Solarium\QueryType\Server\Collections\Query\Action\ModifyCollection',
@@ -262,10 +259,8 @@ class Query extends AbstractServerQuery
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'admin/collections',
     ];
 
@@ -302,7 +297,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return ActionInterface|Create
+     * @return Create
      */
     public function createCreate(array $options = []): Create
     {
@@ -312,7 +307,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Delete|ActionInterface
+     * @return Delete
      */
     public function createDelete(array $options = []): Delete
     {
@@ -322,7 +317,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Reload|ActionInterface
+     * @return Reload
      */
     public function createReload(array $options = []): Reload
     {
@@ -332,7 +327,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return ClusterStatus|ActionInterface
+     * @return ClusterStatus
      */
     public function createClusterStatus(array $options = []): ClusterStatus
     {

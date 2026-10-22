@@ -3,16 +3,17 @@
 namespace Drupal\search_api_solr\Plugin\search_api\datasource;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiDatasource;
 
 /**
  * Represents a datasource which exposes external Solr Documents.
- *
- * @SearchApiDatasource(
- *   id = "solr_multisite_document",
- *   label = @Translation("Solr Multisite Document"),
- *   description = @Translation("Search through a different site's content. (Only works if this index is attached to a Solr-based server.)"),
- * )
  */
+#[SearchApiDatasource(
+  id: 'solr_multisite_document',
+  label: new TranslatableMarkup('Solr Multisite Document'),
+  description: new TranslatableMarkup("Search through a different site's content. (Only works if this index is attached to a Solr-based server.)"),
+)]
 class SolrMultisiteDocument extends SolrDocument {
 
   /**

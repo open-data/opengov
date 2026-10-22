@@ -210,8 +210,8 @@ class ServerForm extends EntityForm {
    */
   public function buildBackendConfigForm(array &$form, FormStateInterface $form_state, ServerInterface $server) {
     $form['backend_config'] = [];
-    if ($server->hasValidBackend()) {
-      $backend = $server->getBackend();
+    $backend = $server->getBackendIfAvailable();
+    if ($backend) {
       $form_state->set('backend', $backend->getPluginId());
       if ($backend instanceof PluginFormInterface) {
         if ($form_state->isRebuilding()) {
@@ -282,9 +282,8 @@ class ServerForm extends EntityForm {
         $form_state->setRebuild();
       }
     }
-    // Check before loading the backend plugin so we don't throw an exception.
     elseif ($server->hasValidBackend()) {
-      $backend = $server->getBackend();
+      $backend = $server->getBackendIfAvailable();
       if ($backend instanceof PluginFormInterface) {
         $backend_form_state = SubformState::createForSubform($form['backend_config'], $form, $form_state);
         $backend->validateConfigurationForm($form['backend_config'], $backend_form_state);
@@ -300,13 +299,10 @@ class ServerForm extends EntityForm {
 
     /** @var \Drupal\search_api\ServerInterface $server */
     $server = $this->getEntity();
-    // Check before loading the backend plugin so we don't throw an exception.
-    if ($server->hasValidBackend()) {
-      $backend = $server->getBackend();
-      if ($backend instanceof PluginFormInterface) {
-        $backend_form_state = SubformState::createForSubform($form['backend_config'], $form, $form_state);
-        $backend->submitConfigurationForm($form['backend_config'], $backend_form_state);
-      }
+    $backend = $server->getBackendIfAvailable();
+    if ($backend instanceof PluginFormInterface) {
+      $backend_form_state = SubformState::createForSubform($form['backend_config'], $form, $form_state);
+      $backend->submitConfigurationForm($form['backend_config'], $backend_form_state);
     }
 
     return $server;

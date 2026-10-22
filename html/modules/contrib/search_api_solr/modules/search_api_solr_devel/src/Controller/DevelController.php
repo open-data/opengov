@@ -20,7 +20,6 @@ use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\search_api\tracker\Basic;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api\Utility\FieldsHelperInterface;
-use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_solr\Controller\EventDispatcherTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -30,13 +29,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DevelController extends ControllerBase {
 
   use EventDispatcherTrait;
-
-  /**
-   * The server storage controller.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $storage;
 
   /**
    * The backend plugin manager.
@@ -99,7 +91,7 @@ class DevelController extends ControllerBase {
    *   The time service.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, BackendPluginManager $backend_plugin_manager, DevelDumperManagerInterface $devel_dumper_manager, FieldsHelperInterface $fields_helper, ModuleHandlerInterface $module_handler, DateFormatterInterface $date_formatter, TimeInterface $time) {
-    $this->storage = $entity_type_manager->getStorage('search_api_server');
+    $this->entityTypeManager = $entity_type_manager;
     $this->backendPluginManager = $backend_plugin_manager;
     $this->develDumperManager = $devel_dumper_manager;
     $this->fieldsHelper = $fields_helper;
@@ -161,9 +153,10 @@ class DevelController extends ControllerBase {
     $entity = $route_match->getParameter($parameter_name);
 
     if ($entity instanceof ContentEntityInterface) {
+      $storage = $this->entityTypeManager->getStorage('search_api_server');
       foreach ($this->getBackends() as $backend_id) {
         /** @var \Drupal\search_api\ServerInterface[] $servers */
-        $servers = $this->storage->loadByProperties([
+        $servers = $storage->loadByProperties([
           'backend' => $backend_id,
           'status' => TRUE,
         ]);
@@ -412,7 +405,7 @@ class DevelController extends ControllerBase {
       $select->condition('datasource', $datasource_id);
       $select->condition('item_id', $item_id);
       $select->fields('sai', ['item_id', 'status', 'changed']);
-      $tracker_data = $select->execute()->fetch();
+      $tracker_data = $select->execute()->fetchObject();
       // Add tracker information to row.
       if ($tracker_data) {
         $base_row['tracked'] = $this->t('yes');

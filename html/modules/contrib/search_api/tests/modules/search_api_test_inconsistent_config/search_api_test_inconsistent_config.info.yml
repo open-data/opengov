@@ -7,7 +7,7 @@ dependencies:
   - search_api:search_api_test
 hidden: true
 
-# Information added by Drupal.org packaging script on 2025-09-27
-version: '8.x-1.39'
+# Information added by Drupal.org packaging script on 2026-10-11
+version: '8.x-1.42'
 project: 'search_api'
-datestamp: 1758968167
+datestamp: 1791743457

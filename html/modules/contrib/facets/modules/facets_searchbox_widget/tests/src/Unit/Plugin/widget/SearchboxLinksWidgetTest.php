@@ -8,14 +8,14 @@ use Drupal\facets\Plugin\facets\widget\LinksWidget;
 use Drupal\facets\Result\Result;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\UrlProcessor\UrlProcessorInterface;
+use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
 use Drupal\facets\Utility\FacetsUrlGenerator;
 use Drupal\Tests\facets\Unit\Plugin\widget\LinksWidgetTest;
+use Drupal\Tests\Core\Routing\TestRouterInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Drupal\Tests\Core\Routing\TestRouterInterface;
 
 /**
  * Unit test for widget.
@@ -30,7 +30,7 @@ class SearchboxLinksWidgetTest extends LinksWidgetTest {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->widget = new LinksWidget([], 'links_widget', []);
+    $this->widget = new LinksWidget([], 'links_widget', [], $this->urlProcessorManager, $this->facetsUrlGenerator, $this->requestStack);
   }
 
   /**
@@ -256,17 +256,15 @@ class SearchboxLinksWidgetTest extends LinksWidgetTest {
 
     $url_processor = $this->createMock(UrlProcessorInterface::class);
 
-    $manager = $this->createMock(FacetSourcePluginManager::class);
-    $manager->expects($this->atLeastOnce())
-      ->method('createInstance')
+    $manager = $this->createMock(UrlProcessorPluginManager::class);
+    $manager->method('createInstance')
       ->willReturn($url_processor);
 
     $facets_url_generator = $this->createMock(FacetsUrlGenerator::class);
 
     $storage = $this->createMock(EntityStorageInterface::class);
     $em = $this->createMock(EntityTypeManagerInterface::class);
-    $em->expects($this->atLeastOnce())
-      ->method('getStorage')
+    $em->method('getStorage')
       ->willReturn($storage);
 
     $container = new ContainerBuilder();

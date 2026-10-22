@@ -238,7 +238,7 @@ class SearchApiEntity extends SearchApiStandard {
       $bundle = $entity->bundle();
       $operation = ($this->getDisplayMethod($bundle) == 'label') ? 'view label' : 'view';
       if ($entity->access($operation, $account)) {
-        foreach ($to_load[$id] as list($i, $j)) {
+        foreach ($to_load[$id] as [$i, $j]) {
           if ($entity->access('view', $account)) {
             $langcode = $values[$i]->search_api_language;
             if ($entity instanceof TranslatableInterface && $entity->hasTranslation($langcode)) {

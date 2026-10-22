@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Access;
 
+// cspell:ignore Behat
+use Behat\Mink\Driver\BrowserKitDriver;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\webform\Entity\Webform;
@@ -118,6 +120,18 @@ class WebformAccessSubmissionPermissionsTest extends WebformBrowserTestBase {
     // Check webform submission allowed.
     $this->drupalGet("/admin/structure/webform/manage/{$webform_id}/submission/{$sid_2}");
     $assert_session->statusCodeEquals(200);
+    $assert_session->responseContains('webform-submission-data--view-mode-html');
+    $assert_session->responseNotContains('webform-submission-data--view-mode-yaml');
+
+    // Check webform submission YAML view mode access denied.
+    $this->drupalGet("/admin/structure/webform/manage/{$webform_id}/submission/{$sid_2}/yaml");
+    $assert_session->statusCodeEquals(403);
+
+    // Check webform submission YAML view mode cannot be forced.
+    $this->postSubmissionViewModeOverride("admin/structure/webform/manage/{$webform_id}/submission/{$sid_2}", 'yaml');
+    $assert_session->statusCodeEquals(200);
+    $assert_session->responseNotContains('webform-submission-data--view-mode-yaml');
+    $assert_session->responseNotContains('data-webform-codemirror-mode="text/x-yaml"');
 
     // Check all results access denied.
     $this->drupalGet('/admin/structure/webform/submissions/manage');
@@ -235,6 +249,23 @@ class WebformAccessSubmissionPermissionsTest extends WebformBrowserTestBase {
     // Check user can the submissions when they are the webform owner.
     $this->drupalGet("admin/structure/webform/manage/{$webform_id}/submission/{$sid_4}");
     $assert_session->statusCodeEquals(200);
+  }
+
+  /**
+   * Posts an internal webform submission view mode override.
+   *
+   * @param string $path
+   *   The path to request.
+   * @param string $view_mode
+   *   The requested view mode.
+   */
+  protected function postSubmissionViewModeOverride(string $path, string $view_mode): void {
+    $url = $this->getAbsoluteUrl('/' . ltrim($path, '/'));
+    $driver = $this->getSession()->getDriver();
+    $this->assertInstanceOf(BrowserKitDriver::class, $driver);
+    $driver->getClient()->request('POST', $url, [
+      '_webform_submissions_view_mode' => $view_mode,
+    ]);
   }
 
 }

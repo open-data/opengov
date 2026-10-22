@@ -286,6 +286,13 @@ webform.token:
 
 # Tooltip.
 
+webform.xss:
+  js:
+    js/webform.xss.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
 webform.tooltip:
   js:
     js/webform.tooltip.js: {}
@@ -294,6 +301,7 @@ webform.tooltip:
     - core/jquery
     - core/once
     - webform/libraries.tippyjs
+    - webform/webform.xss
 
 # Theme
 
@@ -617,6 +625,7 @@ webform.element.help:
     - core/jquery
     - core/once
     - webform/libraries.tippyjs
+    - webform/webform.xss
 
 webform.element.html_editor:
   css:

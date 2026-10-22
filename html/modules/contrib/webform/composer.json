@@ -42,6 +42,7 @@
     "drupal/entity": "^1.0",
     "drupal/entity_print": "^2.0",
     "drupal/hal" : "^2.0",
+    "drupal/honeypot" : "^2.0",
     "drupal/jquery_ui": "^1.0",
     "drupal/jquery_ui_button": "^2.0",
     "drupal/jquery_ui_checkboxradio": "^2.0",

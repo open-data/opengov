@@ -57,9 +57,9 @@ class LogSettingsForm extends ConfigFormBase {
       '#description' => $this->t('"auto" uses Solr\'s auto commit strategy (recommended). "immediate" forces a commit after each log event. "request" forces a single commit and the end of the request.'),
       '#required' => TRUE,
       '#options' => [
-        'auto' => 'auto',
-        'immediate' => 'immediate',
-        'request' => 'request',
+        'auto' => $this->t('auto'),
+        'immediate' => $this->t('immediate'),
+        'request' => $this->t('request'),
       ],
       '#default_value' => $config->get('commit') ?? 'auto',
     ];

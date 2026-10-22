@@ -18,6 +18,19 @@ class WebformEntityPrintAttachmentFunctionalTest extends WebformEntityPrintFunct
   protected static $modules = ['webform_entity_print_attachment_test'];
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+
+    // Use a test print engine that returns the rendered attachment contents.
+    \Drupal::configFactory()
+      ->getEditable('entity_print.settings')
+      ->set('print_engines.pdf_engine', 'webform_entity_print_test')
+      ->save();
+  }
+
+  /**
    * Test entity print attachment.
    */
   public function testEntityPrintAttachment(): void {
@@ -30,9 +43,20 @@ class WebformEntityPrintAttachmentFunctionalTest extends WebformEntityPrintFunct
     // Check that the PDF attachment is added to the sent email.
     $this->postSubmission($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertEquals('entity_print_pdf_html.pdf', $sent_email['params']['attachments'][0]['filename'], "The PDF attachment's file name");
-    $this->assertEquals('application/pdf', $sent_email['params']['attachments'][0]['filemime'], "The PDF attachment's file mime type");
-    $this->assertEquals('Using testprintengine', $sent_email['params']['attachments'][0]['filecontent'], "The attachment's file content");
+    // cspell:ignore filecontent
+    $attachments = array_column($sent_email['params']['attachments'], 'filecontent', 'filename');
+
+    // Check that the HTML attachment uses the HTML view mode.
+    $this->assertArrayHasKey('entity_print_pdf_html.pdf', $attachments);
+    $this->assertStringContainsString('webform-submission-data--view-mode-html', $attachments['entity_print_pdf_html.pdf']);
+
+    // Check that the table attachment uses the table view mode.
+    $this->assertArrayHasKey('entity_print_pdf_table.pdf', $attachments);
+    $this->assertStringContainsString('webform-submission-table', $attachments['entity_print_pdf_table.pdf']);
+
+    // Check that the Twig attachment uses its configured template.
+    $this->assertArrayHasKey('entity_print_pdf_custom.pdf', $attachments);
+    $this->assertStringContainsString('This is a custom template', $attachments['entity_print_pdf_custom.pdf']);
   }
 
 }

@@ -71,4 +71,20 @@ install the [google/recaptcha](https://github.com/google/recaptcha) library.
 
    - Select action on user verification fail
 
-3. Use the action you created above as a challenge in captcha form settings.
+3. Use the action you created above as a challenge in CAPTCHA form settings.
+
+4. Optional: enable `Hide badge` if you do not want Google to display the
+   floating reCAPTCHA badge on the page.
+
+   This option hides the badge with CSS following Google's documented CSS
+   approach. Previously, when hiding the badge you needed to display a notice
+   about Google's Terms of Service and Privacy Policy. As of April 2, 2026,
+   this is no longer required. reCAPTCHA is now a *data processor* and your
+   website is the *data controller*, so data is handled under Google's Cloud
+   Data Processing Addendum.
+
+   https://cloud.google.com/terms/data-processing-addendum
+
+   For more, see the official reCAPTCHA FAQ page on Google Cloud Docs platform.
+
+   https://docs.cloud.google.com/recaptcha/docs/faq

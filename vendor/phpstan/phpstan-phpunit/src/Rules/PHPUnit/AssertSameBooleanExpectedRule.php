@@ -5,6 +5,7 @@ namespace PHPStan\Rules\PHPUnit;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\NodeAbstract;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -50,6 +51,10 @@ class AssertSameBooleanExpectedRule implements Rule
 				RuleErrorBuilder::message('You should use assertTrue() instead of assertSame() when expecting "true"')
 					->identifier('phpunit.assertTrue')
 					->fixNode($node, static function (CallLike $node) {
+						if (AssertRuleHelper::hasNamedOrUnpackedArguments($node)) {
+							return $node;
+						}
+
 						$node->name = new Node\Identifier('assertTrue');
 						$node->args = self::rewriteArgs($node->args);
 
@@ -77,8 +82,9 @@ class AssertSameBooleanExpectedRule implements Rule
 	}
 
 	/**
-	 * @param array<Node\Arg|Node\VariadicPlaceholder> $args
-	 * @return list<Node\Arg|Node\VariadicPlaceholder>
+	 * @template T of NodeAbstract
+	 * @param array<T> $args
+	 * @return list<T>
 	 */
 	private static function rewriteArgs(array $args): array
 	{

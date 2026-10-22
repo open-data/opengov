@@ -103,7 +103,7 @@ class LanguageSwitcherLinksAlterer {
         $url_aliases = $facet_info['url_aliases'];
         $original_language = $url_aliases['original'];
 
-        if (!isset($link['query'][$filter_key]) || !is_array($link['query'][$filter_key])) {
+        if ($filter_key === NULL || !isset($link['query'][$filter_key]) || !is_array($link['query'][$filter_key])) {
           continue;
         }
 

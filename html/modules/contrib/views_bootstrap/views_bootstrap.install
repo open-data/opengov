@@ -1,0 +1,226 @@
+<?php
+
+/**
+ * @file
+ * The install and update functions of the module.
+ */
+
+use Drupal\Component\Utility\DeprecationHelper;
+
+/**
+ * @file
+ * Contains update functions for Views Bootstrap.
+ */
+
+/**
+ * Update Views Bootstrap style configuration for Bootstrap 5 options.
+ */
+function views_bootstrap_update_91001(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+        $options = $display['display_options']['style']['options'];
+
+        // Check cards for set columns value.
+        if ($style == 'views_bootstrap_cards' && !array_key_exists('columns', $options)) {
+          $display['display_options']['style']['options']['columns'] = 1;
+          \Drupal::logger('views_bootstrap')->notice("Updating cards column to default in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+        // Check carousel for new options.
+        if ($style == 'views_bootstrap_carousel' && !array_key_exists('keyboard', $options)) {
+          $display['display_options']['style']['options']['keyboard'] = TRUE;
+          $display['display_options']['style']['options']['ride'] = TRUE;
+          $display['display_options']['style']['options']['use_caption'] = TRUE;
+          $display['display_options']['style']['options']['effect'] = 'slide';
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+        // Check media object for image placement.
+        if ($style == 'views_bootstrap_media_object' && !array_key_exists('image_placement', $options)) {
+          $display['display_options']['style']['options']['image_placement'] = 'first';
+          \Drupal::logger('views_bootstrap')->notice("Updating image placement in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}
+
+/**
+ * Update Views Bootstrap Dropdown classes.
+ */
+function views_bootstrap_update_91002(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+
+        // Check for dropdown with default button class.
+        if ($style == 'views_bootstrap_dropdown' && $display['display_options']['style']['options']['button_class'] == 'btn btn-default') {
+          $display['display_options']['style']['options']['button_class'] = 'btn btn-primary';
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}
+
+/**
+ * Update Views Bootstrap from older versions.
+ */
+function views_bootstrap_update_91003(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+
+        // Check for thumbnail.
+        if ($style == 'views_bootstrap_thumbnail') {
+          $display['display_options']['style']['type'] = 'views_bootstrap_cards';
+          $display['display_options']['style']['options']['row_class'] = $display['display_options']['style']['options']['row_class_custom'];
+          $display['display_options']['style']['options']['row_class_default'] = $display['display_options']['style']['options']['default_row_class'];
+          $display['display_options']['style']['options']['card_group_class_custom'] = $display['display_options']['style']['options']['col_class_custom'];
+          unset($display['display_options']['style']['options']['alignment']);
+          unset($display['display_options']['style']['options']['automatic_width']);
+          unset($display['display_options']['style']['options']['col_xs']);
+          unset($display['display_options']['style']['options']['col_sm']);
+          unset($display['display_options']['style']['options']['col_md']);
+          unset($display['display_options']['style']['options']['col_lg']);
+          unset($display['display_options']['style']['options']['row_class_custom']);
+          unset($display['display_options']['style']['options']['default_row_class']);
+          unset($display['display_options']['style']['options']['col_class_custom']);
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+        // Check for panel.
+        elseif ($style == 'views_bootstrap_panel') {
+          $display['display_options']['style']['type'] = 'views_bootstrap_cards';
+          $display['display_options']['style']['options']['card_title_field'] = $display['display_options']['style']['options']['panel_title_field'];
+          $display['display_options']['style']['options']['card_group_class_custom'] = $display['display_options']['style']['options']['contextual_class'];
+          unset($display['display_options']['style']['options']['panel_label_field']);
+          unset($display['display_options']['style']['options']['panel_footer_field']);
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}
+
+/**
+ * Update Views Bootstrap cards display option.
+ */
+function views_bootstrap_update_91004(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+
+        // Check for dropdown with default button class.
+        if ($style == 'views_bootstrap_cards') {
+          $display['display_options']['style']['options']['display'] = 'fields';
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}
+
+/**
+ * Set Views Bootstrap carousel caption breakpoint default option.
+ */
+function views_bootstrap_update_91005(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+
+        // Check for dropdown with default button class.
+        if ($style == 'views_bootstrap_carousel') {
+          $display['display_options']['style']['options']['caption_breakpoints'] = 'd-none d-md-block';
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}
+
+/**
+ * Set Views Bootstrap carousel caption breakpoint default option.
+ */
+function views_bootstrap_update_91006(&$sandbox): void {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+    $view = $config_factory->getEditable($view_config_name);
+    $save = FALSE;
+    $displays = $view->get('display');
+    foreach ($displays as $display_name => &$display) {
+      if (!empty($display['display_options']['style']) && !empty($display['display_options']['style']['options'])) {
+        $style = (string) $display['display_options']['style']['type'];
+
+        // Check for ride option.
+        if ($style == 'views_bootstrap_carousel') {
+          $ride_value = $display->display_options['style']['options']['ride'] ?? NULL;
+          $display['display_options']['style']['options']['ride'] = $ride_value === TRUE ? 'carousel' : NULL;
+          \Drupal::logger('views_bootstrap')->notice("Updating options in $display_name for $view_config_name");
+          $save = TRUE;
+        }
+      }
+    }
+    if ($save) {
+      $view->set('display', $displays);
+      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $view->save(), fn() => $view->save(TRUE));
+    }
+  }
+}

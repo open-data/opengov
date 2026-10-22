@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\search_api_solr\Kernel\Processor;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
-use Symfony\Component\Yaml\Yaml;
 
 defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
 
@@ -23,7 +23,7 @@ trait SolrBackendTrait {
   protected function enableSolrServer() {
     $config = '/config/install/search_api.server.solr_search_server' . ('true' === SOLR_CLOUD ? '_cloud' : '') . '.yml';
     $this->server = Server::create(
-      Yaml::parse(file_get_contents(
+      Yaml::decode(file_get_contents(
         \Drupal::service('extension.list.module')->getPath('search_api_solr_test') . $config
       ))
     );

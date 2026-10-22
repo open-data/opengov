@@ -2,19 +2,20 @@
 
 namespace Drupal\search_api_solr\Plugin\SolrConnector;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api_solr\Attribute\SolrConnector;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
 use Solarium\Exception\HttpException;
 
 /**
  * Standard Solr connector.
- *
- * @SolrConnector(
- *   id = "standard",
- *   label = @Translation("Standard"),
- *   description = @Translation("A standard connector usable for local installations of the standard Solr distribution.")
- * )
  */
+#[SolrConnector(
+  id: 'standard',
+  label: new TranslatableMarkup('Standard'),
+  description: new TranslatableMarkup('A standard connector usable for local installations of the standard Solr distribution.'),
+)]
 class StandardSolrConnector extends SolrConnectorPluginBase {
 
   /**
@@ -23,9 +24,9 @@ class StandardSolrConnector extends SolrConnectorPluginBase {
   public function reloadCore() {
     $this->connect();
     $this->useTimeout(self::INDEX_TIMEOUT);
+    $core = $this->configuration['core'];
 
     try {
-      $core = $this->configuration['core'];
       $core_admin_query = $this->solr->createCoreAdmin();
       $reload_action = $core_admin_query->createReload();
       $reload_action->setCore($core);

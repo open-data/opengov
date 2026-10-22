@@ -4,7 +4,6 @@ namespace Drupal\advanced_email_validation\Plugin\Validation\Constraint;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\advanced_email_validation\AdvancedEmailValidator;
-use EmailValidator\EmailValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -43,12 +42,13 @@ class AEVNewEmailValidator extends ConstraintValidator implements ContainerInjec
       return;
     }
 
-    $result = $this->emailValidator->validate($email);
+    $result = $this->emailValidator->validateEmail($email);
 
-    if ($result !== EmailValidator::NO_ERROR) {
-      $errorMessage = $this->emailValidator->errorMessageFromCode($result);
+    if (!$result->isValid()) {
+      $errorMessage = $result->message;
       if (empty($errorMessage)) {
         $this->context->addViolation($constraint->defaultError);
+        return;
       }
       $this->context->addViolation($errorMessage);
     }

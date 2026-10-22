@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api_solr_log\EventSubscriber;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api\Event\QueryPreExecuteEvent;
 use Drupal\search_api\Event\SearchApiEvents;
@@ -16,6 +18,19 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class EventSubscriber implements EventSubscriberInterface {
   use StringTranslationTrait;
+
+  /**
+   * Constructs the event subscriber.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger.
+   */
+  public function __construct(
+    protected ConfigFactoryInterface $configFactory,
+    protected MessengerInterface $messenger,
+  ) {}
 
   /**
    * {@inheritdoc}
@@ -40,7 +55,7 @@ class EventSubscriber implements EventSubscriberInterface {
    *   The terminate request event.
    */
   public function onTerminate(TerminateEvent $event) : void {
-    $config = \Drupal::config('search_api_solr_log.settings');
+    $config = $this->configFactory->get('search_api_solr_log.settings');
     if ('request' === (string) ($config->get('commit') ?? 'auto')) {
       SolrLogger::commit();
     }
@@ -53,10 +68,10 @@ class EventSubscriber implements EventSubscriberInterface {
     $query = $event->getQuery();
 
     if ($query->hasTag('views_search_api_solr_log')) {
-      $config = \Drupal::config('search_api_solr_log.settings');
+      $config = $this->configFactory->get('search_api_solr_log.settings');
       if ($config->get('site_hash') ?? TRUE) {
         $query->addCondition('site_hash', Utility::getSiteHash());
-        \Drupal::messenger()->addStatus($this->t('Report is limited to log events of this site.'));
+        $this->messenger->addStatus($this->t('Report is limited to log events of this site.'));
       }
     }
   }

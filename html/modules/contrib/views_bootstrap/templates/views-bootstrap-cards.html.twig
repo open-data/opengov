@@ -10,22 +10,63 @@
  * @ingroup views_templates
  */
 #}
-
-<div class="card-group">
-  {% for key, row in rows -%}
-  <div class="card">
-    {# Show image #}
-    {% if row.image %}
-        {{ row.image }}
+{% if use_card_group %}
+  {% set counter = 0 %}
+  {% for row in rows %}
+    {% if counter == 0 %}
+      <div{{ attributes }}>
     {% endif %}
-    {% if row.title %}
-      <div class="card-header">{{ row.title }}</div>
-    {% endif %}
-    {% if row.content %}
+    {# begin card #}
+    <div{{ row.attributes }}>
+      {% if row.image %}
+        <span class="card-img-top">{{ row.image }}</span>
+      {% endif %}
       <div class="card-body">
-        {{ row.content }}
+        {% if row.title %}
+          <h5 class="card-title">{{ row.title }}</h5>
+        {% endif %}
+        {% if row.content %}
+          <div class="card-text">
+            {{- row.content -}}
+          </div>
+        {% endif %}
+        {% if row.link %}
+          {{ row.link|raw }}
+        {% endif %}
       </div>
+    </div>
+    {% set counter = counter + 1 %}
+    {% if counter == columns or loop.last %}
+      </div>
+      {% set counter = 0 %}
     {% endif %}
+  {% endfor %}
+{% else %}
+  <div{{ row_attributes }}>
+  {% for key, row in rows %}
+    <div{{ col_attributes }}>
+      <div{{ row.attributes }}>
+        {% if row.image %}
+          <span class="card-img-top">{{ row.image }}</span>
+        {% endif %}
+        <div class="card-body">
+          {% if row.title %}
+            <h5 class="card-title">{{ row.title }}</h5>
+          {% endif %}
+          {% if row.content %}
+            <div class="card-text">
+              {{- row.content -}}
+            </div>
+          {% endif %}
+          {% if row.link %}
+            {{ row.link|raw }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% if (key + 1) % columns == 0 and not loop.last %}
+      </div><div{{ row_attributes }}>
+    {% endif %}
+  {% endfor %}
   </div>
-  {%- endfor %}
-</div>
+{% endif %}

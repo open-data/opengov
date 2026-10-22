@@ -205,7 +205,7 @@ interface SolrFieldTypeInterface extends SolrConfigInterface {
    * The XML format is used as part of classic Solr schema.
    *
    * @param bool $add_comment
-   *   Wether to add a comment to the XML or not to explain the purpose of thid
+   *   Wether to add a comment to the XML or not to explain the purpose of this
    *   Solr Field Type.
    *
    * @return string
@@ -259,7 +259,7 @@ interface SolrFieldTypeInterface extends SolrConfigInterface {
    *   doesn't exist.
    *
    * @return self
-   *   Untemmed field type as json.
+   *   Unstemmed field type as json.
    */
   public function setUnstemmedFieldTypeAsJson($unstemmed_field_type);
 

@@ -97,6 +97,48 @@ body {
     $assert_session->statusCodeEquals(200);
     $this->drupalLogin($this->rootUser);
 
+    // Check that print CSS is only editable by users with webform asset access.
+    $css_field_name = 'third_party_settings[webform_entity_print][template][css]';
+    $webform_creator = $this->drupalCreateUser([
+      'access webform overview',
+      'create webform',
+      'edit own webform',
+    ]);
+    $webform_asset_editor = $this->drupalCreateUser([
+      'access webform overview',
+      'create webform',
+      'edit own webform',
+      'edit webform assets',
+    ]);
+    $webform_without_asset_access = $this->createWebform([
+      'id' => 'test_entity_print_css_access',
+      'title' => 'Test: Entity print CSS access',
+    ]);
+    $webform_without_asset_access->setOwner($webform_creator)->save();
+    $webform_with_asset_access = $this->createWebform([
+      'id' => 'test_entity_print_css_editor',
+      'title' => 'Test: Entity print CSS editor',
+    ]);
+    $webform_with_asset_access->setOwner($webform_asset_editor)->save();
+
+    // Check that a webform creator without asset access cannot edit print CSS.
+    $this->drupalLogin($webform_creator);
+    $this->drupalGet('/admin/structure/webform/manage/test_entity_print_css_access/settings');
+    $assert_session->statusCodeEquals(200);
+    $assert_session->fieldNotExists($css_field_name);
+
+    // Check that a webform creator with asset access can edit print CSS.
+    $this->drupalLogin($webform_asset_editor);
+    $this->drupalGet('/admin/structure/webform/manage/test_entity_print_css_editor/settings');
+    $assert_session->statusCodeEquals(200);
+    $assert_session->fieldExists($css_field_name);
+    $edit = [$css_field_name => '/** safe custom print css **/'];
+    $this->submitForm($edit, 'Save');
+    $webform_with_asset_access = $this->reloadWebform('test_entity_print_css_editor');
+    $template_settings = $webform_with_asset_access->getThirdPartySetting('webform_entity_print', 'template');
+    $this->assertSame('/** safe custom print css **/', $template_settings['css']);
+    $this->drupalLogin($this->rootUser);
+
     // Check PDF document Table view mode.
     $this->drupalGet("/print/pdf/webform_submission/$sid/debug", ['query' => ['view_mode' => 'table']]);
     $assert_session->responseContains('<div class="webform-entity-print-header"><h1>' . Html::escape($submission->label()) . '</h1></div>');

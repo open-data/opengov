@@ -35,8 +35,6 @@ class RangeSliderProcessorTest extends Drupal10CompatibilityUnitTestCase {
    */
   public function setUp(): void {
     parent::setUp();
-    $this->processor = new RangeSliderProcessor([], 'range_slider', []);
-
     $facets_url_generator = $this->prophesize(FacetsUrlGenerator::class);
     $facets_url_generator->getUrl(Argument::any(), Argument::any())->willReturn(new Url('test', [], ['query' => ['f' => ['animals::(min:__range_slider_min__,max:__range_slider_max__)']]]));
     $url_generator = $this->prophesize(UrlGeneratorInterface::class);
@@ -45,6 +43,8 @@ class RangeSliderProcessorTest extends Drupal10CompatibilityUnitTestCase {
     $container->set('url_generator', $url_generator->reveal());
     $container->set('facets.utility.url_generator', $facets_url_generator->reveal());
     \Drupal::setContainer($container);
+
+    $this->processor = new RangeSliderProcessor([], 'range_slider', [], \Drupal::service('facets.utility.url_generator'));
   }
 
   /**

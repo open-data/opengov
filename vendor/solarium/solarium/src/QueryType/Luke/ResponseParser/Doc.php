@@ -18,6 +18,7 @@ use Solarium\QueryType\Luke\Result\Doc\DocFieldInfo;
 use Solarium\QueryType\Luke\Result\Doc\DocInfo;
 use Solarium\QueryType\Luke\Result\FlagList;
 use Solarium\QueryType\Luke\Result\Result;
+use Solarium\QueryType\Luke\Query;
 
 /**
  * Parse Luke doc response data.
@@ -26,10 +27,7 @@ class Doc extends Index
 {
     use InfoTrait;
 
-    /**
-     * @var ResultInterface
-     */
-    protected $result;
+    protected ResultInterface $result;
 
     /**
      * Get result data for the response.
@@ -44,6 +42,7 @@ class Doc extends Index
 
         $query = $result->getQuery();
 
+        // @phpstan-ignore classConstant.deprecated (Will be removed in Solarium 8)
         if ($query::WT_PHPS === $query->getResponseWriter()) {
             // workaround for https://github.com/apache/solr/pull/2114
             $response = $result->getResponse();
@@ -165,7 +164,9 @@ class Doc extends Index
      */
     protected function parseSolr(array $solrData): DocumentInterface
     {
-        $documentClass = $this->result->getQuery()->getDocumentClass();
+        /** @var Query $query */
+        $query = $this->result->getQuery();
+        $documentClass = $query->getDocumentClass();
         $classes = class_implements($documentClass);
         if (!\in_array(DocumentInterface::class, $classes, true)) {
             throw new RuntimeException('The result document class must implement a document interface');

@@ -4,9 +4,12 @@ namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\sug
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\SearchApiException;
+use Drupal\search_api_autocomplete\Attribute\SearchApiAutocompleteSuggester;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
@@ -22,19 +25,19 @@ use Solarium\Core\Query\Result\ResultInterface;
  *
  * The server needs to support the "search_api_autocomplete" feature for this to
  * work.
- *
- * @SearchApiAutocompleteSuggester(
- *   id = "search_api_solr_spellcheck",
- *   label = @Translation("Solr Spellcheck"),
- *   description = @Translation("Suggest corrections for the entered words based on Solr's spellcheck component. Note: Be careful when activating this feature if you run multiple indexes in one Solr core! The spellcheck component is not able to distinguish between the different indexes and returns suggestions for the complete core. If you run multiple indexes in one core you might get suggestions that lead to zero results on a specific index!"),
- * )
  */
+#[SearchApiAutocompleteSuggester(
+  id: 'search_api_solr_spellcheck',
+  label: new TranslatableMarkup('Solr Spellcheck'),
+  description: new TranslatableMarkup("Suggest corrections for the entered words based on Solr's spellcheck component. Note: Be careful when activating this feature if you run multiple indexes in one Solr core! The spellcheck component is not able to distinguish between the different indexes and returns suggestions for the complete core. If you run multiple indexes in one core you might get suggestions that lead to zero results on a specific index!"),
+)]
 class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
 
   use PluginFormTrait;
   use BackendTrait;
   use SolrAutocompleteBackendTrait;
   use SolrSpellcheckBackendTrait;
+  use LoggerTrait;
 
   /**
    * {@inheritdoc}

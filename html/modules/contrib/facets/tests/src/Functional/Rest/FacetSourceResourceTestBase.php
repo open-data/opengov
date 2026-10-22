@@ -3,12 +3,12 @@
 namespace Drupal\Tests\facets\Functional\Rest;
 
 use Drupal\facets\Entity\FacetSource;
-use Drupal\Tests\rest\Functional\EntityResource\EntityResourceTestBase;
+use Drupal\Tests\rest\Functional\EntityResource\ConfigEntityResourceTestBase;
 
 /**
  * Provides the FacetSourceResourceTestBase class.
  */
-abstract class FacetSourceResourceTestBase extends EntityResourceTestBase {
+abstract class FacetSourceResourceTestBase extends ConfigEntityResourceTestBase {
 
   /**
    * {@inheritdoc}

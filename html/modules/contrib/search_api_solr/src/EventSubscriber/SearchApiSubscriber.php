@@ -16,7 +16,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
   /**
    * Adds the mapping how to treat some Solr special fields in views.
    *
-   * @param \Drupal\search_api\Event\MappingViewsFieldHandlersEvent $event
+   * @param \Drupal\search_api\Event\MappingFieldTypesEvent $event
    *   The Search API event.
    */
   public function onMappingFieldTypes(MappingFieldTypesEvent $event) {
@@ -74,7 +74,8 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     return [
       SearchApiEvents::MAPPING_FIELD_TYPES => 'onMappingFieldTypes',
       SearchApiEvents::MAPPING_VIEWS_FIELD_HANDLERS => 'onMappingViewsFieldHandlers',
-      SearchApiEvents::MAPPING_VIEWS_HANDLERS =>  'onMappingViewsHandlers',
+      SearchApiEvents::MAPPING_VIEWS_HANDLERS => 'onMappingViewsHandlers',
     ];
   }
+
 }

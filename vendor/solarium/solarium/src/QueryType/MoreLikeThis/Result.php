@@ -35,12 +35,12 @@ class Result extends SelectResult
     /**
      * MLT interesting terms.
      */
-    protected $interestingTerms;
+    protected ?array $interestingTerms = null;
 
     /**
      * MLT match document.
      */
-    protected $match;
+    protected ?ReadOnlyDocument $match = null;
 
     /**
      * Get MLT interesting terms.
@@ -59,10 +59,11 @@ class Result extends SelectResult
      *
      * @throws UnexpectedValueException
      *
-     * @return array
+     * @return array|null
      */
-    public function getInterestingTerms()
+    public function getInterestingTerms(): ?array
     {
+        /** @var Query $query */
         $query = $this->getQuery();
         if ('none' === $query->getInterestingTerms()) {
             throw new UnexpectedValueException('interestingterms is none');
@@ -79,10 +80,11 @@ class Result extends SelectResult
      *
      * @throws UnexpectedValueException
      *
-     * @return ReadOnlyDocument
+     * @return ReadOnlyDocument|null
      */
-    public function getMatch()
+    public function getMatch(): ?ReadOnlyDocument
     {
+        /** @var Query $query */
         $query = $this->getQuery();
         if (true !== $query->getMatchInclude()) {
             throw new UnexpectedValueException('matchinclude was disabled in the MLT query');

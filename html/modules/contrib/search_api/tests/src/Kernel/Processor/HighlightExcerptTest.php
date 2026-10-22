@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\search_api\Kernel\Processor;
 
@@ -13,6 +13,7 @@ use Drupal\search_api\Processor\ProcessorInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests generation of highlighted excerpts by the "Highlight" processor.
@@ -21,6 +22,7 @@ use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
  *
  * @see \Drupal\search_api\Plugin\search_api\processor\Highlight
  */
+#[RunTestsInSeparateProcesses]
 class HighlightExcerptTest extends ProcessorTestBase {
 
   use CommentTestTrait;

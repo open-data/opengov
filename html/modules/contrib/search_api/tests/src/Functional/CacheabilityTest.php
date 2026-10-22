@@ -6,12 +6,14 @@ use Drupal\block\Entity\Block;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Task;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the cacheability metadata of Search API.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class CacheabilityTest extends SearchApiBrowserTestBase {
 
   use ExampleContentTrait;
@@ -128,19 +130,29 @@ class CacheabilityTest extends SearchApiBrowserTestBase {
     ]);
     // Prime page cache before indexing.
     $this->drupalGet('search-api-test-search-view-caching-tag');
-    $this->assertSession()->pageTextContains('Displaying 5 search results');
+    $assert = $this->assertSession();
+    $assert->pageTextContains('Displaying 5 search results');
 
     $this->indexItems($this->indexId);
 
     // Check that the newly indexed node is visible on the search index.
     $this->drupalGet('search-api-test-search-view-caching-tag');
-    $this->assertSession()->pageTextContains('Displaying 6 search results');
+    $assert->pageTextContains('Displaying 6 search results');
 
     $entity->delete();
 
     // Check that the deleted entity is now no longer shown.
     $this->drupalGet('search-api-test-search-view-caching-tag');
-    $this->assertSession()->pageTextContains('Displaying 5 search results');
+    $assert->pageTextContains('Displaying 5 search results');
+
+    // Make sure that disabling the index will not lead to a fatal error when
+    // the search page is accessed.
+    Index::load($this->indexId)->disable()->save();
+    $this->drupalGet('search-api-test-search-view-caching-tag');
+    $assert->pageTextNotContains('The website encountered an unexpected error.');
+    $assert->pageTextNotContains('Displaying 5 search results');
+    $assert->pageTextContains('Search API Test search view caching');
+    $assert->pageTextContains('Cannot search on a disabled index.');
   }
 
   /**

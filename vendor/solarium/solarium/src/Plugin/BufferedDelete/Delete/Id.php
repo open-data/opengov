@@ -9,36 +9,36 @@
 
 namespace Solarium\Plugin\BufferedDelete\Delete;
 
-use Solarium\Plugin\BufferedDelete\AbstractDelete;
+use Solarium\Plugin\BufferedDelete\DeleteInterface;
 
 /**
  * Wrapper class for the id of a document to delete.
  */
-class Id extends AbstractDelete
+class Id implements DeleteInterface
 {
     /**
      * Document id to delete.
-     *
-     * @var int|string
      */
-    protected $id;
+    protected int|string $id;
 
     /**
      * Constructor.
      *
      * @param int|string $id
      */
-    public function __construct($id)
+    public function __construct(int|string $id)
     {
         $this->id = $id;
     }
 
     /**
-     * {@inheritdoc}
+     * Get delete type.
+     *
+     * @return self::TYPE_ID
      */
     public function getType(): string
     {
-        return AbstractDelete::TYPE_ID;
+        return DeleteInterface::TYPE_ID;
     }
 
     /**
@@ -48,7 +48,7 @@ class Id extends AbstractDelete
      *
      * @return self Provides fluent interface
      */
-    public function setId($id): self
+    public function setId(int|string $id): self
     {
         $this->id = $id;
 
@@ -60,7 +60,7 @@ class Id extends AbstractDelete
      *
      * @return int|string
      */
-    public function getId()
+    public function getId(): int|string
     {
         return $this->id;
     }

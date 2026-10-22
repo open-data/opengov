@@ -4,24 +4,27 @@ namespace Drupal\search_api_solr\Plugin\search_api\datasource;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\ComplexDataInterface;
+use Drupal\Core\TypedData\TypedDataManagerInterface;
 use Drupal\Core\Url;
+use Drupal\search_api\Attribute\SearchApiDatasource;
 use Drupal\search_api\Datasource\DatasourcePluginBase;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api_solr\SolrDocumentFactoryInterface;
 use Drupal\search_api_solr\SolrFieldManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a datasource which exposes external Solr Documents.
- *
- * @SearchApiDatasource(
- *   id = "solr_document",
- *   label = @Translation("Solr Document"),
- *   description = @Translation("Search through external Solr content. (Only works if this index is attached to a Solr-based server.)"),
- * )
  */
+#[SearchApiDatasource(
+  id: 'solr_document',
+  label: new TranslatableMarkup('Solr Document'),
+  description: new TranslatableMarkup('Search through external Solr content. (Only works if this index is attached to a Solr-based server.)'),
+)]
 class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
   /**
@@ -56,6 +59,26 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
   protected $solrFieldManager;
 
   /**
+   * The typed data manager.
+   *
+   * @var \Drupal\Core\TypedData\TypedDataManagerInterface
+   */
+  protected $typedDataManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    /** @var static $plugin */
+    $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $plugin->setSolrDocumentFactory($container->get('solr_document.factory'));
+    $plugin->setSolrFieldManager($container->get('solr_field.manager'));
+    $plugin->setTypedDataManager($container->get('typed_data_manager'));
+
+    return $plugin;
+  }
+
+  /**
    * Sets the Solr document factory.
    *
    * @param \Drupal\search_api_solr\SolrDocumentFactoryInterface $factory
@@ -75,7 +98,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr document factory.
    */
   public function getSolrDocumentFactory() {
-    return $this->solrDocumentFactory ?: \Drupal::getContainer()->get($this->solrDocument . '.factory');
+    return $this->solrDocumentFactory;
   }
 
   /**
@@ -98,7 +121,20 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr field manager.
    */
   public function getSolrFieldManager() {
-    return $this->solrFieldManager ?: \Drupal::getContainer()->get($this->solrField . '.manager');
+    return $this->solrFieldManager;
+  }
+
+  /**
+   * Sets the typed data manager.
+   *
+   * @param \Drupal\Core\TypedData\TypedDataManagerInterface $typed_data_manager
+   *   The typed data manager.
+   *
+   * @return $this
+   */
+  public function setTypedDataManager(TypedDataManagerInterface $typed_data_manager) {
+    $this->typedDataManager = $typed_data_manager;
+    return $this;
   }
 
   /**
@@ -144,6 +180,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
       // Log the exception and return NULL.
       $this->logException($e);
     }
+
+    return NULL;
   }
 
   /**
@@ -193,11 +231,11 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
         ->execute()
         ->getResultItems();
       foreach ($results as $id => $result) {
-        $original_id =  str_replace('solr_document/', '', $id);
+        $original_id = str_replace('solr_document/', '', $id);
         $documents[$original_id] = $this->getSolrDocumentFactory()->create($result);
       }
     }
-    catch (SearchApiException $e) {
+    catch (SearchApiException) {
       // Couldn't load items from server, return an empty array.
     }
     return $documents;

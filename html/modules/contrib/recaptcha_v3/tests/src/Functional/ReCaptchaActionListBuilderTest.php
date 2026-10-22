@@ -65,7 +65,7 @@ class ReCaptchaActionListBuilderTest extends BrowserTestBase {
     $assert->pageTextContains('Test action');
     $assert->pageTextContains('test_action');
     $assert->pageTextContains('.5');
-    $assert->pageTextContains('Default');
+    $assert->pageTextContains('Math');
   }
 
 }

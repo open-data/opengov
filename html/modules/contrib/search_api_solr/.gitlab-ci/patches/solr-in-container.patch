@@ -1,0 +1,52 @@
+diff --git a/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server.yml b/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server.yml
+index b046230e..5d4c0aa6 100644
+--- a/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server.yml
++++ b/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server.yml
+@@ -12,7 +12,7 @@ backend_config:
+   connector: basic_auth_test
+   connector_config:
+     scheme: http
+-    host: localhost
++    host: solr
+     port: 8983
+     path: /
+     core: drupal
+diff --git a/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server_cloud.yml b/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server_cloud.yml
+index 62871e63..cfac7096 100644
+--- a/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server_cloud.yml
++++ b/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server_cloud.yml
+@@ -12,7 +12,7 @@ backend_config:
+   connector: solr_cloud_basic_auth_test
+   connector_config:
+     scheme: http
+-    host: localhost
++    host: solr
+     port: 8983
+     path: /
+     core: drupal
+diff --git a/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts.yml b/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts.yml
+index a4580588..ba3b847f 100644
+--- a/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts.yml
++++ b/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts.yml
+@@ -11,7 +11,7 @@ backend_config:
+   connector: standard
+   connector_config:
+     scheme: http
+-    host: localhost
++    host: solr
+     port: 8983
+     path: /
+     core: techproducts
+diff --git a/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts_cloud.yml b/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts_cloud.yml
+index b2b3d6ad..4774abec 100644
+--- a/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts_cloud.yml
++++ b/tests/modules/search_api_solr_test/config/install/search_api.server.techproducts_cloud.yml
+@@ -11,7 +11,7 @@ backend_config:
+   connector: solr_cloud
+   connector_config:
+     scheme: http
+-    host: localhost
++    host: solr
+     port: 8983
+     path: /
+     core: techproducts

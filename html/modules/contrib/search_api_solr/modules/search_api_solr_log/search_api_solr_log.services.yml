@@ -1,12 +1,16 @@
+parameters:
+  search_api_solr_log.skip_procedural_hook_scan: true
+
 services:
   logger.solr:
     class: Drupal\search_api_solr_log\Logger\SolrLogger
-    arguments: ['@logger.log_message_parser', '@solarium.query_helper']
+    arguments: ['@logger.log_message_parser', '@solarium.query_helper', '@config.factory']
     tags:
       - { name: logger }
       - { name: backend_overridable }
 
   search_api_solr_log.kernel_subscriber:
     class: Drupal\search_api_solr_log\EventSubscriber\EventSubscriber
+    arguments: ['@config.factory', '@messenger']
     tags:
       - { name: event_subscriber }

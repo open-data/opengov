@@ -114,7 +114,7 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
   /**
    * Retrieves the Search API index.
    *
-   * @return string
+   * @return \Drupal\search_api\IndexInterface
    *   The Search API index the field belongs to.
    */
   public function getIndex(): IndexInterface {

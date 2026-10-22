@@ -3,6 +3,7 @@
 namespace Drupal\facets\Plugin\facets\processor;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -28,6 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class TranslateEntityProcessor extends ProcessorPluginBase implements BuildProcessorInterface, ContainerFactoryPluginInterface {
+  use TranslateEntityAccessCheckTrait;
 
   /**
    * The language manager.
@@ -113,8 +115,19 @@ class TranslateEntityProcessor extends ProcessorPluginBase implements BuildProce
     $entities = $this->entityTypeManager
       ->getStorage($entity_type)
       ->loadMultiple($ids);
-    $access = $this->entityTypeManager->getAccessControlHandler($entity_type);
-    $this->checkEntitiesAccess($entities, $facet, $access);
+
+    $config = $this->getConfiguration();
+
+    if ($config['skip_access_check'] === FALSE) {
+      $access = $this->entityTypeManager->getAccessControlHandler($entity_type);
+
+      // Only run access checking if the handler actually exists and implements
+      // the expected interface. This preserves backwards compatibility for
+      // entity types (and tests) that do not define an access handler.
+      if ($access instanceof EntityAccessControlHandlerInterface) {
+        $this->checkEntitiesAccess($entities, $facet, $access);
+      }
+    }
 
     // Loop over all results.
     foreach ($results as $i => $result) {

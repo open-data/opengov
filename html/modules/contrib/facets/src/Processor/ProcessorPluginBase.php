@@ -132,6 +132,8 @@ class ProcessorPluginBase extends PluginBase implements ProcessorInterface, Cach
    *   which the current user does not have access will be removed.
    * @param \Drupal\facets\FacetInterface $facet
    *   The facet for which the entities were loaded.
+   * @param \Drupal\Core\Entity\EntityAccessControlHandlerInterface $access
+   *   The access object.
    */
   protected function checkEntitiesAccess(
     array &$entities,
@@ -139,7 +141,7 @@ class ProcessorPluginBase extends PluginBase implements ProcessorInterface, Cach
     EntityAccessControlHandlerInterface $access,
   ): void {
     foreach ($entities as $id => $entity) {
-      $access_result = $access->access($entity, 'view', return_as_object: TRUE);
+      $access_result = $access->access($entity, 'view label', return_as_object: TRUE);
       $facet->addCacheableDependency($access_result);
       if (!$access_result->isAllowed()) {
         unset($entities[$id]);

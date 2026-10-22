@@ -2,8 +2,11 @@
 
 namespace Drupal\search_api_solr\Utility;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\search_api\ConsoleException;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
@@ -12,8 +15,8 @@ use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\Plugin\search_api\tracker\IndexParallel;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use ZipStream\Option\Archive;
 
 /**
  * Provides functionality to be used by CLI tools.
@@ -27,7 +30,40 @@ class SolrCommandHelper extends CommandHelper {
    */
   protected $configsetController;
 
+  /**
+   * Running child process handles keyed by process ID.
+   *
+   * @var array
+   */
   protected $processes = [];
+
+  /**
+   * The state service.
+   *
+   * @var \Drupal\Core\State\StateInterface|null
+   */
+  protected ?StateInterface $state = NULL;
+
+  /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface|null
+   */
+  protected ?TimeInterface $time = NULL;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface|null
+   */
+  protected ?ConfigFactoryInterface $configFactory = NULL;
+
+  /**
+   * The service container.
+   *
+   * @var \Psr\Container\ContainerInterface|null
+   */
+  protected ?ContainerInterface $container = NULL;
 
   /**
    * Constructs a CommandHelper object.
@@ -51,6 +87,25 @@ class SolrCommandHelper extends CommandHelper {
   public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, SolrConfigSetController $configset_controller) {
     parent::__construct($entity_type_manager, $module_handler, $event_dispatcher);
     $this->configsetController = $configset_controller;
+  }
+
+  /**
+   * Sets supporting services for command execution.
+   *
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
+   * @param \Psr\Container\ContainerInterface $container
+   *   The service container.
+   */
+  public function setSupportingServices(StateInterface $state, TimeInterface $time, ConfigFactoryInterface $configFactory, ContainerInterface $container): void {
+    $this->state = $state;
+    $this->time = $time;
+    $this->configFactory = $configFactory;
+    $this->container = $container;
   }
 
   /**
@@ -92,17 +147,7 @@ class SolrCommandHelper extends CommandHelper {
       $stream = fopen($file_name, 'w+b');
     }
 
-    if (class_exists('\ZipStream\Option\Archive')) {
-      // Version 2.x.
-      $archive_options_or_ressource = new Archive();
-      $archive_options_or_ressource->setOutputStream($stream);
-    }
-    else {
-      // Version 3.x.
-      $archive_options_or_ressource = $stream;
-    }
-
-    $zip = $this->configsetController->getConfigZip($archive_options_or_ressource);
+    $zip = $this->configsetController->getConfigZip($stream);
     $zip->finish();
 
     if ($stream) {
@@ -124,16 +169,24 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function finalizeIndexCommand(?array $indexIds = NULL, $force = FALSE) {
+    if ($indexIds === [NULL]) {
+      $indexIds = NULL;
+    }
     $servers = search_api_solr_get_servers();
 
     if ($force) {
       // It's important to mark all indexes as "dirty" before the first
       // finalization runs because there might be dependencies between the
-      // indexes. Therefor we do the loop two times.
+      // indexes. Therefore, we do the loop two times.
       foreach ($servers as $server) {
         foreach ($server->getIndexes() as $index) {
           if ($index->status() && !$index->isReadOnly() && (!$indexIds || in_array($index->id(), $indexIds))) {
-            \Drupal::state()->set('search_api_solr.' . $index->id() . '.last_update', \Drupal::time()->getRequestTime());
+            assert($this->state instanceof StateInterface);
+            assert($this->time instanceof TimeInterface);
+            $this->state->set(
+              'search_api_solr.' . $index->id() . '.last_update',
+              $this->time->getRequestTime(),
+            );
           }
         }
       }
@@ -209,6 +262,9 @@ class SolrCommandHelper extends CommandHelper {
    *   Thrown if one of the affected indexes had an invalid tracker set.
    */
   public function indexParallelCommand(?array $indexIds = NULL, $threads = 2, $batchSize = NULL): array {
+    if ($indexIds === [NULL]) {
+      $indexIds = NULL;
+    }
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return [];
@@ -218,7 +274,8 @@ class SolrCommandHelper extends CommandHelper {
 
     /** @var \Drupal\search_api_solr\Entity\Index $index */
     foreach ($indexes as $index) {
-      if (!$index->status() || $index->isReadOnly() || !($index->getServerInstance()->getBackend() instanceof SolrBackendInterface)) {
+      if (!$index->status() || $index->isReadOnly() || (empty($indexIds) && !($index->getServerInstance()->getBackend() instanceof SolrBackendInterface))) {
+        // If the list of indexes is not limited, only handle Solr backends.
         continue;
       }
       $tracker = $index->getTrackerInstance();
@@ -243,7 +300,8 @@ class SolrCommandHelper extends CommandHelper {
       $currentBatchSize = $batchSize;
       if (!$currentBatchSize) {
         $cron_limit = $index->getOption('cron_limit');
-        $currentBatchSize = $cron_limit ?: \Drupal::configFactory()
+        assert($this->configFactory instanceof ConfigFactoryInterface);
+        $currentBatchSize = $cron_limit ?: $this->configFactory
           ->get('search_api.settings')
           ->get('default_cron_limit');
       }
@@ -272,9 +330,14 @@ class SolrCommandHelper extends CommandHelper {
 
       // Create the batch.
       try {
-        $ids[$index->id()] = IndexParallelBatchHelper::create($index, $currentBatchSize, $currentThreads);
-      } catch (SearchApiException $e) {
-        throw new ConsoleException($this->t("Couldn't create all batches, check the batch size and other parameters."), 0, $e);
+        assert($this->container instanceof ContainerInterface);
+        /** @var \Drupal\search_api_solr\Utility\IndexParallelBatchHelper $batchHelper */
+        $batchHelper = $this->container->get('search_api_solr.index_parallel_batch_helper');
+        $batchHelper->createBatch($index, $currentBatchSize, $currentThreads);
+        $ids[$index->id()] = $batchHelper->getBatchIds();
+      }
+      catch (SearchApiException $e) {
+        throw new ConsoleException("Couldn't create all batches, check the batch size and other parameters.", 0, $e);
       }
     }
 
@@ -303,6 +366,12 @@ class SolrCommandHelper extends CommandHelper {
     return $shuffled_ids;
   }
 
+  /**
+   * Resets the empty-index state for the provided indexes.
+   *
+   * @param array<int, string> $indexIds
+   *   The Search API index IDs.
+   */
   public function resetEmptyIndexState(array $indexIds): void {
     if ($indexes = $this->loadIndexes($indexIds)) {
       /** @var \Drupal\search_api_solr\Entity\Index $index */

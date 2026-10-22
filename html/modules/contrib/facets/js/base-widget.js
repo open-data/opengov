@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
-  'use strict';
-
   /**
    * Handles "facets_filter" event and triggers "facets_filtering".
    *
@@ -43,14 +40,15 @@
    * register/deregister them.
    */
   Drupal.behaviors.facetsFilter = {
-    attach: function (context) {
-      $(once('js-facet-filter', '.js-facets-widget', context))
-        .on('facets_filter.facets', function (event, url) {
+    attach: (context) => {
+      $(once('js-facet-filter', '.js-facets-widget', context)).on(
+        'facets_filter.facets',
+        function (event, url) {
           $('.js-facets-widget').trigger('facets_filtering');
 
           window.location = url;
-        });
-    }
+        },
+      );
+    },
   };
-
 })(jQuery, Drupal, once);

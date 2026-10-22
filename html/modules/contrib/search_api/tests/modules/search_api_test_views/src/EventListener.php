@@ -18,7 +18,7 @@ class EventListener implements EventSubscriberInterface {
   /**
    * Drupal state key to toggle printing of the query to the page.
    */
-  const STATE_PRINT_QUERY = 'search_api_test_views.print_query';
+  public const STATE_PRINT_QUERY = 'search_api_test_views.print_query';
 
   /**
    * The messenger.

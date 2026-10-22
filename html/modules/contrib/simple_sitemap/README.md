@@ -321,6 +321,10 @@ the use of `hook_simple_sitemap_url_generators_alter(&$url_generators){}`.
 Altering sitemap generators is possible through
 the use of `hook_simple_sitemap_sitemap_generators_alter(&$sitemap_generators){}`.
 
+Entity URL generator query can be altered through the use of
+`hook_entity_query_tag__simple_sitemap_alter($query){}` and
+`hook_entity_query_tag__ENTITY_TYPE__simple_sitemap_alter($query){}`.
+
 Sitemaps as well as sitemap types can be altered through the usual entity hooks.
 
 ### WRITING PLUGINS ###

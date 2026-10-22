@@ -53,6 +53,19 @@
           options = $.extend(true, options, JSON.parse($(this).attr('data-options')));
         }
 
+        // The text counter plugin builds counter HTML from string options.
+        // @see https://github.com/ractoon/jQuery-Text-Counter#options
+        // Prevent custom options from changing element names used to build HTML.
+        delete options.countContainerElement;
+        delete options.errorTextElement;
+
+        // Escape remaining text and class options before they are used in HTML.
+        Object.keys(options).forEach(function (key) {
+          if (typeof options[key] === 'string') {
+            options[key] = Drupal.checkPlain(options[key]);
+          }
+        });
+
         $(this).textcounter(options);
       });
 

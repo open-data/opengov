@@ -928,11 +928,14 @@ class Utility {
                 $boost = implode('', $split);
               }
 
-              // Fuzziness isn't "compatible" with analyzed fields. In fact, it turns off the analyzer. So we build the
-              // query part without fuzziness first and add a second query part with fuzziness applied. These parts will
-              // be combined using an OR conjunction. Additionally, fuzziness should never be applied to fields of
-              // "fulltext string" types. In case of embedded phrases (see above) we might get a duplicate query part.
-              // Therfore, an array_unique() is performed later.
+              // Fuzziness isn't "compatible" with analyzed fields. In fact, it
+              // turns off the analyzer. So we build the query part without
+              // fuzziness first and add a second query part with fuzziness
+              // applied. These parts will be combined using an OR conjunction.
+              // Additionally, fuzziness should never be applied to fields of
+              // "fulltext string" types. In case of embedded phrases (see
+              // above) we might get a duplicate query part.
+              // Therefore, an array_unique() is performed later.
               // @see https://www.drupal.org/project/search_api_solr/issues/3404623
               if (('fuzzy_terms' === $parse_mode_id && $options['fuzzy_analyzer']) || preg_match('/^t[^_]*string/', $field)) {
                 $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k_without_fuzziness) . ')' . $boost;
@@ -1238,7 +1241,9 @@ class Utility {
       }
       // Trim all whitespaces.
       foreach ($xpath->query('//text()') as $whitespace) {
-        $whitespace->data = trim($whitespace->nodeValue);
+        if ($whitespace instanceof \DOMCharacterData) {
+          $whitespace->data = trim($whitespace->nodeValue);
+        }
       }
       return [$version_number, $document->saveXML()];
     }

@@ -33,16 +33,14 @@ class Stopwords extends AbstractQuery
     /**
      * Default result class if no command is set.
      *
-     * @var string
+     * @var class-string<WordSet>
      */
-    protected $defaultResultClass = WordSet::class;
+    protected string $defaultResultClass = WordSet::class;
 
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'handler' => 'schema/analysis/stopwords/',
         'resultclass' => WordSet::class,
         'omitheader' => true,
@@ -51,9 +49,9 @@ class Stopwords extends AbstractQuery
     /**
      * Command types.
      *
-     * @var array
+     * @var array<self::COMMAND_*, class-string<AbstractCommand>>
      */
-    protected $commandTypes = [
+    protected array $commandTypes = [
         self::COMMAND_ADD => Add::class,
         self::COMMAND_CONFIG => Config::class,
         self::COMMAND_CREATE => Create::class,
@@ -65,7 +63,7 @@ class Stopwords extends AbstractQuery
     /**
      * Get query type.
      *
-     * @return string
+     * @return Client::QUERY_MANAGED_STOPWORDS
      */
     public function getType(): string
     {
@@ -75,7 +73,7 @@ class Stopwords extends AbstractQuery
     /**
      * Get the response parser class for this query.
      *
-     * @return \Solarium\Core\Query\ResponseParserInterface
+     * @return ResponseParserInterface
      */
     public function getResponseParser(): ResponseParserInterface
     {
@@ -101,9 +99,9 @@ class Stopwords extends AbstractQuery
      *
      * @param array|null $initArgs
      *
-     * @return \Solarium\QueryType\ManagedResources\Query\Stopwords\InitArgs
+     * @return InitArgs
      */
-    public function createInitArgs(?array $initArgs = null): InitArgsInterface
+    public function createInitArgs(?array $initArgs = null): InitArgs
     {
         return new InitArgs($initArgs);
     }

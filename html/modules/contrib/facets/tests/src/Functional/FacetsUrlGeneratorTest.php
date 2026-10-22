@@ -57,6 +57,11 @@ class FacetsUrlGeneratorTest extends FacetsTestBase {
       'name' => 'Test facet',
     ]);
     $entity->setWidget('links');
+    $entity->addProcessor([
+      'processor_id' => 'url_processor_handler',
+      'weights' => ['pre_query' => 50, 'build' => 15],
+      'settings' => [],
+    ]);
     $entity->setEmptyBehavior(['behavior' => 'none']);
     $entity->setUrlAlias('owl');
     $entity->setFacetSourceId('search_api:views_page__search_api_test_view__page_1');

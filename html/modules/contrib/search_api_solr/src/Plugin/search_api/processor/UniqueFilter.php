@@ -2,23 +2,24 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\processor;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Processor\FieldsProcessorPluginBase;
 
 /**
  * Strips HTML tags from fulltext fields and decodes HTML entities.
- *
- * @SearchApiProcessor(
- *   id = "unique_filter",
- *   label = @Translation("Unique values filter"),
- *   description = @Translation("Ensures unique values for multi-valued fields"),
- *   stages = {
- *     "pre_index_save" = 0,
- *     "preprocess_index" = -15,
- *     "preprocess_query" = -15,
- *   }
- * )
  */
+#[SearchApiProcessor(
+  id: 'unique_filter',
+  label: new TranslatableMarkup('Unique values filter'),
+  description: new TranslatableMarkup('Ensures unique values for multi-valued fields'),
+  stages: [
+    'pre_index_save' => 0,
+    'preprocess_index' => -15,
+    'preprocess_query' => -15,
+  ],
+)]
 class UniqueFilter extends FieldsProcessorPluginBase {
 
   /**

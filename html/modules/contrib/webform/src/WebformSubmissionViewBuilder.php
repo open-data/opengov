@@ -64,7 +64,11 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
   public function view(EntityInterface $entity, $view_mode = 'full', $langcode = NULL) {
     // Allow modules to set custom webform submission view mode.
     // @see \Drupal\webform_entity_print\Plugin\WebformExporter\WebformEntityPrintWebformExporter::writeSubmission
-    if ($webform_submissions_view_mode = \Drupal::request()->request->get('_webform_submissions_view_mode')) {
+    $webform_submissions_view_mode = \Drupal::request()->request->get('_webform_submissions_view_mode');
+    if (isset($entity->webformViewModeTwig)) {
+      $view_mode = 'twig';
+    }
+    elseif (in_array($webform_submissions_view_mode, ['html', 'table'])) {
       $view_mode = $webform_submissions_view_mode;
     }
 

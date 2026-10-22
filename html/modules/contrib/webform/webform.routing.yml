@@ -273,6 +273,7 @@ entity.webform.edit_form:
     _title_callback: '\Drupal\webform\Controller\WebformEntityController::title'
   requirements:
     _entity_access: 'webform.update'
+    _permission: 'edit webform source'
 
 entity.webform.duplicate_form:
   path: '/admin/structure/webform/manage/{webform}/duplicate'

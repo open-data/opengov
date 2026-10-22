@@ -77,7 +77,7 @@ class LogMessage extends FieldPluginBase {
         }
       }
 
-      return $this->t(Xss::filterAdmin($value), (array) $variables)->render();
+      return (string) new FormattableMarkup(Xss::filterAdmin($value), (array) $variables);
     }
 
     return $this->sanitizeValue((string) $value);

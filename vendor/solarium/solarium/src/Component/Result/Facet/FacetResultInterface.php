@@ -9,9 +9,11 @@
 
 namespace Solarium\Component\Result\Facet;
 
+use Solarium\Component\Result\ComponentResultInterface;
+
 /**
  * Facet result interface.
  */
-interface FacetResultInterface
+interface FacetResultInterface extends ComponentResultInterface
 {
 }

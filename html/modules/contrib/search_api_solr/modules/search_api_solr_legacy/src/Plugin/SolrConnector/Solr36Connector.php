@@ -3,6 +3,8 @@
 namespace Drupal\search_api_solr_legacy\Plugin\SolrConnector;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api_solr\Attribute\SolrConnector;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
 use Solarium\Core\Client\Endpoint;
 use Solarium\QueryType\Select\Query\Query;
@@ -13,13 +15,12 @@ use Solarium\QueryType\Select\Query\Query;
  * Extends SolrConnectorPluginBase for Solr 3.6.
  *
  * @package Drupal\sarch_api_solr_legacy\Plugin\SolrConnector
- *
- * @SolrConnector(
- *   id = "solr_36",
- *   label = @Translation("Solr 3.6"),
- *   description = @Translation("Index items using a Solr 3.6 server.")
- * )
  */
+#[SolrConnector(
+  id: 'solr_36',
+  label: new TranslatableMarkup('Solr 3.6'),
+  description: new TranslatableMarkup('Index items using a Solr 3.6 server.'),
+)]
 class Solr36Connector extends SolrConnectorPluginBase {
 
   /**

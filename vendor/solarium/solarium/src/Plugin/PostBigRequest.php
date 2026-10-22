@@ -28,10 +28,8 @@ class PostBigRequest extends AbstractPlugin
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'maxquerystringlength' => 1024,
     ];
 
@@ -66,7 +64,7 @@ class PostBigRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function preExecuteRequest($event): self
+    public function preExecuteRequest(object $event): self
     {
         // We need to accept event proxies or decorators.
         /** @var PreExecuteRequest $event */
@@ -93,7 +91,7 @@ class PostBigRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType()
+    protected function initPluginType(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -107,7 +105,7 @@ class PostBigRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin()
+    public function deinitPlugin(): void
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

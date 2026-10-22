@@ -20,24 +20,20 @@ class Exists extends AbstractCommand
 {
     /**
      * Default options.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         'useHeadRequest' => false,
     ];
 
     /**
      * Name of the child resource to be checked if exists.
-     *
-     * @var string|null
      */
-    protected $term = null;
+    protected ?string $term = null;
 
     /**
      * Returns command type, for use in adapters.
      *
-     * @return string
+     * @return Query::COMMAND_EXISTS
      */
     public function getType(): string
     {
@@ -47,7 +43,7 @@ class Exists extends AbstractCommand
     /**
      * Returns request method.
      *
-     * @return string
+     * @return Request::METHOD_HEAD|Request::METHOD_GET
      */
     public function getRequestMethod(): string
     {

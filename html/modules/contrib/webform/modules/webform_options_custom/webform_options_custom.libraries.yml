@@ -10,6 +10,7 @@ webform_options_custom.element:
     - core/once
     - webform/libraries.tippyjs
     - webform/webform.element.select
+    - webform/webform.xss
 
 # External libraries.
 

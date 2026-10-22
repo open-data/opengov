@@ -2,10 +2,14 @@
 
 namespace Drupal\search_api_solr\Utility;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Processor\ProcessorInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrProcessorInterface;
@@ -126,7 +130,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
   /**
    * The Solr connector.
    *
-   * @var \Drupal\search_api_solr\SolrBackendInterface
+   * @var \Drupal\search_api_solr\SolrConnectorInterface
    */
   protected $connector;
 
@@ -135,14 +139,27 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    *
    * @param \Drupal\search_api\IndexInterface $index
    *   The Search API index entity.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function __construct(IndexInterface $index) {
+  public function __construct(
+    IndexInterface $index,
+    protected LanguageManagerInterface $languageManager,
+    protected TimeInterface $time,
+    protected StateInterface $state,
+  ) {
     $server = $index->getServerInstance();
     $this->serverId = $server->id();
-    $this->backend = $server->getBackend();
+    $backend = $server->getBackend();
+    assert($backend instanceof SearchApiSolrBackend);
+    $this->backend = $backend;
     $this->connector = $this->backend->getSolrConnector();
     $index_settings = Utility::getIndexSolrSettings($index);
 
@@ -150,14 +167,14 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
       throw new SearchApiSolrException('Streaming expressions are only supported by a Solr Cloud connector.');
     }
 
-    $language_ids = array_merge(array_keys(\Drupal::languageManager()->getLanguages()), [LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+    $language_ids = array_merge(array_keys($this->languageManager->getLanguages()), [LanguageInterface::LANGCODE_NOT_SPECIFIED]);
     $this->collection = $index_settings['advanced']['collection'] ?: $this->connector->getCollectionName();
     $this->checkpointsCollection = $this->connector->getCheckpointsCollectionName();
     $this->indexFilterQuery = $this->backend->getIndexFilterQueryString($index);
     $this->targetedIndexId = $this->backend->getTargetedIndexId($index);
     $this->targetedSiteHash = $this->backend->getTargetedSiteHash($index);
     $this->index = $index;
-    $this->requestTime = $this->backend->formatDate(\Drupal::time()->getRequestTime());
+    $this->requestTime = $this->backend->formatDate($this->time->getRequestTime());
     $this->allFieldsMapped = [];
     foreach ($this->backend->getSolrFieldNamesKeyedByLanguage($language_ids, $index) as $search_api_field => $solr_field) {
       foreach ($solr_field as $language_id => $solr_field_name) {
@@ -289,7 +306,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    *   (optional) The delimiter to use. Defaults to ",".
    * @param bool $include_sorts
    *   (optional) Whether to include sort fields. Defaults to TRUE.
-   * @param array $blacklist
+   * @param array $exclude_list
    *   (optional) An array of field names to exclude.
    * @param string $language_id
    *   (optional) The language ID. Defaults to "und".
@@ -297,11 +314,11 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * @return string
    *   A list of all Solr field names for the index.
    */
-  public function _all_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
-    $blacklist = array_merge($blacklist, ['search_api_relevance', 'search_api_random']);
+  public function _all_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $exclude_list = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
+    $exclude_list = array_merge($exclude_list, ['search_api_relevance', 'search_api_random']);
     return implode($delimiter, array_diff_key(
       ($include_sorts ? array_merge($this->allFieldsMapped[$language_id], $this->sortFieldsMapped[$language_id]) : $this->allFieldsMapped[$language_id]),
-      array_flip($blacklist))
+      array_flip($exclude_list))
     );
   }
 
@@ -312,7 +329,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    *   (optional) The delimiter to use. Defaults to ",".
    * @param bool $include_sorts
    *   (optional) Whether to include sort fields. Defaults to TRUE.
-   * @param array $blacklist
+   * @param array $exclude_list
    *   (optional) An array of field names to exclude.
    * @param string $language_id
    *   (optional) The language ID. Defaults to "und".
@@ -320,12 +337,12 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * @return string
    *   A list of all Solr field names for the index.
    */
-  public function _all_doc_value_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
-    $blacklist = array_merge($blacklist, ['search_api_relevance', 'search_api_random']);
+  public function _all_doc_value_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $exclude_list = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
+    $exclude_list = array_merge($exclude_list, ['search_api_relevance', 'search_api_random']);
     return implode($delimiter, array_diff_key(
       // All sort fields have docValues.
       ($include_sorts ? array_merge($this->allDocValueFieldsMapped[$language_id], $this->sortFieldsMapped[$language_id]) : $this->allDocValueFieldsMapped[$language_id]),
-      array_flip($blacklist))
+      array_flip($exclude_list))
     );
   }
 
@@ -747,6 +764,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * collisions.
    *
    * @param string $checkpoint
+   *   The checkpoint name.
    *
    * @return string
    *   Formatted checkpoint parameter.
@@ -777,13 +795,13 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    */
   public function getSearchAllRows() {
     if (!$this->searchAllRows) {
-      $rows = \Drupal::state()->get('search_api_solr.search_all_rows', []);
+      $rows = $this->state->get('search_api_solr.search_all_rows', []);
       $this->searchAllRows = $rows[$this->serverId][$this->targetedSiteHash][$this->targetedIndexId] ?? FALSE;
       if (FALSE === $this->searchAllRows) {
         $counts = $this->backend->getDocumentCounts();
         $this->searchAllRows = $rows[$this->serverId][$this->targetedSiteHash][$this->targetedIndexId] =
           Utility::normalizeMaxRows($counts[$this->targetedSiteHash][$this->targetedIndexId] ?? ($counts['#total'] ?? 512));
-        \Drupal::state()->set('search_api_solr.search_all_rows', $rows);
+        $this->state->set('search_api_solr.search_all_rows', $rows);
       }
     }
     return $this->searchAllRows;

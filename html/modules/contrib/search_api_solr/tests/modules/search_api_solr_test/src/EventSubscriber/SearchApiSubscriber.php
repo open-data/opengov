@@ -1,10 +1,13 @@
 <?php
 
+// phpcs:ignoreFile SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace Drupal\search_api_solr_test\EventSubscriber;
 
 use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\SearchApiSolrEvents;
+use Solarium\QueryType\Update\Query\Document;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -22,6 +25,12 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     return $events;
   }
 
+  /**
+   * Adds a test config file after config generation.
+   *
+   * @param \Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent $event
+   *   The dispatched event.
+   */
   public function postConfigFilesGeneration(PostConfigFilesGenerationEvent $event): void {
     $files = $event->getConfigFiles();
 
@@ -32,14 +41,25 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     $event->setConfigFiles($files);
   }
 
+  /**
+   * Alters generated index documents for fallback test coverage.
+   *
+   * @param \Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent $event
+   *   The dispatched event.
+   */
   public function postCreateIndexDocuments(PostCreateIndexDocumentsEvent $event): void {
     global $_search_api_solr_test_index_fallback_test;
 
     if ($_search_api_solr_test_index_fallback_test) {
       $documents = $event->getSolariumDocuments();
       foreach ($documents as $document) {
-        if ('entity:entity_test_mulrev_changed/2:en' === $document->ss_search_api_id) {
-          // Mess up this document by sending a string as value of a float field.
+        assert($document instanceof Document);
+        $fields = $document->getFields();
+        if (
+          'entity:entity_test_mulrev_changed/2:en' ===
+          ($fields['ss_search_api_id'] ?? NULL)
+        ) {
+          // Send a string as value of a float field for the fallback test.
           $document->setField('fts_width', 'bar');
         }
       }

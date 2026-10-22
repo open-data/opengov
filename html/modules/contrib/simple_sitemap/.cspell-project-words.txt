@@ -6,7 +6,6 @@ indexnow
 lastmod
 naver
 pawel
-phplint
 seznam
 simplesitemap
 sitemapindex
@@ -16,4 +15,5 @@ tymchuk
 unstash
 unstashes
 urlset
+varchar
 xmlwriter

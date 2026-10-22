@@ -4,20 +4,16 @@
  */
 
 (function ($) {
-
-  'use strict';
-
   Drupal.behaviors.facetsEditForm = {
-    attach: function (context, settings) {
+    attach: (context, settings) => {
       $('.facet-source-field-wrapper select').change(function () {
-
-        var default_name = $(this).find('option:selected').text();
-        default_name = default_name.replace(/(\s\((?!.*\().*\))/g, '');
-        $('#edit-name').val(default_name);
-        setTimeout(function () { $('#edit-name').trigger('change'); }, 100);
-
+        let defaultName = $(this).find('option:selected')[0].textContent;
+        defaultName = defaultName.replace(/(\s\((?!.*\().*\))/g, '');
+        $('#edit-name')[0].value = defaultName;
+        setTimeout(function () {
+          $('#edit-name').trigger('change');
+        }, 100);
       });
-    }
+    },
   };
-
 })(jQuery);

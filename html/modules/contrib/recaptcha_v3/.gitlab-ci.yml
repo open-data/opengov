@@ -26,5 +26,7 @@ include:
 variables:
   OPT_IN_TEST_PREVIOUS_MINOR: 1
   OPT_IN_TEST_NEXT_MINOR: 1
-  OPT_IN_TEST_NEXT_MAJOR: 1
+  # Temporarily disable next-major testing until CAPTCHA supports the next
+  # core major and no longer blocks composer resolution for this project.
+  OPT_IN_TEST_NEXT_MAJOR: 0
   OPT_IN_TEST_MAX_PHP: 1

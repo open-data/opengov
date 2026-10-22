@@ -4,8 +4,9 @@ namespace PHPStan\Rules\PHPUnit;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\Expr\TypeExpr;
-use PHPStan\Rules\Rule;
+use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use function array_slice;
@@ -14,9 +15,9 @@ use function max;
 use const PHP_INT_MAX;
 
 /**
- * @implements Rule<Node>
+ * @implements MultipleNodeTypesRule<Node>
  */
-class DataProviderDataRule implements Rule
+class DataProviderDataRule implements MultipleNodeTypesRule
 {
 
 	private TestMethodsHelper $testMethodsHelper;
@@ -34,6 +35,11 @@ class DataProviderDataRule implements Rule
 		$this->testMethodsHelper = $testMethodsHelper;
 		$this->dataProviderHelper = $dataProviderHelper;
 		$this->PHPUnitVersion = $PHPUnitVersion;
+	}
+
+	public function getNodeTypes(): array
+	{
+		return [Node\Stmt\Return_::class, Node\Expr\Yield_::class, Node\Expr\YieldFrom::class];
 	}
 
 	public function getNodeType(): string
@@ -63,19 +69,19 @@ class DataProviderDataRule implements Rule
 			return [];
 		}
 
-		$testsWithProvider = [];
+		$testWithProviderMethods = [];
 		$method = $scope->getFunction();
 		$testMethods = $this->testMethodsHelper->getTestMethods($classReflection, $scope);
 		foreach ($testMethods as $testMethod) {
 			foreach ($this->dataProviderHelper->getDataProviderMethods($scope, $testMethod, $classReflection) as [, $providerMethodName]) {
 				if ($providerMethodName === $method->getName()) {
-					$testsWithProvider[] = $testMethod;
+					$testWithProviderMethods[] = $testMethod;
 					continue 2;
 				}
 			}
 		}
 
-		if (count($testsWithProvider) === 0) {
+		if (count($testWithProviderMethods) === 0) {
 			return [];
 		}
 
@@ -84,25 +90,10 @@ class DataProviderDataRule implements Rule
 			return [];
 		}
 
-		$maxNumberOfParameters = null;
-		foreach ($testsWithProvider as $testMethod) {
-			$num = $testMethod->getNumberOfParameters();
-			if ($testMethod->isVariadic()) {
-				$num = PHP_INT_MAX;
-			}
-			if ($maxNumberOfParameters === null) {
-				$maxNumberOfParameters = $num;
-				continue;
-			}
+		$maxNumberOfParameters = $this->getMaxNumberOfParameters($testWithProviderMethods);
 
-			$maxNumberOfParameters = max($maxNumberOfParameters, $num);
-			if ($num === PHP_INT_MAX) {
-				break;
-			}
-		}
-
-		foreach ($testsWithProvider as $testMethod) {
-			$numberOfParameters = $testMethod->getNumberOfParameters();
+		foreach ($testWithProviderMethods as $testWithProviderMethod) {
+			$numberOfParameters = $testWithProviderMethod->getNumberOfParameters();
 
 			foreach ($arraysTypes as [$startLine, $arraysType]) {
 				$args = $this->arrayItemsToArgs($arraysType, $numberOfParameters);
@@ -111,7 +102,7 @@ class DataProviderDataRule implements Rule
 				}
 
 				if (
-					!$testMethod->isVariadic()
+					!$testWithProviderMethod->isVariadic()
 					&& $numberOfParameters !== $maxNumberOfParameters
 				) {
 					$args = array_slice($args, 0, $numberOfParameters);
@@ -119,7 +110,7 @@ class DataProviderDataRule implements Rule
 
 				$scope->invokeNodeCallback(new Node\Expr\MethodCall(
 					new TypeExpr(new ObjectType($classReflection->getName())),
-					$testMethod->getName(),
+					$testWithProviderMethod->getName(),
 					$args,
 					['startLine' => $startLine],
 				));
@@ -127,6 +118,28 @@ class DataProviderDataRule implements Rule
 		}
 
 		return [];
+	}
+
+	/**
+	 * @param non-empty-array<ReflectionMethod> $testMethods
+	 */
+	private function getMaxNumberOfParameters(array $testMethods): int
+	{
+		$maxNumberOfParameters = null;
+		foreach ($testMethods as $testMethod) {
+			$num = $testMethod->getNumberOfParameters();
+			if ($testMethod->isVariadic()) {
+				return PHP_INT_MAX;
+			}
+			if ($maxNumberOfParameters === null) {
+				$maxNumberOfParameters = $num;
+				continue;
+			}
+
+			$maxNumberOfParameters = max($maxNumberOfParameters, $num);
+		}
+
+		return $maxNumberOfParameters;
 	}
 
 	/**

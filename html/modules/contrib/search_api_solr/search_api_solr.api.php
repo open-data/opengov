@@ -117,8 +117,8 @@ function hook_search_api_solr_suggester_autocomplete_query_alter(Query $solarium
  * Lets modules alter the converted Solarium select query before executing it.
  *
  * This hook is called after the select query is finally converted into an
- * expression that meets the requirements of the trageted query parser. Using
- *  this hook you can carefully modify the 'q' parameter here, in oposite to
+ * expression that meets the requirements of the targeted query parser. Using
+ *  this hook you can carefully modify the 'q' parameter here, in opposite to
  * hook_search_api_solr_query_alter().
  *
  * @param \Solarium\Core\Query\QueryInterface $solarium_query
@@ -223,7 +223,7 @@ function hook_search_api_solr_search_results_alter(ResultSetInterface $result_se
  *
  * @return array
  *   In addition to the keys for the individual types that are defined by
- *   hook_search_api_data_type_info(), the following keys are regonized:
+ *   hook_search_api_data_type_info(), the following keys are recognized:
  *   - prefix: The Solr field name prefix to use for this type. Should match
  *     two existing dynamic fields definitions with names "{PREFIX}s_*" and
  *     "{PREFIX}m_*".

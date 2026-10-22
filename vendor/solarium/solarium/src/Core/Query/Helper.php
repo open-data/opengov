@@ -138,19 +138,26 @@ class Helper
      * A date field shall be of the form 1995-12-31T23:59:59Z.
      * The trailing "Z" designates UTC time and is mandatory.
      *
+     * Besides an integer timestamp, a date string, or an instance of
+     * DateTime or DateTimeImmutable, boolean false is also accepted as input.
+     * This allows you to use the return value of strtotime() directly
+     * without checking its return value for boolean false first.
+     *
      * @see https://solr.apache.org/guide/working-with-dates.html#date-formatting
      *
-     * @param int|string|\DateTimeInterface $input Accepted formats: timestamp, date string, DateTime or
-     *                                             DateTimeImmutable
+     * @param int|string|\DateTime|\DateTimeImmutable|false $input
      *
      * @return string|false false is returned in case of invalid input
      */
-    public function formatDate($input): string|false
+    public function formatDate(int|string|\DateTime|\DateTimeImmutable|false $input): string|false
     {
         switch (true) {
-            case $input instanceof \DateTimeInterface:
-                // input of DateTime or DateTimeImmutable object
+            case $input instanceof \DateTime:
+                // don't work on the original object, DateTime::setTimezone() will modify it
                 $input = clone $input;
+                break;
+            case $input instanceof \DateTimeImmutable:
+                // no action needed, DateTimeImmutable::setTimezone() will return a new object
                 break;
             case \is_string($input):
             case is_numeric($input):
@@ -160,10 +167,10 @@ class Helper
                     $input = strtotime($input);
                 }
 
-                // now try converting the timestamp to a datetime instance, on failure return false
+                // now try converting the timestamp to a DateTime instance, on failure return false
                 try {
                     $input = new \DateTime('@'.$input);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     $input = false;
                 }
                 break;
@@ -458,37 +465,6 @@ class Helper
     }
 
     /**
-     * Render cache control param for use in filterquery.
-     *
-     * This is a Solr 3.4+ feature.
-     *
-     * @see https://solr.apache.org/guide/common-query-parameters.html#cache-parameter
-     *
-     * @param bool       $useCache
-     * @param float|null $cost
-     *
-     * @return string
-     *
-     * @deprecated Will be removed in Solarium 6. Use FilterQuery::setCache() and FilterQuery::setCost() instead.
-     */
-    public function cacheControl(bool $useCache, ?float $cost = null): string
-    {
-        $cache = 'false';
-
-        if (true === $useCache) {
-            $cache = 'true';
-        }
-
-        $result = '{!cache='.$cache;
-        if (null !== $cost) {
-            $result .= ' cost='.$cost;
-        }
-        $result .= '}';
-
-        return $result;
-    }
-
-    /**
      * Filters control characters that cause issues with servlet containers.
      *
      * Mainly useful to filter data before adding it to a document for the update query.
@@ -576,12 +552,12 @@ class Helper
      * The knn k-nearest neighbors query parser matches k-nearest documents to
      * the target vector.
      *
-     * @param string            $field
-     * @param float[]           $vector
-     * @param int|null          $topK
-     * @param array|string|null $preFilter
-     * @param array|string|null $includeTags
-     * @param array|string|null $excludeTags
+     * @param string               $field
+     * @param float[]              $vector
+     * @param int|null             $topK
+     * @param string[]|string|null $preFilter
+     * @param string[]|string|null $includeTags
+     * @param string[]|string|null $excludeTags
      *
      * @return string
      */
@@ -606,13 +582,13 @@ class Helper
      * encoding text to vector for sentence similarity) and matches k-nearest
      * neighbours documents to such query vector.
      *
-     * @param string            $model
-     * @param string            $field
-     * @param string            $query
-     * @param int|null          $topK
-     * @param array|string|null $preFilter
-     * @param array|string|null $includeTags
-     * @param array|string|null $excludeTags
+     * @param string               $model
+     * @param string               $field
+     * @param string               $query
+     * @param int|null             $topK
+     * @param string[]|string|null $preFilter
+     * @param string[]|string|null $includeTags
+     * @param string[]|string|null $excludeTags
      *
      * @return string
      */
@@ -636,13 +612,13 @@ class Helper
      * The vectorSimilarity vector similarity query parser matches documents
      * whose similarity with the target vector is a above a minimum threshold.
      *
-     * @param string            $field
-     * @param float[]           $vector
-     * @param float             $minReturn
-     * @param string            $minTraverse
-     * @param array|string|null $preFilter
-     * @param array|string|null $includeTags
-     * @param array|string|null $excludeTags
+     * @param string               $field
+     * @param float[]              $vector
+     * @param float                $minReturn
+     * @param string               $minTraverse
+     * @param string[]|string|null $preFilter
+     * @param string[]|string|null $includeTags
+     * @param string[]|string|null $excludeTags
      *
      * @return string
      */
@@ -661,10 +637,10 @@ class Helper
     /**
      * Get common knn and vector filter parameters.
      *
-     * @param string            $field
-     * @param array|string|null $preFilter
-     * @param array|string|null $includeTags
-     * @param array|string|null $excludeTags
+     * @param string               $field
+     * @param string[]|string|null $preFilter
+     * @param string[]|string|null $includeTags
+     * @param string[]|string|null $excludeTags
      *
      * @return array
      */
@@ -695,7 +671,7 @@ class Helper
      */
     protected function getFloatList(array $values): string
     {
-        return '['.implode(', ', array_map(function ($value) {
+        return '['.implode(', ', array_map(function (float $value): string {
             if ($value == (int) $value) {
                 return number_format($value, 1, '.', '');
             }

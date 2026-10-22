@@ -104,8 +104,13 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
           $value = '__EMPTY_STRING_VALUE__';
         }
         elseif (is_bool($value) === TRUE) {
-          // SimpleXMLElement::addAtribute() converts booleans to integers 0
+          // SimpleXMLElement::addAttribute() converts booleans to integers 0
           // and 1. But Solr requires the strings 'false' and 'true'.
+          $value = $value ? 'true' : 'false';
+        }
+        elseif (is_int($value) && in_array($value, [0, 1], TRUE) && self::shouldConvertIntegerToBoolean($attributes, $key)) {
+          // Some Solr filters expect boolean values for certain properties,
+          // but they are stored as integers in Drupal config.
           $value = $value ? 'true' : 'false';
         }
 
@@ -137,6 +142,35 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
         }
       }
     }
+  }
+
+  /**
+   * Determines if an integer value should be converted to a boolean string.
+   *
+   * Certain Solr filter/property combinations expect boolean values,
+   * but are stored as integers in Drupal configuration.
+   *
+   * @param array $attributes
+   *   The attributes array containing the property.
+   * @param string $property
+   *   The property name to check.
+   *
+   * @return bool
+   *   TRUE if the property should be converted to boolean, FALSE otherwise.
+   */
+  protected static function shouldConvertIntegerToBoolean(array $attributes, string $property): bool {
+    // Filters that expect boolean values for preserveOriginal.
+    $boolean_preserve_original_filters = [
+      'solr.ASCIIFoldingFilterFactory',
+      'solr.EdgeNGramFilterFactory',
+      'solr.NGramFilterFactory',
+    ];
+
+    if ($property === 'preserveOriginal' && isset($attributes['class'])) {
+      return in_array($attributes['class'], $boolean_preserve_original_filters, TRUE);
+    }
+
+    return FALSE;
   }
 
   /**

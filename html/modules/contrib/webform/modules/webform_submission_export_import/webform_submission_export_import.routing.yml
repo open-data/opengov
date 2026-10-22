@@ -8,6 +8,7 @@ entity.webform_submission_export_import.results_import:
       webform:
         type: 'entity:webform'
   requirements:
+    _permission: 'access webform submission export import'
     _entity_access: 'webform.submission_update_any'
     _custom_access: '\Drupal\webform\Access\WebformEntityAccess:checkResultsAccess'
 
@@ -20,6 +21,7 @@ entity.webform_submission_export_import.results_import.example.download:
       webform:
         type: 'entity:webform'
   requirements:
+    _permission: 'access webform submission export import'
     _entity_access: 'webform.submission_update_any'
     _custom_access: '\Drupal\webform\Access\WebformEntityAccess:checkResultsAccess'
 
@@ -32,6 +34,7 @@ entity.webform_submission_export_import.results_import.example.view:
       webform:
         type: 'entity:webform'
   requirements:
+    _permission: 'access webform submission export import'
     _entity_access: 'webform.submission_update_any'
     _custom_access: '\Drupal\webform\Access\WebformEntityAccess:checkResultsAccess'
 
@@ -51,6 +54,7 @@ entity.node.webform_submission_export_import.results_import:
       node:
         type: 'entity:node'
   requirements:
+    _permission: 'access webform submission export import'
     _custom_access: '\Drupal\webform_node\Access\WebformNodeAccess::checkWebformResultsAccess'
 
 entity.node.webform_submission_export_import.results_import.example.download:
@@ -64,6 +68,7 @@ entity.node.webform_submission_export_import.results_import.example.download:
       node:
         type: 'entity:node'
   requirements:
+    _permission: 'access webform submission export import'
     _custom_access: '\Drupal\webform_node\Access\WebformNodeAccess::checkWebformResultsAccess'
 
 entity.node.webform_submission_export_import.results_import.example.view:
@@ -77,4 +82,5 @@ entity.node.webform_submission_export_import.results_import.example.view:
       node:
         type: 'entity:node'
   requirements:
+    _permission: 'access webform submission export import'
     _custom_access: '\Drupal\webform_node\Access\WebformNodeAccess::checkWebformResultsAccess'

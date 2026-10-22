@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\search_api\Functional;
 
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+
 /**
  * Tests integration with the Layout Builder module.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class LayoutBuilderTest extends SearchApiBrowserTestBase {
 
   /**

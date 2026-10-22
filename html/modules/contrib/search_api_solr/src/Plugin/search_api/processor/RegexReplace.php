@@ -3,22 +3,23 @@
 namespace Drupal\search_api_solr\Plugin\search_api\processor;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Processor\FieldsProcessorPluginBase;
 
 /**
  * Perform replacements based on regular expressions.
- *
- * @SearchApiProcessor(
- *   id = "solr_regex_replace",
- *   label = @Translation("Regular expression based replacements"),
- *   description = @Translation("Regular expression based replacements."),
- *   stages = {
- *     "preprocess_index" = -16,
- *     "preprocess_query" = -16,
- *     "postprocess_query" = 0,
- *   },
- * )
  */
+#[SearchApiProcessor(
+  id: 'solr_regex_replace',
+  label: new TranslatableMarkup('Regular expression based replacements'),
+  description: new TranslatableMarkup('Regular expression based replacements.'),
+  stages: [
+    'preprocess_index' => -16,
+    'preprocess_query' => -16,
+    'postprocess_query' => 0,
+  ],
+)]
 class RegexReplace extends FieldsProcessorPluginBase {
 
   /**
@@ -67,8 +68,6 @@ class RegexReplace extends FieldsProcessorPluginBase {
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
-
-    $regex_replace = $form_state->getValue('regex_replace');
 
     $regexes = [];
     $value = rtrim(preg_replace('/\r\n|\r|\n/', "\n", $form_state->getValue('regexes')), "\n");

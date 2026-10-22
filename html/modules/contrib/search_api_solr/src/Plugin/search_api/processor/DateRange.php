@@ -2,23 +2,24 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\processor;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 use Drupal\search_api_solr\Plugin\search_api\data_type\value\DateRangeValue;
 
 /**
  * Add date ranges to the index.
- *
- * @SearchApiProcessor(
- *   id = "solr_date_range",
- *   label = @Translation("Date ranges"),
- *   description = @Translation("Date ranges."),
- *   stages = {
- *     "preprocess_index" = 0,
- *   },
- *   locked = true,
- *   hidden = true,
- * )
  */
+#[SearchApiProcessor(
+  id: 'solr_date_range',
+  label: new TranslatableMarkup('Date ranges'),
+  description: new TranslatableMarkup('Date ranges.'),
+  stages: [
+    'preprocess_index' => 0,
+  ],
+  locked: TRUE,
+  hidden: TRUE,
+)]
 class DateRange extends ProcessorPluginBase {
 
   /**

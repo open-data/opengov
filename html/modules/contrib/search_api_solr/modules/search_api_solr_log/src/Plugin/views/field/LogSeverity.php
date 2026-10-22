@@ -16,6 +16,8 @@ class LogSeverity extends FieldPluginBase {
 
   /**
    * List of log level mappings.
+   *
+   * @var string[]
    */
   protected $logLevels = [
     RfcLogLevel::DEBUG => 'debug',

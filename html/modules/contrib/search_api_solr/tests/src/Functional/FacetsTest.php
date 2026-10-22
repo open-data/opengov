@@ -102,7 +102,7 @@ class FacetsTest extends SearchApiBrowserTestBase {
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function indexItems($index_id) {
-    $index_status = $this->doindexItems($index_id);
+    $index_status = $this->doIndexItems($index_id);
     $index = Index::load($this->indexId);
     $this->ensureCommit($index);
     return $index_status;

@@ -1,0 +1,2 @@
+# Reduce merge request noise.
+jump-start/solr*/*config-set/**     gitlab-generated

@@ -218,8 +218,8 @@ final class Settings implements ContainerInjectionInterface {
    *   The theme setting form elements.
    */
   public function getSettingsForm(?AccountInterface $account = NULL): array {
-    $experimental_label = ' <span class="gin-experimental-flag">Experimental</span>';
-    $beta_label = ' <span class="gin-beta-flag">Beta</span>';
+    $experimental_label = ' <span class="admin-experimental-flag">Experimental</span>';
+    $beta_label = ' <span class="admin-beta-flag">Beta</span>';
 
     $form['enable_dark_mode'] = [
       '#type' => 'radios',
@@ -277,6 +277,8 @@ final class Settings implements ContainerInjectionInterface {
     // Accent color picker (helper field).
     $form['accent_group']['accent_picker'] = [
       '#type' => 'color',
+      '#title' => $this->t('Accent color picker'),
+      '#title_display' => 'invisible',
       '#placeholder' => '#777777',
       '#default_value' => $account ? $this->get('accent_color', $account) : $this->getDefault('accent_color'),
       '#process' => [[__CLASS__, 'processColorPicker']],
@@ -290,7 +292,7 @@ final class Settings implements ContainerInjectionInterface {
       '#options' => [
         'gin' => $this->t('Default Admin Focus color (Default)'),
         'green' => $this->t('Green'),
-        'claro' => $this->t('Claro Green'),
+        'claro' => $this->t('Legacy green'),
         'orange' => $this->t('Orange'),
         'dark' => $this->t('Neutral'),
         'accent' => $this->t('Same as Accent color'),
@@ -314,6 +316,8 @@ final class Settings implements ContainerInjectionInterface {
     // Focus color picker (helper).
     $form['focus_group']['focus_picker'] = [
       '#type' => 'color',
+      '#title' => $this->t('Focus color picker'),
+      '#title_display' => 'invisible',
       '#placeholder' => '#777777',
       '#default_value' => $account ? $this->get('focus_color', $account) : $this->getDefault('focus_color'),
       '#process' => [[__CLASS__, 'processColorPicker']],
