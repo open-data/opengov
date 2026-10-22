@@ -18,9 +18,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class PostExecute extends Event
 {
-    protected QueryInterface $query;
+    /**
+     * @var QueryInterface
+     */
+    protected $query;
 
-    protected ResultInterface $result;
+    /**
+     * @var ResultInterface
+     */
+    protected $result;
 
     /**
      * Event constructor.

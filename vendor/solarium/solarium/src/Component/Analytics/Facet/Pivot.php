@@ -24,11 +24,20 @@ class Pivot extends Configurable implements \JsonSerializable
     use ConfigurableInitTrait;
     use ObjectTrait;
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private string $expression;
+    /**
+     * @var string
+     */
+    private $expression;
 
-    private ?Sort $sort;
+    /**
+     * @var \Solarium\Component\Analytics\Facet\Sort\Sort|null
+     */
+    private $sort;
 
     /**
      * @return string
@@ -41,7 +50,7 @@ class Pivot extends Configurable implements \JsonSerializable
     /**
      * @param string $name
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setName(string $name): self
     {
@@ -61,7 +70,7 @@ class Pivot extends Configurable implements \JsonSerializable
     /**
      * @param string $expression
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setExpression(string $expression): self
     {
@@ -71,7 +80,7 @@ class Pivot extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @return Sort|null
+     * @return \Solarium\Component\Analytics\Facet\Sort\Sort|null
      */
     public function getSort(): ?Sort
     {
@@ -79,11 +88,11 @@ class Pivot extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @param Sort|array|null $sort
+     * @param \Solarium\Component\Analytics\Facet\Sort\Sort|array|null $sort
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
-    public function setSort(Sort|array|null $sort): self
+    public function setSort($sort): self
     {
         $this->sort = $this->ensureObject(Sort::class, $sort);
 
@@ -93,7 +102,8 @@ class Pivot extends Configurable implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return array_filter([
             'name' => $this->name,

@@ -34,20 +34,24 @@ class Analytics extends AbstractComponent implements \JsonSerializable
 
     /**
      * An array of functions.
+     *
+     * @var array
      */
-    private array $functions = [];
+    private $functions = [];
 
     /**
      * An array of expressions.
+     *
+     * @var array
      */
-    private array $expressions = [];
+    private $expressions = [];
 
     /**
      * An array of groupings.
      *
-     * @var Grouping[]
+     * @var \Solarium\Component\Analytics\Grouping[]
      */
-    private array $groupings = [];
+    private $groupings = [];
 
     /**
      * {@inheritdoc}
@@ -84,7 +88,7 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     /**
      * @param array $functions
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setFunctions(array $functions): self
     {
@@ -99,7 +103,7 @@ class Analytics extends AbstractComponent implements \JsonSerializable
      * @param string $key
      * @param string $function
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addFunction(string $key, string $function): self
     {
@@ -119,7 +123,7 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     /**
      * @param array $expressions
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setExpressions(array $expressions): self
     {
@@ -134,7 +138,7 @@ class Analytics extends AbstractComponent implements \JsonSerializable
      * @param string $key
      * @param string $expression
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addExpression(string $key, string $expression): self
     {
@@ -144,7 +148,7 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     }
 
     /**
-     * @return Grouping[]
+     * @return \Solarium\Component\Analytics\Grouping[]
      */
     public function getGroupings(): array
     {
@@ -152,9 +156,9 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     }
 
     /**
-     * @param Grouping[] $groupings
+     * @param \Solarium\Component\Analytics\Grouping[] $groupings
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setGroupings(array $groupings): self
     {
@@ -166,9 +170,9 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     }
 
     /**
-     * @param Grouping $grouping
+     * @param \Solarium\Component\Analytics\Grouping $grouping
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addGrouping(Grouping $grouping): self
     {
@@ -180,7 +184,8 @@ class Analytics extends AbstractComponent implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return array_filter([
             'functions' => $this->functions,

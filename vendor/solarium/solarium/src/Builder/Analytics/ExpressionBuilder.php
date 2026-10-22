@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Solarium\Builder\Analytics;
 
 use Solarium\Builder\ExpressionInterface;
-use Solarium\Exception\RuntimeException;
 
 /**
  * Expression Builder.
@@ -24,9 +23,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function count($x = null): ExpressionInterface
     {
@@ -36,9 +35,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function docCount($x = null): ExpressionInterface
     {
@@ -48,9 +47,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function missing($x = null): ExpressionInterface
     {
@@ -60,9 +59,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function unique($x = null): ExpressionInterface
     {
@@ -72,9 +71,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function sum($x = null): ExpressionInterface
     {
@@ -84,9 +83,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function variance($x = null): ExpressionInterface
     {
@@ -96,9 +95,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function stddev($x = null): ExpressionInterface
     {
@@ -108,9 +107,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function mean($x = null): ExpressionInterface
     {
@@ -120,9 +119,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function weightedMean($x = null): ExpressionInterface
     {
@@ -132,9 +131,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function minimum($x = null): ExpressionInterface
     {
@@ -144,9 +143,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function maximum($x = null): ExpressionInterface
     {
@@ -156,9 +155,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function median($x = null): ExpressionInterface
     {
@@ -168,9 +167,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function percentile($x = null): ExpressionInterface
     {
@@ -180,9 +179,9 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function ordinal($x = null): ExpressionInterface
     {
@@ -192,7 +191,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function negation($x = null): ExpressionInterface
     {
@@ -202,7 +201,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function absolute($x = null): ExpressionInterface
     {
@@ -212,7 +211,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function round($x = null): ExpressionInterface
     {
@@ -222,7 +221,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function ceil($x = null): ExpressionInterface
     {
@@ -232,7 +231,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function floor($x = null): ExpressionInterface
     {
@@ -242,7 +241,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function add($x = null): ExpressionInterface
     {
@@ -252,7 +251,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function sub($x = null): ExpressionInterface
     {
@@ -262,7 +261,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function mult($x = null): ExpressionInterface
     {
@@ -272,7 +271,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function div($x = null): ExpressionInterface
     {
@@ -282,7 +281,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function power($x = null): ExpressionInterface
     {
@@ -292,7 +291,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function logarithm($x = null): ExpressionInterface
     {
@@ -302,7 +301,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function and($x = null): ExpressionInterface
     {
@@ -312,7 +311,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function or($x = null): ExpressionInterface
     {
@@ -322,7 +321,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function exists($x = null): ExpressionInterface
     {
@@ -332,7 +331,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function equal($x = null): ExpressionInterface
     {
@@ -342,7 +341,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function gt($x = null): ExpressionInterface
     {
@@ -352,7 +351,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function gte($x = null): ExpressionInterface
     {
@@ -362,7 +361,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function lt($x = null): ExpressionInterface
     {
@@ -372,7 +371,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function lte($x = null): ExpressionInterface
     {
@@ -382,7 +381,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function top($x = null): ExpressionInterface
     {
@@ -392,7 +391,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function bottom($x = null): ExpressionInterface
     {
@@ -402,7 +401,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function if($x = null): ExpressionInterface
     {
@@ -412,7 +411,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function replace($x = null): ExpressionInterface
     {
@@ -422,7 +421,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function fillMissing($x = null): ExpressionInterface
     {
@@ -432,7 +431,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function remove($x = null): ExpressionInterface
     {
@@ -442,7 +441,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function filter($x = null): ExpressionInterface
     {
@@ -452,7 +451,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function date($x = null): ExpressionInterface
     {
@@ -462,7 +461,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function dateMath($x = null): ExpressionInterface
     {
@@ -472,7 +471,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function string($x = null): ExpressionInterface
     {
@@ -482,7 +481,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function concat($x = null): ExpressionInterface
     {
@@ -492,7 +491,7 @@ class ExpressionBuilder
     /**
      * @param null $x
      *
-     * @return ExpressionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
     public function concatSeparated($x = null): ExpressionInterface
     {

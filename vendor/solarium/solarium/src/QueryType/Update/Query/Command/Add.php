@@ -25,7 +25,7 @@ class Add extends AbstractCommand
      *
      * @var DocumentInterface[]
      */
-    protected array $documents = [];
+    protected $documents = [];
 
     /**
      * Get command type.
@@ -60,7 +60,7 @@ class Add extends AbstractCommand
      *
      * @return self Provides fluent interface
      */
-    public function addDocuments(array|\Traversable $documents): self
+    public function addDocuments($documents): self
     {
         if ($documents instanceof \Traversable) {
             $documents = iterator_to_array($documents);

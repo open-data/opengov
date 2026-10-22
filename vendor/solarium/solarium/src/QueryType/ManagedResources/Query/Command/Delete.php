@@ -20,13 +20,15 @@ class Delete extends AbstractCommand
 {
     /**
      * Term to be deleted.
+     *
+     * @var string
      */
-    protected ?string $term = null;
+    protected $term;
 
     /**
      * Returns command type, for use in adapters.
      *
-     * @return Query::COMMAND_DELETE
+     * @return string
      */
     public function getType(): string
     {
@@ -36,7 +38,7 @@ class Delete extends AbstractCommand
     /**
      * Returns request method.
      *
-     * @return Request::METHOD_DELETE
+     * @return string
      */
     public function getRequestMethod(): string
     {

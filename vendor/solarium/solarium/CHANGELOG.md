@@ -4,37 +4,9 @@ All notable changes to the Solarium library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [7.0.0]
-### Added
-- Solr 10 support
-- PHP 8.5 support
-- Solarium\QueryType\Extract\Query::setStreamType()
-
-### Fixed
-- Solarium\QueryType\Server\CoreAdmin\Result\Result::getResponse() always returns a Solarium\Core\Client\Response object, even if the response data contains a field named `"response"`
-- Solarium\QueryType\Server\CoreAdmin\Result\Result::$response publicly exposes the `"response"` field from the response data
-- Solarium\Plugin\MinimumScoreFilter\Document::__call() unpacks the $arguments array when forwarding a method call to the original document
-- Solarium\QueryType\Analysis\Query\Document::setQuery() and setShowMatch() options are added to the request query string
-- Solarium\QueryType\Analysis\Query\Document can handle documents with multivalued fields
-
-### Changed
-- Added `void` return type to `Solarium\Core\Plugin\PluginInterface::initPlugin()` method signature
-- Added `void` return type to `Solarium\Core\Plugin\PluginInterface::deinitPlugin()` method signature
-- Added `void` return type to `Solarium\Core\Plugin\AbstractPlugin::initPluginType()` method signature
-- Changed return type of some Facets methods from `self` to `static`
-- Replaced class property type hints with type declarations
-- Added union type declarations to method signatures
-- Solarium\Core\Query\Helper::formatDate() throws a `TypeError` instead of returning `false` if called with an incompatibly typed parameter
-- Managed resources queries no longer work around SOLR-6853 by default. Set the 'useDoubleEncoding' option to `true` if this bug affects you.
-- Solarium codebase is now analysed at PHPStan level 2
-
+## [6.4.2]
 ### Removed
-- Solarium\Component\Result\Stats\FacetValue::getFacets(), always returned `null`
-- Solarium\Core\Query\AbstractQuery::setTimeAllowed() and getTimeAllowed(), moved to Solarium\QueryType\Select\Query\Query
-- Solarium\Core\Query\Helper::cacheControl(), use Solarium\QueryType\Select\Query\FilterQuery::setCache() and setCost() instead
-
-### Deprecated
-- Solarium\Core\Query\AbstractQuery::setResponseWriter('phps'), rely on the default 'json' response writer instead
+- Remove deprecated curl_close() for PHP 8.5 compatibility (#1178)
 
 
 ## [6.4.1]

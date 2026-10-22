@@ -22,9 +22,15 @@ class ValueFacet extends AbstractFacet
 {
     use ObjectTrait;
 
-    private string $expression;
+    /**
+     * @var string
+     */
+    private $expression;
 
-    private ?Sort $sort;
+    /**
+     * @var \Solarium\Component\Analytics\Facet\Sort\Sort|null
+     */
+    private $sort;
 
     /**
      * {@inheritdoc}
@@ -45,7 +51,7 @@ class ValueFacet extends AbstractFacet
     /**
      * @param string $expression
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setExpression(string $expression): self
     {
@@ -55,7 +61,7 @@ class ValueFacet extends AbstractFacet
     }
 
     /**
-     * @return Sort|null
+     * @return \Solarium\Component\Analytics\Facet\Sort\Sort|null
      */
     public function getSort(): ?Sort
     {
@@ -63,11 +69,11 @@ class ValueFacet extends AbstractFacet
     }
 
     /**
-     * @param Sort|array|null $sort
+     * @param \Solarium\Component\Analytics\Facet\Sort\Sort|array|null $sort
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
-    public function setSort(Sort|array|null $sort): self
+    public function setSort($sort): self
     {
         $this->sort = $this->ensureObject(Sort::class, $sort);
 
@@ -77,7 +83,8 @@ class ValueFacet extends AbstractFacet
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return array_filter([
             'type' => $this->getType(),

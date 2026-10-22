@@ -18,9 +18,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class StatusCodeFailure extends Event
 {
-    protected Endpoint $endpoint;
+    /**
+     * @var Endpoint
+     */
+    protected $endpoint;
 
-    protected Response $response;
+    /**
+     * @var Response
+     */
+    protected $response;
 
     /**
      * Constructor.

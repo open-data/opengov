@@ -16,7 +16,10 @@ use Solarium\Core\Client\ClientInterface;
  */
 class Executor
 {
-    private ClientInterface $client;
+    /**
+     * @var ClientInterface
+     */
+    private $client;
 
     /**
      * Constructor.

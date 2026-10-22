@@ -22,7 +22,7 @@ trait SpatialTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return Spatial
+     * @return \Solarium\Component\Spatial
      */
     public function getSpatial(): Spatial
     {

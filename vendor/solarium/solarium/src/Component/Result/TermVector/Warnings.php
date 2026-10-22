@@ -17,22 +17,22 @@ class Warnings implements \ArrayAccess
     /**
      * @var string[]|null
      */
-    protected ?array $noTermVectors;
+    protected $noTermVectors;
 
     /**
      * @var string[]|null
      */
-    protected ?array $noPositions;
+    protected $noPositions;
 
     /**
      * @var string[]|null
      */
-    protected ?array $noOffsets;
+    protected $noOffsets;
 
     /**
      * @var string[]|null
      */
-    protected ?array $noPayloads;
+    protected $noPayloads;
 
     /**
      * @param string[]|null $noTermVectors

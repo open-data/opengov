@@ -10,7 +10,6 @@
 namespace Solarium\Plugin\MinimumScoreFilter;
 
 use Solarium\Exception\OutOfBoundsException;
-use Solarium\QueryType\Select\Result\Document as SelectDocument;
 
 /**
  * Minimumscore filter.
@@ -20,10 +19,10 @@ class Filter
     /**
      * Apply filter to document array.
      *
-     * @param SelectDocument[] $documents
-     * @param float            $maxScore
-     * @param float            $ratio
-     * @param string           $mode
+     * @param \Solarium\QueryType\Select\Result\Document[] $documents
+     * @param float                                        $maxScore
+     * @param float                                        $ratio
+     * @param string                                       $mode
      *
      * @return array
      */

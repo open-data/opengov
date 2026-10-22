@@ -22,7 +22,7 @@ trait TermsTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return Terms
+     * @return \Solarium\Component\Terms
      */
     public function getTerms(): Terms
     {

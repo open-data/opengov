@@ -26,8 +26,10 @@ class Upload extends AbstractAction
 
     /**
      * The File to be uploaded, a zipped configset or a non-zipped single file of a configset.
+     *
+     * @var string
      */
-    protected string $file;
+    protected $file;
 
     /**
      * Returns the action type of the Configsets API action.
@@ -147,7 +149,7 @@ class Upload extends AbstractAction
     /**
      * Returns the namespace and class of the result class for the action.
      *
-     * @return class-string<ConfigsetsResult>
+     * @return string
      */
     public function getResultClass(): string
     {

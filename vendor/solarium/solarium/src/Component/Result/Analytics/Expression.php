@@ -18,11 +18,20 @@ namespace Solarium\Component\Result\Analytics;
  */
 class Expression
 {
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private string $expression;
+    /**
+     * @var string
+     */
+    private $expression;
 
-    private float $value;
+    /**
+     * @var float
+     */
+    private $value;
 
     /**
      * @param string $name

@@ -22,8 +22,10 @@ class Field extends AbstractFacet implements FieldValueParametersInterface
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'field' => 'id',
     ];
 
@@ -78,11 +80,11 @@ class Field extends AbstractFacet implements FieldValueParametersInterface
     /**
      * Add multiple terms.
      *
-     * @param string|string[] $terms array or string with comma separated terms
+     * @param array|string $terms array or string with comma separated terms
      *
      * @return self Provides fluent interface
      */
-    public function addTerms(string|array $terms): self
+    public function addTerms($terms): self
     {
         if (\is_string($terms)) {
             $terms = preg_split('/(?<!\\\\),/', $terms);
@@ -98,11 +100,11 @@ class Field extends AbstractFacet implements FieldValueParametersInterface
      *
      * This overwrites any existing terms.
      *
-     * @param string|string[] $terms
+     * @param array|string $terms
      *
      * @return self Provides fluent interface
      */
-    public function setTerms(string|array $terms): self
+    public function setTerms($terms): self
     {
         $this->clearTerms()->addTerms($terms);
 

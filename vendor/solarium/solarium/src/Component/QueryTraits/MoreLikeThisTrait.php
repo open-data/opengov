@@ -22,7 +22,7 @@ trait MoreLikeThisTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return MoreLikeThis
+     * @return \Solarium\Component\MoreLikeThis
      */
     public function getMoreLikeThis(): MoreLikeThis
     {

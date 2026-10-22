@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:ignoreFile SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
-
 namespace Drupal\Tests\search_api_solr\Functional;
 
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -30,9 +28,8 @@ class ViewsTest extends SearchApiViewsTest {
   /**
    * {@inheritdoc}
    */
-  // @phpstan-ignore-next-line
   public function setUp(): void {
-    // Skip parent::setUp() to use Solr instead of the DB backend!
+    // Skip parent::setUp() to use Solr iunstead of the DB backend!
     SearchApiBrowserTestBase::setUp();
 
     // Add a second language.
@@ -48,12 +45,6 @@ class ViewsTest extends SearchApiViewsTest {
       ->save();
 
     $this->adjustBackendConfig();
-
-    // Ensure custom Solr field types are installed and their derived Search
-    // API data types are rebuilt before the index is used.
-    search_api_solr_install_missing_field_types();
-    \Drupal::service('plugin.manager.search_api.data_type')
-      ->clearCachedDefinitions();
 
     // Now do the same as parent::setUp().
     \Drupal::getContainer()

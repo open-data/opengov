@@ -19,8 +19,10 @@ abstract class AbstractPlugin extends Configurable implements PluginInterface
 {
     /**
      * Client instance.
+     *
+     * @var ClientInterface
      */
-    protected ClientInterface $client;
+    protected $client;
 
     /**
      * Initialize.
@@ -30,7 +32,7 @@ abstract class AbstractPlugin extends Configurable implements PluginInterface
      * @param ClientInterface $client
      * @param array           $options
      */
-    public function initPlugin(ClientInterface $client, array $options): void
+    public function initPlugin(ClientInterface $client, array $options)
     {
         $this->client = $client;
         parent::__construct($options);
@@ -44,7 +46,7 @@ abstract class AbstractPlugin extends Configurable implements PluginInterface
      * This is an extension point for plugin implementations.
      * Will be called as soon as $this->client and options have been set.
      */
-    protected function initPluginType(): void
+    protected function initPluginType()
     {
     }
 
@@ -54,7 +56,7 @@ abstract class AbstractPlugin extends Configurable implements PluginInterface
      * This is an extension point for plugin implementations.
      * This method is called if the plugin is removed from a client instance.
      */
-    public function deinitPlugin(): void
+    public function deinitPlugin()
     {
     }
 }

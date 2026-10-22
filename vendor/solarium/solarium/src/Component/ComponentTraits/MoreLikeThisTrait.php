@@ -114,7 +114,7 @@ trait MoreLikeThisTrait
      *
      * @param int $maximumpercentage A percentage between 0 and 100
      *
-     * @throws DomainException
+     * @throws \Solarium\Exception\DomainException
      *
      * @return MoreLikeThisInterface Provides fluent interface
      */
@@ -291,11 +291,11 @@ trait MoreLikeThisTrait
      *
      * @see https://solr.apache.org/guide/morelikethis.html#common-handler-and-component-parameters
      *
-     * @param string|string[] $queryFields
+     * @param string|array $queryFields
      *
      * @return MoreLikeThisInterface Provides fluent interface
      */
-    public function setQueryFields(string|array $queryFields): MoreLikeThisInterface
+    public function setQueryFields($queryFields): MoreLikeThisInterface
     {
         if (\is_string($queryFields)) {
             $queryFields = explode(',', $queryFields);

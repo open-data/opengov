@@ -16,7 +16,10 @@ namespace Solarium\Core\Client\Adapter;
  */
 trait ConnectionTimeoutAwareTrait
 {
-    private ?int $connectionTimeout = null;
+    /**
+     * @var int|null
+     */
+    private $connectionTimeout;
 
     /**
      * {@inheritdoc}

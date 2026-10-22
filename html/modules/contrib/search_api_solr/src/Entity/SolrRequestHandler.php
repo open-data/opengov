@@ -46,7 +46,6 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $request_handler;
 
   /**

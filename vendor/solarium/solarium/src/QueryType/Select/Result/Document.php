@@ -22,8 +22,10 @@ class Document extends AbstractDocument
 {
     /**
      * All fields in this document.
+     *
+     * @var array
      */
-    protected array $fields;
+    protected $fields;
 
     /**
      * Constructor.
@@ -42,11 +44,11 @@ class Document extends AbstractDocument
      * is a readonly document an exception will be thrown to prevent this.
      *
      * @param string $name
-     * @param mixed  $value
+     * @param string $value
      *
      * @throws RuntimeException
      */
-    public function __set(string $name, mixed $value): void
+    public function __set($name, $value): void
     {
         throw new RuntimeException('A readonly document cannot be altered');
     }
@@ -54,7 +56,8 @@ class Document extends AbstractDocument
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return $this->getFields();
     }

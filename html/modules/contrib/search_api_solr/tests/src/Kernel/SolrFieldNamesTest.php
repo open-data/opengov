@@ -86,12 +86,6 @@ class SolrFieldNamesTest extends KernelTestBase {
           'datasource_id' => 'entity:node',
           'property_path' => 'uid:entity:field_bio:value',
         ],
-        'title_unstemmed' => [
-          'label' => 'Link title unstemmed',
-          'type' => 'solr_text_unstemmed',
-          'datasource_id' => 'entity:node',
-          'property_path' => 'uid:entity:field_links:title',
-        ],
       ],
     ]);
 
@@ -100,7 +94,6 @@ class SolrFieldNamesTest extends KernelTestBase {
 
     $this->assertSame('sm_title', $fields['title']);
     $this->assertSame('ss_bio', $fields['bio']);
-    $this->assertSame('tum_X3b_und_title_unstemmed', $fields['title_unstemmed']);
 
     $fields = $index->getFields();
     $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [

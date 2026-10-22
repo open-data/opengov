@@ -15,9 +15,9 @@ namespace Solarium\Exception;
 class StreamException extends \UnexpectedValueException implements RuntimeExceptionInterface
 {
     /**
-     * The streaming expression.
+     * @var string the streaming expression
      */
-    protected string $expression = '';
+    protected $expression = '';
 
     /**
      * Set the streaming expression that caused the exception.

@@ -16,14 +16,16 @@ abstract class AbstractDocument implements DocumentInterface, \IteratorAggregate
 {
     /**
      * All fields in this document.
+     *
+     * @var array
      */
-    protected array $fields;
+    protected $fields;
 
     /**
-     * @param string $name
-     * @param mixed  $value
+     * @param mixed $name
+     * @param mixed $value
      */
-    abstract public function __set(string $name, mixed $value): void;
+    abstract public function __set($name, $value): void;
 
     /**
      * Get field value by name.
@@ -33,9 +35,9 @@ abstract class AbstractDocument implements DocumentInterface, \IteratorAggregate
      *
      * @param string $name
      *
-     * @return mixed
+     * @return mixed|null
      */
-    public function __get(string $name): mixed
+    public function __get($name)
     {
         return $this->fields[$name] ?? null;
     }
@@ -50,7 +52,7 @@ abstract class AbstractDocument implements DocumentInterface, \IteratorAggregate
      *
      * @return bool
      */
-    public function __isset(string $name): bool
+    public function __isset($name): bool
     {
         return isset($this->fields[$name]);
     }
@@ -134,5 +136,6 @@ abstract class AbstractDocument implements DocumentInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    abstract public function jsonSerialize(): mixed;
+    #[\ReturnTypeWillChange]
+    abstract public function jsonSerialize();
 }

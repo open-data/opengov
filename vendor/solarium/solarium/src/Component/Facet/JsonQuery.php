@@ -28,8 +28,10 @@ class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInt
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'query' => '*:*',
     ];
 
@@ -46,7 +48,7 @@ class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInt
     /**
      * Returns a query helper.
      *
-     * @return Helper
+     * @return \Solarium\Core\Query\Helper
      */
     public function getHelper(): Helper
     {

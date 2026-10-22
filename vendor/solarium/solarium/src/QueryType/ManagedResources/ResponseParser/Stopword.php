@@ -21,7 +21,7 @@ class Stopword extends ResponseParserAbstract implements ResponseParserInterface
     /**
      * Parse response data.
      *
-     * @param ResultInterface $result
+     * @param \Solarium\Core\Query\Result\ResultInterface $result
      *
      * @return array
      */

@@ -21,15 +21,19 @@ class QueryElevation extends AbstractComponent
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'transformers' => '[elevated]',
     ];
 
     /**
      * Document transformers.
+     *
+     * @var array
      */
-    protected array $transformers = [];
+    protected $transformers = [];
 
     /**
      * Get component type.
@@ -70,11 +74,11 @@ class QueryElevation extends AbstractComponent
      *
      * You can use an array or a comma separated string as input
      *
-     * @param string|string[] $transformers
+     * @param array|string $transformers
      *
      * @return self Provides fluent interface
      */
-    public function addTransformers(string|array $transformers): self
+    public function addTransformers($transformers): self
     {
         if (\is_string($transformers)) {
             $transformers = explode(',', $transformers);
@@ -131,11 +135,11 @@ class QueryElevation extends AbstractComponent
      *
      * This overwrites any existing transformers
      *
-     * @param string|string[] $transformers
+     * @param array|string $transformers
      *
      * @return self Provides fluent interface
      */
-    public function setTransformers(string|array $transformers): self
+    public function setTransformers($transformers): self
     {
         $this->clearTransformers();
         $this->addTransformers($transformers);
@@ -272,11 +276,11 @@ class QueryElevation extends AbstractComponent
     /**
      * Set elevated document ids.
      *
-     * @param string|string[] $ids can be an array or string with comma separated ids
+     * @param string|array $ids can be an array or string with comma separated ids
      *
      * @return self Provides fluent interface
      */
-    public function setElevateIds(string|array $ids): self
+    public function setElevateIds($ids): self
     {
         if (\is_string($ids)) {
             $ids = explode(',', $ids);
@@ -301,11 +305,11 @@ class QueryElevation extends AbstractComponent
     /**
      * Set excluded document ids.
      *
-     * @param string|string[] $ids can be an array or string with comma separated ids
+     * @param string|array $ids can be an array or string with comma separated ids
      *
      * @return self Provides fluent interface
      */
-    public function setExcludeIds(string|array $ids): self
+    public function setExcludeIds($ids): self
     {
         if (\is_string($ids)) {
             $ids = explode(',', $ids);
@@ -330,11 +334,11 @@ class QueryElevation extends AbstractComponent
     /**
      * Set tags of filter queries to exclude for elevated documents.
      *
-     * @param string|string[] $tags can be an array or string with comma separated tags
+     * @param string|array $tags can be an array or string with comma separated tags
      *
      * @return self Provides fluent interface
      */
-    public function setExcludeTags(string|array $tags): self
+    public function setExcludeTags($tags): self
     {
         if (\is_string($tags)) {
             $tags = explode(',', $tags);
@@ -363,7 +367,7 @@ class QueryElevation extends AbstractComponent
      *            Options that set a list of ids need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

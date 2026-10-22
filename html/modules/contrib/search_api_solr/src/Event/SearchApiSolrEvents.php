@@ -45,7 +45,7 @@ final class SearchApiSolrEvents {
    *
    * This event gets fired after the select query is finally converted into an
    * expression that meets the requirements of the targeted query parser. Using
-   * this event you can carefully modify the 'q' parameter, in opposite to the
+   * this event you can carefully modify the 'q' parameter, in oposite to the
    * PRE_QUERY event.
    *
    * @Event

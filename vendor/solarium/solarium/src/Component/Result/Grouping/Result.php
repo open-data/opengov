@@ -9,19 +9,19 @@
 
 namespace Solarium\Component\Result\Grouping;
 
-use Solarium\Component\Result\ComponentResultInterface;
-
 /**
  * Select component grouping result.
  *
  * @since 2.1.0
  */
-class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
+class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Group results array.
+     *
+     * @var array
      */
-    protected array $groups;
+    protected $groups;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
      *
      * @return FieldGroup|QueryGroup|null
      */
-    public function getGroup(string $key): FieldGroup|QueryGroup|null
+    public function getGroup(string $key)
     {
         if (isset($this->groups[$key])) {
             return $this->groups[$key];

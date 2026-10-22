@@ -177,16 +177,19 @@ class MappingFunction implements FunctionInterface, ExpressionInterface
      */
     public const CONCAT_SEPARATED = 'concat_sep';
 
-    private string $type;
-
     /**
-     * @var FunctionInterface[]|float[]|string[]
+     * @var string
      */
-    private array $arguments;
+    private $type;
 
     /**
-     * @param string                               $type
-     * @param FunctionInterface[]|float[]|string[] $arguments
+     * @var \Solarium\Builder\FunctionInterface[]|float[]|string[]
+     */
+    private $arguments;
+
+    /**
+     * @param string                                                 $type
+     * @param \Solarium\Builder\FunctionInterface[]|float[]|string[] $arguments
      */
     public function __construct(string $type, array $arguments)
     {

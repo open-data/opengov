@@ -12,7 +12,7 @@ class StreamDocument extends AbstractDocument {
   /**
    * Constructor.
    *
-   * @param array<string, mixed> $fields
+   * @param array $fields
    *   The array of fields.
    */
   public function __construct(array $fields) {
@@ -31,10 +31,12 @@ class StreamDocument extends AbstractDocument {
     $this->fields[$name] = $value;
   }
 
+  #[\ReturnTypeWillChange]
+
   /**
    * {@inheritdoc}
    */
-  public function jsonSerialize(): array {
+  public function jsonSerialize() {
     return $this->getFields();
   }
 

@@ -20,40 +20,53 @@ class ValueGroup implements \IteratorAggregate, \Countable
 {
     /**
      * Field value.
+     *
+     * @var string
      */
-    protected ?string $value;
+    protected $value;
 
     /**
      * NumFound.
+     *
+     * @var int
      */
-    protected ?int $numFound;
+    protected $numFound;
 
     /**
      * Start position.
+     *
+     * @var int|null
      */
-    protected ?int $start;
+    protected $start;
 
     /**
      * Documents in this group.
+     *
+     * @var array
      */
-    protected array $documents;
+    protected $documents;
 
     /**
      * Maximum score in group.
+     *
+     * @var float|null
      */
-    protected ?float $maximumScore;
+    protected $maximumScore;
 
-    protected ?AbstractQuery $query;
+    /**
+     * @var AbstractQuery
+     */
+    protected $query;
 
     /**
      * Constructor.
      *
-     * @param string|null        $value
-     * @param int|null           $numFound
-     * @param int|null           $start
-     * @param array              $documents
-     * @param float|null         $maxScore
-     * @param AbstractQuery|null $query
+     * @param string|null   $value
+     * @param int|null      $numFound
+     * @param int|null      $start
+     * @param array         $documents
+     * @param float|null    $maxScore
+     * @param AbstractQuery $query
      */
     public function __construct(?string $value, ?int $numFound, ?int $start, array $documents, ?float $maxScore = null, ?AbstractQuery $query = null)
     {

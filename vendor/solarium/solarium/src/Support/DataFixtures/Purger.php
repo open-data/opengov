@@ -16,9 +16,15 @@ use Solarium\Core\Client\ClientInterface;
  */
 class Purger
 {
-    private ClientInterface $client;
+    /**
+     * @var ClientInterface
+     */
+    private $client;
 
-    private string $deleteQuery = '*:*';
+    /**
+     * @var string
+     */
+    private $deleteQuery = '*:*';
 
     /**
      * @param ClientInterface $client

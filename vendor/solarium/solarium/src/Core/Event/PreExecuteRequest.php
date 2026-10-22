@@ -19,11 +19,20 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class PreExecuteRequest extends Event
 {
-    protected Request $request;
+    /**
+     * @var Request
+     */
+    protected $request;
 
-    protected Endpoint $endpoint;
+    /**
+     * @var Endpoint
+     */
+    protected $endpoint;
 
-    protected ?Response $response = null;
+    /**
+     * @var Response
+     */
+    protected $response;
 
     /**
      * Event constructor.

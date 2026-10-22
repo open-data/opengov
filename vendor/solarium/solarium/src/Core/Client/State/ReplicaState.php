@@ -35,34 +35,34 @@ class ReplicaState extends AbstractState
     const RECOVERY_FAILED = 'recovery_failed';
 
     /**
-     * Name of the replica.
+     * @var string Name of the replica
      */
-    protected string $name = '';
+    protected $name = '';
 
     /**
-     * Name of the core.
+     * @var string Name of the core
      */
-    protected string $core = '';
+    protected $core = '';
 
     /**
-     * Base URI of shard replica.
+     * @var string Base uri of shard replica
      */
-    protected string $baseUri = '';
+    protected $baseUri = '';
 
     /**
-     * Name of the node.
+     * @var string
      */
-    protected string $nodeName = '';
+    protected $nodeName = '';
 
     /**
-     * Whether or not this replica is a shard leader.
+     * @var bool Whether or not this replica is a shard leader
      */
-    protected bool $leader = false;
+    protected $leader = false;
 
     /**
-     * Replica state, one of the following: active, down, recovering or recovery_failed.
+     * @var string Replica state, one of the following: active, down, recovering or recovery_failed
      */
-    protected string $state;
+    protected $state;
 
     /**
      * @return string
@@ -125,7 +125,7 @@ class ReplicaState extends AbstractState
     /**
      * {@inheritdoc}
      */
-    protected function init(): void
+    protected function init()
     {
         $this->name = key($this->stateRaw);
         $this->stateRaw = reset($this->stateRaw);

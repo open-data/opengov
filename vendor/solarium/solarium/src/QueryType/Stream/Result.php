@@ -11,7 +11,6 @@ namespace Solarium\QueryType\Stream;
 
 use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\Result\QueryType as BaseResult;
-use Solarium\Exception\UnexpectedValueException;
 
 /**
  * Stream query result.
@@ -22,13 +21,17 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Solr numFound.
      *
      * This is NOT the number of document fetched from Solr!
+     *
+     * @var int
      */
-    protected int $numfound;
+    protected $numfound;
 
     /**
      * Document instances array.
+     *
+     * @var array
      */
-    protected array $documents;
+    protected $documents;
 
     /**
      * get Solr numFound.
@@ -36,7 +39,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Returns the total number of documents found by Solr (this is NOT the
      * number of document fetched from Solr!)
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return int
      */
@@ -60,7 +63,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Get all documents.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return DocumentInterface[]
      */
@@ -74,7 +77,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * IteratorAggregate implementation.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return \ArrayIterator
      */
@@ -88,7 +91,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Countable implementation.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return int
      */

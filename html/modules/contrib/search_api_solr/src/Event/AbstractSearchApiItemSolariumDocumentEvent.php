@@ -32,8 +32,6 @@ abstract class AbstractSearchApiItemSolariumDocumentEvent extends AbstractIndexA
    *   The search_api item.
    * @param \Solarium\Core\Query\DocumentInterface $solarium_document
    *   The solarium document.
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The search index.
    */
   public function __construct(ItemInterface $search_api_item, DocumentInterface $solarium_document, IndexInterface $index) {
     parent::__construct($index);

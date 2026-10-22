@@ -22,7 +22,7 @@ use Solarium\Component\ComponentAwareQueryInterface;
 trait AnalyticsTrait
 {
     /**
-     * @return Analytics
+     * @return \Solarium\Component\Analytics\Analytics
      */
     public function getAnalytics(): Analytics
     {

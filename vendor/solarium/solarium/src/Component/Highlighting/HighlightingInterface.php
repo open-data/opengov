@@ -155,7 +155,9 @@ interface HighlightingInterface
     /**
      * Set highlighter method.
      *
-     * @param self::METHOD_* $method
+     * Use one of the METHOD_* constants as value.
+     *
+     * @param string $method
      *
      * @return self Provides fluent interface
      */
@@ -185,7 +187,7 @@ interface HighlightingInterface
     public function getUsePhraseHighlighter(): ?bool;
 
     /**
-     * Set highlightMultiTerm option.
+     * Set HighlightMultiTerm option.
      *
      * @param bool $highlight
      *
@@ -194,7 +196,7 @@ interface HighlightingInterface
     public function setHighlightMultiTerm(bool $highlight): self;
 
     /**
-     * Get highlightMultiTerm option.
+     * Get HighlightMultiTerm option.
      *
      * @return bool|null
      */
@@ -279,7 +281,9 @@ interface HighlightingInterface
     /**
      * Set encoder option.
      *
-     * @param self::ENCODER_* $encoder
+     * Use one of the ENCODER_* constants as value.
+     *
+     * @param string $encoder
      *
      * @return self Provides fluent interface
      */
@@ -313,7 +317,9 @@ interface HighlightingInterface
     /**
      * Set offsetSource option.
      *
-     * @param self::OFFSETSOURCE_* $offsetSource
+     * Use one of the OFFSETSOURCE_* constants as value.
+     *
+     * @param string $offsetSource
      *
      * @return self Provides fluent interface
      */
@@ -497,7 +503,9 @@ interface HighlightingInterface
     /**
      * Set breakIterator boundary scanner type option.
      *
-     * @param self::BOUNDARYSCANNER_TYPE_* $type
+     * Use one of the BOUNDARYSCANNER_TYPE_* constants as value.
+     *
+     * @param string $type
      *
      * @return self Provides fluent interface
      */
@@ -651,7 +659,9 @@ interface HighlightingInterface
     /**
      * Set formatter option.
      *
-     * @param self::FORMATTER_* $formatter
+     * Use one of the FORMATTER_* constants as value.
+     *
+     * @param string $formatter
      *
      * @return self Provides fluent interface
      */
@@ -707,7 +717,9 @@ interface HighlightingInterface
     /**
      * Set fragmenter option.
      *
-     * @param self::FRAGMENTER_* $fragmenter
+     * Use one of the FRAGMENTER_* constants as value.
+     *
+     * @param string $fragmenter
      *
      * @return self Provides fluent interface
      */
@@ -803,7 +815,9 @@ interface HighlightingInterface
     /**
      * Set fragListBuilder option.
      *
-     * @param self::FRAGLISTBUILDER_* $builder
+     * Use one of the FRAGLISTBUILDER_* constants as value.
+     *
+     * @param string $builder
      *
      * @return self Provides fluent interface
      */
@@ -819,7 +833,9 @@ interface HighlightingInterface
     /**
      * Set fragmentsBuilder option.
      *
-     * @param self::FRAGMENTSBUILDER_* $builder
+     * Use one of the FRAGMENTSBUILDER_* constants or the name of your own fragments builder as value.
+     *
+     * @param string $builder
      *
      * @return self Provides fluent interface
      */
@@ -835,7 +851,9 @@ interface HighlightingInterface
     /**
      * Set boundaryScanner option.
      *
-     * @param self::BOUNDARYSCANNER_* $scanner
+     * Use one of the BOUNDARYSCANNER_* constants as value.
+     *
+     * @param string $scanner
      *
      * @return self Provides fluent interface
      */

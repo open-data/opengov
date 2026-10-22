@@ -60,7 +60,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $field_type;
 
   /**
@@ -68,7 +67,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $spellcheck_field_type;
 
   /**
@@ -76,7 +74,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $collated_field_type;
 
   /**
@@ -84,7 +81,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $unstemmed_field_type;
 
   /**
@@ -92,7 +88,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var string
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $custom_code;
 
   /**
@@ -100,7 +95,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var string
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $field_type_language_code;
 
   /**
@@ -239,7 +233,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   public function getFieldTypeAsJson(bool $pretty = FALSE) {
     // Unfortunately the JSON encoded field type definition still uses the
     // element names "indexAnalyzer", "queryAnalyzer" and "multiTermAnalyzer"
-    // which are deprecated in the XML format. Therefore, we need to add some
+    // which are deprecated in the XML format. Therefor we need to add some
     // conversion logic.
     $field_type = $this->field_type;
     unset($field_type['analyzers']);
@@ -399,7 +393,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * @param array $field_type
    *   The filed type array.
    * @param string $additional_label
-   *   An additional label to add to the XML fragment.
+   *   An additioanl label to add to the XML fragment.
    * @param bool $add_comment
    *   Whether to add a comment or not. Default is to add a comment.
    *

@@ -34,8 +34,10 @@ class Query extends BaseQuery implements SpellcheckInterface, QueryInterface
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'spell',
         'resultclass' => Result::class,
         'termclass' => Term::class,

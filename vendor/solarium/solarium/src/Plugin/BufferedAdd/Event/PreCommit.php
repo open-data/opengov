@@ -22,9 +22,12 @@ class PreCommit extends AbstractPreCommit
     /**
      * @var DocumentInterface[]
      */
-    protected array $buffer;
+    protected $buffer;
 
-    protected ?bool $overwrite;
+    /**
+     * @var bool|null
+     */
+    protected $overwrite;
 
     /**
      * Event constructor.

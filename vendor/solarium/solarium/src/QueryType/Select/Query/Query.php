@@ -47,7 +47,6 @@ use Solarium\Component\Suggester;
 use Solarium\Component\TermVector;
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\Exception\InvalidArgumentException;
@@ -107,8 +106,10 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'select',
         'resultclass' => Result::class,
         'documentclass' => Document::class,
@@ -121,25 +122,31 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
 
     /**
      * Tags for this query.
+     *
+     * @var array
      */
-    protected array $tags = [];
+    protected $tags = [];
 
     /**
      * Fields to fetch.
+     *
+     * @var array
      */
-    protected array $fields = [];
+    protected $fields = [];
 
     /**
      * Items to sort on.
+     *
+     * @var array
      */
-    protected array $sorts = [];
+    protected $sorts = [];
 
     /**
      * Filterqueries.
      *
      * @var FilterQuery[]
      */
-    protected array $filterQueries = [];
+    protected $filterQueries = [];
 
     /**
      * @param array|null $options
@@ -203,7 +210,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * This class should implement the document interface
      *
-     * @param class-string<DocumentInterface> $value classname
+     * @param string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -219,7 +226,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * The value is a classname, not an instance
      *
-     * @return class-string<DocumentInterface>|null
+     * @return string|null
      */
     public function getDocumentClass(): ?string
     {
@@ -229,7 +236,9 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Set default query operator.
      *
-     * @param self::QUERY_OPERATOR_* $operator
+     * Use one of the constants as value
+     *
+     * @param string $operator
      *
      * @return self Provides fluent interface
      */
@@ -387,11 +396,12 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Specify multiple fields to return in the resultset.
      *
-     * @param string|string[] $fields can be an array or string with comma separated fieldnames
+     * @param string|array $fields can be an array or string with comma
+     *                             separated fieldnames
      *
      * @return self Provides fluent interface
      */
-    public function addFields(string|array $fields): self
+    public function addFields($fields): self
     {
         if (\is_string($fields)) {
             $fields = explode(',', $fields);
@@ -448,11 +458,11 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * This overwrites any existing fields
      *
-     * @param string|string[] $fields can be an array or string with comma separated field names
+     * @param string|array $fields can be an array or string with comma separated field names
      *
      * @return self Provides fluent interface
      */
-    public function setFields(string|array $fields): self
+    public function setFields($fields): self
     {
         $this->clearFields();
         $this->addFields($fields);
@@ -463,8 +473,8 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Add a sort.
      *
-     * @param string       $sort
-     * @param self::SORT_* $order
+     * @param string $sort
+     * @param string $order
      *
      * @return self Provides fluent interface
      */
@@ -480,7 +490,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * The input array must contain sort items as keys and the order as values.
      *
-     * @param array<string, self::SORT_*> $sorts
+     * @param array $sorts
      *
      * @return self Provides fluent interface
      */
@@ -524,7 +534,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Get a list of the sorts.
      *
-     * @return array<string, self::SORT_*>
+     * @return array
      */
     public function getSorts(): array
     {
@@ -536,7 +546,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * This overwrites any existing sorts
      *
-     * @param array<string, self::SORT_*> $sorts
+     * @param array $sorts
      *
      * @return self Provides fluent interface
      */
@@ -590,7 +600,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @return self Provides fluent interface
      */
-    public function addFilterQuery(FilterQuery|array $filterQuery): self
+    public function addFilterQuery($filterQuery): self
     {
         if (\is_array($filterQuery)) {
             $filterQuery = new FilterQuery($filterQuery);
@@ -664,7 +674,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @return self Provides fluent interface
      */
-    public function removeFilterQuery(string|FilterQuery $filterQuery): self
+    public function removeFilterQuery($filterQuery): self
     {
         if (\is_object($filterQuery)) {
             $filterQuery = $filterQuery->getKey();
@@ -766,7 +776,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @throws OutOfBoundsException
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function removeTag(string $tag): self
     {
@@ -804,7 +814,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @throws OutOfBoundsException
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setTags(array $tags): self
     {
@@ -1040,7 +1050,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

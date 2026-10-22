@@ -17,6 +17,7 @@ use Drupal\search_api_solr\Utility\ZipStreamFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
 defined('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') || define('SEARCH_API_SOLR_JUMP_START_CONFIG_SET', getenv('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') ?: 0);
@@ -309,7 +310,6 @@ class SolrConfigSetController extends ControllerBase {
       '7.x' => $template_path . '7.x',
       '8.x' => $template_path . '8.x',
       '9.x' => $template_path . '9.x',
-      '10.x' => $template_path . '10.x',
     ];
 
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
@@ -401,12 +401,12 @@ class SolrConfigSetController extends ControllerBase {
       // ZooKeeper). Therefore, we go for a more specific fallback to keep the
       // possibility to set the property as parameter of the virtual machine.
       // @see https://lucene.apache.org/solr/guide/8_6/configuring-solrconfig-xml.html
-      $files['solrconfig.xml'] = preg_replace('/solr.luceneMatchVersion:LUCENE_[\d_]+/', 'solr.luceneMatchVersion:' . $solrcore_properties['solr.luceneMatchVersion'], $files['solrconfig.xml']);
+      $files['solrconfig.xml'] = preg_replace('/solr.luceneMatchVersion:LUCENE_\d+/', 'solr.luceneMatchVersion:' . $solrcore_properties['solr.luceneMatchVersion'], $files['solrconfig.xml']);
       unset($files['solrcore.properties']);
     }
 
     if (version_compare($connector->getSolrVersion(), '9.8.0', '>=')) {
-      $files['solrconfig.xml'] = preg_replace('@<lib .*?/modules/([^/]+/).*?/>@', "<!-- <lib/> directives are deprecated and will be removed in Solr 10.0.\nEnsure to load the required module in your Solr server, for example by appending it to the comma-separated module list environment variable like SOLR_MODULES=\"\${SOLR_MODULES},$1\" -->\n<!-- $0 -->", $files['solrconfig.xml']);
+      $files['solrconfig.xml'] = preg_replace('@<lib .*?/modules/([^/]+/).*?/>@', "<!-- <lib/> directives are deprecated and will be removed in Solr 10.0.\nEnsure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES=\"\${SOLR_MODULES},$1\" -->\n<!-- $0 -->", $files['solrconfig.xml']);
     }
 
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
@@ -419,8 +419,8 @@ class SolrConfigSetController extends ControllerBase {
   /**
    * Returns a ZipStream of all configuration files.
    *
-   * @param resource|null $resource
-   *   Output stream resource.
+   * @param \ZipStream\Option\Archive|ressource|NUll $archive_options_or_ressource
+   *   Archive options.
    *
    * @return \ZipStream\ZipStream
    *   The ZipStream that contains all configuration files.
@@ -429,14 +429,14 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip($resource = NULL): ZipStream {
+  public function getConfigZip($archive_options_or_ressource = NULL): ZipStream {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    $zip = ZipStreamFactory::createInstance('solr_' . $solr_branch . '_config.zip', $resource);
+    $zip = ZipStreamFactory::createInstance('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
 
     $files = $this->getConfigFiles();
     foreach ($files as $name => $content) {
@@ -465,12 +465,18 @@ class SolrConfigSetController extends ControllerBase {
     $this->setServer($search_api_server);
 
     try {
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-      $zip = $this->getConfigZip();
+      $zip = $this->getConfigZip($archive_options);
       $zip->finish();
       @ob_end_flush();
 
@@ -501,12 +507,20 @@ class SolrConfigSetController extends ControllerBase {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();
 
+      if (class_exists('\ZipStream\Option\Archive')) {
+        $archive_options_or_ressource = new Archive();
+        $archive_options_or_ressource->setSendHttpHeaders(TRUE);
+      }
+      else {
+        $archive_options_or_ressource = NULL;
+      }
+
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-      $zip = ZipStreamFactory::createInstance('solr_current_config.zip');
+      $zip = ZipStreamFactory::createInstance('solr_current_config.zip', $archive_options_or_ressource);
 
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();
@@ -539,9 +553,9 @@ class SolrConfigSetController extends ControllerBase {
   /**
    * Provides an XML snippet containing all query cache settings as XML.
    *
-   * @param string $file_name
+   * @param \Drupal\search_api_solr\Controller\string $file_name
    *   The file name.
-   * @param string $xml
+   * @param \Drupal\search_api_solr\Controller\string $xml
    *   The XML.
    *
    * @return \Symfony\Component\HttpFoundation\Response

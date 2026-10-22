@@ -47,7 +47,6 @@ class SolrFieldTypeForm extends EntityForm {
 
     $form = parent::form($form, $form_state);
 
-    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
     $solr_field_type = $this->entity;
     $form['label'] = [
       '#type' => 'SolrFieldType',
@@ -134,8 +133,6 @@ class SolrFieldTypeForm extends EntityForm {
       ]));
     }
     $form_state->setRedirectUrl($solr_field_type->toUrl('collection'));
-
-    return (int) $status;
   }
 
 }

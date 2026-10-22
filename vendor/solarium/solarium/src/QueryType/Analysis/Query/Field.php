@@ -23,8 +23,10 @@ class Field extends AbstractQuery
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'analysis/field',
         'resultclass' => ResultField::class,
         'omitheader' => true,

@@ -11,7 +11,6 @@ namespace Solarium\QueryType\Luke;
 
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery as BaseQuery;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\QueryType\Luke\ResponseParser\Doc as DocResponseParser;
@@ -55,8 +54,10 @@ class Query extends BaseQuery
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'resultclass' => Result::class,
         'documentclass' => Document::class,
         'handler' => 'admin/luke',
@@ -118,7 +119,7 @@ class Query extends BaseQuery
      *
      * This class should implement the document interface.
      *
-     * @param class-string<DocumentInterface> $value classname
+     * @param string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -134,7 +135,7 @@ class Query extends BaseQuery
      *
      * The value is a classname, not an instance.
      *
-     * @return class-string<DocumentInterface>|null
+     * @return string|null
      */
     public function getDocumentClass(): ?string
     {
@@ -143,6 +144,8 @@ class Query extends BaseQuery
 
     /**
      * Set the data about the index to include in the response.
+     *
+     * Use one of the SHOW_* constants as value.
      *
      * {@see SHOW_ALL} returns all fields plus the index details. This is also the
      * default behaviour if no 'show' and no 'id' or 'docId' is set.
@@ -156,7 +159,7 @@ class Query extends BaseQuery
      * It works in conjunction with {@see setId()} or {@see setDocId()}. This is
      * also the default behaviour if 'show' isn't set and an 'id' or 'docId' is set.
      *
-     * @param self::SHOW_* $show
+     * @param string $show
      *
      * @return self Provides fluent interface
      */
@@ -182,11 +185,11 @@ class Query extends BaseQuery
      *
      * @see setDocId() To set a Lucene documentID instead.
      *
-     * @param int|string $id
+     * @param mixed $id
      *
      * @return self Provides fluent interface
      */
-    public function setId(int|string $id): self
+    public function setId($id): self
     {
         $this->setOption('id', $id);
 
@@ -196,9 +199,9 @@ class Query extends BaseQuery
     /**
      * Get the id of the document to get.
      *
-     * @return int|string|null
+     * @return mixed|null
      */
-    public function getId(): int|string|null
+    public function getId()
     {
         return $this->getOption('id');
     }
@@ -234,11 +237,11 @@ class Query extends BaseQuery
      *
      * Separate multiple fields with commas if you use string input.
      *
-     * @param string|string[] $fields
+     * @param string|array $fields
      *
      * @return self Provides fluent interface
      */
-    public function setFields(string|array $fields): self
+    public function setFields($fields): self
     {
         if (\is_string($fields)) {
             $fields = explode(',', $fields);
@@ -311,7 +314,7 @@ class Query extends BaseQuery
     /**
      * Initialize options.
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

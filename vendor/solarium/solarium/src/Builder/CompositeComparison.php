@@ -26,20 +26,23 @@ class CompositeComparison implements ExpressionInterface
 
     public const TYPE_OR = 'OR';
 
-    private string $type;
+    /**
+     * @var string
+     */
+    private $type;
 
     /**
-     * @var Comparison[]
+     * @var \Solarium\Builder\Comparison[]
      */
-    private array $comparisons = [];
+    private $comparisons = [];
 
     /**
      * @param string $type
      * @param array  $comparisons
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      */
-    public function __construct(string $type, array $comparisons)
+    public function __construct($type, array $comparisons)
     {
         $this->type = $type;
 
@@ -64,7 +67,7 @@ class CompositeComparison implements ExpressionInterface
     }
 
     /**
-     * @return Comparison[]
+     * @return \Solarium\Builder\Comparison[]
      */
     public function getComparisons(): array
     {

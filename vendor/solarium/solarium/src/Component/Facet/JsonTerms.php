@@ -82,8 +82,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'field' => 'id',
     ];
 
@@ -101,8 +103,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Set the field name to facet over.
      *
      * @param string $field
+     *
+     * @return self Provides fluent interface
      */
-    public function setField(string $field): static
+    public function setField(string $field): self
     {
         $this->setOption('field', $field);
 
@@ -123,8 +127,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Set the number of buckets to skip over.
      *
      * @param int $offset
+     *
+     * @return self Provides fluent interface
      */
-    public function setOffset(int $offset): static
+    public function setOffset(int $offset): self
     {
         $this->setOption('offset', $offset);
 
@@ -145,8 +151,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Set the limit for number of buckets returned.
      *
      * @param int $limit
+     *
+     * @return self Provides fluent interface
      */
-    public function setLimit(int $limit): static
+    public function setLimit(int $limit): self
     {
         $this->setOption('limit', $limit);
 
@@ -171,9 +179,11 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      *
      * @see https://solr.apache.org/guide/json-facet-api.html#sorting-facets-by-nested-functions
      *
-     * @param self::SORT_*|string $sort
+     * @param string $sort
+     *
+     * @return self Provides fluent interface
      */
-    public function setSort(string $sort): static
+    public function setSort(string $sort): self
     {
         $this->setOption('sort', $sort);
 
@@ -196,8 +206,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Number of buckets beyond the limit to request internally during distributed search. -1 means default.
      *
      * @param int $overrequest
+     *
+     * @return self Provides fluent interface
      */
-    public function setOverRequest(int $overrequest): static
+    public function setOverRequest(int $overrequest): self
     {
         $this->setOption('overrequest', $overrequest);
 
@@ -222,8 +234,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * returned buckets exact.
      *
      * @param bool $refine
+     *
+     * @return self Provides fluent interface
      */
-    public function setRefine(bool $refine): static
+    public function setRefine(bool $refine): self
     {
         $this->setOption('refine', $refine);
 
@@ -247,8 +261,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * The default of -1 causes a heuristic to be applied based on other options specified.
      *
      * @param int $overrefine
+     *
+     * @return self Provides fluent interface
      */
-    public function setOverRefine(int $overrefine): static
+    public function setOverRefine(int $overrefine): self
     {
         $this->setOption('overrefine', $overrefine);
 
@@ -269,8 +285,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Set the mincount for buckets to return.
      *
      * @param int $minCount
+     *
+     * @return self Provides fluent interface
      */
-    public function setMinCount(int $minCount): static
+    public function setMinCount(int $minCount): self
     {
         $this->setOption('mincount', $minCount);
 
@@ -291,8 +309,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Specify if a special "missing" bucket should be returned.
      *
      * @param bool $missing
+     *
+     * @return self Provides fluent interface
      */
-    public function setMissing(bool $missing): static
+    public function setMissing(bool $missing): self
     {
         $this->setOption('missing', $missing);
 
@@ -316,8 +336,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * facet (as opposed to the number of buckets returned). Defaults to false.
      *
      * @param bool $numBuckets
+     *
+     * @return self Provides fluent interface
      */
-    public function setNumBuckets(bool $numBuckets): static
+    public function setNumBuckets(bool $numBuckets): self
     {
         $this->setOption('numBuckets', $numBuckets);
 
@@ -342,8 +364,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * document can belong to multiple buckets. Defaults to false.
      *
      * @param bool $allBuckets
+     *
+     * @return self Provides fluent interface
      */
-    public function setAllBuckets(bool $allBuckets): static
+    public function setAllBuckets(bool $allBuckets): self
     {
         $this->setOption('allBuckets', $allBuckets);
 
@@ -364,8 +388,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * Only produce buckets for terms starting with the specified prefix.
      *
      * @param string $prefix
+     *
+     * @return self Provides fluent interface
      */
-    public function setPrefix(string $prefix): static
+    public function setPrefix(string $prefix): self
     {
         $this->setOption('prefix', $prefix);
 
@@ -385,9 +411,13 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
     /**
      * Set the facet algorithm to use.
      *
-     * @param self::METHOD_* $method
+     * Use one of the METHOD_* constants as value.
+     *
+     * @param string $method
+     *
+     * @return self Provides fluent interface
      */
-    public function setMethod(string $method): static
+    public function setMethod(string $method): self
     {
         $this->setOption('method', $method);
 
@@ -410,8 +440,10 @@ class JsonTerms extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      * @see setSort() For the possible sort values.
      *
      * @param string $prelimSort
+     *
+     * @return self Provides fluent interface
      */
-    public function setPrelimSort(string $prelimSort): static
+    public function setPrelimSort(string $prelimSort): self
     {
         $this->setOption('prelim_sort', $prelimSort);
 

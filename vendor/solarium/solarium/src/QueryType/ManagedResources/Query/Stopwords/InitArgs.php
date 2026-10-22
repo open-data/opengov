@@ -18,8 +18,10 @@ class InitArgs implements InitArgsInterface
 {
     /**
      * Whether or not to ignore the case.
+     *
+     * @var bool
      */
-    protected bool $ignoreCase;
+    protected $ignoreCase;
 
     /**
      * Constructor.

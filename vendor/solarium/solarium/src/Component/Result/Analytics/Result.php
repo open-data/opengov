@@ -11,29 +11,27 @@ declare(strict_types=1);
 
 namespace Solarium\Component\Result\Analytics;
 
-use Solarium\Component\Result\ComponentResultInterface;
-
 /**
  * Analytics result.
  *
  * @author wicliff <wicliff.wolda@gmail.com>
  */
-class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
+class Result implements \IteratorAggregate, \Countable
 {
     /**
-     * @var Expression[]
+     * @var \Solarium\Component\Result\Analytics\Expression[]
      */
-    private array $results = [];
+    private $results = [];
 
     /**
-     * @var Grouping[]
+     * @var \Solarium\Component\Result\Analytics\Grouping[]
      */
-    private array $groupings = [];
+    private $groupings = [];
 
     /**
-     * @param Expression[] $results
+     * @param \Solarium\Component\Result\Analytics\Expression[] $results
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setResults(array $results): self
     {
@@ -45,9 +43,9 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Expression $result
+     * @param \Solarium\Component\Result\Analytics\Expression $result
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addResult(Expression $result): self
     {
@@ -57,7 +55,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * @return Expression[]
+     * @return \Solarium\Component\Result\Analytics\Expression[]
      */
     public function getResults(): array
     {
@@ -67,7 +65,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     /**
      * @param string $name
      *
-     * @return Expression|null
+     * @return \Solarium\Component\Result\Analytics\Expression|null
      */
     public function getResult(string $name): ?Expression
     {
@@ -91,7 +89,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * @return Grouping[]
+     * @return \Solarium\Component\Result\Analytics\Grouping[]
      */
     public function getGroupings(): array
     {
@@ -99,9 +97,9 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Grouping[] $groupings
+     * @param array $groupings
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setGroupings(array $groupings): self
     {
@@ -115,7 +113,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     /**
      * @param string $name
      *
-     * @return Grouping|null
+     * @return \Solarium\Component\Result\Analytics\Grouping|null
      */
     public function getGrouping(string $name): ?Grouping
     {
@@ -123,9 +121,9 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Grouping $grouping
+     * @param \Solarium\Component\Result\Analytics\Grouping $grouping
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addGrouping(Grouping $grouping): self
     {

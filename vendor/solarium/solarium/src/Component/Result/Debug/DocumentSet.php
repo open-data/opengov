@@ -16,8 +16,10 @@ class DocumentSet implements \IteratorAggregate, \Countable
 {
     /**
      * Docs array.
+     *
+     * @var array
      */
-    protected array $docs;
+    protected $docs;
 
     /**
      * Constructor.

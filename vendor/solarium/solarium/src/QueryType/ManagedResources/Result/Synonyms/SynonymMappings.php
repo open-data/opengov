@@ -21,39 +21,55 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
 {
     /**
      * List name.
+     *
+     * @var string
      */
-    protected string $name = 'synonymMappings';
+    protected $name = 'synonymMappings';
 
     /**
      * Whether or not to ignore the case.
+     *
+     * @var bool|null
      */
-    protected ?bool $ignoreCase;
+    protected $ignoreCase;
 
     /**
      * Format.
+     *
+     * @var string|null
      */
-    protected ?string $format;
+    protected $format;
 
     /**
      * Datetime when the resource was initialized.
+     *
+     * @var string
      */
-    protected string $initializedOn;
+    protected $initializedOn;
 
     /**
      * Datetime when the resource was last updated.
+     *
+     * @var string|null
      */
-    protected ?string $updatedSinceInit = null;
+    protected $updatedSinceInit;
 
     /**
      * List items.
      *
-     * @var Synonyms[]
+     * @var array
      */
-    protected array $items = [];
+    protected $items = [];
 
-    protected bool $wasSuccessful = false;
+    /**
+     * @var bool
+     */
+    protected $wasSuccessful = false;
 
-    protected string $statusMessage = 'ERROR';
+    /**
+     * @var string
+     */
+    protected $statusMessage = 'ERROR';
 
     /**
      * Constructor.
@@ -79,7 +95,7 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
     /**
      * Get all items.
      *
-     * @return Synonyms[]
+     * @return \Solarium\QueryType\ManagedResources\Result\Synonyms\Synonyms[]
      */
     public function getItems(): array
     {

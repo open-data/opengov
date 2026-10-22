@@ -36,48 +36,60 @@ interface FacetInterface
      * Set key.
      *
      * @param string $key
+     *
+     * @return self Provides fluent interface
      */
-    public function setKey(string $key): static;
+    public function setKey(string $key): self;
 
     /**
      * Add an exclude tag.
      *
      * @param string $exclude
+     *
+     * @return self Provides fluent interface
      */
-    public function addExclude(string $exclude): static;
+    public function addExclude(string $exclude): self;
 
     /**
      * Add multiple exclude tags.
      *
-     * @param string[]|string $excludes array or string with comma separated exclude tags
+     * @param array|string $excludes array or string with comma separated exclude tags
+     *
+     * @return self Provides fluent interface
      */
-    public function addExcludes(array|string $excludes): static;
+    public function addExcludes($excludes): self;
 
     /**
      * Set the list of exclude tags.
      *
      * This overwrites any existing exclude tags.
      *
-     * @param string[]|string $excludes
+     * @param array|string $excludes
+     *
+     * @return self Provides fluent interface
      */
-    public function setExcludes(array|string $excludes): static;
+    public function setExcludes($excludes): self;
 
     /**
      * Remove a single exclude tag.
      *
      * @param string $exclude
+     *
+     * @return self Provides fluent interface
      */
-    public function removeExclude(string $exclude): static;
+    public function removeExclude(string $exclude): self;
 
     /**
      * Remove all exclude tags.
+     *
+     * @return self Provides fluent interface
      */
-    public function clearExcludes(): static;
+    public function clearExcludes(): self;
 
     /**
      * Get the list of exclude tags.
      *
-     * @return string[]
+     * @return array
      */
-    public function getExcludes(): array;
+    public function getExcludes();
 }

@@ -22,7 +22,7 @@ trait GroupingTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return Grouping
+     * @return \Solarium\Component\Grouping
      */
     public function getGrouping(): Grouping
     {

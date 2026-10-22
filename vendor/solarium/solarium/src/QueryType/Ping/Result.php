@@ -16,7 +16,10 @@ use Solarium\Core\Query\Result\QueryType as BaseResult;
  */
 class Result extends BaseResult
 {
-    protected string $status;
+    /**
+     * @var string
+     */
+    protected $status;
 
     /**
      * Return the ping status.

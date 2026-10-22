@@ -14,17 +14,35 @@ namespace Solarium\QueryType\Server\CoreAdmin\Result;
  */
 class StatusResult
 {
-    protected string $coreName = '';
+    /**
+     * @var string
+     */
+    protected $coreName = '';
 
-    protected int $numberOfDocuments = 0;
+    /**
+     * @var int
+     */
+    protected $numberOfDocuments = 0;
 
-    protected int $uptime = 0;
+    /**
+     * @var int
+     */
+    protected $uptime = 0;
 
-    protected int $version = 0;
+    /**
+     * @var int
+     */
+    protected $version = 0;
 
-    protected ?\DateTime $startTime;
+    /**
+     * @var \DateTime|null
+     */
+    protected $startTime;
 
-    protected ?\DateTime $lastModified;
+    /**
+     * @var \DateTime|null
+     */
+    protected $lastModified;
 
     /**
      * @return string
@@ -137,7 +155,7 @@ class StatusResult
     /**
      * @param \DateTime|null $lastModified
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setLastModified(?\DateTime $lastModified): self
     {

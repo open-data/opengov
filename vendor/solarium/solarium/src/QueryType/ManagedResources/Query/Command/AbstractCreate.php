@@ -21,7 +21,7 @@ abstract class AbstractCreate extends AbstractCommand
     /**
      * Returns command type, for use in adapters.
      *
-     * @return Query::COMMAND_CREATE
+     * @return string
      */
     public function getType(): string
     {
@@ -31,7 +31,7 @@ abstract class AbstractCreate extends AbstractCommand
     /**
      * Returns request method.
      *
-     * @return Request::METHOD_PUT
+     * @return string
      */
     public function getRequestMethod(): string
     {

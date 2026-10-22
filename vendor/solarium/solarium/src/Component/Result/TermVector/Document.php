@@ -14,12 +14,15 @@ namespace Solarium\Component\Result\TermVector;
  */
 class Document implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-    protected ?string $uniqueKey;
+    /**
+     * @var string|null
+     */
+    protected $uniqueKey;
 
     /**
      * @var Field[]
      */
-    protected array $fields;
+    protected $fields;
 
     /**
      * Constructor.

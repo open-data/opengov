@@ -18,8 +18,10 @@ class FacetValue
 
     /**
      * Facet value.
+     *
+     * @var string
      */
-    protected string $value;
+    protected $value;
 
     /**
      * Constructor.
@@ -41,5 +43,17 @@ class FacetValue
     public function getValue(): ?string
     {
         return $this->value;
+    }
+
+    /**
+     * Get facet stats.
+     *
+     * @return array|null
+     *
+     * @deprecated Will be removed in Solarium 7
+     */
+    public function getFacets(): ?array
+    {
+        return null;
     }
 }

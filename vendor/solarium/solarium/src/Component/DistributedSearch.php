@@ -22,18 +22,24 @@ class DistributedSearch extends AbstractComponent
 {
     /**
      * Request to be distributed across all shards in the list.
+     *
+     * @var array
      */
-    protected array $shards = [];
+    protected $shards = [];
 
     /**
      * Requests will be distributed across collections in this list.
+     *
+     * @var array
      */
-    protected array $collections = [];
+    protected $collections = [];
 
     /**
      * Requests will be load balanced across replicas in this list.
+     *
+     * @var array
      */
-    protected array $replicas = [];
+    protected $replicas = [];
 
     /**
      * Get component type.
@@ -80,10 +86,10 @@ class DistributedSearch extends AbstractComponent
      * $client = new Solarium\Client;
      * $query = $client->createSelect();
      * $distributedSearch = $query->getDistributedSearch();
-     * $distributedSearch->addShards([
+     * $distributedSearch->addShards(array(
      *     'core0' => 'localhost:8983/solr/core0',
-     *     'core1' => 'localhost:8983/solr/core1',
-     * ]);
+     *     'core1' => 'localhost:8983/solr/core1'
+     * ));
      * $result = $client->select($query);
      * </code>
      *
@@ -138,10 +144,10 @@ class DistributedSearch extends AbstractComponent
      * $client = new Solarium\Client;
      * $query = $client->createSelect();
      * $distributedSearch = $query->getDistributedSearch();
-     * $distributedSearch->setShards([
+     * $distributedSearch->setShards(array(
      *     'core0' => 'localhost:8983/solr/core0',
-     *     'core1' => 'localhost:8983/solr/core1',
-     * ]);
+     *     'core1' => 'localhost:8983/solr/core1'
+     * ));
      * $result = $client->select($query);
      * </code>
      *
@@ -374,7 +380,7 @@ class DistributedSearch extends AbstractComponent
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

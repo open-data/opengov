@@ -14,9 +14,15 @@ namespace Solarium\QueryType\Luke\Result\Schema;
  */
 class Similarity
 {
-    protected ?string $className = null;
+    /**
+     * @var string|null
+     */
+    protected $className = null;
 
-    protected ?string $details = null;
+    /**
+     * @var string|null
+     */
+    protected $details = null;
 
     /**
      * @return string|null

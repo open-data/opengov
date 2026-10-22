@@ -36,7 +36,7 @@ class Reload extends AbstractAsyncAction
     /**
      * Returns the namespace and class of the result class for the action.
      *
-     * @return class-string<ReloadResult>
+     * @return string
      */
     public function getResultClass(): string
     {

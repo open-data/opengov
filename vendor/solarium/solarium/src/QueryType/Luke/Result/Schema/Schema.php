@@ -21,21 +21,27 @@ class Schema
     /**
      * @var Field[]
      */
-    protected array $fields;
+    protected $fields;
 
     /**
      * @var DynamicField[]
      */
-    protected array $dynamicFields;
+    protected $dynamicFields;
 
-    protected ?Field $uniqueKeyField = null;
+    /**
+     * @var Field|null
+     */
+    protected $uniqueKeyField = null;
 
-    protected Similarity $similarity;
+    /**
+     * @var Similarity
+     */
+    protected $similarity;
 
     /**
      * @var Type[]
      */
-    protected array $types;
+    protected $types;
 
     /**
      * @return Field[]

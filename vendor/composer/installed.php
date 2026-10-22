@@ -3,7 +3,7 @@
         'name' => 'opengov/opengov-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '54e3da70219c8ebe7748ec34cac7afe0b7c52376',
+        'reference' => '29b985c72675563ed8fe7867083ee308a19f6612',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -671,9 +671,9 @@
             'dev_requirement' => false,
         ),
         'drupal/search_api_solr' => array(
-            'pretty_version' => '4.4.0',
-            'version' => '4.4.0.0',
-            'reference' => '4.4.0',
+            'pretty_version' => '4.3.10',
+            'version' => '4.3.10.0',
+            'reference' => '4.3.10',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../html/modules/contrib/search_api_solr',
             'aliases' => array(),
@@ -1077,7 +1077,7 @@
         'opengov/og' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'f453d34c1c955cf33c4687f6e0d1d4ca21c3c78c',
+            'reference' => '5b77a95a6716e0b26e21f08205f89075bb3f63db',
             'type' => 'drupal-profile',
             'install_path' => __DIR__ . '/../../html/profiles/og',
             'aliases' => array(
@@ -1088,7 +1088,7 @@
         'opengov/opengov-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '54e3da70219c8ebe7748ec34cac7afe0b7c52376',
+            'reference' => '29b985c72675563ed8fe7867083ee308a19f6612',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1427,8 +1427,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -1443,8 +1443,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -1459,8 +1459,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -1726,9 +1726,9 @@
             'dev_requirement' => true,
         ),
         'solarium/solarium' => array(
-            'pretty_version' => '7.0.0',
-            'version' => '7.0.0.0',
-            'reference' => '44739c15341c308ea5ba79942fa4c9f4198679c4',
+            'pretty_version' => '6.4.2',
+            'version' => '6.4.2.0',
+            'reference' => 'a5dd79827d2b64da4417568780a3705e997b6640',
             'type' => 'library',
             'install_path' => __DIR__ . '/../solarium/solarium',
             'aliases' => array(),

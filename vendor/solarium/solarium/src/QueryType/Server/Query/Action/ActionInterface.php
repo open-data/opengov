@@ -10,7 +10,6 @@
 namespace Solarium\QueryType\Server\Query\Action;
 
 use Solarium\Core\ConfigurableInterface;
-use Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
  * ActionInterface.
@@ -27,7 +26,7 @@ interface ActionInterface extends ConfigurableInterface
     /**
      * Returns the namespace and class of the result class for the action.
      *
-     * @return class-string<BaseResult>
+     * @return string
      */
     public function getResultClass(): string;
 }

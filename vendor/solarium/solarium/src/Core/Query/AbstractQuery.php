@@ -11,7 +11,6 @@ namespace Solarium\Core\Query;
 
 use Solarium\Core\Configurable;
 use Solarium\Core\Query\LocalParameters\LocalParametersTrait;
-use Solarium\Core\Query\Result\ResultInterface;
 
 /**
  * Base class for all query types, not intended for direct usage.
@@ -22,20 +21,21 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
 
     public const WT_JSON = 'json';
 
-    /**
-     * @deprecated Will be removed in Solarium 8
-     */
     public const WT_PHPS = 'phps';
 
     /**
      * Helper instance.
+     *
+     * @var Helper
      */
-    protected ?Helper $helper = null;
+    protected $helper;
 
     /**
      * Extra query params (e.g. dereferenced params).
+     *
+     * @var array
      */
-    protected array $params = [];
+    protected $params = [];
 
     /**
      * Set handler option.
@@ -71,7 +71,7 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
      * Also you need to make sure it extends the orginal result class of the
      * query or has an identical API.
      *
-     * @param class-string<ResultInterface> $classname
+     * @param string $classname
      *
      * @return self Provides fluent interface
      */
@@ -85,11 +85,39 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     /**
      * Get resultclass option.
      *
-     * @return class-string<ResultInterface>|null
+     * @return string|null
      */
     public function getResultClass(): ?string
     {
         return $this->getOption('resultclass');
+    }
+
+    /**
+     * Set timeAllowed option.
+     *
+     * @param int $value
+     *
+     * @return self Provides fluent interface
+     *
+     * @deprecated Will be removed in Solarium 7. This parameter is only relevant for Select queries.
+     */
+    public function setTimeAllowed(int $value): self
+    {
+        $this->setOption('timeallowed', $value);
+
+        return $this;
+    }
+
+    /**
+     * Get timeAllowed option.
+     *
+     * @return int|null
+     *
+     * @deprecated Will be removed in Solarium 7. This parameter is only relevant for Select queries.
+     */
+    public function getTimeAllowed(): ?int
+    {
+        return $this->getOption('timeallowed');
     }
 
     /**
@@ -181,13 +209,13 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     /**
      * Set responsewriter option.
      *
-     * @param self::WT_*|string $responseWriter
+     * @param string $value
      *
      * @return self Provides fluent interface
      */
-    public function setResponseWriter(string $responseWriter): self
+    public function setResponseWriter(string $value): self
     {
-        $this->setOption('responsewriter', $responseWriter);
+        $this->setOption('responsewriter', $value);
 
         return $this;
     }
@@ -201,13 +229,16 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
      * setting the responsewriter to 'phps' (serialized php). This can give a performance advantage,
      * especially with big resultsets.
      *
-     * @return self::WT_*|string
+     * @return string
      */
     public function getResponseWriter(): string
     {
         $responseWriter = $this->getOption('responsewriter');
+        if (null === $responseWriter) {
+            $responseWriter = self::WT_JSON;
+        }
 
-        return $responseWriter ?? self::WT_JSON;
+        return $responseWriter;
     }
 
     /**
@@ -247,7 +278,7 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
      *
      * @return self Provides fluent interface
      */
-    public function setTimeZone(string|\DateTimeZone $timezone): self
+    public function setTimeZone($timezone): self
     {
         if ($timezone instanceof \DateTimeZone) {
             $this->setOption('timezone', $timezone->getName());
@@ -314,28 +345,5 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     public function getInputEncoding(): ?string
     {
         return $this->getOption('ie');
-    }
-
-    public function setOption(string $name, $value): Configurable
-    {
-        // @phpstan-ignore classConstant.deprecated (Will be removed in Solarium 8)
-        if ('responsewriter' === $name && self::WT_PHPS === $value) {
-            trigger_error('Support for parsing "phps" responses is deprecated in Solarium 7 and will be removed in Solarium 8.', \E_USER_DEPRECATED);
-        }
-
-        return parent::setOption($name, $value);
-    }
-
-    /**
-     * Initialization hook.
-     *
-     * {@internal Check for deprecated 'phps' response writer.}
-     */
-    protected function init(): void
-    {
-        // @phpstan-ignore classConstant.deprecated (Will be removed in Solarium 8)
-        if (isset($this->options['responsewriter']) && self::WT_PHPS === $this->options['responsewriter']) {
-            trigger_error('Support for parsing "phps" responses is deprecated in Solarium 7 and will be removed in Solarium 8.', \E_USER_DEPRECATED);
-        }
     }
 }

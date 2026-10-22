@@ -30,8 +30,10 @@ class PostBigExtractRequest extends AbstractPlugin
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'maxquerystringlength' => 1024,
     ];
 
@@ -122,12 +124,10 @@ class PostBigExtractRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType(): void
+    protected function initPluginType()
     {
         $dispatcher = $this->client->getEventDispatcher();
-        if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
-            $dispatcher->addListener(Events::POST_CREATE_REQUEST, [$this, 'postCreateRequest']);
-        }
+        $dispatcher->addListener(Events::POST_CREATE_REQUEST, [$this, 'postCreateRequest']);
     }
 
     /**
@@ -135,11 +135,9 @@ class PostBigExtractRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin(): void
+    public function deinitPlugin()
     {
         $dispatcher = $this->client->getEventDispatcher();
-        if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
-            $dispatcher->removeListener(Events::POST_CREATE_REQUEST, [$this, 'postCreateRequest']);
-        }
+        $dispatcher->removeListener(Events::POST_CREATE_REQUEST, [$this, 'postCreateRequest']);
     }
 }

@@ -46,15 +46,13 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Get preferred schema version.
    *
    * @return string
-   *   The preferred schema version.
    */
   public function getPreferredSchemaVersion(): string;
 
   /**
-   * Get the minimal required schema version.
+   * Get minmal required schema version.
    *
    * @return string
-   *   The minimal required schema version.
    */
   public function getMinimalRequiredSchemaVersion(): string;
 
@@ -405,6 +403,9 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @param object $event
    *   The object to process.
+   *
+   * @return object
+   *   The Event that was passed, now modified by listeners.
    *
    * @see \Psr\EventDispatcher\EventDispatcherInterface
    */

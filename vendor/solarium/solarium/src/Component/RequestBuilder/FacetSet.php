@@ -9,7 +9,6 @@
 
 namespace Solarium\Component\RequestBuilder;
 
-use Solarium\Component\Facet\FacetInterface;
 use Solarium\Component\Facet\Field as FacetField;
 use Solarium\Component\Facet\Interval as FacetInterval;
 use Solarium\Component\Facet\JsonFacetInterface;
@@ -35,7 +34,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param FacetSetComponent $component
      * @param Request           $request
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return Request
      */
@@ -52,42 +51,42 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
             // 2) get field name
             // 3) count occurence
             $facetFields = array_count_values(array_map(
-                static function (FacetField $value): ?string {
+                static function ($value) {
                     return $value->getField();
                 },
-                array_filter($facets, static function (FacetInterface $value): bool {
+                array_filter($facets, static function ($value) {
                     return FacetSetInterface::FACET_FIELD === $value->getType();
                 })
             ));
             foreach ($facets as $key => $facet) {
                 switch ($facet->getType()) {
                     case FacetSetInterface::FACET_FIELD:
-                        assert($facet instanceof FacetField);
+                        /* @var FacetField $facet */
                         $this->addFacetField($request, $facet, 1 < $facetFields[$facet->getField()]);
                         $nonJson = true;
                         break;
                     case FacetSetInterface::FACET_QUERY:
-                        assert($facet instanceof FacetQuery);
+                        /* @var FacetQuery $facet */
                         $this->addFacetQuery($request, $facet);
                         $nonJson = true;
                         break;
                     case FacetSetInterface::FACET_MULTIQUERY:
-                        assert($facet instanceof FacetMultiQuery);
+                        /* @var FacetMultiQuery $facet */
                         $this->addFacetMultiQuery($request, $facet);
                         $nonJson = true;
                         break;
                     case FacetSetInterface::FACET_RANGE:
-                        assert($facet instanceof FacetRange);
+                        /* @var FacetRange $facet */
                         $this->addFacetRange($request, $facet);
                         $nonJson = true;
                         break;
                     case FacetSetInterface::FACET_PIVOT:
-                        assert($facet instanceof FacetPivot);
+                        /* @var FacetPivot $facet */
                         $this->addFacetPivot($request, $facet);
                         $nonJson = true;
                         break;
                     case FacetSetInterface::FACET_INTERVAL:
-                        assert($facet instanceof FacetInterval);
+                        /* @var FacetInterval $facet */
                         $this->addFacetInterval($request, $facet);
                         $nonJson = true;
                         break;
@@ -95,7 +94,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
                     case FacetSetInterface::JSON_FACET_QUERY:
                     case FacetSetInterface::JSON_FACET_RANGE:
                     case FacetSetInterface::JSON_FACET_AGGREGATION:
-                        assert($facet instanceof JsonFacetInterface);
+                        /* @var JsonFacetInterface $facet */
                         $jsonFacets[$key] = $facet->serialize();
                         break;
                     default:
@@ -210,7 +209,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param Request    $request
      * @param FacetQuery $facet
      */
-    public function addFacetQuery(Request $request, FacetQuery $facet): void
+    public function addFacetQuery($request, $facet): void
     {
         $request->addParam(
             'facet.query',
@@ -227,7 +226,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param Request         $request
      * @param FacetMultiQuery $facet
      */
-    public function addFacetMultiQuery(Request $request, FacetMultiQuery $facet): void
+    public function addFacetMultiQuery($request, $facet): void
     {
         foreach ($facet->getQueries() as $facetQuery) {
             $this->addFacetQuery($request, $facetQuery);
@@ -240,7 +239,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param Request    $request
      * @param FacetRange $facet
      */
-    public function addFacetRange(Request $request, FacetRange $facet): void
+    public function addFacetRange($request, $facet): void
     {
         $field = $facet->getField();
 
@@ -283,7 +282,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param Request    $request
      * @param FacetPivot $facet
      */
-    public function addFacetPivot(Request $request, FacetPivot $facet): void
+    public function addFacetPivot($request, $facet): void
     {
         $fields = $facet->getFields();
         $stats = $facet->getStats();
@@ -321,7 +320,7 @@ class FacetSet extends RequestBuilder implements ComponentRequestBuilderInterfac
      * @param Request       $request
      * @param FacetInterval $facet
      */
-    public function addFacetInterval(Request $request, FacetInterval $facet): void
+    public function addFacetInterval($request, $facet): void
     {
         $field = $facet->getField();
 

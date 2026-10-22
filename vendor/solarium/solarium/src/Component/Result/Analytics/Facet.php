@@ -18,19 +18,25 @@ namespace Solarium\Component\Result\Analytics;
  */
 class Facet implements \IteratorAggregate, \Countable
 {
-    private ?string $pivot;
-
-    private string $value;
+    /**
+     * @var string|null
+     */
+    private $pivot;
 
     /**
-     * @var Expression[]
+     * @var string
      */
-    private array $results;
+    private $value;
 
     /**
-     * @var Facet[]
+     * @var \Solarium\Component\Result\Analytics\Expression[]
      */
-    private array $children = [];
+    private $results;
+
+    /**
+     * @var \Solarium\Component\Result\Analytics\Facet[]
+     */
+    private $children = [];
 
     /**
      * @param string      $value
@@ -59,7 +65,7 @@ class Facet implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return Expression[]
+     * @return \Solarium\Component\Result\Analytics\Expression[]
      */
     public function getResults(): array
     {
@@ -67,9 +73,9 @@ class Facet implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Expression $expression
+     * @param \Solarium\Component\Result\Analytics\Expression $expression
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addResult(Expression $expression): self
     {
@@ -79,7 +85,7 @@ class Facet implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return Facet[]
+     * @return \Solarium\Component\Result\Analytics\Facet[]
      */
     public function getChildren(): array
     {
@@ -87,11 +93,11 @@ class Facet implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Facet $facet
+     * @param \Solarium\Component\Result\Analytics\Facet $facet
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
-    public function addChild(Facet $facet): self
+    public function addChild(self $facet): self
     {
         $this->children[] = $facet;
 

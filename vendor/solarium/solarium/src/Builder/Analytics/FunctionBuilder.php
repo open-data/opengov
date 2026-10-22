@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Solarium\Builder\Analytics;
 
 use Solarium\Builder\ExpressionInterface;
-use Solarium\Builder\FunctionInterface;
 
 /**
  * FunctionBuilder.
@@ -21,9 +20,15 @@ use Solarium\Builder\FunctionInterface;
  */
 class FunctionBuilder
 {
-    private ExpressionInterface&FunctionInterface $function;
+    /**
+     * @var \Solarium\Builder\ExpressionInterface
+     */
+    private $function;
 
-    private static ?ExpressionBuilder $expressionBuilder = null;
+    /**
+     * @var \Solarium\Builder\Analytics\ExpressionBuilder
+     */
+    private static $expressionBuilder;
 
     /**
      * @return static
@@ -34,7 +39,7 @@ class FunctionBuilder
     }
 
     /**
-     * @return ExpressionBuilder
+     * @return \Solarium\Builder\Analytics\ExpressionBuilder
      */
     public static function expr(): ExpressionBuilder
     {
@@ -46,11 +51,11 @@ class FunctionBuilder
     }
 
     /**
-     * @param ExpressionInterface&FunctionInterface $function
+     * @param \Solarium\Builder\ExpressionInterface $function
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
-    public function where(ExpressionInterface&FunctionInterface $function): self
+    public function where(ExpressionInterface $function): self
     {
         $this->function = $function;
 
@@ -58,9 +63,9 @@ class FunctionBuilder
     }
 
     /**
-     * @return ExpressionInterface&FunctionInterface
+     * @return \Solarium\Builder\ExpressionInterface
      */
-    public function getFunction(): ExpressionInterface&FunctionInterface
+    public function getFunction(): ExpressionInterface
     {
         return $this->function;
     }

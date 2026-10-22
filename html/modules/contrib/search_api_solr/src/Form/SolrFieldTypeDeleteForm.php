@@ -42,7 +42,7 @@ class SolrFieldTypeDeleteForm extends EntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
 
-    $this->messenger()->addStatus(
+    \Drupal::messenger()->addStatus(
       $this->t('content @type: deleted @label.',
         [
           '@type' => $this->entity->bundle(),

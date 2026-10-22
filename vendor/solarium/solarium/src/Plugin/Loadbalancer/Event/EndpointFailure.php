@@ -18,9 +18,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class EndpointFailure extends Event
 {
-    protected Endpoint $endpoint;
+    /**
+     * @var Endpoint
+     */
+    protected $endpoint;
 
-    protected HttpException $exception;
+    /**
+     * @var HttpException
+     */
+    protected $exception;
 
     /**
      * Constructor.

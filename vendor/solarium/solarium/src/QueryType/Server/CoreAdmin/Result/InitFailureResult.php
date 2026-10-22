@@ -14,9 +14,15 @@ namespace Solarium\QueryType\Server\CoreAdmin\Result;
  */
 class InitFailureResult
 {
-    protected string $coreName;
+    /**
+     * @var string
+     */
+    protected $coreName;
 
-    protected string $exception;
+    /**
+     * @var string
+     */
+    protected $exception;
 
     /**
      * @return string

@@ -16,8 +16,10 @@ class Field implements \IteratorAggregate, \Countable
 {
     /**
      * Terms.
+     *
+     * @var array
      */
-    protected array $terms;
+    protected $terms;
 
     /**
      * Constructor.

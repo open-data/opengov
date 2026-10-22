@@ -58,9 +58,9 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
      * @param string $dictionaryClass
      * @param array  $terms
      *
-     * @return object
+     * @return mixed
      */
-    private function createDictionary(string $dictionaryClass, array $terms): object
+    private function createDictionary($dictionaryClass, array $terms)
     {
         return new $dictionaryClass(
             $terms
@@ -71,9 +71,9 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
      * @param string $termClass
      * @param array  $termData
      *
-     * @return object
+     * @return mixed
      */
-    private function createTerm(string $termClass, array $termData): object
+    private function createTerm($termClass, array $termData)
     {
         return new $termClass(
             $termData['numFound'],

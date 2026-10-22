@@ -30,9 +30,9 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
     /**
      * Buffered document ids and/or queries to delete.
      *
-     * @var DeleteInterface[]
+     * @var AbstractDelete[]
      */
-    protected array $buffer = [];
+    protected $buffer = [];
 
     /**
      * Add a document id to delete.
@@ -41,7 +41,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      *
      * @return self Provides fluent interface
      */
-    public function addDeleteById(int|string $id): self
+    public function addDeleteById($id): self
     {
         $this->buffer[] = new DeleteById($id);
 
@@ -107,7 +107,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
      *
      * Any previously flushed deletes will not be included!
      *
-     * @return DeleteInterface[]
+     * @return AbstractDelete[]
      */
     public function getDeletes(): array
     {
@@ -177,7 +177,7 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
     /**
      * Add all deletes from the buffer as commands to the update query.
      *
-     * @param DeleteInterface[] $buffer
+     * @param AbstractDelete[] $buffer
      */
     protected function addBufferToQuery(array $buffer): void
     {
@@ -189,12 +189,10 @@ class BufferedDeleteLite extends AbstractBufferedUpdate
             $delete = $it->current();
 
             switch ($delete->getType()) {
-                case DeleteInterface::TYPE_ID:
-                    assert($delete instanceof DeleteById);
+                case AbstractDelete::TYPE_ID:
                     $command->addId($delete->getId());
                     break;
-                case DeleteInterface::TYPE_QUERY:
-                    assert($delete instanceof DeleteQuery);
+                case AbstractDelete::TYPE_QUERY:
                     $command->addQuery($delete->getQuery());
                     break;
                 default:

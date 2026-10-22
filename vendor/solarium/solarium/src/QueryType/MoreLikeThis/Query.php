@@ -32,8 +32,10 @@ class Query extends SelectQuery implements MoreLikeThisInterface
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'mlt',
         'resultclass' => Result::class,
         'documentclass' => Document::class,
@@ -116,11 +118,11 @@ class Query extends SelectQuery implements MoreLikeThisInterface
      *
      * @see https://solr.apache.org/guide/morelikethis.html#common-handler-and-component-parameters
      *
-     * @param string|string[] $fields
+     * @param string|array $fields
      *
      * @return self Provides fluent interface
      */
-    public function setMltFields(string|array $fields): self
+    public function setMltFields($fields): self
     {
         if (\is_string($fields)) {
             $fields = explode(',', $fields);

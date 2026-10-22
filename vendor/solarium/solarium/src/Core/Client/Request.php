@@ -93,8 +93,10 @@ class Request extends Configurable implements RequestParamsInterface
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'method' => self::METHOD_GET,
         'api' => self::API_V1,
     ];
@@ -102,12 +104,14 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Request headers.
      */
-    protected array $headers = [];
+    protected $headers = [];
 
     /**
      * Raw POST data.
+     *
+     * @var string
      */
-    protected ?string $rawData = null;
+    protected $rawData;
 
     /**
      * Magic method enables a object to be transformed to a string.
@@ -160,7 +164,9 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set request method.
      *
-     * @param self::METHOD_* $method
+     * Use one of the METHOD_* constants as value.
+     *
+     * @param string $method
      *
      * @return self Provides fluent interface
      */
@@ -184,10 +190,12 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set request Content-Type.
      *
+     * Use one of the CONTENT_TYPE_* constants as value.
+     *
      * Content-Type parameters can be passed in $params or set with {@see setContentTypeParams()}.
      *
-     * @param self::CONTENT_TYPE_*|null $contentType
-     * @param array|null                $params
+     * @param string|null $contentType
+     * @param array|null  $params
      *
      * @return self Provides fluent interface
      */
@@ -368,7 +376,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function addHeader(string|array $value): self
+    public function addHeader($value): self
     {
         $this->headers[] = $value;
 
@@ -380,7 +388,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @param string $header
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function replaceOrAddHeader(string $header): self
     {
@@ -502,11 +510,13 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set Solr API version.
      *
-     * @param self::API_* $api
+     * Use one of the API_* constants as value.
+     *
+     * @param string $api
      *
      * @return self Provides fluent interface
      */
-    public function setApi(string $api): self
+    public function setApi($api): self
     {
         $this->setOption('api', $api);
 
@@ -534,7 +544,7 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Initialization hook.
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

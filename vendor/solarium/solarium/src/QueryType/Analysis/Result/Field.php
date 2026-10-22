@@ -18,8 +18,10 @@ class Field extends BaseResult implements \IteratorAggregate, \Countable
 {
     /**
      * List instances array.
+     *
+     * @var array
      */
-    protected array $items;
+    protected $items;
 
     /**
      * Get all lists.

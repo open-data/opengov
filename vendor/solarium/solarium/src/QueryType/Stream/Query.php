@@ -11,7 +11,6 @@ namespace Solarium\QueryType\Stream;
 
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\QueryType\Select\Result\Document;
@@ -23,8 +22,10 @@ class Query extends AbstractQuery
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'stream',
         'resultclass' => Result::class,
         'documentclass' => Document::class,
@@ -89,7 +90,7 @@ class Query extends AbstractQuery
      *
      * This class should implement the document interface
      *
-     * @param class-string<DocumentInterface> $value classname
+     * @param string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -105,7 +106,7 @@ class Query extends AbstractQuery
      *
      * The value is a classname, not an instance
      *
-     * @return class-string<DocumentInterface>|null
+     * @return string|null
      */
     public function getDocumentClass(): ?string
     {

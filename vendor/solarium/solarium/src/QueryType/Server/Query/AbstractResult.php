@@ -16,9 +16,15 @@ use Solarium\Core\Query\Result\QueryType as BaseResult;
  */
 abstract class AbstractResult extends BaseResult
 {
-    protected bool $wasSuccessful = false;
+    /**
+     * @var bool
+     */
+    protected $wasSuccessful = false;
 
-    protected string $statusMessage = 'ERROR';
+    /**
+     * @var string
+     */
+    protected $statusMessage = 'ERROR';
 
     /**
      * @return bool

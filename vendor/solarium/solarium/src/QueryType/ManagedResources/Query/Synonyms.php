@@ -33,14 +33,16 @@ class Synonyms extends AbstractQuery
     /**
      * Default result class if no command is set.
      *
-     * @var class-string<SynonymMappings>
+     * @var string
      */
-    protected string $defaultResultClass = SynonymMappings::class;
+    protected $defaultResultClass = SynonymMappings::class;
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'schema/analysis/synonyms/',
         'resultclass' => SynonymMappings::class,
         'omitheader' => true,
@@ -49,9 +51,9 @@ class Synonyms extends AbstractQuery
     /**
      * Command types.
      *
-     * @var array<self::COMMAND_*, class-string<AbstractCommand>>
+     * @var array
      */
-    protected array $commandTypes = [
+    protected $commandTypes = [
         self::COMMAND_ADD => Add::class,
         self::COMMAND_CONFIG => Config::class,
         self::COMMAND_CREATE => Create::class,
@@ -63,7 +65,7 @@ class Synonyms extends AbstractQuery
     /**
      * Get query type.
      *
-     * @return Client::QUERY_MANAGED_SYNONYMS
+     * @return string
      */
     public function getType(): string
     {
@@ -73,7 +75,7 @@ class Synonyms extends AbstractQuery
     /**
      * Get the response parser class for this query.
      *
-     * @return ResponseParserInterface
+     * @return \Solarium\Core\Query\ResponseParserInterface
      */
     public function getResponseParser(): ResponseParserInterface
     {
@@ -99,9 +101,9 @@ class Synonyms extends AbstractQuery
      *
      * @param array|null $initArgs
      *
-     * @return InitArgs
+     * @return \Solarium\QueryType\ManagedResources\Query\Synonyms\InitArgs
      */
-    public function createInitArgs(?array $initArgs = null): InitArgs
+    public function createInitArgs(?array $initArgs = null): InitArgsInterface
     {
         return new InitArgs($initArgs);
     }

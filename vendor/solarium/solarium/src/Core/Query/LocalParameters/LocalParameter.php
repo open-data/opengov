@@ -78,9 +78,15 @@ class LocalParameter implements LocalParameterInterface
         self::TYPE_QUERY,
     ];
 
-    private string $type;
+    /**
+     * @var string
+     */
+    private $type;
 
-    private array $values = [];
+    /**
+     * @var array
+     */
+    private $values = [];
 
     /**
      * @param string $type
@@ -117,7 +123,7 @@ class LocalParameter implements LocalParameterInterface
     /**
      * @param array $values
      *
-     * @return LocalParameterInterface
+     * @return \Solarium\Core\Query\LocalParameters\LocalParameterInterface
      */
     public function setValues(array $values): LocalParameterInterface
     {

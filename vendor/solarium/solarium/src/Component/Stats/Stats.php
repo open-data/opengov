@@ -29,9 +29,9 @@ class Stats extends AbstractComponent
     /**
      * Fields.
      *
-     * @var Field[]
+     * @var array
      */
-    protected array $fields = [];
+    protected $fields = [];
 
     /**
      * Get component type.
@@ -105,7 +105,7 @@ class Stats extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function addField(Field|array $field): self
+    public function addField($field): self
     {
         if (\is_array($field)) {
             $field = new Field($field);
@@ -179,7 +179,7 @@ class Stats extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function removeField(string|Field $field): self
+    public function removeField($field): self
     {
         if (\is_object($field)) {
             $field = $field->getKey();
@@ -227,7 +227,7 @@ class Stats extends AbstractComponent
      * {@internal Options that set a list of field or facet names need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

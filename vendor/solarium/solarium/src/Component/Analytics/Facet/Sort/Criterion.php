@@ -43,16 +43,25 @@ class Criterion extends Configurable implements \JsonSerializable
      */
     public const DIRECTION_DESCENDING = 'descending';
 
-    private ?string $type = null;
-
-    private ?string $expression = null;
-
-    private ?string $direction = null;
+    /**
+     * @var string
+     */
+    private $type;
 
     /**
-     * @return string|null
+     * @var string
      */
-    public function getType(): ?string
+    private $expression;
+
+    /**
+     * @var string
+     */
+    private $direction;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
     {
         return $this->type;
     }
@@ -60,7 +69,7 @@ class Criterion extends Configurable implements \JsonSerializable
     /**
      * @param string $type
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setType(string $type): self
     {
@@ -70,9 +79,9 @@ class Criterion extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getExpression(): ?string
+    public function getExpression(): string
     {
         return $this->expression;
     }
@@ -80,7 +89,7 @@ class Criterion extends Configurable implements \JsonSerializable
     /**
      * @param string $expression
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setExpression(string $expression): self
     {
@@ -90,9 +99,9 @@ class Criterion extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getDirection(): ?string
+    public function getDirection(): string
     {
         return $this->direction;
     }
@@ -100,7 +109,7 @@ class Criterion extends Configurable implements \JsonSerializable
     /**
      * @param string $direction
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setDirection(string $direction): self
     {
@@ -112,7 +121,8 @@ class Criterion extends Configurable implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return array_filter([
             'type' => $this->type,

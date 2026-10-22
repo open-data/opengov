@@ -16,15 +16,17 @@ trait ResultTrait
 {
     /**
      * Stats data.
+     *
+     * @var array
      */
-    protected array $stats;
+    protected $stats;
 
     /**
      * Get min value.
      *
      * @return float|string|null
      */
-    public function getMin(): float|string|null
+    public function getMin()
     {
         return $this->getStatValue('min');
     }
@@ -34,7 +36,7 @@ trait ResultTrait
      *
      * @return float|string|null
      */
-    public function getMax(): float|string|null
+    public function getMax()
     {
         return $this->getStatValue('max');
     }
@@ -84,7 +86,7 @@ trait ResultTrait
      *
      * @return float|string|null
      */
-    public function getMean(): float|string|null
+    public function getMean()
     {
         return $this->getStatValue('mean');
     }

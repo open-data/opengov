@@ -23,12 +23,14 @@ class Buckets implements FacetResultInterface, \IteratorAggregate, \Countable
      *
      * @var Bucket[]
      */
-    protected array $buckets;
+    protected $buckets;
 
     /**
      * numBuckets.
+     *
+     * @var int|null
      */
-    protected ?int $numBuckets;
+    protected $numBuckets;
 
     /**
      * Constructor.

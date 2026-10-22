@@ -44,8 +44,10 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
      * Set key.
      *
      * @param string $key
+     *
+     * @return self Provides fluent interface
      */
-    public function setKey(string $key): static
+    public function setKey(string $key): self
     {
         $this->getLocalParameters()->setKey($key);
 
@@ -56,8 +58,10 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
      * Add an exclude tag.
      *
      * @param string $exclude
+     *
+     * @return self Provides fluent interface
      */
-    public function addExclude(string $exclude): static
+    public function addExclude(string $exclude): self
     {
         $this->getLocalParameters()->setExclude($exclude);
 
@@ -67,9 +71,11 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
     /**
      * Add multiple exclude tags.
      *
-     * @param string[]|string $excludes array or string with comma separated exclude tags
+     * @param array|string $excludes array or string with comma separated exclude tags
+     *
+     * @return self Provides fluent interface
      */
-    public function addExcludes(array|string $excludes): static
+    public function addExcludes($excludes): self
     {
         if (\is_string($excludes)) {
             $excludes = preg_split('/(?<!\\\\),/', $excludes);
@@ -85,9 +91,11 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
      *
      * This overwrites any existing exclude tags.
      *
-     * @param string[]|string $excludes
+     * @param array|string $excludes
+     *
+     * @return self Provides fluent interface
      */
-    public function setExcludes(array|string $excludes): static
+    public function setExcludes($excludes): self
     {
         $this->clearExcludes()->addExcludes($excludes);
 
@@ -98,8 +106,10 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
      * Remove a single exclude tag.
      *
      * @param string $exclude
+     *
+     * @return self Provides fluent interface
      */
-    public function removeExclude(string $exclude): static
+    public function removeExclude(string $exclude): self
     {
         $this->getLocalParameters()->removeExclude($exclude);
 
@@ -108,8 +118,10 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
 
     /**
      * Remove all exclude tags.
+     *
+     * @return self Provides fluent interface
      */
-    public function clearExcludes(): static
+    public function clearExcludes(): self
     {
         $this->getLocalParameters()->clearExcludes();
 
@@ -119,7 +131,7 @@ abstract class AbstractFacet extends Configurable implements FacetInterface
     /**
      * Get the list of exclude tags.
      *
-     * @return string[]
+     * @return array
      */
     public function getExcludes(): array
     {

@@ -23,20 +23,26 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'buffersize' => 100,
     ];
 
     /**
      * Update query instance.
+     *
+     * @var UpdateQuery
      */
-    protected UpdateQuery $updateQuery;
+    protected $updateQuery;
 
     /**
      * Buffer.
+     *
+     * @var array
      */
-    protected array $buffer = [];
+    protected $buffer = [];
 
     /**
      * Set the endpoint for the updates.
@@ -65,7 +71,9 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
     /**
      * Set the request format for the updates.
      *
-     * @param UpdateQuery::REQUEST_FORMAT_* $requestFormat
+     * Use one of the UpdateQuery::REQUEST_FORMAT_* constants as value.
+     *
+     * @param string $requestFormat
      *
      * @throws InvalidArgumentException
      *
@@ -172,7 +180,7 @@ abstract class AbstractBufferedUpdate extends AbstractPlugin
     /**
      * Initialize options.
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

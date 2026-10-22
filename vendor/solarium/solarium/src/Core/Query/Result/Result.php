@@ -26,20 +26,26 @@ class Result implements ResultInterface, \JsonSerializable
 {
     /**
      * Response object.
+     *
+     * @var Response
      */
-    protected Response $response;
+    protected $response;
 
     /**
      * Decoded response data.
      *
      * This is lazy loaded, {@link getData()}
+     *
+     * @var array
      */
-    protected ?array $data = null;
+    protected $data;
 
     /**
      * Query used for this request.
+     *
+     * @var AbstractQuery
      */
-    protected AbstractQuery $query;
+    protected $query;
 
     /**
      * Constructor.
@@ -104,15 +110,13 @@ class Result implements ResultInterface, \JsonSerializable
     {
         if (null === $this->data) {
             switch ($this->query->getResponseWriter()) {
-                // @phpstan-ignore classConstant.deprecated (Will be removed in Solarium 8)
                 case AbstractQuery::WT_PHPS:
-                    $data = unserialize($this->response->getBody(), ['allowed_classes' => false]);
+                    $this->data = unserialize($this->response->getBody(), ['allowed_classes' => false]);
 
-                    if (false === $data) {
+                    if (false === $this->data) {
                         throw new UnexpectedValueException('Solr PHPS response could not be unserialized');
                     }
 
-                    $this->data = $data;
                     break;
                 case AbstractQuery::WT_JSON:
                     $this->data = json_decode($this->response->getBody(), true);
@@ -133,7 +137,8 @@ class Result implements ResultInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return $this->getData();
     }

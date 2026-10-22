@@ -36,7 +36,7 @@ class RequestStatus extends AbstractAction
      *
      * @return self Provides fluent interface
      */
-    public function setRequestId(string $requestId): self
+    public function setRequestId($requestId): self
     {
         $this->setOption('requestid', $requestId);
 

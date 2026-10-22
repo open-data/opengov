@@ -19,9 +19,11 @@ class Field extends Configurable
     use FacetsTrait;
 
     /**
-     * Pivot facets for these stats.
+     * pivot facets for these stats.
+     *
+     * @var array
      */
-    protected array $pivots = [];
+    protected $pivots = [];
 
     /**
      * Get key value.
@@ -64,11 +66,12 @@ class Field extends Configurable
     /**
      * Specify multiple Pivots.
      *
-     * @param string|string[] $pivots can be an array or string with comma separated facetnames
+     * @param string|array $pivots can be an array or string with comma
+     *                             separated facetnames
      *
      * @return self Provides fluent interface
      */
-    public function addPivots(string|array $pivots): self
+    public function addPivots($pivots): self
     {
         if (\is_string($pivots)) {
             $pivots = explode(',', $pivots);
@@ -125,11 +128,12 @@ class Field extends Configurable
      *
      * This overwrites any existing pivots
      *
-     * @param string|string[] $pivots can be an array or string with comma separated facetnames
+     * @param array|string $pivots can be an array or string with comma
+     *                             separated facetnames
      *
      * @return self Provides fluent interface
      */
-    public function setPivots(string|array $pivots): self
+    public function setPivots($pivots): self
     {
         $this->clearPivots();
         $this->addPivots($pivots);
@@ -143,7 +147,7 @@ class Field extends Configurable
      * {@internal Options that set a list of facet names need additional setup work
      *            because they can be an array or a comma separated string.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

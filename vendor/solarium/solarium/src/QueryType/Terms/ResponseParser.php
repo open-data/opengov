@@ -21,7 +21,7 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
     /**
      * Get result data for the response.
      *
-     * @param ResultInterface $result
+     * @param \Solarium\Core\Query\Result\ResultInterface $result
      *
      * @return array
      */

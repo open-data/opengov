@@ -38,7 +38,7 @@ class Rename extends AbstractAsyncAction implements CoreActionInterface
      *
      * @return self Provides fluent interface
      */
-    public function setOther(string $other): self
+    public function setOther($other): self
     {
         $this->setOption('other', $other);
 

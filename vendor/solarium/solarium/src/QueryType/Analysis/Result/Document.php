@@ -21,7 +21,7 @@ class Document extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @var ResultList[]
      */
-    protected array $items;
+    protected $items;
 
     /**
      * Get all documents.

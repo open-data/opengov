@@ -9,7 +9,6 @@
 
 namespace Solarium\Component\RequestBuilder;
 
-use Solarium\Component\SuggesterInterface;
 use Solarium\Core\Client\Request;
 use Solarium\Core\ConfigurableInterface;
 
@@ -21,8 +20,8 @@ class Suggester implements ComponentRequestBuilderInterface
     /**
      * Add request settings for Suggester.
      *
-     * @param SuggesterInterface $component
-     * @param Request            $request
+     * @param \Solarium\Component\SuggesterInterface $component
+     * @param Request                                $request
      *
      * @return Request
      */

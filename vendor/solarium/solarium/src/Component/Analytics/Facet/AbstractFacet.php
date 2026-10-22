@@ -52,7 +52,10 @@ abstract class AbstractFacet extends Configurable implements \JsonSerializable
         self::TYPE_QUERY => QueryFacet::class,
     ];
 
-    private string $key;
+    /**
+     * @var string
+     */
+    private $key;
 
     /**
      * Get Facet type.
@@ -70,7 +73,7 @@ abstract class AbstractFacet extends Configurable implements \JsonSerializable
     /**
      * @param string $key
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setKey(string $key): self
     {

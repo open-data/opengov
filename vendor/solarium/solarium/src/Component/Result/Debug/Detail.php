@@ -16,23 +16,29 @@ class Detail implements \ArrayAccess
 {
     /**
      * Value.
+     *
+     * @var float
      */
-    protected float $value;
+    protected $value;
 
     /**
      * Match.
+     *
+     * @var bool
      */
-    protected bool $match;
+    protected $match;
 
     /**
      * Description.
+     *
+     * @var string
      */
-    protected string $description;
+    protected $description;
 
     /**
-     * @var Detail[]
+     * @var \Solarium\Component\Result\Debug\Detail[]
      */
-    protected ?array $subDetails = null;
+    protected $subDetails;
 
     /**
      * Constructor.
@@ -79,7 +85,7 @@ class Detail implements \ArrayAccess
     }
 
     /**
-     * @param Detail[]|array $subDetails
+     * @param \Solarium\Component\Result\Debug\Detail[]|array $subDetails
      *
      * @return self Provides fluent interface
      */
@@ -98,7 +104,7 @@ class Detail implements \ArrayAccess
     }
 
     /**
-     * @return Detail[]|null
+     * @return \Solarium\Component\Result\Debug\Detail[]|null
      */
     public function getSubDetails(): ?array
     {

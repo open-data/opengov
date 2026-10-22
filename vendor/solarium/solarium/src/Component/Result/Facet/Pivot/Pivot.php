@@ -19,9 +19,9 @@ class Pivot implements FacetResultInterface, \IteratorAggregate, \Countable
     /**
      * Value array.
      *
-     * @var PivotItem[]
+     * @var array
      */
-    protected array $pivot = [];
+    protected $pivot = [];
 
     /**
      * Constructor.
@@ -38,7 +38,7 @@ class Pivot implements FacetResultInterface, \IteratorAggregate, \Countable
     /**
      * Get pivot results.
      *
-     * @return PivotItem[]
+     * @return Pivot[]
      */
     public function getPivot(): array
     {

@@ -24,8 +24,10 @@ class Resources extends BaseQuery
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'schema/managed',
         'resultclass' => ResourceList::class,
         'omitheader' => true,
@@ -33,8 +35,10 @@ class Resources extends BaseQuery
 
     /**
      * Fixed name for resources.
+     *
+     * @var string
      */
-    private string $name = 'resources';
+    private $name = 'resources';
 
     /**
      * Get the name of resources.
@@ -59,7 +63,7 @@ class Resources extends BaseQuery
     /**
      * Get the request builder class for this query.
      *
-     * @return RequestBuilder
+     * @return \Solarium\QueryType\ManagedResources\RequestBuilder\Resources
      */
     public function getRequestBuilder(): RequestBuilderInterface
     {
@@ -69,7 +73,7 @@ class Resources extends BaseQuery
     /**
      * Get the response parser class for this query.
      *
-     * @return ResponseParser
+     * @return \Solarium\QueryType\ManagedResources\ResponseParser\Resources
      */
     public function getResponseParser(): ResponseParserInterface
     {

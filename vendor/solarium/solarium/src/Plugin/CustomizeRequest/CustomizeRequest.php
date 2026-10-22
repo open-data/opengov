@@ -28,7 +28,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * @var Customization[]
      */
-    protected array $customizations = [];
+    protected $customizations = [];
 
     /**
      * Create a Customization instance.
@@ -72,7 +72,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function addCustomization(Customization|array $customization): self
+    public function addCustomization($customization): self
     {
         if (\is_array($customization)) {
             $customization = new Customization($customization);
@@ -150,7 +150,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function removeCustomization(string|Customization $customization): self
+    public function removeCustomization($customization): self
     {
         if (\is_object($customization)) {
             $customization = $customization->getKey();
@@ -201,7 +201,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function postCreateRequest(object $event): self
+    public function postCreateRequest($event): self
     {
         // We need to accept event proxies or decorators.
         /* @var PostCreateRequest $event */
@@ -238,7 +238,7 @@ class CustomizeRequest extends AbstractPlugin
     /**
      * Initialize options.
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {
@@ -254,7 +254,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType(): void
+    protected function initPluginType()
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -267,7 +267,7 @@ class CustomizeRequest extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin(): void
+    public function deinitPlugin()
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

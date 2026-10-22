@@ -1,279 +1,99 @@
 ################
-# GitLabCI template for Drupal projects.
+# DrupalCI GitLabCI template
 #
-# This template is designed to give any Contrib maintainer everything they need to test, without requiring modification.
-# It is also designed to keep up to date with Core Development automatically through the use of include files that can be centrally maintained.
-# As long as you include the project, ref and three files below, any future updates added by the Drupal Association will be used in your
-# pipelines automatically. However, you can modify this template if you have additional needs for your project.
-# The full documentation is on https://project.pages.drupalcode.org/gitlab_templates/
+# Gitlab-ci.yml to replicate DrupalCI testing for Contrib
+#
+# With thanks to:
+#   * The GitLab Acceleration Initiative participants
+#   * DrupalSpoons
 ################
 
-# For information on alternative values for 'ref' see https://project.pages.drupalcode.org/gitlab_templates/info/templates-version/
-# To test a Drupal 7 project, change the first include filename from .main.yml to .main-d7.yml
+################
+# Guidelines
+#
+# This template is designed to give any Contrib maintainer everything they need to test, without requiring modification. It is also designed to keep up to date with Core Development automatically through the use of include files that can be centrally maintained.
+#
+# However, you can modify this template if you have additional needs for your project.
+################
+
+################
+# Includes
+#
+# Additional configuration can be provided through includes.
+# One advantage of include files is that if they are updated upstream, the changes affect all pipelines using that include.
+#
+# Includes can be overridden by re-declaring anything provided in an include, here in gitlab-ci.yml
+# https://docs.gitlab.com/ee/ci/yaml/includes.html#override-included-configuration-values
+################
+
 include:
+  ################
+  # DrupalCI includes:
+  # As long as you include this, any future includes added by the Drupal Association will be accessible to your pipelines automatically.
+  # View these include files at https://git.drupalcode.org/project/gitlab_templates/
+  ################
   - project: $_GITLAB_TEMPLATES_REPO
     ref: $_GITLAB_TEMPLATES_REF
     file:
       - '/includes/include.drupalci.main.yml'
+      # EXPERIMENTAL: For Drupal 7, remove the above line and uncomment the below.
+      # - '/includes/include.drupalci.main-d7.yml'
       - '/includes/include.drupalci.variables.yml'
       - '/includes/include.drupalci.workflows.yml'
-#
+
 ################
-# Pipeline configuration variables are defined with default values and descriptions in the file
-# https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.variables.yml
-# Uncomment the lines below if you want to override any of the variables. The following is just an example.
+# Pipeline configuration variables
+#
+# These are the variables provided to the Run Pipeline form that a user may want to override.
+#
+# Docs at https://git.drupalcode.org/project/gitlab_templates/-/blob/1.0.x/includes/include.drupalci.variables.yml
 ################
 # variables:
 #   SKIP_ESLINT: '1'
-#   OPT_IN_TEST_NEXT_MAJOR: '1'
-#   _CURL_TEMPLATES_REF: 'main'
 
-variables:
-  _CSPELL_IGNORE_PATHS: 'jump-start,**/config/install,**/config/optional,solr-conf-templates,modules/search_api_solr_legacy/solr-conf-templates,docs/multisite.graphml'
-  _PHPUNIT_EXTRA: "--group search_api_solr --exclude-group not_solr${SOLR_VERSION}"
-  OPT_IN_TEST_MAX_PHP: 1
-  OPT_IN_TEST_PREVIOUS_MAJOR: 0
-  SOLR_VERSION: 10
-  SOLR_MODULES: "extraction,langid,ltr,analysis-extras"
-  SOLR_COMMAND: "solr-foreground"
-  SOLR_INDEX_WAIT: 4
-  SOLR_CLOUD: "true"
-  SYMFONY_DEPRECATIONS_HELPER: "disabled"
-  JDK_JAVA_OPTIONS: "-Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0"
 
-  # Uncomment to see logs from services (solr, mysql)
-  # CI_DEBUG_SERVICES: "true"
-
-composer:
-  variables:
-    DRUPAL_CORE: '11.4.4'
-
-jump-start:
-  stage: validate
-  needs: [composer]
-  variables:
-    NEXT_MODULE_VERSION: 4.4.0
-    SEARCH_API_SOLR_JUMP_START_CONFIG_SET: 1
-  script:
-    - cd $CI_PROJECT_DIR && pwd
-    - !reference [.check-composer-end-code]
-    - !reference [.show-environment-variables]
-    - !reference [.show-context]
-    - git tag $NEXT_MODULE_VERSION
-    - $COMPOSER_BIN_DIR/dr install minimal
-    - composer require --dev drush/drush
-    - $COMPOSER_BIN_DIR/drush st
-    - $COMPOSER_BIN_DIR/drush en language
-    - $COMPOSER_BIN_DIR/drush language:add ar
-    - $COMPOSER_BIN_DIR/drush language:add bg
-    - $COMPOSER_BIN_DIR/drush language:add ca
-    - $COMPOSER_BIN_DIR/drush language:add cs
-    - $COMPOSER_BIN_DIR/drush language:add cy
-    - $COMPOSER_BIN_DIR/drush language:add da
-    - $COMPOSER_BIN_DIR/drush language:add de
-    - $COMPOSER_BIN_DIR/drush language:add el
-    - $COMPOSER_BIN_DIR/drush language:add es
-    - $COMPOSER_BIN_DIR/drush language:add et
-    - $COMPOSER_BIN_DIR/drush language:add fa
-    - $COMPOSER_BIN_DIR/drush language:add fi
-    - $COMPOSER_BIN_DIR/drush language:add fr
-    - $COMPOSER_BIN_DIR/drush language:add ga
-    - $COMPOSER_BIN_DIR/drush language:add hi
-    - $COMPOSER_BIN_DIR/drush language:add hr
-    - $COMPOSER_BIN_DIR/drush language:add hu
-    - $COMPOSER_BIN_DIR/drush language:add id
-    - $COMPOSER_BIN_DIR/drush language:add it
-    - $COMPOSER_BIN_DIR/drush language:add ja
-    - $COMPOSER_BIN_DIR/drush language:add ko
-    - $COMPOSER_BIN_DIR/drush language:add lv
-    - $COMPOSER_BIN_DIR/drush language:add nb
-    - $COMPOSER_BIN_DIR/drush language:add nl
-    - $COMPOSER_BIN_DIR/drush language:add nn
-    - $COMPOSER_BIN_DIR/drush language:add pl
-    - $COMPOSER_BIN_DIR/drush language:add pt-pt
-    - $COMPOSER_BIN_DIR/drush language:add pt-br
-    - $COMPOSER_BIN_DIR/drush language:add ro
-    - $COMPOSER_BIN_DIR/drush language:add ru
-    - $COMPOSER_BIN_DIR/drush language:add sk
-    - $COMPOSER_BIN_DIR/drush language:add sr
-    - $COMPOSER_BIN_DIR/drush language:add sv
-    - $COMPOSER_BIN_DIR/drush language:add th
-    - $COMPOSER_BIN_DIR/drush language:add tr
-    - $COMPOSER_BIN_DIR/drush language:add uk
-    - $COMPOSER_BIN_DIR/drush language:add zh-hans
-    - $COMPOSER_BIN_DIR/drush language:add zh-hant
-    - $COMPOSER_BIN_DIR/drush en search_api_solr_legacy,config --yes
-    - $COMPOSER_BIN_DIR/drush cim --partial --source=${CI_PROJECT_DIR}/jump-start/drupal_configs --yes
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_36 ${CI_PROJECT_DIR}/config.zip 3.6
-    - rm jump-start/solr3/config-set/*
-    - unzip -o -d jump-start/solr3/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 4.5
-    - rm jump-start/solr4/config-set/*
-    - unzip -o -d jump-start/solr4/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 5
-    - rm jump-start/solr5/config-set/*
-    - unzip -o -d jump-start/solr5/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 6
-    - rm jump-start/solr6/config-set/*
-    - unzip -o -d jump-start/solr6/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 7
-    - rm jump-start/solr7/config-set/*
-    - unzip -o -d jump-start/solr7/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 8
-    - rm jump-start/solr8/config-set/*
-    - unzip -o -d jump-start/solr8/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 9.8
-    - rm jump-start/solr9/config-set/*
-    - unzip -o -d jump-start/solr9/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr ${CI_PROJECT_DIR}/config.zip 10
-    - rm jump-start/solr10/config-set/*
-    - unzip -o -d jump-start/solr10/config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 4.5
-    - rm jump-start/solr4/cloud-config-set/*
-    - unzip -o -d jump-start/solr4/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 5
-    - rm jump-start/solr5/cloud-config-set/*
-    - unzip -o -d jump-start/solr5/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 6
-    - rm jump-start/solr6/cloud-config-set/*
-    - unzip -o -d jump-start/solr6/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 7
-    - rm jump-start/solr7/cloud-config-set/*
-    - unzip -o -d jump-start/solr7/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 8
-    - rm jump-start/solr8/cloud-config-set/*
-    - unzip -o -d jump-start/solr8/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 9.8
-    - rm jump-start/solr9/cloud-config-set/*
-    - unzip -o -d jump-start/solr9/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - $COMPOSER_BIN_DIR/drush -v solr-gsc solr_cloud ${CI_PROJECT_DIR}/config.zip 10
-    - rm jump-start/solr10/cloud-config-set/*
-    - unzip -o -d jump-start/solr10/cloud-config-set ${CI_PROJECT_DIR}/config.zip
-    - |
-      if git diff --quiet -- jump-start; then
-        echo "No changes after rebuilding jump-start"
-      else
-        echo "Changes found after rebuilding jump-start."
-        echo
-        echo "Changed jump-start files:"
-        git status --short -- jump-start
-        echo
-        echo "Jump-start diff summary:"
-        git diff --stat -- jump-start
-        echo
-        echo "Jump-start diff sample:"
-        git diff --unified=1 -- jump-start | sed -n '1,240p'
-        echo
-        echo "Please update, commit and push the jump-start configs."
-        echo "Generated configs are available from the jump-start build artifacts."
-        exit 1
-      fi
-  artifacts:
-    when: always
-    expire_in: 1 week
-    expose_as: jump-start
-    name: artifacts-$CI_PIPELINE_ID-$CI_JOB_NAME_SLUG
-    paths:
-      - jump-start
-
-phpunit:
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-  services:
-    - !reference [.with-database]
-    - !reference [.with-chrome]
-    - name: docker.io/library/solr:${SOLR_VERSION}
-      alias: solr
-      command:
-        - 'sh'
-        - '-c'
-        - |
-          (wait-for-solr.sh && for SECONDS in 1 2 3 5 8 13 21 34; do
-            if [ -x "${CI_PROJECT_DIR}/.gitlab-ci/scripts/solr-setup.sh" ] && [ -d "${CI_PROJECT_DIR}/jump-start/solr${SOLR_VERSION}/cloud-config-set" ]; then
-              "${CI_PROJECT_DIR}/.gitlab-ci/scripts/solr-setup.sh" "${CI_PROJECT_DIR}/jump-start/solr${SOLR_VERSION}/cloud-config-set"
-              break
-            else
-              sleep ${SECONDS}
-            fi
-          done)&
-          exec ${SOLR_COMMAND}
-
-  before_script:
-    - patch -p1 < .gitlab-ci/patches/solr-in-container.patch
-    - |
-      for SECONDS in 1 2 3 5 8 13 21 34; do
-        RESULT="$(curl -fsS 'http://solr:8983/solr/admin/collections?action=LIST')"
-        case "${RESULT}" in
-          *checkpoints*)
-            echo "Solr setup is done: checkpoints collection is present."
-            break
-            ;;
-          *)
-            echo "Solr setup is pending: waiting for ${SECONDS}."
-            sleep ${SECONDS}
-            ;;
-        esac
-      done
-
-phpunit (Solr 9):
-  extends: phpunit
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-    - job: phpunit
-  variables:
-    SOLR_COMMAND: "solr-foreground -c"
-    SOLR_VERSION: 9
-
-phpunit (Solr 8):
-  extends: phpunit
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-    - job: phpunit
-  variables:
-    SOLR_COMMAND: "solr-foreground -c"
-    SOLR_VERSION: 8
-
-phpunit (Solr 7):
-  extends: phpunit
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-    - job: phpunit
-  variables:
-    SOLR_COMMAND: "solr-foreground -c"
-    SOLR_VERSION: 7
-
-phpunit (Solr 6):
-  extends: phpunit
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-    - job: phpunit
-  variables:
-    SOLR_COMMAND: "solr-foreground -c"
-    SOLR_VERSION: 6
-
-phpunit (Solr 5):
-  extends: phpunit
-  needs:
-    - job: composer
-      artifacts: true
-    - job: jump-start
-      artifacts: true
-    - job: phpunit
-  variables:
-    SOLR_COMMAND: "solr-foreground -c"
-    SOLR_VERSION: 5
+###################################################################################
+#
+#                                        *
+#                                       /(
+#                                      ((((,
+#                                    /(((((((
+#                                   ((((((((((*
+#                                ,(((((((((((((((
+#                              ,(((((((((((((((((((
+#                            ((((((((((((((((((((((((*
+#                         *(((((((((((((((((((((((((((((
+#                       ((((((((((((((((((((((((((((((((((*
+#                    *((((((((((((((((((  .((((((((((((((((((
+#                  ((((((((((((((((((.       /(((((((((((((((((*
+#                /(((((((((((((((((            .(((((((((((((((((,
+#             ,((((((((((((((((((                 ((((((((((((((((((
+#           .((((((((((((((((((((                   .(((((((((((((((((
+#          (((((((((((((((((((((((                     ((((((((((((((((/
+#        (((((((((((((((((((((((((((/                    ,(((((((((((((((*
+#      .((((((((((((((/  /(((((((((((((.                   ,(((((((((((((((
+#     *((((((((((((((      ,(((((((((((((/                   *((((((((((((((.
+#    ((((((((((((((,          /(((((((((((((.                  ((((((((((((((,
+#   (((((((((((((/              ,(((((((((((((*                 ,(((((((((((((,
+#  *(((((((((((((                .(((((((((((((((                ,(((((((((((((
+#  ((((((((((((/                /((((((((((((((((((.              ,((((((((((((/
+# (((((((((((((              *(((((((((((((((((((((((*             *((((((((((((
+# (((((((((((((            ,(((((((((((((..(((((((((((((           *((((((((((((
+# ((((((((((((,          /((((((((((((*      /((((((((((((/         ((((((((((((
+# (((((((((((((        /((((((((((((/          (((((((((((((*       ((((((((((((
+# (((((((((((((/     /((((((((((((               ,((((((((((((,    *((((((((((((
+#  ((((((((((((((  *(((((((((((/                   *((((((((((((.  ((((((((((((/
+#  *((((((((((((((((((((((((((,                      /(((((((((((((((((((((((((
+#   (((((((((((((((((((((((((                         ((((((((((((((((((((((((,
+#   .(((((((((((((((((((((((/                         ,(((((((((((((((((((((((
+#     ((((((((((((((((((((((/                         ,(((((((((((((((((((((/
+#      *(((((((((((((((((((((                         (((((((((((((((((((((,
+#       ,(((((((((((((((((((((,                      ((((((((((((((((((((/
+#         ,(((((((((((((((((((((*                  /((((((((((((((((((((
+#            ((((((((((((((((((((((,           ,/((((((((((((((((((((,
+#              ,(((((((((((((((((((((((((((((((((((((((((((((((((((
+#                 .(((((((((((((((((((((((((((((((((((((((((((((
+#                     .((((((((((((((((((((((((((((((((((((,.
+#                          .,(((((((((((((((((((((((((.
+#
+###################################################################################

@@ -18,6 +18,7 @@ use Solarium\QueryType\Server\Configsets\Query\Action\Delete;
 use Solarium\QueryType\Server\Configsets\Query\Action\ListConfigsets;
 use Solarium\QueryType\Server\Configsets\Query\Action\Upload;
 use Solarium\QueryType\Server\Configsets\RequestBuilder;
+use Solarium\QueryType\Server\Query\Action\ActionInterface;
 use Solarium\QueryType\Server\Query\ResponseParser;
 
 /**
@@ -49,8 +50,10 @@ class Query extends AbstractServerQuery
 
     /**
      * Action types.
+     *
+     * @var array
      */
-    protected array $actionTypes = [
+    protected $actionTypes = [
         self::ACTION_LIST => ListConfigsets::class,
         self::ACTION_UPLOAD => Upload::class,
         self::ACTION_CREATE => Create::class,
@@ -59,8 +62,10 @@ class Query extends AbstractServerQuery
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'admin/configs',
     ];
 
@@ -97,7 +102,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return ListConfigsets
+     * @return ListConfigsets|ActionInterface
      */
     public function createList(array $options = []): ListConfigsets
     {
@@ -107,7 +112,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Upload
+     * @return Upload|ActionInterface
      */
     public function createUpload(array $options = []): Upload
     {
@@ -117,7 +122,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Create
+     * @return Create|ActionInterface
      */
     public function createCreate(array $options = []): Create
     {
@@ -127,7 +132,7 @@ class Query extends AbstractServerQuery
     /**
      * @param array $options
      *
-     * @return Delete
+     * @return Delete|ActionInterface
      */
     public function createDelete(array $options = []): Delete
     {

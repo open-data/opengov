@@ -19,7 +19,10 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 abstract class AbstractPostFlush extends Event
 {
-    protected Result $result;
+    /**
+     * @var Result
+     */
+    protected $result;
 
     /**
      * Event constructor.

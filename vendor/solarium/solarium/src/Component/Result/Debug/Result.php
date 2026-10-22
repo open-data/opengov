@@ -9,58 +9,70 @@
 
 namespace Solarium\Component\Result\Debug;
 
-use Solarium\Component\Result\ComponentResultInterface;
-
 /**
  * Select component debug result.
  */
-class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
+class Result implements \IteratorAggregate, \Countable
 {
     /**
      * QueryString.
+     *
+     * @var string
      */
-    protected string $queryString;
+    protected $queryString;
 
     /**
      * ParsedQuery.
+     *
+     * @var string
      */
-    protected string $parsedQuery;
+    protected $parsedQuery;
 
     /**
      * QueryParser.
+     *
+     * @var string
      */
-    protected string $queryParser;
+    protected $queryParser;
 
     /**
      * OtherQuery.
+     *
+     * @var string
      */
-    protected string $otherQuery;
+    protected $otherQuery;
 
     /**
      * Explain instance.
+     *
+     * @var DocumentSet
      */
-    protected DocumentSet $explain;
+    protected $explain;
 
     /**
      * ExplainOther instance.
+     *
+     * @var DocumentSet
      */
-    protected ?DocumentSet $explainOther;
+    protected $explainOther;
 
     /**
      * Timing instance.
+     *
+     * @var Timing
      */
-    protected ?Timing $timing;
+    protected $timing;
 
     /**
      * Constructor.
      *
-     * @param string           $queryString
-     * @param string           $parsedQuery
-     * @param string           $queryParser
-     * @param string           $otherQuery
-     * @param DocumentSet      $explain
-     * @param DocumentSet|null $explainOther
-     * @param Timing|null      $timing
+     * @param string      $queryString
+     * @param string      $parsedQuery
+     * @param string      $queryParser
+     * @param string      $otherQuery
+     * @param DocumentSet $explain
+     * @param DocumentSet $explainOther
+     * @param Timing      $timing
      */
     public function __construct(string $queryString, string $parsedQuery, string $queryParser, string $otherQuery, DocumentSet $explain, ?DocumentSet $explainOther, ?Timing $timing)
     {

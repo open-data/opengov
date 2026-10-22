@@ -20,8 +20,10 @@ class SubRequest extends BaseRequestBuilder implements RequestParamsInterface
 
     /**
      * Query parser.
+     *
+     * @var string
      */
-    protected string $queryParser = 'rerank';
+    protected $queryParser = 'rerank';
 
     /**
      * Get query parser.

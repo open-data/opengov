@@ -22,18 +22,24 @@ class JsonRange extends Buckets
 {
     /**
      * Count of all records with field values lower then lower bound of the first range.
+     *
+     * @var int|null
      */
-    protected ?int $before;
+    protected $before;
 
     /**
      * Count of all records with field values greater then the upper bound of the last range.
+     *
+     * @var int|null
      */
-    protected ?int $after;
+    protected $after;
 
     /**
      * Count all records with field values between the start and end bounds of all ranges.
+     *
+     * @var int|null
      */
-    protected ?int $between;
+    protected $between;
 
     /**
      * Constructor.

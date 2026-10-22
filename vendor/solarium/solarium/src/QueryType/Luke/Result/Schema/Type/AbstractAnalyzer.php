@@ -14,19 +14,25 @@ namespace Solarium\QueryType\Luke\Result\Schema\Type;
  */
 abstract class AbstractAnalyzer
 {
-    protected string $className;
+    /**
+     * @var string
+     */
+    protected $className;
 
     /**
      * @var CharFilter[]
      */
-    protected array $charFilters = [];
+    protected $charFilters = [];
 
-    protected ?Tokenizer $tokenizer = null;
+    /**
+     * @var Tokenizer|null
+     */
+    protected $tokenizer = null;
 
     /**
      * @var Filter[]
      */
-    protected array $filters = [];
+    protected $filters = [];
 
     /**
      * Constructor.

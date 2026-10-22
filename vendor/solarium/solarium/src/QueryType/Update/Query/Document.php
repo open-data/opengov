@@ -34,49 +34,67 @@ class Document extends AbstractDocument
      * Directive to set or replace the field value(s) with the specified value(s), or remove the values if 'null' or
      * empty list is specified as the new value. May be specified as a single value, or as a list for multiValued
      * fields.
+     *
+     * @var string
      */
     const MODIFIER_SET = 'set';
 
     /**
      * Directive to add the specified values to a multiValued field. May be specified as a single value, or as a list.
+     *
+     * @var string
      */
     const MODIFIER_ADD = 'add';
 
     /**
      * Directive to add the specified values to a multiValued field, only if not already present. May be specified as a
      * single value, or as a list.
+     *
+     * @var string
      */
     const MODIFIER_ADD_DISTINCT = 'add-distinct';
 
     /**
      * Directive to remove (all occurrences of) the specified values from a multiValued field. May be specified as a
      * single value, or as a list.
+     *
+     * @var string
      */
     const MODIFIER_REMOVE = 'remove';
 
     /**
      * Directive to remove all occurrences of the specified regex from a multiValued field. May be specified as a single
      * value, or as a list.
+     *
+     * @var string
      */
     const MODIFIER_REMOVEREGEX = 'removeregex';
 
     /**
      * Directive to increment a numeric value by a specific amount. Must be specified as a single numeric value.
+     *
+     * @var string
      */
     const MODIFIER_INC = 'inc';
 
     /**
      * This value has the same effect as not setting a version.
+     *
+     * @var int
      */
     const VERSION_DONT_CARE = 0;
 
     /**
      * This value requires an existing document with the same key, but no specific version.
+     *
+     * @var int
      */
     const VERSION_MUST_EXIST = 1;
 
     /**
      * This value requires that no document with the same key exists (so no automatic overwrite like default).
+     *
+     * @var int
      */
     const VERSION_MUST_NOT_EXIST = -1;
 
@@ -84,37 +102,49 @@ class Document extends AbstractDocument
      * Document boost value.
      *
      * Null menas no boost which is something different than a boost by '0.0'.
+     *
+     * @var float|null
      */
-    protected ?float $boost = null;
+    protected $boost;
 
     /**
      * Allows us to determine what kind of atomic update we want to set.
+     *
+     * @var array
      */
-    protected array $modifiers = [];
+    protected $modifiers = [];
 
     /**
      * This field needs to be explicitly set to observe the rules of atomic updates.
+     *
+     * @var string
      */
-    protected ?string $key = null;
+    protected $key;
 
     /**
      * Field boosts.
      *
      * Using fieldname as the key and the boost as the value
+     *
+     * @var array
      */
-    protected array $fieldBoosts = [];
+    protected $fieldBoosts;
 
     /**
      * Version value.
      *
      * Can be used for updating using Solr's optimistic concurrency control
+     *
+     * @var int
      */
-    protected ?int $version = null;
+    protected $version;
 
     /**
      * Helper instance.
+     *
+     * @var Helper
      */
-    protected ?Helper $helper = null;
+    protected $helper;
 
     /**
      * Constructor.
@@ -141,7 +171,7 @@ class Document extends AbstractDocument
      * @param string $name
      * @param mixed  $value
      */
-    public function __set(string $name, mixed $value): void
+    public function __set($name, $value): void
     {
         $this->setField($name, $value);
     }
@@ -153,7 +183,7 @@ class Document extends AbstractDocument
      *
      * @param string $name
      */
-    public function __unset(string $name): void
+    public function __unset($name): void
     {
         $this->removeField($name);
     }
@@ -460,7 +490,8 @@ class Document extends AbstractDocument
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         $fields = $this->getFields();
 

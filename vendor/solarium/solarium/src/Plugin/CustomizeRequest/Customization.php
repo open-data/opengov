@@ -28,8 +28,10 @@ class Customization extends Configurable
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'key' => null,
         'type' => null,
         'name' => null,

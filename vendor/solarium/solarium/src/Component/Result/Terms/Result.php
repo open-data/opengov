@@ -9,22 +9,24 @@
 
 namespace Solarium\Component\Result\Terms;
 
-use Solarium\Component\Result\ComponentResultInterface;
-
 /**
  * Component terms result.
  */
-class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
+class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Terms results.
+     *
+     * @var array
      */
-    protected array $results;
+    protected $results;
 
     /**
      * Terms flat results.
+     *
+     * @var array
      */
-    protected array $all;
+    protected $all;
 
     /**
      * Constructor.
@@ -65,7 +67,7 @@ class Result implements ComponentResultInterface, \IteratorAggregate, \Countable
      *
      * @return Field|null
      */
-    public function getField(string $field): ?Field
+    public function getField($field): ?Field
     {
         return $this->results[$field] ?? null;
     }

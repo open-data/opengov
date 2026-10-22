@@ -32,8 +32,10 @@ class Interval extends AbstractFacet
      * Set the field name.
      *
      * @param string $field
+     *
+     * @return self Provides fluent interface
      */
-    public function setField(string $field): static
+    public function setField(string $field): self
     {
         $this->setOption('field', $field);
 
@@ -56,9 +58,11 @@ class Interval extends AbstractFacet
      * Use one of the constants as value.
      * If you want to use multiple values supply an array or comma separated string
      *
-     * @param string|string[] $set
+     * @param string|array $set
+     *
+     * @return self Provides fluent interface
      */
-    public function setSet(string|array $set): static
+    public function setSet($set): self
     {
         if (\is_string($set)) {
             $set = explode(',', $set);
@@ -91,7 +95,7 @@ class Interval extends AbstractFacet
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

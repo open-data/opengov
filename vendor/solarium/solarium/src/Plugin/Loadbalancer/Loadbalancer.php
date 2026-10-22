@@ -43,8 +43,10 @@ class Loadbalancer extends AbstractPlugin
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'failoverenabled' => false,
         'failovermaxretries' => 1,
         'failoverstatuscodes' => [],
@@ -55,12 +57,14 @@ class Loadbalancer extends AbstractPlugin
      *
      * @var Endpoint[]
      */
-    protected array $endpoints = [];
+    protected $endpoints = [];
 
     /**
      * Query types that are blocked from loadbalancing.
+     *
+     * @var array
      */
-    protected array $blockedQueryTypes = [
+    protected $blockedQueryTypes = [
         Client::QUERY_EXTRACT => true,
         Client::QUERY_UPDATE => true,
     ];
@@ -69,36 +73,48 @@ class Loadbalancer extends AbstractPlugin
      * Last used endpoint key.
      *
      * The value can be null if no queries have been executed, or if the last executed query didn't use loadbalancing.
+     *
+     * @var string|null
      */
-    protected ?string $lastEndpoint = null;
+    protected $lastEndpoint;
 
     /**
      * Endpoint key to use for next query (overrules randomizer).
+     *
+     * @var string
      */
-    protected ?string $nextEndpoint = null;
+    protected $nextEndpoint;
 
     /**
      * Default endpoint key.
      *
      * This endpoint is used for queries that cannot be loadbalanced
      * (for instance update queries that need to go to the master)
+     *
+     * @var string
      */
-    protected ?string $defaultEndpoint = null;
+    protected $defaultEndpoint;
 
     /**
      * Pool of endpoint keys to use for requests.
+     *
+     * @var WeightedRandomChoice
      */
-    protected ?WeightedRandomChoice $randomizer = null;
+    protected $randomizer;
 
     /**
      * Query type.
+     *
+     * @var string
      */
-    protected string $queryType;
+    protected $queryType;
 
     /**
      * Used for failover mechanism.
+     *
+     * @var array
      */
-    protected array $endpointExcludes;
+    protected $endpointExcludes;
 
     /**
      * Set failover enabled option.
@@ -165,11 +181,12 @@ class Loadbalancer extends AbstractPlugin
     /**
      * Add multiple HTTP response status codes for which to failover.
      *
-     * @param string|int[] $statusCodes can be an array or string with comma separated status codes
+     * @param int[]|string $statusCodes can be an array or string with comma
+     *                                  separated status codes
      *
      * @return self Provides fluent interface
      */
-    public function addFailoverStatusCodes(string|array $statusCodes): self
+    public function addFailoverStatusCodes($statusCodes): self
     {
         if (\is_string($statusCodes)) {
             $statusCodes = explode(',', $statusCodes);
@@ -223,11 +240,12 @@ class Loadbalancer extends AbstractPlugin
      *
      * This overwrites any existing status codes.
      *
-     * @param string|int[] $statusCodes can be an array or string with comma separated status codes
+     * @param int[]|string $statusCodes can be an array or string with comma
+     *                                  separated status codes
      *
      * @return self Provides fluent interface
      */
-    public function setFailoverStatusCodes(string|array $statusCodes): self
+    public function setFailoverStatusCodes($statusCodes): self
     {
         $this->clearFailoverStatusCodes();
         $this->addFailoverStatusCodes($statusCodes);
@@ -238,14 +256,14 @@ class Loadbalancer extends AbstractPlugin
     /**
      * Add an endpoint to the loadbalacing 'pool'.
      *
-     * @param string|Endpoint $endpoint
+     * @param Endpoint|string $endpoint
      * @param int             $weight   Must be a positive number
      *
      * @throws InvalidArgumentException
      *
      * @return self Provides fluent interface
      */
-    public function addEndpoint(string|Endpoint $endpoint, int $weight = 1): self
+    public function addEndpoint($endpoint, int $weight = 1): self
     {
         if (!\is_string($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -304,11 +322,11 @@ class Loadbalancer extends AbstractPlugin
     /**
      * Remove an endpoint by key.
      *
-     * @param string|Endpoint $endpoint
+     * @param Endpoint|string $endpoint
      *
      * @return self Provides fluent interface
      */
-    public function removeEndpoint(string|Endpoint $endpoint): self
+    public function removeEndpoint($endpoint): self
     {
         if (!\is_string($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -330,7 +348,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function setEndpoints(array $endpoints): self
+    public function setEndpoints($endpoints): self
     {
         $this->clearEndpoints();
         $this->addEndpoints($endpoints);
@@ -353,7 +371,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function setForcedEndpointForNextQuery(string|Endpoint|null $endpoint): self
+    public function setForcedEndpointForNextQuery($endpoint): self
     {
         if (!\is_string($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -393,7 +411,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Overwrites any existing types
      *
-     * @param array<Client::QUERY_*|string> $types An array of Client::QUERY_* and/or self-registered types
+     * @param array $types Use an array with the constants defined in Solarium\Client as values
      *
      * @return self Provides fluent interface
      */
@@ -408,7 +426,7 @@ class Loadbalancer extends AbstractPlugin
     /**
      * Add a querytype to block from loadbalancing.
      *
-     * @param Client::QUERY_*|string $type A Client::QUERY_* or self-registered type
+     * @param string $type Use one of the constants defined in Solarium\Client
      *
      * @return self Provides fluent interface
      */
@@ -426,7 +444,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Appended to any existing types
      *
-     * @param array<Client::QUERY_*|string> $types An array of Client::QUERY_* and/or self-registered types
+     * @param array $types Use an array with the constants defined in Solarium\Client as values
      *
      * @return self Provides fluent interface
      */
@@ -442,7 +460,7 @@ class Loadbalancer extends AbstractPlugin
     /**
      * Remove a single querytype from the block list.
      *
-     * @param Client::QUERY_*|string $type A Client::QUERY_* or self-registered type
+     * @param string $type
      *
      * @return self Provides fluent interface
      */
@@ -486,7 +504,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function preCreateRequest(object $event): self
+    public function preCreateRequest($event): self
     {
         // We need to accept event proxies or decorators.
         /* @var PreCreateRequest $event */
@@ -502,7 +520,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * @return self Provides fluent interface
      */
-    public function preExecuteRequest(object $event): self
+    public function preExecuteRequest($event): self
     {
         // We need to accept event proxies or decorators.
         /* @var PreExecuteRequest $event */
@@ -620,7 +638,7 @@ class Loadbalancer extends AbstractPlugin
      * {@internal Several options need some extra checks or setup work,
      *            for these options the setters are called.}
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {
@@ -642,7 +660,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Register event listeners.
      */
-    protected function initPluginType(): void
+    protected function initPluginType()
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
@@ -657,7 +675,7 @@ class Loadbalancer extends AbstractPlugin
      *
      * Unregister event listeners.
      */
-    public function deinitPlugin(): void
+    public function deinitPlugin()
     {
         $dispatcher = $this->client->getEventDispatcher();
         if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {

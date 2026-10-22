@@ -27,13 +27,17 @@ class FilterQuery extends Configurable implements QueryInterface
 
     /**
      * Tags for this filterquery.
+     *
+     * @var array
      */
-    protected array $tags = [];
+    protected $tags = [];
 
     /**
      * Query.
+     *
+     * @var string
      */
-    protected string $query;
+    protected $query;
 
     /**
      * Get key value.
@@ -196,7 +200,7 @@ class FilterQuery extends Configurable implements QueryInterface
     /**
      * Returns a query helper.
      *
-     * @return Helper
+     * @return \Solarium\Core\Query\Helper
      */
     public function getHelper(): Helper
     {
@@ -206,7 +210,7 @@ class FilterQuery extends Configurable implements QueryInterface
     /**
      * Initialize options.
      */
-    protected function init(): void
+    protected function init()
     {
         foreach ($this->options as $name => $value) {
             switch ($name) {

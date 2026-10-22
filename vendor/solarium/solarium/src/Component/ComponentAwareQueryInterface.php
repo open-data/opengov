@@ -104,7 +104,7 @@ interface ComponentAwareQueryInterface
     /**
      * Get all registered component types.
      *
-     * @return array<self::COMPONENT_*|string> An array of self::COMPONENT_* and/or self-registered keys
+     * @return array
      */
     public function getComponentTypes(): array;
 
@@ -131,23 +131,23 @@ interface ComponentAwareQueryInterface
      * You can optionally supply an autoload class to create a new component
      * instance if there is no registered component for the given key yet.
      *
-     * @param self::COMPONENT_*|string $key      A self::COMPONENT_* or self-registered key
-     * @param bool                     $autoload Autoload if component needs to be created
-     * @param array|null               $config   Configuration to use for autoload
+     * @param string      $key      Use one of the constants
+     * @param string|bool $autoload Class to autoload if component needs to be created
+     * @param array|null  $config   Configuration to use for autoload
      *
      * @throws OutOfBoundsException
      *
-     * @return AbstractComponent|null
+     * @return object|null
      */
-    public function getComponent(string $key, ?bool $autoload = false, ?array $config = null): ?AbstractComponent;
+    public function getComponent(string $key, $autoload = false, ?array $config = null);
 
     /**
      * Set a component instance.
      *
      * This overwrites any existing component registered with the same key.
      *
-     * @param self::COMPONENT_*|string $key       A self::COMPONENT_* or self-registered key
-     * @param AbstractComponent        $component
+     * @param string            $key
+     * @param AbstractComponent $component
      *
      * @return self Provides fluent interface
      */
@@ -158,9 +158,9 @@ interface ComponentAwareQueryInterface
      *
      * You can remove a component by passing its key or the component instance.
      *
-     * @param self::COMPONENT_*|string|AbstractComponent $component
+     * @param string|AbstractComponent $component
      *
      * @return self Provides fluent interface
      */
-    public function removeComponent(string|AbstractComponent $component): self;
+    public function removeComponent($component): self;
 }

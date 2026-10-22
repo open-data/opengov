@@ -18,11 +18,20 @@ use ReflectionException;
  */
 class FixtureLoader
 {
-    private Loader $loader;
+    /**
+     * @var Loader
+     */
+    private $loader;
 
-    private Purger $purger;
+    /**
+     * @var Purger
+     */
+    private $purger;
 
-    private Executor $executor;
+    /**
+     * @var Executor
+     */
+    private $executor;
 
     /**
      * @param Loader   $loader

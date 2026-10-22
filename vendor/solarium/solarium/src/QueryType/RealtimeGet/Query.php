@@ -11,7 +11,6 @@ namespace Solarium\QueryType\RealtimeGet;
 
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery as BaseQuery;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\QueryType\Select\ResponseParser;
@@ -28,8 +27,10 @@ class Query extends BaseQuery
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'resultclass' => Result::class,
         'documentclass' => Document::class,
         'handler' => 'get',
@@ -38,8 +39,10 @@ class Query extends BaseQuery
 
     /**
      * Document IDs.
+     *
+     * @var array
      */
-    protected array $ids = [];
+    protected $ids = [];
 
     /**
      * Get type for this query.
@@ -92,7 +95,7 @@ class Query extends BaseQuery
      *
      * @return self Provides fluent interface
      */
-    public function addIds(string|array $ids): self
+    public function addIds($ids): self
     {
         if (\is_string($ids)) {
             $ids = explode(',', $ids);
@@ -166,7 +169,7 @@ class Query extends BaseQuery
      *
      * This class should implement the document interface
      *
-     * @param class-string<DocumentInterface> $value classname
+     * @param string $value classname
      *
      * @return self Provides fluent interface
      */
@@ -182,7 +185,7 @@ class Query extends BaseQuery
      *
      * The value is a classname, not an instance
      *
-     * @return class-string<DocumentInterface>
+     * @return string
      */
     public function getDocumentClass(): string
     {

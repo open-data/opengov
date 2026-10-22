@@ -22,7 +22,7 @@ trait SpellcheckTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return Spellcheck
+     * @return \Solarium\Component\Spellcheck
      */
     public function getSpellcheck(): Spellcheck
     {

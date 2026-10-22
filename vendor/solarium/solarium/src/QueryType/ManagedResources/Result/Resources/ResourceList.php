@@ -22,15 +22,17 @@ class ResourceList extends BaseResult implements \IteratorAggregate, \Countable
 {
     /**
      * List name.
+     *
+     * @var string
      */
-    protected string $name = 'managedResources';
+    protected $name = 'managedResources';
 
     /**
      * List items.
      *
      * @var ManagedResource[]
      */
-    protected array $items = [];
+    protected $items = [];
 
     /**
      * Constructor.

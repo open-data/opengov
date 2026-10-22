@@ -18,23 +18,31 @@ class Response
 {
     /**
      * Headers.
+     *
+     * @var array
      */
-    protected array $headers;
+    protected $headers;
 
     /**
      * Body.
+     *
+     * @var string
      */
-    protected string $body;
+    protected $body;
 
     /**
      * HTTP response code.
+     *
+     * @var int
      */
-    protected int $statusCode;
+    protected $statusCode;
 
     /**
      * HTTP response message.
+     *
+     * @var string
      */
-    protected string $statusMessage;
+    protected $statusMessage;
 
     /**
      * Constructor.

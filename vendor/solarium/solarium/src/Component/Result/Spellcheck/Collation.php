@@ -16,18 +16,24 @@ class Collation implements \IteratorAggregate, \Countable
 {
     /**
      * Query.
+     *
+     * @var string
      */
-    protected string $query;
+    protected $query;
 
     /**
      * Hit count.
+     *
+     * @var int
      */
-    protected ?int $hits;
+    protected $hits;
 
     /**
      * Corrections.
+     *
+     * @var array
      */
-    protected array $corrections;
+    protected $corrections;
 
     /**
      * Constructor.

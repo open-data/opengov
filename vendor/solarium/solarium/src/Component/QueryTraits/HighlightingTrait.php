@@ -22,7 +22,7 @@ trait HighlightingTrait
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return Highlighting
+     * @return \Solarium\Component\Highlighting\Highlighting
      */
     public function getHighlighting(): Highlighting
     {

@@ -31,8 +31,10 @@ class Query extends SelectQuery
 
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'handler' => 'select',
         'resultclass' => Result::class,
         'documentclass' => \Solarium\QueryType\Select\Result\Document::class,

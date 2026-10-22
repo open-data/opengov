@@ -12,7 +12,6 @@ namespace Solarium\Component\ResponseParser;
 use Solarium\Component\AbstractComponent;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Component\Result\Suggester\Result;
-use Solarium\Component\Suggester as SuggesterComponent;
 use Solarium\Core\Query\AbstractResponseParser;
 use Solarium\QueryType\Suggester\Result\Dictionary;
 use Solarium\QueryType\Suggester\Result\Term;
@@ -25,37 +24,37 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
     /**
      * Parse result data into result objects.
      *
-     * @param ComponentAwareQueryInterface         $query
-     * @param AbstractComponent&SuggesterComponent $suggester
-     * @param array                                $data
+     * @param \Solarium\Component\ComponentAwareQueryInterface|null $query
+     * @param \Solarium\Component\AbstractComponent|null            $suggester
+     * @param array                                                 $data
      *
      * @return Result|null
      */
-    public function parse(ComponentAwareQueryInterface $query, AbstractComponent $suggester, array $data): ?Result
+    public function parse(?ComponentAwareQueryInterface $query, ?AbstractComponent $suggester, array $data): ?Result
     {
-        if (!isset($data['suggest']) || !\is_array($data['suggest'])) {
-            return null;
-        }
-
         $dictionaries = [];
         $allSuggestions = [];
 
-        foreach ($data['suggest'] as $dictionary => $dictionaryResults) {
-            $terms = [];
-            foreach ($dictionaryResults as $term => $termData) {
-                $allSuggestions[] = $this->createTerm($termData);
-                $terms[$term] = $this->createTerm($termData);
+        if (isset($data['suggest']) && \is_array($data['suggest'])) {
+            foreach ($data['suggest'] as $dictionary => $dictionaryResults) {
+                $terms = [];
+                foreach ($dictionaryResults as $term => $termData) {
+                    $allSuggestions[] = $this->createTerm($termData);
+                    $terms[$term] = $this->createTerm($termData);
+                }
+                $dictionaries[$dictionary] = $this->createDictionary($terms);
             }
-            $dictionaries[$dictionary] = $this->createDictionary($terms);
+
+            return new Result($dictionaries, $allSuggestions);
         }
 
-        return new Result($dictionaries, $allSuggestions);
+        return null;
     }
 
     /**
      * @param array $terms
      *
-     * @return Dictionary
+     * @return \Solarium\QueryType\Suggester\Result\Dictionary
      */
     private function createDictionary(array $terms): Dictionary
     {
@@ -67,7 +66,7 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
     /**
      * @param array $termData
      *
-     * @return Term
+     * @return \Solarium\QueryType\Suggester\Result\Term
      */
     private function createTerm(array $termData): Term
     {

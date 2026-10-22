@@ -38,15 +38,19 @@ class ParallelExecution extends AbstractPlugin
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'curlmultiselecttimeout' => 0.1,
     ];
 
     /**
      * Queries to execute coupled with the keys of the endpoints to execute them against.
+     *
+     * @var array
      */
-    protected array $queries = [];
+    protected $queries = [];
 
     /**
      * Add a query to execute.
@@ -102,7 +106,7 @@ class ParallelExecution extends AbstractPlugin
      *
      * @throws RuntimeException
      *
-     * @return array<string, Result|HttpException>
+     * @return (Result|HttpException)[]
      */
     public function execute(): array
     {
@@ -206,7 +210,7 @@ class ParallelExecution extends AbstractPlugin
      * Set cURL adapter (the only type that supports ParallelExecution)
      * if $this->client uses another adapter.
      */
-    protected function initPluginType(): void
+    protected function initPluginType()
     {
         $adapter = $this->client->getAdapter();
 

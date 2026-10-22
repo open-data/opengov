@@ -29,8 +29,10 @@ trait JsonFacetTrait
 
     /**
      * Facet type mapping.
+     *
+     * @var array
      */
-    protected array $facetTypes = [
+    protected $facetTypes = [
         FacetSetInterface::JSON_FACET_TERMS => 'Solarium\Component\Facet\JsonTerms',
         FacetSetInterface::JSON_FACET_QUERY => 'Solarium\Component\Facet\JsonQuery',
         FacetSetInterface::JSON_FACET_RANGE => 'Solarium\Component\Facet\JsonRange',
@@ -42,7 +44,7 @@ trait JsonFacetTrait
      *
      * @return array|string|null
      */
-    public function getDomainFilter(): array|string|null
+    public function getDomainFilter()
     {
         $domain = $this->getOption('domain');
 
@@ -56,8 +58,10 @@ trait JsonFacetTrait
      *
      * @param string     $query
      * @param array|null $bind  Bind values for placeholders in the query string
+     *
+     * @return self Provides fluent interface
      */
-    public function setDomainFilterQuery(string $query, ?array $bind = null): static
+    public function setDomainFilterQuery(string $query, ?array $bind = null): self
     {
         if (null !== $bind) {
             $helper = new Helper();
@@ -94,8 +98,10 @@ trait JsonFacetTrait
      * Adds a domain filter parameter.
      *
      * @param string $param
+     *
+     * @return self Provides fluent interface
      */
-    public function addDomainFilterParameter(string $param): static
+    public function addDomainFilterParameter(string $param): self
     {
         $filter = $this->getDomainFilter();
         if (!$filter) {
@@ -158,8 +164,10 @@ trait JsonFacetTrait
      * @param FacetInterface|array $facet
      *
      * @throws InvalidArgumentException
+     *
+     * @return self Provides fluent interface
      */
-    public function addFacet(FacetInterface|array $facet): static
+    public function addFacet($facet): self
     {
         if ($facet instanceof JsonFacetInterface) {
             $this->facetSetAddFacet($facet);
@@ -172,35 +180,15 @@ trait JsonFacetTrait
     }
 
     /**
-     * Get a facet.
-     *
-     * @param string $key
-     *
-     * @return JsonFacetInterface|null
-     */
-    public function getFacet(string $key): ?JsonFacetInterface
-    {
-        return $this->facets[$key] ?? null;
-    }
-
-    /**
-     * Get all facets.
-     *
-     * @return JsonFacetInterface[]
-     */
-    public function getFacets(): array
-    {
-        return $this->facets;
-    }
-
-    /**
      * Remove a single facet.
      *
      * You can remove a facet by passing its key or the facet instance
      *
      * @param string|FacetInterface $facet
+     *
+     * @return self Provides fluent interface
      */
-    public function removeFacet(string|FacetInterface $facet): static
+    public function removeFacet($facet): self
     {
         $this->facetSetRemoveFacet($facet);
         $this->serialize();
@@ -210,8 +198,10 @@ trait JsonFacetTrait
 
     /**
      * Remove all facets.
+     *
+     * @return self Provides fluent interface
      */
-    public function clearFacets(): static
+    public function clearFacets(): self
     {
         $this->facetSetClearFacets();
         $this->serialize();

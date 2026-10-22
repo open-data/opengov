@@ -14,12 +14,15 @@ namespace Solarium\Component\Result\TermVector;
  */
 class Field implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-    protected string $name;
+    /**
+     * @var string
+     */
+    protected $name;
 
     /**
      * @var Term[]
      */
-    protected array $terms;
+    protected $terms;
 
     /**
      * Constructor.

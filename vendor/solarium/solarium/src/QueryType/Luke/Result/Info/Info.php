@@ -14,9 +14,15 @@ namespace Solarium\QueryType\Luke\Result\Info;
  */
 class Info
 {
-    protected array $key;
+    /**
+     * @var array
+     */
+    protected $key;
 
-    protected string $note;
+    /**
+     * @var string
+     */
+    protected $note;
 
     /**
      * @return array

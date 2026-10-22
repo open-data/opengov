@@ -21,7 +21,7 @@ class FacetSet implements \IteratorAggregate, \Countable, FacetResultInterface
      *
      * @var FacetResultInterface[]
      */
-    protected array $facets;
+    protected $facets;
 
     /**
      * Constructor.

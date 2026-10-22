@@ -12,7 +12,6 @@ namespace Solarium\QueryType\ManagedResources\ResponseParser;
 use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\Core\Query\Result\ResultInterface;
-use Solarium\Exception\RuntimeException;
 use Solarium\QueryType\ManagedResources\Result\Synonyms\Synonyms as SynonymResult;
 
 /**
@@ -23,9 +22,9 @@ class Synonyms extends ResponseParserAbstract implements ResponseParserInterface
     /**
      * Get result data for the response.
      *
-     * @param ResultInterface $result
+     * @param \Solarium\Core\Query\Result\ResultInterface $result
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      *
      * @return array
      */

@@ -19,8 +19,10 @@ class PivotItem extends Pivot
 {
     /**
      * Field name.
+     *
+     * @var string
      */
-    protected string $field;
+    protected $field;
 
     /**
      * Field value.
@@ -31,18 +33,22 @@ class PivotItem extends Pivot
 
     /**
      * Count.
+     *
+     * @var int
      */
-    protected int $count;
+    protected $count;
 
     /**
      * Field stats.
+     *
+     * @var Stats|null
      */
-    protected ?Stats $stats = null;
+    protected $stats;
 
     /**
-     * @var Range[]
+     * @var \Solarium\Component\Result\Facet\Range[]
      */
-    protected array $ranges = [];
+    protected $ranges;
 
     /**
      * Constructor.
@@ -123,7 +129,7 @@ class PivotItem extends Pivot
     /**
      * Get ranges.
      *
-     * @return Range[]
+     * @return \Solarium\Component\Result\Facet\Range[]
      */
     public function getRanges(): array
     {

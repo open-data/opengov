@@ -16,23 +16,50 @@ use Solarium\QueryType\Luke\Result\FlagList;
  */
 class FieldInfo
 {
-    protected string $name;
+    /**
+     * @var string
+     */
+    protected $name;
 
-    protected ?string $type;
+    /**
+     * @var string|null
+     */
+    protected $type;
 
-    protected FlagList $schema;
+    /**
+     * @var FlagList
+     */
+    protected $schema;
 
-    protected ?string $dynamicBase = null;
+    /**
+     * @var string|null
+     */
+    protected $dynamicBase = null;
 
-    protected FlagList|string|null $index = null;
+    /**
+     * @var FlagList|string|null
+     */
+    protected $index = null;
 
-    protected ?int $docs = null;
+    /**
+     * @var int|null
+     */
+    protected $docs = null;
 
-    protected ?int $distinct = null;
+    /**
+     * @var int|null
+     */
+    protected $distinct = null;
 
-    protected ?array $topTerms = null;
+    /**
+     * @var array|null
+     */
+    protected $topTerms = null;
 
-    protected ?array $histogram = null;
+    /**
+     * @var array|null
+     */
+    protected $histogram = null;
 
     /**
      * Constructor.
@@ -125,7 +152,7 @@ class FieldInfo
      *
      * @return FlagList|string|null
      */
-    public function getIndex(): FlagList|string|null
+    public function getIndex()
     {
         return $this->index;
     }
@@ -135,7 +162,7 @@ class FieldInfo
      *
      * @return self Provides fluent interface
      */
-    public function setIndex(FlagList|string|null $index): self
+    public function setIndex($index): self
     {
         $this->index = $index;
 

@@ -18,9 +18,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class PostCreateRequest extends Event
 {
-    protected QueryInterface $query;
+    /**
+     * @var QueryInterface
+     */
+    protected $query;
 
-    protected Request $request;
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * Event constructor.

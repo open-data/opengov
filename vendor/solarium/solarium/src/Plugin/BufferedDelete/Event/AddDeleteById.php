@@ -19,7 +19,10 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class AddDeleteById extends Event
 {
-    protected Id $id;
+    /**
+     * @var Id
+     */
+    protected $id;
 
     /**
      * Event constructor.
@@ -36,7 +39,7 @@ class AddDeleteById extends Event
      *
      * @return int|string
      */
-    public function getId(): int|string
+    public function getId()
     {
         return $this->id->getId();
     }
@@ -48,7 +51,7 @@ class AddDeleteById extends Event
      *
      * @return self Provides fluent interface
      */
-    public function setId(int|string $id): self
+    public function setId($id): self
     {
         $this->id->setId($id);
 

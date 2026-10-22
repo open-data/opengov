@@ -6,7 +6,6 @@ use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigInstallerInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,20 +21,21 @@ class ConfigSubscriber implements EventSubscriberInterface {
   use StringTranslationTrait;
 
   /**
+   * The Config Installer.
+   *
+   * @var \Drupal\Core\Config\ConfigInstallerInterface
+   */
+  protected $configInstaller;
+
+  /**
    * Constructs a ConfigSubscriber object.
    *
    * @param \Drupal\Core\Config\ConfigInstallerInterface $configInstaller
    *   The Config Installer.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
-   *   The language manager.
    */
-  public function __construct(
-    protected ConfigInstallerInterface $configInstaller,
-    protected MessengerInterface $messenger,
-    protected LanguageManagerInterface $languageManager,
-  ) {}
+  public function __construct(ConfigInstallerInterface $configInstaller) {
+    $this->configInstaller = $configInstaller;
+  }
 
   /**
    * {@inheritdoc}
@@ -64,14 +64,13 @@ class ConfigSubscriber implements EventSubscriberInterface {
     }
 
     $saved_config = $event->getConfig();
-    $languages = array_keys($this->languageManager->getLanguages());
 
-    // If the language already exists, then we don't need to install the
-    // language-specific Solr Field Types.
-    if (preg_match('@^language\.entity\.(.+)@', $saved_config->getName(), $matches)
-      && $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE
-      && !in_array($matches[1], $languages)
-    ) {
+    // Unfortunately, we can't check for $saved_config->isNew() here anymore as
+    // it always returns false.
+    // @todo find a way to limit the the condition to new language configs.
+    if (preg_match('@^language\.entity\.(.+)@', $saved_config->getName(), $matches) &&
+      $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE)
+    {
       $restrict_by_dependency = [
         'module' => 'search_api_solr',
       ];
@@ -91,11 +90,11 @@ class ConfigSubscriber implements EventSubscriberInterface {
       }
     }
     elseif (preg_match('@^search_api_solr\.solr_field_type\..+@', $saved_config->getName(), $matches)) {
-      $this->messenger
+      \Drupal::messenger()
         ->addMessage($this->t('A new Solr field type has been installed due to configuration changes. It is advisable to download and deploy an updated config.zip to your Solr server.'), MessengerInterface::TYPE_WARNING);
     }
     elseif (preg_match('@^search_api_solr\.solr_cache\..+@', $saved_config->getName(), $matches) || preg_match('@^search_api_solr\.solr_request\..+@', $saved_config->getName(), $matches)) {
-      $this->messenger
+      \Drupal::messenger()
         ->addMessage($this->t('There have been some configuration changes. It is advisable to download and deploy an updated config.zip to your Solr server.'), MessengerInterface::TYPE_WARNING);
     }
   }
@@ -113,7 +112,8 @@ class ConfigSubscriber implements EventSubscriberInterface {
     $deleted_config = $event->getConfig();
 
     if (preg_match('@^language\.entity\.(.+)@', $deleted_config->getName(), $matches) &&
-      $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE) {
+      $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE)
+    {
       // If a language is deleted, the existing indexes must be re-indexed to
       // remove the language-specific fields of that language to ensure balanced
       // scoring.
@@ -126,11 +126,11 @@ class ConfigSubscriber implements EventSubscriberInterface {
       }
     }
     elseif (preg_match('@^search_api_solr\.solr_field_type\..+@', $deleted_config->getName(), $matches)) {
-      $this->messenger
+      \Drupal::messenger()
         ->addMessage($this->t('A Solr field type has been deleted due to configuration changes. It is advisable to download and deploy an updated config.zip to your Solr server.'), MessengerInterface::TYPE_WARNING);
     }
     elseif (preg_match('@^search_api_solr\.solr_cache\..+@', $deleted_config->getName(), $matches) || preg_match('@^search_api_solr\.solr_request\..+@', $deleted_config->getName(), $matches)) {
-      $this->messenger
+      \Drupal::messenger()
         ->addMessage($this->t('There have been some configuration changes. It is advisable to download and deploy an updated config.zip to your Solr server.'), MessengerInterface::TYPE_WARNING);
     }
   }

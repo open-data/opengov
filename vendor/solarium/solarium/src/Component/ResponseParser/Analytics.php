@@ -12,8 +12,7 @@ declare(strict_types=1);
 namespace Solarium\Component\ResponseParser;
 
 use Solarium\Component\AbstractComponent;
-use Solarium\Component\Analytics\Analytics as AnalyticsComponent;
-use Solarium\Component\Analytics\Grouping as GroupingComponent;
+use Solarium\Component\Analytics\Grouping as ComponentGrouping;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Component\Result\Analytics\Expression;
 use Solarium\Component\Result\Analytics\Facet;
@@ -28,17 +27,11 @@ use Solarium\Component\Result\Analytics\Result;
 class Analytics implements ComponentParserInterface
 {
     /**
-     * Parse result data into result objects.
-     *
-     * @param ComponentAwareQueryInterface         $query
-     * @param AbstractComponent&AnalyticsComponent $component
-     * @param array                                $data
-     *
-     * @return Result|null
+     * {@inheritdoc}
      */
-    public function parse(ComponentAwareQueryInterface $query, AbstractComponent $component, array $data): ?Result
+    public function parse(?ComponentAwareQueryInterface $query, ?AbstractComponent $component, array $data): ?Result
     {
-        if (!isset($data['analytics_response'])) {
+        if (false === isset($data['analytics_response']) || null === $component) {
             return null;
         }
 
@@ -46,6 +39,7 @@ class Analytics implements ComponentParserInterface
         $result = new Result();
         $results = [];
 
+        /** @var \Solarium\Component\Analytics\Analytics $component */
         foreach ($component->getExpressions() as $name => $expression) {
             if (false === isset($response['results'][$name])) {
                 continue;
@@ -88,12 +82,12 @@ class Analytics implements ComponentParserInterface
     }
 
     /**
-     * @param GroupingComponent $grouping
-     * @param array             $result
+     * @param \Solarium\Component\Analytics\Grouping $grouping
+     * @param array                                  $result
      *
-     * @return Facet
+     * @return \Solarium\Component\Result\Analytics\Facet
      */
-    private function facet(GroupingComponent $grouping, array $result): Facet
+    private function facet(ComponentGrouping $grouping, array $result): Facet
     {
         $facet = new Facet($result['value'], $result['pivot'] ?? null);
 

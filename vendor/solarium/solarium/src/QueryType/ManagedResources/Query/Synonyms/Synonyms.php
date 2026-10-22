@@ -14,9 +14,15 @@ namespace Solarium\QueryType\ManagedResources\Query\Synonyms;
  */
 class Synonyms
 {
-    protected ?string $term = null;
+    /**
+     * @var string|null
+     */
+    protected $term = null;
 
-    protected array $synonyms = [];
+    /**
+     * @var array
+     */
+    protected $synonyms = [];
 
     /**
      * Get the term.

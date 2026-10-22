@@ -10,7 +10,6 @@
 namespace Solarium\QueryType\Spellcheck\Result;
 
 use Solarium\Core\Query\Result\QueryType as BaseResult;
-use Solarium\Exception\UnexpectedValueException;
 
 /**
  * Spellcheck query result.
@@ -19,25 +18,31 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
 {
     /**
      * Suggester results.
+     *
+     * @var array
      */
-    protected array $results;
+    protected $results;
 
     /**
      * Suggester flat results.
+     *
+     * @var array
      */
-    protected array $all;
+    protected $all;
 
     /**
      * Collation result.
      *
      * Only available when collate is enabled in the suggester query
+     *
+     * @var string
      */
-    protected ?string $collation;
+    protected $collation;
 
     /**
      * Get all results.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return array
      */
@@ -51,7 +56,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Get flat results.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return array
      */
@@ -67,7 +72,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @param string $term
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return Term|null
      */
@@ -81,7 +86,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * IteratorAggregate implementation.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return \ArrayIterator
      */
@@ -95,7 +100,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Countable implementation.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return int
      */
@@ -109,7 +114,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Get collation.
      *
-     * @throws UnexpectedValueException
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return string|null
      */

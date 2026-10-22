@@ -19,7 +19,10 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class AddDeleteQuery extends Event
 {
-    protected Query $query;
+    /**
+     * @var Query
+     */
+    protected $query;
 
     /**
      * Event constructor.

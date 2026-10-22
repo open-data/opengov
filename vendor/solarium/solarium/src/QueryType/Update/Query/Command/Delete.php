@@ -20,13 +20,17 @@ class Delete extends AbstractCommand
 {
     /**
      * Ids to delete.
+     *
+     * @var array
      */
-    protected array $ids = [];
+    protected $ids = [];
 
     /**
      * Delete queries.
+     *
+     * @var array
      */
-    protected array $queries = [];
+    protected $queries = [];
 
     /**
      * Get command type.
@@ -45,7 +49,7 @@ class Delete extends AbstractCommand
      *
      * @return self Provides fluent interface
      */
-    public function addId(int|string $id): self
+    public function addId($id): self
     {
         $this->ids[] = $id;
 

@@ -18,8 +18,10 @@ class Add extends AbstractAdd
 {
     /**
      * Stopwords to add.
+     *
+     * @var array
      */
-    protected ?array $stopwords = null;
+    protected $stopwords;
 
     /**
      * Get stopwords.

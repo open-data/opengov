@@ -93,18 +93,21 @@ class ReductionFunction implements FunctionInterface, ExpressionInterface
      */
     public const ORDINAL = 'ordinal';
 
-    private string $type;
-
     /**
-     * @var FunctionInterface[]|float[]|string[]
+     * @var string
      */
-    private array $arguments;
+    private $type;
 
     /**
-     * @param string                               $type
-     * @param FunctionInterface[]|float[]|string[] $arguments
+     * @var \Solarium\Builder\FunctionInterface[]|float[]|string[]
+     */
+    private $arguments;
+
+    /**
+     * @param string                                                 $type
+     * @param \Solarium\Builder\FunctionInterface[]|float[]|string[] $arguments
      *
-     * @throws RuntimeException
+     * @throws \Solarium\Exception\RuntimeException
      */
     public function __construct(string $type, array $arguments)
     {

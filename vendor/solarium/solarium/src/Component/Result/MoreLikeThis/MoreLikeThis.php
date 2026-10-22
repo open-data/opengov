@@ -9,27 +9,28 @@
 
 namespace Solarium\Component\Result\MoreLikeThis;
 
-use Solarium\Component\Result\ComponentResultInterface;
 use Solarium\Exception\UnexpectedValueException;
 
 /**
  * Select component morelikethis result.
  */
-class MoreLikeThis implements ComponentResultInterface, \IteratorAggregate, \Countable
+class MoreLikeThis implements \IteratorAggregate, \Countable
 {
     /**
      * Result array.
      *
-     * @var Result[]
+     * @var array
      */
-    protected array $results;
+    protected $results;
 
     /**
      * Interesting terms.
      *
      * Only available if mlt.interestingTerms wasn't 'none'.
+     *
+     * @var array|null
      */
-    protected ?array $interestingTerms;
+    protected $interestingTerms;
 
     /**
      * Constructor.

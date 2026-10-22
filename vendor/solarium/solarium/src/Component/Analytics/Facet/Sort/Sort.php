@@ -26,16 +26,22 @@ class Sort extends Configurable implements \JsonSerializable
     use ObjectTrait;
 
     /**
-     * @var Criterion[]
+     * @var \Solarium\Component\Analytics\Facet\Sort\Criterion[]
      */
-    private array $criteria = [];
-
-    private ?int $limit = null;
-
-    private ?int $offset = null;
+    private $criteria = [];
 
     /**
-     * @return Criterion[]
+     * @var int|null
+     */
+    private $limit;
+
+    /**
+     * @var int|null
+     */
+    private $offset;
+
+    /**
+     * @return \Solarium\Component\Analytics\Facet\Sort\Criterion[]
      */
     public function getCriteria(): array
     {
@@ -43,9 +49,9 @@ class Sort extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @param Criterion[] $criteria
+     * @param \Solarium\Component\Analytics\Facet\Sort\Criterion[] $criteria
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setCriteria(array $criteria): self
     {
@@ -57,9 +63,9 @@ class Sort extends Configurable implements \JsonSerializable
     }
 
     /**
-     * @param Criterion $criterion
+     * @param \Solarium\Component\Analytics\Facet\Sort\Criterion $criterion
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function addCriterion(Criterion $criterion): self
     {
@@ -79,7 +85,7 @@ class Sort extends Configurable implements \JsonSerializable
     /**
      * @param int|null $limit
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setLimit(?int $limit): self
     {
@@ -99,7 +105,7 @@ class Sort extends Configurable implements \JsonSerializable
     /**
      * @param int|null $offset
      *
-     * @return self Provides fluent interface
+     * @return $this
      */
     public function setOffset(?int $offset): self
     {
@@ -111,7 +117,8 @@ class Sort extends Configurable implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize(): mixed
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return array_filter([
             'limit' => $this->limit,

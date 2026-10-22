@@ -15,6 +15,8 @@ use Solarium\Component\Grouping as GroupingComponent;
 use Solarium\Component\Result\Grouping\FieldGroup;
 use Solarium\Component\Result\Grouping\Result;
 use Solarium\Core\Query\AbstractQuery;
+use Solarium\Exception\InvalidArgumentException;
+use Solarium\QueryType\Select\Query\Query;
 
 /**
  * Parse select component Grouping result from the data.
@@ -24,16 +26,25 @@ class Grouping implements ComponentParserInterface
     /**
      * Parse result data into result objects.
      *
-     * @param ComponentAwareQueryInterface&AbstractQuery $query
-     * @param AbstractComponent&GroupingComponent        $grouping
-     * @param array                                      $data
+     * @param ComponentAwareQueryInterface|Query  $query
+     * @param GroupingComponent|AbstractComponent $grouping
+     * @param array                               $data
+     *
+     * @throws InvalidArgumentException
      *
      * @return Result
      */
-    public function parse(ComponentAwareQueryInterface $query, AbstractComponent $grouping, array $data): Result
+    public function parse(?ComponentAwareQueryInterface $query, ?AbstractComponent $grouping, array $data): Result
     {
         if (!isset($data['grouped'])) {
             return new Result([]);
+        }
+
+        if (!$query) {
+            throw new InvalidArgumentException('A valid query object needs to be provided.');
+        }
+        if (!$grouping) {
+            throw new InvalidArgumentException('A valid grouping component needs to be provided.');
         }
 
         $groups = [];
@@ -114,7 +125,7 @@ class Grouping implements ComponentParserInterface
      *
      * @return object
      */
-    private function extractValueGroup(string $valueResultClass, string $documentClass, array $valueGroupResult, AbstractQuery $query): object
+    private function extractValueGroup(string $valueResultClass, string $documentClass, array $valueGroupResult, AbstractQuery $query)
     {
         $value = $valueGroupResult['groupValue'] ?? null;
         $numFound = $valueGroupResult['doclist']['numFound'] ?? null;

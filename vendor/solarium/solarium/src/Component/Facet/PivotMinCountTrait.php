@@ -18,8 +18,10 @@ trait PivotMinCountTrait
      * Set the minimum number of documents that need to match in order for the facet to be included in results.
      *
      * @param int $minCount
+     *
+     * @return self Provides fluent interface
      */
-    public function setPivotMinCount(int $minCount): static
+    public function setPivotMinCount(int $minCount): self
     {
         $this->setOption('pivot.mincount', $minCount);
 

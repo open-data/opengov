@@ -9,7 +9,6 @@
 
 namespace Solarium\QueryType\ManagedResources\Query;
 
-use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery as BaseQuery;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
@@ -17,8 +16,6 @@ use Solarium\Core\Query\Status4xxNoExceptionInterface;
 use Solarium\Exception\InvalidArgumentException;
 use Solarium\QueryType\ManagedResources\RequestBuilder\Resource as RequestBuilder;
 use Solarium\QueryType\ManagedResources\Result\Command as CommandResult;
-use Solarium\QueryType\ManagedResources\Result\Stopwords\WordSet;
-use Solarium\QueryType\ManagedResources\Result\Synonyms\SynonymMappings;
 
 /**
  * Query base class.
@@ -58,43 +55,49 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
     /**
      * Command types.
      *
-     * @var array<self::COMMAND_*, class-string<AbstractCommand>>
+     * @var array
      */
-    protected array $commandTypes;
+    protected $commandTypes;
 
     /**
      * Name of the managed resource to query.
+     *
+     * @var string
      */
-    protected string $name = '';
+    protected $name = '';
 
     /**
      * Name of the child resource to query.
+     *
+     * @var string|null
      */
-    protected ?string $term = null;
+    protected $term = null;
 
     /**
      * Default result class if no command is set.
      *
-     * @var class-string<WordSet|SynonymMappings>
+     * @var string
      */
-    protected string $defaultResultClass;
+    protected $defaultResultClass;
 
     /**
      * Command.
+     *
+     * @var \Solarium\QueryType\ManagedResources\Query\AbstractCommand
      */
-    protected ?AbstractCommand $command = null;
+    protected $command;
 
     /**
      * Get query type.
      *
-     * @return Client::QUERY_MANAGED_*
+     * @return string
      */
     abstract public function getType(): string;
 
     /**
      * Get the request builder class for this query.
      *
-     * @return RequestBuilder
+     * @return \Solarium\QueryType\ManagedResources\RequestBuilder\Resource
      */
     public function getRequestBuilder(): RequestBuilderInterface
     {
@@ -104,7 +107,7 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
     /**
      * Get the response parser class for this query.
      *
-     * @return ResponseParserInterface
+     * @return \Solarium\Core\Query\ResponseParserInterface
      */
     abstract public function getResponseParser(): ResponseParserInterface;
 
@@ -171,12 +174,12 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
     /**
      * Create a command instance.
      *
-     * @param self::COMMAND_* $type
-     * @param array|null      $options
+     * @param string     $type
+     * @param array|null $options
      *
-     * @throws InvalidArgumentException
+     * @throws \Solarium\Exception\InvalidArgumentException
      *
-     * @return AbstractCommand
+     * @return \Solarium\QueryType\ManagedResources\Query\AbstractCommand
      */
     public function createCommand(string $type, ?array $options = null): AbstractCommand
     {
@@ -194,7 +197,7 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
     /**
      * Get command for this query.
      *
-     * @return AbstractCommand|null
+     * @return \Solarium\QueryType\ManagedResources\Query\AbstractCommand|null
      */
     public function getCommand(): ?AbstractCommand
     {
@@ -204,7 +207,7 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
     /**
      * Set a command to the query.
      *
-     * @param AbstractCommand $command
+     * @param \Solarium\QueryType\ManagedResources\Query\AbstractCommand $command
      *
      * @return self Provides fluent interface
      */
@@ -234,35 +237,7 @@ abstract class AbstractQuery extends BaseQuery implements Status4xxNoExceptionIn
      *
      * @param array|null $initArgs
      *
-     * @return InitArgsInterface
+     * @return \Solarium\QueryType\ManagedResources\Query\InitArgsInterface
      */
     abstract public function createInitArgs(?array $initArgs = null): InitArgsInterface;
-
-    /**
-     * Percent-encode names and terms twice as a workaround for SOLR-6853?
-     *
-     * @return bool
-     */
-    public function getUseDoubleEncoding(): bool
-    {
-        return $this->getOption('useDoubleEncoding') ?? false;
-    }
-
-    /**
-     * Percent-encode names and terms twice as a workaround for SOLR-6853?
-     *
-     * Solr versions prior to 10 required reserved characters to be doubly
-     * percent-encoded. Set this to true if your Solr version is affected by
-     * {@link https://issues.apache.org/jira/browse/SOLR-6853 SOLR-6853}.
-     *
-     * @param bool $useDoubleEncoding
-     *
-     * @return self Provides fluent interface
-     */
-    public function setUseDoubleEncoding(bool $useDoubleEncoding): self
-    {
-        $this->setOption('useDoubleEncoding', $useDoubleEncoding);
-
-        return $this;
-    }
 }

@@ -3,9 +3,8 @@
 namespace Drupal\search_api_solr\Event;
 
 /**
- * Event to be fired after all solarium documents have been created.
- *
- * The event is dispatched after all documents for indexing have been built.
+ * Event to be fired after all solarium documents
+ * have been created for indexing.
  *
  * @code
  *   // Add a "foo" field with value "bar" to all documents.

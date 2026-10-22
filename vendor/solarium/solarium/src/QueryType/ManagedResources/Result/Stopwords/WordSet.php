@@ -21,32 +21,48 @@ class WordSet extends BaseResult implements \IteratorAggregate, \Countable
 {
     /**
      * List name.
+     *
+     * @var string
      */
-    protected string $name = 'wordSet';
+    protected $name = 'wordSet';
 
     /**
      * Whether or not to ignore the case.
+     *
+     * @var bool|null
      */
-    protected ?bool $ignoreCase;
+    protected $ignoreCase;
 
     /**
      * Datetime when the resource was initialized.
+     *
+     * @var string
      */
-    protected string $initializedOn;
+    protected $initializedOn;
 
     /**
      * Datetime when the resource was last updated.
+     *
+     * @var string|null
      */
-    protected ?string $updatedSinceInit = null;
+    protected $updatedSinceInit;
 
     /**
      * List items.
+     *
+     * @var array
      */
-    protected array $items = [];
+    protected $items = [];
 
-    protected bool $wasSuccessful = false;
+    /**
+     * @var bool
+     */
+    protected $wasSuccessful = false;
 
-    protected string $statusMessage = 'ERROR';
+    /**
+     * @var string
+     */
+    protected $statusMessage = 'ERROR';
 
     /**
      * Constructor.

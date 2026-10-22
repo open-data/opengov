@@ -25,9 +25,9 @@ trait ObjectTrait
      * @param string            $class
      * @param array|object|null $variable
      *
-     * @return object|null
+     * @return mixed
      */
-    public function ensureObject(string $class, array|object|null $variable): ?object
+    public function ensureObject(string $class, $variable)
     {
         if (null === $variable) {
             return null;
@@ -41,7 +41,7 @@ trait ObjectTrait
 
         try {
             $refClass = new \ReflectionClass($class);
-        } catch (\ReflectionException) {
+        } catch (\ReflectionException $e) {
             throw new InvalidArgumentException(sprintf('Class %s does not exists', $class));
         }
 

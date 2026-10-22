@@ -16,8 +16,10 @@ class Result implements \IteratorAggregate, \Countable
 {
     /**
      * Fields array.
+     *
+     * @var array
      */
-    protected array $fields;
+    protected $fields;
 
     /**
      * Constructor.
@@ -46,7 +48,7 @@ class Result implements \IteratorAggregate, \Countable
      *
      * @return array
      */
-    public function getField(string $key): array
+    public function getField($key): array
     {
         if (isset($this->fields[$key])) {
             return $this->fields[$key];

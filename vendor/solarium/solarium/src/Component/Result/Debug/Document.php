@@ -16,15 +16,17 @@ class Document extends Detail implements \IteratorAggregate, \Countable
 {
     /**
      * Key.
+     *
+     * @var string
      */
-    protected string $key;
+    protected $key;
 
     /**
      * Details.
      *
-     * @var Detail[]
+     * @var \Solarium\Component\Result\Debug\Detail[]
      */
-    protected array $details;
+    protected $details;
 
     /**
      * Constructor.
@@ -55,7 +57,7 @@ class Document extends Detail implements \IteratorAggregate, \Countable
     /**
      * Get details.
      *
-     * @return Detail[]
+     * @return \Solarium\Component\Result\Debug\Detail[]
      */
     public function getDetails(): array
     {

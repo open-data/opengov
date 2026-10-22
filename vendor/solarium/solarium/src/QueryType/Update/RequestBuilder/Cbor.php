@@ -25,11 +25,9 @@ use CBOR\UnsignedIntegerObject;
 use Composer\InstalledVersions;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Query\AbstractRequestBuilder;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\RuntimeException;
 use Solarium\QueryType\Update\Query\Command\Add;
-use Solarium\QueryType\Update\Query\Document;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 /**
@@ -37,12 +35,15 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
  */
 class Cbor extends AbstractRequestBuilder
 {
-    protected Request $request;
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * Build request for an update query.
      *
-     * @param QueryInterface&UpdateQuery $query
+     * @param QueryInterface|UpdateQuery $query
      *
      * @throws RuntimeException
      *
@@ -89,8 +90,7 @@ class Cbor extends AbstractRequestBuilder
 
         foreach ($query->getCommands() as $command) {
             if (UpdateQuery::COMMAND_ADD === $command->getType()) {
-                assert($command instanceof Add);
-
+                /* @var Add $command */
                 $this->addDocuments($command->getDocuments(), $cbor);
 
                 if (null !== $overwrite = $command->getOverwrite()) {
@@ -116,7 +116,6 @@ class Cbor extends AbstractRequestBuilder
      */
     protected function addDocuments(array $documents, IndefiniteLengthListObject $cbor): void
     {
-        /** @var Document $doc */
         foreach ($documents as $doc) {
             $fields = IndefiniteLengthMapObject::create();
 

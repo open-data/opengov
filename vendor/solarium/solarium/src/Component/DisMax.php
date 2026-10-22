@@ -23,8 +23,10 @@ class DisMax extends AbstractComponent
 {
     /**
      * Default options.
+     *
+     * @var array
      */
-    protected array $options = [
+    protected $options = [
         'queryparser' => 'dismax',
     ];
 
@@ -33,7 +35,7 @@ class DisMax extends AbstractComponent
      *
      * @var BoostQuery[]
      */
-    protected array $boostQueries = [];
+    protected $boostQueries = [];
 
     /**
      * Get component type.
@@ -66,7 +68,7 @@ class DisMax extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function setQueryAlternative(string $queryAlternative): self
+    public function setQueryAlternative($queryAlternative): self
     {
         $this->setOption('queryalternative', $queryAlternative);
 
@@ -303,7 +305,7 @@ class DisMax extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function addBoostQuery(BoostQuery|array $boostQuery): self
+    public function addBoostQuery($boostQuery): self
     {
         if (\is_array($boostQuery)) {
             $boostQuery = new BoostQuery($boostQuery);
@@ -365,7 +367,7 @@ class DisMax extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function removeBoostQuery(string|BoostQuery $boostQuery): self
+    public function removeBoostQuery($boostQuery): self
     {
         if (\is_object($boostQuery)) {
             $boostQuery = $boostQuery->getKey();

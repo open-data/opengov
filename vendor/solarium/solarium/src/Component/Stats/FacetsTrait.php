@@ -16,8 +16,10 @@ trait FacetsTrait
 {
     /**
      * Field facets (for stats).
+     *
+     * @var array
      */
-    protected array $facets = [];
+    protected $facets = [];
 
     /**
      * Specify a facet to return in the resultset.
@@ -36,11 +38,12 @@ trait FacetsTrait
     /**
      * Specify multiple facets to return in the resultset.
      *
-     * @param string|string[] $facets can be an array or string with comma separated facetnames
+     * @param string|array $facets can be an array or string with comma
+     *                             separated facetnames
      *
      * @return self Provides fluent interface
      */
-    public function addFacets(string|array $facets): self
+    public function addFacets($facets): self
     {
         if (\is_string($facets)) {
             $facets = explode(',', $facets);
@@ -97,11 +100,12 @@ trait FacetsTrait
      *
      * This overwrites any existing facets
      *
-     * @param string|string[] $facets can be an array or string with comma separated facetnames
+     * @param array|string $facets can be an array or string with comma
+     *                             separated facetnames
      *
      * @return self Provides fluent interface
      */
-    public function setFacets(string|array $facets): self
+    public function setFacets($facets): self
     {
         $this->clearFacets();
         $this->addFacets($facets);

@@ -28,11 +28,11 @@ interface SuggesterInterface extends ConfigurableInterface
      *
      * The name of the dictionary to use
      *
-     * @param string|string[] $dictionary
+     * @param string|array $dictionary
      *
      * @return self Provides fluent interface
      */
-    public function setDictionary(string|array $dictionary): self;
+    public function setDictionary($dictionary): self;
 
     /**
      * Get dictionary option.
