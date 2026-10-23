@@ -6,36 +6,17 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Utility\Error;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 
 /**
  * Simple XML Sitemap logger.
  */
-class Logger {
+class Logger implements LoggerAwareInterface {
 
   use StringTranslationTrait;
-
-  /**
-   * A logger instance.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected $logger;
-
-  /**
-   * The messenger.
-   *
-   * @var MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $currentUser;
+  use LoggerAwareTrait;
 
   /**
    * The actual message.
@@ -51,25 +32,10 @@ class Logger {
    */
   protected $substitutions = [];
 
-  /**
-   * Logger constructor.
-   *
-   * @param \Psr\Log\LoggerInterface $logger
-   *   A logger instance.
-   * @param MessengerInterface $messenger
-   *   The messenger.
-   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
-   *   The current user.
-   */
   public function __construct(
-    LoggerInterface $logger,
-    MessengerInterface $messenger,
-    AccountProxyInterface $current_user,
-  ) {
-    $this->logger = $logger;
-    $this->messenger = $messenger;
-    $this->currentUser = $current_user;
-  }
+    protected MessengerInterface $messenger,
+    protected AccountProxyInterface $currentUser,
+  ) {}
 
   /**
    * Sets the message with substitutions.
@@ -107,7 +73,6 @@ class Logger {
    *
    * @param \Throwable $exception
    *   The exception.
-   *
    * @param string $logSeverityLevel
    *   The severity level.
    *

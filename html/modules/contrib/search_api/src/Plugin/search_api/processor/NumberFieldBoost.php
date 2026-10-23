@@ -98,7 +98,7 @@ class NumberFieldBoost extends ProcessorPluginBase implements PluginFormInterfac
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $ignore = Utility::formatBoostFactor(0);
-    foreach ($values['boosts'] as $field_id => $settings) {
+    foreach ($values['boosts'] ?? [] as $field_id => $settings) {
       if (!$settings['boost_factor'] || $settings['boost_factor'] === $ignore) {
         unset($values['boosts'][$field_id]);
       }
@@ -134,7 +134,7 @@ class NumberFieldBoost extends ProcessorPluginBase implements PluginFormInterfac
               }
               // Make sure the value is never negative.
               $value = max($value, 0);
-              $item->setBoost($item->getBoost() * (double) $value * (double) $settings['boost_factor']);
+              $item->setBoost($item->getBoost() * (float) $value * (float) $settings['boost_factor']);
             }
           }
         }

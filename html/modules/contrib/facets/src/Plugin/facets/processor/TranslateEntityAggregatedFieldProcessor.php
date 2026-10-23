@@ -3,6 +3,8 @@
 namespace Drupal\facets\Plugin\facets\processor;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
+use Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigManagerInterface;
@@ -31,6 +33,7 @@ use Drupal\Core\TypedData\TranslatableInterface;
  * )
  */
 class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implements BuildProcessorInterface, ContainerFactoryPluginInterface {
+  use TranslateEntityAccessCheckTrait;
 
   /**
    * The language manager.
@@ -68,6 +71,13 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
   protected $entityTypeBundleInfo;
 
   /**
+   * The entity definition update manager.
+   *
+   * @var \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface
+   */
+  protected $entityDefinitionUpdateManager;
+
+  /**
    * Constructs a Drupal\Component\Plugin\PluginBase object.
    *
    * @param array $configuration
@@ -86,8 +96,10 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
    *   The entity field manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The entity bundle info service.
+   * @param \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface $entity_definition_update_manager
+   *   The entity definition update manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LanguageManagerInterface $language_manager, EntityTypeManagerInterface $entity_type_manager, ConfigManagerInterface $config_manager, EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, LanguageManagerInterface $language_manager, EntityTypeManagerInterface $entity_type_manager, ConfigManagerInterface $config_manager, EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityDefinitionUpdateManagerInterface $entity_definition_update_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->languageManager = $language_manager;
@@ -95,6 +107,7 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
     $this->configManager = $config_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
+    $this->entityDefinitionUpdateManager = $entity_definition_update_manager;
   }
 
   /**
@@ -109,7 +122,8 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
       $container->get('entity_type.manager'),
       $container->get('config.manager'),
       $container->get('entity_field.manager'),
-      $container->get('entity_type.bundle.info')
+      $container->get('entity_type.bundle.info'),
+      $container->get('entity.definition_update_manager')
     );
   }
 
@@ -139,8 +153,7 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
         $field = $parts[1];
         $entity_type_ids[] = $entity_type_id;
 
-        $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-        $field_storage = $definition_update_manager->getFieldStorageDefinition($field, $entity_type_id);
+        $field_storage = $this->entityDefinitionUpdateManager->getFieldStorageDefinition($field, $entity_type_id);
         if ($field_storage && $field_storage->getType() === 'entity_reference') {
           /** @var \Drupal\facets\Result\ResultInterface $result */
           $ids = [];
@@ -155,8 +168,20 @@ class TranslateEntityAggregatedFieldProcessor extends ProcessorPluginBase implem
               $entities = $this->entityTypeManager
                 ->getStorage($entity_type_id)
                 ->loadMultiple($ids);
-              $access = $this->entityTypeManager->getAccessControlHandler($entity_type_id);
-              $this->checkEntitiesAccess($entities, $facet, $access);
+
+              $config = $this->getConfiguration();
+
+              if ($config['skip_access_check'] === FALSE) {
+                $access = $this->entityTypeManager->getAccessControlHandler($entity_type_id);
+
+                // Only run access checking if the handler actually exists and
+                // implements the expected interface. This preserves backwards
+                // compatibility for entity types (and tests) that do not
+                // define an access handler.
+                if ($access instanceof EntityAccessControlHandlerInterface) {
+                  $this->checkEntitiesAccess($entities, $facet, $access);
+                }
+              }
 
               // Loop over all results.
               foreach ($results as $i => $result) {

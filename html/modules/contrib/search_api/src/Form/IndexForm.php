@@ -288,7 +288,7 @@ class IndexForm extends EntityForm {
       '#title' => $this->t('Server'),
       '#description' => $this->t('Select the server this index should use. Indexes cannot be enabled without a connection to a valid, enabled server.'),
       '#options' => ['' => '<em>' . $this->t('- No server -') . '</em>'] + $server_options,
-      '#default_value' => $index->hasValidServer() ? $index->getServerId() : '',
+      '#default_value' => (string) $index->getServerInstanceIfAvailable()?->id(),
     ];
 
     $form['status'] = [
@@ -427,12 +427,10 @@ class IndexForm extends EntityForm {
     $selected_tracker = $form_state->getValue('tracker');
     if ($selected_tracker === NULL || $selected_tracker == $index->getTrackerId()) {
       // Initial form build, use the saved tracker (or none for new indexes).
-      if ($index->hasValidTracker()) {
-        $tracker = $index->getTrackerInstance();
-      }
+      $tracker = $index->getTrackerInstanceIfAvailable();
       // Only notify the user of a missing tracker plugin if we're editing an
       // existing index.
-      elseif (!$index->isNew()) {
+      if (!$tracker && !$index->isNew()) {
         $this->messenger->addError($this->t('The tracker plugin is missing or invalid.'));
       }
     }

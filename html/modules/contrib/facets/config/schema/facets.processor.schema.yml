@@ -40,6 +40,9 @@ plugin.plugin_configuration.facets_processor.translate_entity:
     sort:
       type: boolean
       label: translate entity
+    skip_access_check:
+      type: boolean
+      label: 'Skip access check'
 
 plugin.plugin_configuration.facets_processor.term_weight_widget_order:
   type: mapping
@@ -218,6 +221,10 @@ plugin.plugin_configuration.facets_processor.show_only_deepest_level_items_proce
 plugin.plugin_configuration.facets_processor.translate_entity_aggregated_fields:
   type: mapping
   label: 'Transform entity ID in aggregated field to label'
+  mapping:
+    skip_access_check:
+      type: boolean
+      label: 'Skip access check'
 
 plugin.plugin_configuration.facets_processor.uid_to_username_callback:
   type: mapping

@@ -15,6 +15,7 @@
  *     used.
  * - caption_needed: Is the caption tag needed.
  * - caption: The caption for this table.
+ * - caption_is_from_grouping: TRUE if the caption is created from grouping field.
  * - accessibility_description: Extended description for the table details.
  * - accessibility_summary: Summary for the table details.
  * - rows: Table row items. Rows are keyed by row number.
@@ -38,14 +39,13 @@
     sticky ? 'sticky-enabled',
   ]
 %}
-
-{% if responsive %}
-  <div class="table-responsive">
+{% if bs_responsive %}
+  <div class="table-responsive{{ responsive_size }}">
 {% endif %}
 
 <table{{ attributes.addClass(classes) }}>
   {% if caption_needed %}
-    <caption>
+    <caption{% if caption_is_from_grouping %} class="views-bootstrap-table-caption-grouping"{% endif %}>
       {% if caption %}
         {{ caption }}
       {% else %}
@@ -129,6 +129,6 @@
   </tbody>
 </table>
 
-{% if responsive %}
+{% if bs_responsive %}
   </div>
 {% endif %}

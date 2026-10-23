@@ -58,7 +58,7 @@
         });
 
         var options = $.extend({
-          content: $link.attr('data-webform-help'),
+          content: Drupal.webform.xss.filter($link.attr('data-webform-help')),
           delay: 100,
           allowHTML: true,
           interactive: true,

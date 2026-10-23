@@ -2,9 +2,12 @@
 
 namespace Drupal\Tests\webform\Functional\Element;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
+use Drupal\file\FileInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
 
 /**
  * Test for webform element managed file handling.
@@ -144,6 +147,54 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->postSubmission($webform);
     $assert_session->responseContains('<h2 class="visually-hidden">Error message</h2>');
     $assert_session->responseContains('{Custom required error}');
+  }
+
+  /**
+   * Test managed file tamper protection.
+   */
+  public function testFileUploadTampering(): void {
+    $webform = Webform::load('test_element_managed_file');
+
+    // Check that a tampered hidden fid is not saved to the submission.
+    $this->drupalGet('/webform/test_element_managed_file');
+    $this->submitForm([
+      'files[managed_file_single]' => \Drupal::service('file_system')->realpath($this->files[0]->uri),
+    ], 'Upload');
+
+    $tampered_file = $this->createPermanentManagedFile($this->files[1]->uri);
+    $tampered_fid = (int) $tampered_file->id();
+
+    $this->getSession()
+      ->getPage()
+      ->find('css', 'input[name="managed_file_single[fids]"]')
+      ->setValue((string) $tampered_fid);
+    $this->submitForm([], 'Submit');
+
+    $this->assertSession()->responseContains('The uploaded file is invalid.');
+    $this->assertEmpty($this->getLastSubmissionId($webform));
+
+    // Check that a tampered temporary fid is not displayed after an upload.
+    $tampered_file = File::create([
+      'uri' => $this->files[1]->uri,
+      'filename' => basename($this->files[1]->uri),
+      'uid' => 0,
+      'status' => 0,
+    ]);
+    $tampered_file->setTemporary();
+    $tampered_file->save();
+    $tampered_fid = (int) $tampered_file->id();
+
+    $this->drupalGet('/webform/test_element_managed_file');
+    $this->getSession()
+      ->getPage()
+      ->find('css', 'input[name="managed_file_multiple[fids]"]')
+      ->setValue((string) $tampered_fid);
+    $this->submitForm([
+      'files[managed_file_multiple][]' => \Drupal::service('file_system')->realpath($this->files[0]->uri),
+    ], 'Upload');
+
+    // Check that the tampered temporary file is not displayed.
+    $this->assertSession()->responseNotContains($tampered_file->getFilename());
   }
 
   /**
@@ -289,10 +340,70 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->assertEquals(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_usage}')->fetchField());
   }
 
+  /**
+   * Test that browser-renderable file types are downloaded.
+   */
+  public function testFileDownloadMimeTypes() {
+    $this->drupalLogin($this->rootUser);
+
+    $webform = Webform::load('test_element_managed_file');
+    $sid = $this->postSubmissionTest($webform);
+    $submission = WebformSubmission::load($sid);
+
+    $download_files = [
+      'application/xhtml+xml' => $this->createSubmissionFile('test.xhtml', '<html><body>Test XHTML</body></html>', $submission),
+      'application/rdf+xml' => $this->createSubmissionFile('test.rdf', '<rdf:RDF></rdf:RDF>', $submission),
+      'application/atom' => $this->createSubmissionFile('test.atom', '<feed></feed>', $submission),
+      'application/xslt+xml' => $this->createSubmissionFile('test.xslt', '<xsl:stylesheet></xsl:stylesheet>', $submission, 'application/xslt+xml'),
+      'text/xml' => $this->createSubmissionFile('test.text-xml', '<root></root>', $submission, 'text/xml'),
+    ];
+
+    foreach ($download_files as $mime_type => $file) {
+      $headers = WebformManagedFileBase::accessFileDownload($file->getFileUri());
+
+      // Check that browser-renderable files are downloaded.
+      $this->assertEquals($mime_type, $headers['Content-Type']);
+      $this->assertStringStartsWith('attachment;', $headers['Content-Disposition']);
+    }
+  }
+
   /* ************************************************************************ */
   // Helper functions.
   // @see \Drupal\file\Tests\FileFieldTestBase::getTestFile
   /* ************************************************************************ */
+
+  /**
+   * Create a file associated with a webform submission.
+   *
+   * @param string $filename
+   *   The file name.
+   * @param string $data
+   *   The file data.
+   * @param \Drupal\webform\Entity\WebformSubmission $submission
+   *   A webform submission.
+   * @param string|null $mime_type
+   *   The optional mime type.
+   *
+   * @return \Drupal\file\FileInterface
+   *   A file entity.
+   */
+  protected function createSubmissionFile(string $filename, string $data, WebformSubmission $submission, ?string $mime_type = NULL): FileInterface {
+    $directory = 'private://webform/test_element_managed_file/' . $submission->id();
+    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
+    $uri = \Drupal::service('file_system')->saveData($data, "$directory/$filename");
+    $file = File::create([
+      'uri' => $uri,
+      'uid' => $this->rootUser->id(),
+      'status' => 1,
+    ]);
+    if ($mime_type) {
+      $file->setMimeType($mime_type);
+    }
+    $file->save();
+    $this->fileUsage->add($file, 'webform', 'webform_submission', $submission->id());
+
+    return $file;
+  }
 
   /**
    * Check file upload.
@@ -398,6 +509,27 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
     // Check that empty file directory was deleted.
     $this->assertFileDoesNotExist('private://webform/test_element_managed_file/' . $sid . '/');
+  }
+
+  /**
+   * Create a permanent managed file entity.
+   *
+   * @param string $uri
+   *   A file URI.
+   *
+   * @return \Drupal\file\FileInterface
+   *   A permanent managed file.
+   */
+  protected function createPermanentManagedFile(string $uri): FileInterface {
+    $file = File::create([
+      'uri' => $uri,
+      'filename' => basename($uri),
+      'uid' => 0,
+      'status' => 1,
+    ]);
+    $file->setPermanent();
+    $file->save();
+    return $file;
   }
 
 }

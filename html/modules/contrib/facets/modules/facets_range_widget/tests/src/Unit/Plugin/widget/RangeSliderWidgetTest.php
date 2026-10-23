@@ -16,7 +16,7 @@ class RangeSliderWidgetTest extends SliderWidgetTest {
    */
   public function setUp(): void {
     parent::setUp();
-    $this->widget = new RangeSliderWidget([], 'range_slider_widget', []);
+    $this->widget = new RangeSliderWidget([], 'range_slider_widget', [], $this->urlProcessorManager);
   }
 
   /**

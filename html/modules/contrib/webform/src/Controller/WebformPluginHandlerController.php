@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\Plugin\WebformHandler\RemotePostWebformHandler;
 use Drupal\webform\Plugin\WebformHandlerInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformInterface;
@@ -174,6 +175,13 @@ class WebformPluginHandlerController extends ControllerBase implements Container
       /** @var \Drupal\webform\Plugin\WebformHandlerInterface $handler_plugin */
       $handler_plugin = $this->pluginManager->createInstance($plugin_id);
 
+      // Restrict access to remote post handlers.
+      if ($handler_plugin instanceof RemotePostWebformHandler
+        && !$this->currentUser()->hasPermission('administer webform remote post urls')
+        && !$this->currentUser()->hasPermission('administer webform')) {
+        continue;
+      }
+
       // Check if applicable.
       if (!$handler_plugin->isApplicable($webform)) {
         continue;
@@ -284,6 +292,7 @@ class WebformPluginHandlerController extends ControllerBase implements Container
     ];
 
     $build['#attached']['library'][] = 'webform/webform.admin';
+    $build['#cache']['contexts'][] = 'user.permissions';
 
     return $build;
   }

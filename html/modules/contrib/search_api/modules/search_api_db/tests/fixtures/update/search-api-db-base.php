@@ -37,6 +37,13 @@ $extensions = $connection->select('config')
 $extensions = unserialize($extensions);
 $extensions['module']['search_api'] = 0;
 $extensions['module']['search_api_db'] = 0;
+// Uninstall the Core Search modules (in case they were part of the Core dump).
+unset(
+  $extensions['module']['search'],
+  $extensions['module']['search_help'],
+  $extensions['module']['search_node'],
+  $extensions['module']['search_user'],
+);
 $connection->update('config')
   ->fields([
     'data' => serialize($extensions),
@@ -57,3 +64,13 @@ foreach ($configs as $name => $config) {
     ])
     ->execute();
 }
+
+// Remove config objects dependent on Core Search modules.
+$connection->delete('config')
+  ->condition('collection', '')
+  ->condition(
+    $connection->condition('OR')
+      ->condition('name', 'block.block.%search%', 'LIKE')
+      ->condition('name', 'search.%', 'LIKE')
+  )
+  ->execute();

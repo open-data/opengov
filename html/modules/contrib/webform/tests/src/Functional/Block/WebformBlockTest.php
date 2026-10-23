@@ -40,6 +40,11 @@ class WebformBlockTest extends WebformBrowserTestBase {
     $this->drupalGet('<front>');
     $assert_session->responseContains('webform-submission-contact-add-form');
 
+    // Check that a token array query parameter does not break block rendering.
+    $this->drupalGet('<front>', ['query' => ['token' => ['whatever']]]);
+    $assert_session->statusCodeEquals(200);
+    $assert_session->responseContains('webform-submission-contact-add-form');
+
     // Check contact webform with default data.
     $block->getPlugin()->setConfigurationValue('default_data', "name: 'John Smith'");
     $block->save();

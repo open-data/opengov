@@ -1,0 +1,16 @@
+{
+    "name": "drupal/views_bootstrap",
+    "description": "Allows for different styles to be used in views to work with Bootstrap 5 components.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/views_bootstrap",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/views_bootstrap"
+    },
+    "require": {
+        "drupal/core": "^10.1 || ^11 || ^12"
+    },
+    "require-dev": {
+        "drupal/viewsreference": "^2.0"
+    }
+}

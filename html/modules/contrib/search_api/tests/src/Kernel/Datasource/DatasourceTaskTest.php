@@ -8,12 +8,14 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\Utility\Utility;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests task integration of the content entity datasource.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class DatasourceTaskTest extends KernelTestBase {
 
   /**
@@ -188,6 +190,8 @@ class DatasourceTaskTest extends KernelTestBase {
     ];
     $datasource->setConfiguration($configuration);
     $index->save();
+    // Make sure the datasource plugin was not reloaded.
+    $this->assertSame($datasource, $index->getDatasource($datasource_id));
 
     $this->runBatch();
 

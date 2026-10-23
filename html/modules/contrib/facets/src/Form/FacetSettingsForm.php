@@ -87,8 +87,8 @@ class FacetSettingsForm extends EntityForm {
     // facet.
     if ($this->getEntity()->isNew()) {
       $form['#title'] = $this->t('Add facet');
-      $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
-      $form['facets_3_block_support'] = ['#markup' => '<p>' . t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
+      $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . $this->t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
+      $form['facets_3_block_support'] = ['#markup' => '<p>' . $this->t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
     }
     else {
       $form['#title'] = $this->t('Facet settings for %label facet', ['%label' => $this->getEntity()->label()]);

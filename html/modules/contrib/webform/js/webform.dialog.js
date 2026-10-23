@@ -19,7 +19,7 @@
    */
   Drupal.webformOpenDialog = function (url, type) {
     // Create a div with link but don't attach it to the page.
-    var $div = $('<div><a href="' + url + '" class="webform-dialog ' + type + '"></a></div>');
+    var $div = $('<div>').append($('<a>').attr('href', url).addClass('webform-dialog').addClass(type || ''));
     // Init the webform dialog behavior.
     Drupal.behaviors.webformDialog.attach($div.get(0));
     // Trigger the link.

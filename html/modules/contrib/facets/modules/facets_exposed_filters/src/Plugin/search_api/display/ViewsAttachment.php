@@ -2,8 +2,10 @@
 
 namespace Drupal\facets_exposed_filters\Plugin\search_api\display;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\search_api\Plugin\search_api\display\ViewsDisplayBase;
 use Drupal\views\Views;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a Views attachment display.
@@ -14,7 +16,24 @@ use Drupal\views\Views;
  *   deriver = "Drupal\search_api\Plugin\search_api\display\ViewsDisplayDeriver"
  * )
  */
-class ViewsAttachment extends ViewsDisplayBase {
+class ViewsAttachment extends ViewsDisplayBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The current path service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected $currentPath;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    /** @var static $display */
+    $display = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $display->currentPath = $container->get('path.current');
+    return $display;
+  }
 
   /**
    * {@inheritdoc}
@@ -50,7 +69,7 @@ class ViewsAttachment extends ViewsDisplayBase {
     }
 
     // Fallback to the current path.
-    return \Drupal::service('path.current')->getPath();
+    return $this->currentPath->getPath();
   }
 
 }

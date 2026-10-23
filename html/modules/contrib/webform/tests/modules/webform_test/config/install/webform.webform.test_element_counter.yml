@@ -57,6 +57,13 @@ elements: |
       '#counter_maximum': 10
       '#counter_minimum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) entered.'
       '#counter_maximum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) remaining.'
+    counter_characters_options_xss:
+      '#type': textfield
+      '#title': counter_characters_options_xss
+      '#counter_type': character
+      '#counter_minimum': 5
+      '#attributes':
+        data-options: '{"countContainerElement":"em","errorTextElement":"script","counterText":"<strong>%d</strong> option character(s) entered.","minimumErrorText":"<strong>Minimum not met</strong>"}'
   counter_word:
     '#type': details
     '#title': counter_word

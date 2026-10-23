@@ -38,7 +38,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: '<p>A blade runner must pursue and terminate four replicants who stole a ship in space and have returned to Earth to find their creator.</p>'
       format: basic_html

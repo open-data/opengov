@@ -41,7 +41,7 @@ interface BootstrapLayoutsHandlerInterface extends ContainerFactoryPluginInterfa
    * @return \Drupal\bootstrap_layouts\BootstrapLayout[]
    *   An associative array of BootstrapLayout instances, keyed by identifier.
    */
-  public function loadInstances(array $ids = NULL);
+  public function loadInstances(?array $ids = NULL);
 
   /**
    * Saves a specific layout instance.

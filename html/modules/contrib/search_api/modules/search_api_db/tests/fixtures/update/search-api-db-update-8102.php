@@ -6,7 +6,7 @@
  *
  * Used for testing the search_api_db_update_8102() update.
  *
- * @see \Drupal\search_api_db\Tests\Update\SearchApiDbUpdate8102Test
+ * @see \Drupal\Tests\search_api_db\Functional\Update\SearchApiDbUpdate8102Test
  */
 
 use Drupal\Core\Database\Database;

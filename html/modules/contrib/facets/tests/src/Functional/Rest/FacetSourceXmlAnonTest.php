@@ -23,6 +23,6 @@ class FacetSourceXmlAnonTest extends FacetSourceResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $mimeType = 'text/xml; charset=UTF-8';
+  protected static $mimeType = 'text/xml; charset=utf-8';
 
 }

@@ -44,20 +44,51 @@ class SearchApiString extends QueryTypePluginBase {
     if (count($active_items)) {
       $filter = $query->createConditionGroup($operator, ['facet:' . $field_identifier]);
       foreach ($active_items as $value) {
-        if (str_starts_with($value, '!(')) {
-          /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $urlProcessor */
-          $urlProcessor = $this->facet->getProcessors()['url_processor_handler']->getProcessor();
-          foreach (explode($urlProcessor->getDelimiter(), substr($value, 2, -1)) as $missing_value) {
-            // Note that $exclude needs to be inverted for "missing".
-            $filter->addCondition($this->facet->getFieldIdentifier(), $missing_value, !$exclude ? '<>' : '=');
-          }
-        }
-        else {
-          $filter->addCondition($this->facet->getFieldIdentifier(), $value, $exclude ? '<>' : '=');
-        }
+        $this->addActiveItemCondition($query, $filter, $value, $exclude);
       }
       $query->addConditionGroup($filter);
     }
+  }
+
+  /**
+   * Adds an active facet item to the query condition group.
+   *
+   * Missing buckets must exclude every non-missing value at once, so they are
+   * always represented as nested AND groups even when the facet uses OR logic.
+   *
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The query being built.
+   * @param \Drupal\search_api\Query\ConditionGroupInterface $filter
+   *   The outer facet condition group.
+   * @param string $value
+   *   The active facet value.
+   * @param bool $exclude
+   *   Whether the facet uses exclusion mode.
+   */
+  protected function addActiveItemCondition(QueryInterface $query, $filter, string $value, bool $exclude): void {
+    if (!str_starts_with($value, '!(')) {
+      $filter->addCondition($this->facet->getFieldIdentifier(), $value, $exclude ? '<>' : '=');
+      return;
+    }
+
+    $delimiter = ',';
+    $url_processor_handler = $this->facet->getProcessors()['url_processor_handler'] ?? NULL;
+
+    if ($url_processor_handler) {
+      /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $urlProcessor */
+      $urlProcessor = $url_processor_handler->getProcessor();
+      $delimiter = $urlProcessor->getDelimiter();
+    }
+
+    $missing_values = explode($delimiter, substr($value, 2, -1));
+    $missing_filter = $query->createConditionGroup('AND', ['facet:' . $this->facet->getFieldIdentifier()]);
+
+    foreach ($missing_values as $missing_value) {
+      // Note that $exclude needs to be inverted for "missing".
+      $missing_filter->addCondition($this->facet->getFieldIdentifier(), $missing_value, !$exclude ? '<>' : '=');
+    }
+
+    $filter->addConditionGroup($missing_filter);
   }
 
   /**
@@ -80,6 +111,13 @@ class SearchApiString extends QueryTypePluginBase {
           }
           if (($key = array_search($result_filter, $unprocessed_active_items)) !== FALSE) {
             unset($unprocessed_active_items[$key]);
+          }
+          elseif ($result_filter === '!') {
+            foreach ($unprocessed_active_items as $key => $active_item) {
+              if (str_starts_with((string) $active_item, '!(')) {
+                unset($unprocessed_active_items[$key]);
+              }
+            }
           }
           $count = $result['count'];
           $result = new Result($this->facet, $result_filter, $result_filter, $count);

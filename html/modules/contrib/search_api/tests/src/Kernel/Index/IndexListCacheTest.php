@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\search_api\Kernel\Index;
 
@@ -14,12 +14,14 @@ use Drupal\search_api\Task\TaskManagerInterface;
 use Drupal\search_api_test\MethodOverrides;
 use Drupal\search_api_test\PluginTestTrait;
 use Drupal\user\Entity\User;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests correct caching for indexed items.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class IndexListCacheTest extends KernelTestBase {
 
   use PluginTestTrait;

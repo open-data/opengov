@@ -342,7 +342,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     // Load entity from token or saved draft when not editing or testing
     // submission form.
     if (!in_array($this->operation, ['edit', 'edit_all', 'test'])) {
-      $token = $this->getRequest()->query->get('token');
+      $token = $this->getRequest()->query->all()['token'] ?? '';
       $webform_submission_token = $this->getStorage()->loadFromToken($token, $webform, $source_entity);
       if ($webform_submission_token) {
         $entity = $webform_submission_token;

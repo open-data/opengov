@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Utility\Error;
 use Drupal\search_api\Entity\Index;
+use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,7 +34,7 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
    * {@inheritdoc}
    */
   public static function getSubscribedEvents(): array {
-    $events['search_api.task.' . self::TRACK_ITEMS_TASK_TYPE][] = ['trackItems'];
+    $events[SearchApiEvents::EXECUTE_TASK_EVENT_PREFIX . self::TRACK_ITEMS_TASK_TYPE][] = ['trackItems'];
 
     return $events;
   }
@@ -124,7 +125,7 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
 
     $reschedule = FALSE;
     if ($index->isValidDatasource($datasource_id)) {
-      $raw_ids = $index->getDatasource($datasource_id)->getItemIds($data['page']);
+      $raw_ids = $index->getDatasourceIfAvailable($datasource_id)->getItemIds($data['page']);
       if ($raw_ids !== NULL) {
         $reschedule = TRUE;
         if ($raw_ids) {
@@ -195,12 +196,9 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
    * {@inheritdoc}
    */
   public function stopTracking(IndexInterface $index, ?array $datasource_ids = NULL) {
-    $valid_tracker = $index->hasValidTracker();
     if (!isset($datasource_ids)) {
       $this->taskManager->deleteTasks($this->getTaskConditions($index));
-      if ($valid_tracker) {
-        $index->getTrackerInstance()->trackAllItemsDeleted();
-      }
+      $index->getTrackerInstanceIfAvailable()?->trackAllItemsDeleted();
       return;
     }
 
@@ -217,8 +215,9 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
       }
     }
 
+    $tracker = $index->getTrackerInstanceIfAvailable();
     foreach ($datasource_ids as $datasource_id) {
-      $index->getTrackerInstance()->trackAllItemsDeleted($datasource_id);
+      $tracker?->trackAllItemsDeleted($datasource_id);
     }
   }
 

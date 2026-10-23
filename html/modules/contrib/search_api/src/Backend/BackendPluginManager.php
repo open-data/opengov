@@ -27,7 +27,7 @@ class BackendPluginManager extends SearchApiPluginManager {
     #[Autowire(service: 'cache.discovery')]
     CacheBackendInterface $cache_backend,
     ModuleHandlerInterface $module_handler,
-    EventDispatcherInterface $eventDispatcher
+    EventDispatcherInterface $eventDispatcher,
   ) {
     parent::__construct(
       'Plugin/search_api/backend',

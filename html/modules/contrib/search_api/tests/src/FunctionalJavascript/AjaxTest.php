@@ -4,14 +4,15 @@ namespace Drupal\Tests\search_api\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\node\Entity\NodeType;
-use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_test\PluginTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests AJAX functionality in the Search API module.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class AjaxTest extends WebDriverTestBase {
 
   use PluginTestTrait;
@@ -54,13 +55,6 @@ class AjaxTest extends WebDriverTestBase {
         'type' => 'page',
         'name' => 'Page',
       ]);
-    }
-
-    // Do not use a batch for tracking the initial items after creating an
-    // index when running the tests via the GUI. Otherwise, it seems Drupal's
-    // Batch API gets confused and the test fails.
-    if (!Utility::isRunningInCli()) {
-      \Drupal::state()->set('search_api_use_tracking_batch', FALSE);
     }
 
     $permissions = [

@@ -34,10 +34,11 @@ class ViewsBootstrapMediaObject extends StylePluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    $options['image_field'] = ['default' => []];
-    $options['heading_field'] = ['default' => []];
-    $options['body_field'] = ['default' => []];
-    $options['image_class'] = ['default' => 'media-left'];
+    $options['heading_field'] = ['default' => ''];
+    $options['image_field'] = ['default' => ''];
+    $options['image_placement'] = ['default' => 'first'];
+    $options['image_class'] = ['default' => 'start'];
+    $options['body_field'] = ['default' => ''];
 
     return $options;
   }
@@ -52,11 +53,17 @@ class ViewsBootstrapMediaObject extends StylePluginBase {
     $optionalFields = ['' => $this->t('<None>')];
     $optionalFields += $this->displayHandler->getFieldLabels(TRUE);
 
+    $form['help'] = [
+      '#markup' => $this->t('The Bootstrap media object displays content with an image item lead with heading and text (<a href=":docs">see documentation</a>).',
+        [':docs' => 'https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/views-bootstrap-for-bootstrap-5/media-object']),
+      '#weight' => -99,
+    ];
+
     $form['heading_field'] = [
       '#type' => 'select',
       '#title' => $this->t('Heading field'),
       '#options' => $fields,
-      '#required' => TRUE,
+      '#required' => FALSE,
       '#default_value' => $this->options['heading_field'],
       '#description' => $this->t('Select the field that will be used as the media object heading.'),
     ];
@@ -64,19 +71,30 @@ class ViewsBootstrapMediaObject extends StylePluginBase {
     $form['image_field'] = [
       '#type' => 'select',
       '#title' => $this->t('Image field'),
-      '#options' => $this->displayHandler->getFieldLabels(TRUE),
+      '#options' => $fields,
       '#required' => TRUE,
       '#default_value' => $this->options['image_field'],
       '#description' => $this->t('Select the field that will be used as the media object image.'),
+    ];
+
+    $form['image_placement'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Image Placement'),
+      '#options' => [
+        'first' => $this->t('Left'),
+        'last' => $this->t('Right'),
+      ],
+      '#default_value' => $this->options['image_placement'],
+      '#description' => $this->t('Align the media object image left or right.'),
     ];
 
     $form['image_class'] = [
       '#type' => 'radios',
       '#title' => $this->t('Image Alignment'),
       '#options' => [
-        'media-left' => $this->t('Left'),
-        'media-right' => $this->t('Right'),
-        'media-middle' => $this->t('Middle'),
+        'start' => $this->t('Top'),
+        'center' => $this->t('Middle'),
+        'end' => $this->t('Bottom'),
       ],
       '#default_value' => $this->options['image_class'],
       '#description' => $this->t('Align the media object image left or right.'),

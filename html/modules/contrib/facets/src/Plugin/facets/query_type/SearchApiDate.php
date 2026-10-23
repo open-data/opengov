@@ -363,7 +363,7 @@ class SearchApiDate extends QueryTypeRangeBase {
     $date = new DrupalDateTime();
     $date->setTimestamp($value);
     $now = new DrupalDateTime();
-    $now->setTimestamp(\Drupal::time()->getRequestTime());
+    $now->setTimestamp((int) ($_SERVER['REQUEST_TIME'] ?? time()));
     $interval = $date->diff($now);
     $future = $date > $now;
 

@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\facets\Event\GetFacetCacheContexts;
 use Drupal\facets\Event\GetFacetCacheMaxAge;
 use Drupal\facets\Event\GetFacetCacheTags;
-use Drupal\facets\Exception\Exception;
 use Drupal\facets\Exception\InvalidProcessorException;
 use Drupal\facets\Exception\InvalidQueryTypeException;
 use Drupal\facets\FacetInterface;
@@ -868,7 +867,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
     // If there are active values,
     // set the results which are active to active.
     if (count($this->active_values)) {
-      foreach ($this->results as $result) {
+      foreach ($this->getResultsKeyedByRawValue($this->results) as $result) {
         if (in_array($result->getRawValue(), $this->active_values)) {
           $result->setActiveState(TRUE);
         }

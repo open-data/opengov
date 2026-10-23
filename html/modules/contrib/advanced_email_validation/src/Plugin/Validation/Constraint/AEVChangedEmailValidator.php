@@ -6,7 +6,6 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\advanced_email_validation\AdvancedEmailValidator;
-use EmailValidator\EmailValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -41,36 +40,46 @@ class AEVChangedEmailValidator extends ConstraintValidator implements ContainerI
    */
   public function validate($value, Constraint $constraint): void {
 
+    if ($value->isEmpty()) {
+      return;
+    }
     if ($value->getEntity()->isNew()) {
       return;
     }
-    if (!$this->valueChanged($value)) {
-      return;
+
+    $email = $value->getString();
+    $storedValue = $this->getStoredValue($value);
+    if (!$storedValue->isEmpty()) {
+      $storedEmail = $storedValue->getString();
+      if ($storedEmail === $email) {
+        return;
+      }
     }
 
-    $result = $this->emailValidator->validate($value->getString());
-
-    if ($result !== EmailValidator::NO_ERROR) {
-      $errorMessage = $this->emailValidator->errorMessageFromCode($result);
+    $result = $this->emailValidator->validateEmail($email);
+    if (!$result->isValid()) {
+      $errorMessage = $result->message;
       if (empty($errorMessage)) {
         $this->context->addViolation($constraint->defaultError);
+        return;
       }
       $this->context->addViolation($errorMessage);
     }
   }
 
   /**
-   * Determine whether the field being validated has been changed.
+   * Get the stored value of the field.
    */
-  protected function valueChanged(FieldItemListInterface $value): bool {
+  protected function getStoredValue(FieldItemListInterface $value): FieldItemListInterface {
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $value->getEntity();
     $entityType = $entity->getEntityType()->id();
     $entityStorage = $this->entityTypeManager->getStorage($entityType);
-    $storedEntity = $entityStorage->load($entity->id());
-    $storedField = $storedEntity->get($value->getName());
-    $storedValue = $storedField->get(0)->get('value')->getValue();
-    return $storedValue !== $value->getString();
+    // Load the persisted entity, bypassing the static cache, so we compare
+    // against the stored email rather than the in-memory (already modified)
+    // value of the entity currently being validated.
+    $storedEntity = $entityStorage->loadUnchanged($entity->id());
+    return $storedEntity->get($value->getName());
   }
 
 }

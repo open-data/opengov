@@ -242,9 +242,9 @@ class Item implements \IteratorAggregate, ItemInterface {
       $data_type_fallback_mapping = \Drupal::getContainer()
         ->get('search_api.data_type_helper')
         ->getDataTypeFallbackMapping($this->index);
+      $fields_by_property_path = [];
+      $processors_with_fields = [];
       foreach ([NULL, $this->getDatasourceId()] as $datasource_id) {
-        $fields_by_property_path = [];
-        $processors_with_fields = [];
         $properties = $this->index->getPropertyDefinitions($datasource_id);
         foreach ($this->index->getFieldsByDatasource($datasource_id) as $field_id => $field) {
           // Don't overwrite fields that were previously set.
@@ -276,27 +276,29 @@ class Item implements \IteratorAggregate, ItemInterface {
             }
           }
         }
-        try {
-          if ($fields_by_property_path) {
-            \Drupal::getContainer()
-              ->get('search_api.fields_helper')
-              ->extractFields($this->getOriginalObject(), $fields_by_property_path, $this->getLanguage());
-          }
-          if ($processors_with_fields) {
-            $processors = $this->index->getProcessorsByStage(ProcessorInterface::STAGE_ADD_PROPERTIES);
-            foreach ($processors as $processor_id => $processor) {
-              if (isset($processors_with_fields[$processor_id])) {
-                $processor->addFieldValues($this);
-              }
-            }
-          }
+      }
+
+      // Extract the "regular" properties from the Typed Data and then let all
+      // necessary processors add their field values.
+      try {
+        if ($fields_by_property_path) {
+          \Drupal::getContainer()
+            ->get('search_api.fields_helper')
+            ->extractFields($this->getOriginalObject(), $fields_by_property_path, $this->getLanguage());
         }
-        catch (SearchApiException $e) {
-          // If we couldn't load the object, just log an error and fail
-          // silently to set the values.
-          $this->logException($e);
+        if ($processors_with_fields) {
+          $processors = $this->index->getProcessorsByStage(ProcessorInterface::STAGE_ADD_PROPERTIES);
+          foreach (array_intersect_key($processors, $processors_with_fields) as $processor) {
+            $processor->addFieldValues($this);
+          }
         }
       }
+      catch (SearchApiException $e) {
+        // If we couldn't load the object, just log an error and fail
+        // silently to set the values.
+        $this->logException($e);
+      }
+
       $this->fieldsExtracted = TRUE;
     }
     return $this->fields;

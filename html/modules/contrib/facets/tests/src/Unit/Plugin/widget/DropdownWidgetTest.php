@@ -17,7 +17,7 @@ class DropdownWidgetTest extends WidgetTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->widget = new DropdownWidget(['show_numbers' => TRUE], 'dropdown_widget', []);
+    $this->widget = new DropdownWidget(['show_numbers' => TRUE], 'dropdown_widget', [], $this->urlProcessorManager);
   }
 
   /**

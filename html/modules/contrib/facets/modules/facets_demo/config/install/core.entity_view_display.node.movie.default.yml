@@ -2,10 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.movie.body
     - field.field.node.movie.field_country_of_origin
     - field.field.node.movie.field_genre
     - field.field.node.movie.field_imdb_rating
+    - field.field.node.movie.field_movie_body
     - field.field.node.movie.field_release_date
     - node.type.movie
   module:
@@ -17,13 +17,6 @@ targetEntityType: node
 bundle: movie
 mode: default
 content:
-  body:
-    type: text_default
-    label: hidden
-    settings: {  }
-    third_party_settings: {  }
-    weight: 0
-    region: content
   field_country_of_origin:
     type: entity_reference_label
     label: above
@@ -50,6 +43,13 @@ content:
       prefix_suffix: true
     third_party_settings: {  }
     weight: 2
+    region: content
+  field_movie_body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
     region: content
   field_release_date:
     type: datetime_default

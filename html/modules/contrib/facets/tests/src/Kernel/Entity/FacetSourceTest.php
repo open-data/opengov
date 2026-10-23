@@ -4,6 +4,7 @@ namespace Drupal\Tests\facets\Kernel\Entity;
 
 use Drupal\facets\Entity\FacetSource;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Class FacetSourceTest.
@@ -13,6 +14,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @group facets
  * @coversDefaultClass \Drupal\facets\Entity\FacetSource
  */
+#[RunTestsInSeparateProcesses]
 class FacetSourceTest extends KernelTestBase {
 
   /**

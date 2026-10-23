@@ -7,12 +7,14 @@ use Drupal\search_api\Entity\Server;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\ServerInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests our integration with the Configuration Read-only module.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class ConfigReadOnlyIntegrationTest extends SearchApiBrowserTestBase {
 
   /**

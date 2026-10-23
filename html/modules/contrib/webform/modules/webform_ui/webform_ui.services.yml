@@ -7,3 +7,8 @@ services:
   Drupal\webform_ui\Hook\WebformUiHooks:
     class: Drupal\webform_ui\Hook\WebformUiHooks
     autowire: true
+
+  webform_ui.route_subscriber:
+    class: Drupal\webform_ui\Routing\WebformUiRouteSubscriber
+    tags:
+      - { name: event_subscriber }

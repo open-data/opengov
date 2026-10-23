@@ -8,6 +8,7 @@ use Drupal\taxonomy\Entity\Term;
 use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\Tests\facets\Functional\FacetsTestBase;
 use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 /**
  * Tests the hierarchical facets implementation.
@@ -113,6 +114,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
   /**
    * Test the hierarchical facets functionality.
    */
+  #[IgnoreDeprecations]
   public function testHierarchicalFacet() {
     // Verify that the link to the index processors settings page is available.
     $this->drupalGet($this->facetEditPage);

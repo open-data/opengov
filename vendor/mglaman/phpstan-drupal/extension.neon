@@ -1,6 +1,27 @@
 parameters:
+	# Content entities accept any property name through ContentEntityBase::__get(),
+	# and PHPStan only consults property reflection extensions for an interface
+	# when it is listed here. Covers every interface extending ContentEntityInterface.
+	universalObjectCratesClasses:
+		- Drupal\Core\Entity\ContentEntityInterface
 	bootstrapFiles:
 		- drupal-autoloader.php
+	# Drupal adds and removes these BC attributes across minor versions, so each
+	# one is missing on some supported core version. Unmatched ignores are
+	# expected wherever the class exists.
+	ignoreErrors:
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyHook does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyRequirementsHook does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyModuleImplementsAlter does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
 	excludePaths:
 		- '*.api.php'
 		- '*/tests/fixtures/*.php'
@@ -31,6 +52,11 @@ parameters:
 		configGetReturnType: false
 		classResolverReturnType: true
 		rules:
+			discouragedFunctionsRule: true
+			globalDrupalDependencyInjectionRule: true
+			pluginManagerSetsCacheBackendRule: true
+			moduleLoadInclude: true
+			loadIncludes: true
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
 			accessResultConditionRule: true
@@ -275,6 +301,11 @@ parametersSchema:
 		configGetReturnType: boolean()
 		classResolverReturnType: boolean()
 		rules: structure([
+			discouragedFunctionsRule: boolean()
+			globalDrupalDependencyInjectionRule: boolean()
+			pluginManagerSetsCacheBackendRule: boolean()
+			moduleLoadInclude: boolean()
+			loadIncludes: boolean()
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
@@ -305,6 +336,10 @@ services:
 		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
+	-
+		class: mglaman\PHPStanDrupal\Drupal\BootstrapResultCacheMetaExtension
+		tags:
+			- phpstan.resultCacheMetaExtension
 	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:

@@ -3,10 +3,12 @@
 namespace Drupal\search_api\Plugin\search_api\processor;
 
 use Drupal\Component\Transliteration\TransliterationInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\search_api\Attribute\SearchApiProcessor;
 use Drupal\search_api\Processor\FieldsProcessorPluginBase;
+use Drupal\search_api\Query\QueryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -54,8 +56,6 @@ class Transliteration extends FieldsProcessorPluginBase {
 
     $processor->setTransliterator($container->get('transliteration'));
     $processor->setLanguageManager($container->get('language_manager'));
-    $langcode = $processor->getLanguageManager()->getDefaultLanguage()->getId();
-    $processor->setLangcode($langcode);
 
     return $processor;
   }
@@ -107,28 +107,57 @@ class Transliteration extends FieldsProcessorPluginBase {
   }
 
   /**
-   * Retrieves the langcode.
+   * Retrieves the language code.
    *
    * @return string
-   *   The langcode.
+   *   the language code.
    */
   public function getLangcode() {
     return $this->langcode ?: $this->getLanguageManager()
-      ->getDefaultLanguage()
+      ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
       ->getId();
   }
 
   /**
-   * Sets the langcode.
+   * Sets the language code.
    *
-   * @param string $langcode
-   *   The new langcode.
+   * @param string|null $langcode
+   *   The new language code, if any.
    *
    * @return $this
    */
   public function setLangcode($langcode) {
     $this->langcode = $langcode;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preprocessSearchQuery(QueryInterface $query): void {
+    $languages = $query->getLanguages();
+    if ($languages && count($languages) === 1) {
+      $this->setLangcode(reset($languages));
+    }
+    parent::preprocessSearchQuery($query);
+    $this->setLangcode(NULL);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preprocessIndexItems(array $items): void {
+    // Annoyingly, this doc comment is needed for PHPStorm. See
+    // http://youtrack.jetbrains.com/issue/WI-23586
+    foreach ($items as $item) {
+      $this->setLangcode($item->getLanguage());
+      foreach ($item->getFields() as $name => $field) {
+        if ($this->testField($name, $field)) {
+          $this->processField($field);
+        }
+      }
+    }
+    $this->setLangcode(NULL);
   }
 
   /**

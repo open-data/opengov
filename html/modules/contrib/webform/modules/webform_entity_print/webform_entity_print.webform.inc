@@ -73,6 +73,7 @@ function _webform_entity_print_form(array &$element, array $template_settings, a
     '#description' => ($default_template_settings)
       ? t('Enter custom print CSS to be attached to printed webform submissions.')
       : t('Enter custom print CSS to be attached to all printed webform submissions.'),
+    '#access' => \Drupal::currentUser()->hasPermission('edit webform assets'),
   ];
   /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
   $token_manager = \Drupal::service('webform.token_manager');

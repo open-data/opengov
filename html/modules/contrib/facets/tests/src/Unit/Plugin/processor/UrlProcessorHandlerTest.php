@@ -7,9 +7,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Exception\InvalidProcessorException;
-use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\Plugin\facets\processor\UrlProcessorHandler;
 use Drupal\facets\UrlProcessor\UrlProcessorInterface;
+use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -25,7 +25,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testEmptyProcessorConfiguration() {
     $this->expectException(InvalidProcessorException::class);
     $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
-    new UrlProcessorHandler([], 'test', []);
+    new UrlProcessorHandler([], 'test', [], $this->createMock(UrlProcessorPluginManager::class));
   }
 
   /**
@@ -34,7 +34,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testInvalidProcessorConfiguration() {
     $this->expectException(InvalidProcessorException::class);
     $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
-    new UrlProcessorHandler(['facet' => new \stdClass()], 'test', []);
+    new UrlProcessorHandler(['facet' => new \stdClass()], 'test', [], $this->createMock(UrlProcessorPluginManager::class));
   }
 
   /**
@@ -44,7 +44,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
     $facet = new Facet(['id' => '_test'], 'facets_facet');
     $this->createContainer();
 
-    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', []);
+    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', [], \Drupal::service('plugin.manager.facets.url_processor'));
     // The actual results of this should be tested in the actual processor.
     $processor->build($facet, []);
   }
@@ -55,7 +55,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testConfiguration() {
     $facet = new Facet([], 'facets_facet');
     $this->createContainer();
-    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', []);
+    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', [], \Drupal::service('plugin.manager.facets.url_processor'));
 
     $config = $processor->defaultConfiguration();
     $this->assertEquals([], $config);
@@ -67,7 +67,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testDescription() {
     $facet = new Facet([], 'facets_facet');
     $this->createContainer();
-    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', []);
+    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', [], \Drupal::service('plugin.manager.facets.url_processor'));
 
     $this->assertEquals('', $processor->getDescription());
   }
@@ -78,7 +78,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testIsHidden() {
     $facet = new Facet([], 'facets_facet');
     $this->createContainer();
-    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', []);
+    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', [], \Drupal::service('plugin.manager.facets.url_processor'));
 
     $this->assertEquals(FALSE, $processor->isHidden());
   }
@@ -89,7 +89,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   public function testIsLocked() {
     $facet = new Facet([], 'facets_facet');
     $this->createContainer();
-    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', []);
+    $processor = new UrlProcessorHandler(['facet' => $facet], 'url_processor_handler', [], \Drupal::service('plugin.manager.facets.url_processor'));
 
     $this->assertEquals(FALSE, $processor->isLocked());
   }
@@ -100,7 +100,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
   protected function createContainer() {
     $url_processor = $this->createMock(UrlProcessorInterface::class);
 
-    $manager = $this->createMock(FacetSourcePluginManager::class);
+    $manager = $this->createMock(UrlProcessorPluginManager::class);
     $manager->expects($this->exactly(1))
       ->method('createInstance')
       ->willReturn($url_processor);

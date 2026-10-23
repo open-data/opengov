@@ -45,7 +45,7 @@
         }
 
         var options = $.extend({
-          content: $description.html(),
+          content: Drupal.webform.xss.filter($description.html()),
           allowHTML: true
         }, Drupal.webform.tooltipElement.options);
 
@@ -69,7 +69,7 @@
         var title = $(this).attr('title');
         if (title) {
           var options = $.extend({
-            content: title,
+            content: Drupal.webform.xss.filter(title),
             allowHTML: true
           }, Drupal.webform.tooltipLink.options);
 

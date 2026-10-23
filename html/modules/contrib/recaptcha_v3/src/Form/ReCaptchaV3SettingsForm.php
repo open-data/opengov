@@ -45,7 +45,7 @@ class ReCaptchaV3SettingsForm extends ConfigFormBase {
    * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
    *   The typed config manager.
    * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
-   *   Library discovery service.
+   *   The library discovery service.
    * @param \Drupal\Core\Render\ElementInfoManager $element_info_manager
    *   Element info manager service.
    * @param \Drupal\captcha\Service\CaptchaService $captcha_service
@@ -135,8 +135,8 @@ class ReCaptchaV3SettingsForm extends ConfigFormBase {
     ];
 
     $form['error_message'] = [
-      '#type' => 'textfield',
-      '#size' => 128,
+      '#type' => 'textarea',
+      '#rows' => 1,
       '#title' => $this->t('Error message'),
       '#description' => $this->t('This message will be displayed to user in case of failed recaptcha v3 verification.'),
       '#default_value' => $config->get('error_message'),
@@ -162,7 +162,7 @@ class ReCaptchaV3SettingsForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Hide badge'),
       '#default_value' => $config->get('hide_badge'),
-      '#description' => $this->t('Hide the reCAPTCHA badge. An alternative branding will be shown in the form. Cache clearing required.'),
+      '#description' => $this->t('Hide the reCAPTCHA badge. Cache rebuild required.'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -177,13 +177,6 @@ class ReCaptchaV3SettingsForm extends ConfigFormBase {
 
     $is_key_changed = $config->get('site_key') !== $values['site_key'];
     $is_library_changed = $config->get('library_use_recaptcha_net') !== $values['library_use_recaptcha_net'];
-    // If site key or recaptcha library URL have been changed,
-    // then need to rebuild site libraries and elements.
-    if ($is_key_changed || $is_library_changed) {
-      $this->libraryDiscovery->clearCachedDefinitions();
-      $this->elementInfoManager->clearCachedDefinitions();
-    }
-
     $this->config('recaptcha_v3.settings')
       ->set('site_key', $values['site_key'])
       ->set('secret_key', $values['secret_key'])
@@ -195,7 +188,27 @@ class ReCaptchaV3SettingsForm extends ConfigFormBase {
       ->set('library_use_recaptcha_net', $values['library_use_recaptcha_net'])
       ->save();
 
+    // If site key or recaptcha library URL have been changed,
+    // then need to rebuild site libraries and elements.
+    if ($is_key_changed || $is_library_changed) {
+      $this->clearLibraryDiscoveryCache();
+      $this->elementInfoManager->clearCachedDefinitions();
+    }
+
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Clears cached library definitions across supported core versions.
+   */
+  protected function clearLibraryDiscoveryCache() {
+    if (method_exists($this->libraryDiscovery, 'clear')) {
+      $this->libraryDiscovery->clear();
+      return;
+    }
+
+    $method = 'clearCachedDefinitions';
+    $this->libraryDiscovery->{$method}();
   }
 
 }

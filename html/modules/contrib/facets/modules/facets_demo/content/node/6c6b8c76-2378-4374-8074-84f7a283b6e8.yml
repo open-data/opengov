@@ -37,7 +37,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: "<p>Topper Harley, a top gun fighter pilot, is recalled to serve on the SS Essess. Topper's mission is to destroy Saddam Hussein's nuclear plants. Unfortunately, Topper is psychologically imbalanced and is sure to crack under pressure.</p>"
       format: basic_html

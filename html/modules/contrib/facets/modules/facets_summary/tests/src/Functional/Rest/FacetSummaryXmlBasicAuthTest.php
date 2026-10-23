@@ -28,7 +28,7 @@ class FacetSummaryXmlBasicAuthTest extends FacetSummaryResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $mimeType = 'text/xml; charset=UTF-8';
+  protected static $mimeType = 'text/xml; charset=utf-8';
 
   /**
    * {@inheritdoc}

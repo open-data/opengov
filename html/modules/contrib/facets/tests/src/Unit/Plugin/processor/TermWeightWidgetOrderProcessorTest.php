@@ -4,6 +4,9 @@ namespace Drupal\Tests\facets\Unit\Plugin\processor;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\TypedData\EntityDataDefinition;
+use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
+use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Plugin\facets\processor\TermWeightWidgetOrderProcessor;
 use Drupal\facets\Result\Result;
@@ -153,6 +156,45 @@ class TermWeightWidgetOrderProcessorTest extends UnitTestCase {
     // Compare the two values and check the result with an assertion.
     $sort_value = $this->processor->sortResults($this->originalResults[0], $this->originalResults[1]);
     $this->assertLessThan(0, $sort_value);
+  }
+
+  /**
+   * Tests that a facet on a taxonomy term reference field is supported.
+   */
+  public function testSupportsFacet() {
+    $this->assertTrue($this->processor->supportsFacet($this->mockFacet('taxonomy_term')));
+    $this->assertFalse($this->processor->supportsFacet($this->mockFacet('node')));
+  }
+
+  /**
+   * Creates a facet mock for a reference field to the given entity type.
+   *
+   * @param string $entity_type_id
+   *   The referenced entity type ID.
+   *
+   * @return \Drupal\facets\FacetInterface
+   *   The facet mock.
+   */
+  protected function mockFacet(string $entity_type_id) {
+    $property_definition = $this->createMock(DataReferenceDefinitionInterface::class);
+    $property_definition->expects($this->any())
+      ->method('getDataType')
+      ->willReturn('entity_reference');
+    $property_definition->expects($this->any())
+      ->method('getTargetDefinition')
+      ->willReturn((new EntityDataDefinition())->setEntityTypeId($entity_type_id));
+
+    $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
+    $data_definition->expects($this->any())
+      ->method('getPropertyDefinitions')
+      ->willReturn([$property_definition]);
+
+    $facet = $this->createMock(Facet::class);
+    $facet->expects($this->any())
+      ->method('getDataDefinition')
+      ->willReturn($data_definition);
+
+    return $facet;
   }
 
 }

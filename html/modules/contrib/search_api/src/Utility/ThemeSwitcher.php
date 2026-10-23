@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\search_api\Utility;
 
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Theme\ActiveTheme;
 use Drupal\Core\Theme\MissingThemeDependencyException;
@@ -18,7 +19,7 @@ class ThemeSwitcher implements ThemeSwitcherInterface {
   public function __construct(
     protected ThemeManagerInterface $themeManager,
     protected ThemeInitializationInterface $themeInitializer,
-    protected ConfigFactoryInterface $configFactory
+    protected ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -46,9 +47,17 @@ class ThemeSwitcher implements ThemeSwitcherInterface {
     }
 
     $this->themeManager->setActiveTheme($defaultTheme);
+
     // Ensure that statically cached default variables are reset correctly,
     // especially the directory variable.
-    drupal_static_reset('template_preprocess');
+    // Not needed after deprecation of template_preprocess() in Drupal 11.2.
+    DeprecationHelper::backwardsCompatibleCall(
+      \Drupal::VERSION,
+      '11.2.0',
+      fn () => 0,
+      fn () => drupal_static_reset('template_preprocess'),
+    );
+
     // Return the previously active theme, for switching back.
     return $activeTheme;
   }
@@ -57,12 +66,19 @@ class ThemeSwitcher implements ThemeSwitcherInterface {
    * {@inheritdoc}
    */
   public function switchBack(?ActiveTheme $previousTheme): void {
-    if ($previousTheme === NULL
-        || $previousTheme === $this->themeManager->getActiveTheme()) {
+    if (
+      $previousTheme === NULL
+      || $previousTheme === $this->themeManager->getActiveTheme()
+    ) {
       return;
     }
     $this->themeManager->setActiveTheme($previousTheme);
-    drupal_static_reset('template_preprocess');
+    DeprecationHelper::backwardsCompatibleCall(
+      \Drupal::VERSION,
+      '11.2.0',
+      fn () => 0,
+      fn () => drupal_static_reset('template_preprocess'),
+    );
   }
 
 }

@@ -5,8 +5,10 @@ namespace Drupal\Tests\facets_summary\Unit\Plugin\Processor;
 use Drupal\Tests\facets\Unit\Drupal10CompatibilityUnitTestCase;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\Path\CurrentPathStack;
 use Drupal\facets_summary\Entity\FacetsSummary;
 use Drupal\facets_summary\Plugin\facets_summary\processor\ResetFacetsProcessor;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides the ResetFacetsProcessorTest class.
@@ -29,6 +31,9 @@ class ResetFacetsProcessorTest extends Drupal10CompatibilityUnitTestCase {
   public function setUp(): void {
     parent::setUp();
     $string_translation = $this->prophesize(TranslationInterface::class);
+    $request_stack = new RequestStack();
+    $current_path = $this->createMock(CurrentPathStack::class);
+    $current_path->method('getPath')->willReturn('/facets-test');
 
     $container = new ContainerBuilder();
     $container->set('string_translation', $string_translation->reveal());
@@ -39,7 +44,7 @@ class ResetFacetsProcessorTest extends Drupal10CompatibilityUnitTestCase {
         'link_text' => 'Text',
         'position' => ResetFacetsProcessor::POSITION_BEFORE,
       ],
-    ], 'reset_facets', []);
+    ], 'reset_facets', [], $request_stack, $current_path);
   }
 
   /**

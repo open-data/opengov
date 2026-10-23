@@ -1037,6 +1037,11 @@ class IntegrationTest extends FacetsTestBase {
     $this->assertSession()->pageTextContains('Facet ' . $facet_name . ' has been created.');
     $this->assertSession()->addressEquals('admin/config/search/facets/' . $facet_id . '/edit');
 
+    // Non-exposed test facets now need the URL handler explicitly enabled.
+    $this->submitForm([
+      'facet_settings[url_processor_handler][status]' => TRUE,
+    ], 'Save');
+
     $this->drupalGet('admin/config/search/facets');
   }
 

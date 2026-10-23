@@ -277,6 +277,13 @@ class UnsavedIndexConfiguration implements IndexInterface, UnsavedConfigurationI
   /**
    * {@inheritdoc}
    */
+  public function getDatasourceIfAvailable(string $datasource_id): ?DatasourceInterface {
+    return $this->entity->getDatasourceIfAvailable($datasource_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function addDatasource(DatasourceInterface $datasource) {
     $this->entity->addDatasource($datasource);
     return $this;
@@ -329,6 +336,13 @@ class UnsavedIndexConfiguration implements IndexInterface, UnsavedConfigurationI
   /**
    * {@inheritdoc}
    */
+  public function getTrackerInstanceIfAvailable(): ?TrackerInterface {
+    return $this->entity->getTrackerInstanceIfAvailable();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setTracker(TrackerInterface $tracker) {
     $this->entity->setTracker($tracker);
     return $this;
@@ -365,6 +379,13 @@ class UnsavedIndexConfiguration implements IndexInterface, UnsavedConfigurationI
   /**
    * {@inheritdoc}
    */
+  public function getServerInstanceIfAvailable(): ?ServerInterface {
+    return $this->entity->getServerInstanceIfAvailable();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setServer(?ServerInterface $server = NULL) {
     $this->entity->setServer($server);
     return $this;
@@ -396,6 +417,13 @@ class UnsavedIndexConfiguration implements IndexInterface, UnsavedConfigurationI
    */
   public function getProcessor($processor_id) {
     return $this->entity->getProcessor($processor_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProcessorIfAvailable(string $processor_id): ?ProcessorInterface {
+    return $this->entity->getProcessorIfAvailable($processor_id);
   }
 
   /**

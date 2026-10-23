@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\facets\Functional;
 
+use Drupal\entity_test\EntityTestHelper;
 use Drupal\search_api\Entity\Index;
 
 /**
@@ -20,20 +21,22 @@ trait ExampleContentTrait {
    * Sets up the necessary bundles on the test entity type.
    */
   protected function setUpExampleStructure() {
-    entity_test_create_bundle('item', NULL, 'entity_test_mulrev_changed');
-    entity_test_create_bundle('article', NULL, 'entity_test_mulrev_changed');
+    EntityTestHelper::createBundle('item', NULL, 'entity_test_mulrev_changed');
+    EntityTestHelper::createBundle('article', NULL, 'entity_test_mulrev_changed');
   }
 
   /**
    * Creates several test entities.
    */
   protected function insertExampleContent() {
-    $count = \Drupal::entityQuery('entity_test_mulrev_changed')
+    $count = $this->container->get('entity_type.manager')
+      ->getStorage('entity_test_mulrev_changed')
+      ->getQuery()
       ->count()
       ->accessCheck()
       ->execute();
 
-    $entity_test_storage = \Drupal::entityTypeManager()
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
     $this->entities[1] = $entity_test_storage->create([
       'name' => 'foo bar baz',
@@ -73,7 +76,9 @@ trait ExampleContentTrait {
       'category' => 'article_category',
     ]);
     $this->entities[5]->save();
-    $count = \Drupal::entityQuery('entity_test_mulrev_changed')
+    $count = $this->container->get('entity_type.manager')
+      ->getStorage('entity_test_mulrev_changed')
+      ->getQuery()
       ->count()
       ->accessCheck()
       ->execute() - $count;

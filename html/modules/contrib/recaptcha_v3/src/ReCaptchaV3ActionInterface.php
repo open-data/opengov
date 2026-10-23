@@ -5,7 +5,7 @@ namespace Drupal\recaptcha_v3;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
 /**
- * Provides an interface defining a recaptcha v3 entity..
+ * Provides an interface defining a recaptcha v3 entity.
  */
 interface ReCaptchaV3ActionInterface extends ConfigEntityInterface {
 

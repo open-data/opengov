@@ -42,7 +42,8 @@ class BootstrapLayoutsPluginManager extends DefaultPluginManager implements Cont
    * The "container.namespaces" service does not contain theme namespaces
    * since themes are not registered in the container. To allow themes to be
    * able to participate in these plugins, the normal "namespaces" provided
-   * must be appending with the missing autoloader prefixes of the themes.
+   * must be merged with the missing autoloader prefixes of the themes without
+   * mutating the original namespaces object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -62,30 +63,20 @@ class BootstrapLayoutsPluginManager extends DefaultPluginManager implements Cont
    *   Defaults to 'Drupal\Component\Annotation\Plugin'.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ThemeManagerInterface $theme_manager, $plugin_interface = NULL, $plugin_definition_annotation_name = 'Drupal\Component\Annotation\Plugin') {
-    /** @var \Composer\Autoload\ClassLoader $class_loader */
-    $class_loader = \Drupal::service('class_loader');
-
-    /** @var \ArrayObject $namespaces */
-    $ns = $namespaces->getArrayCopy();
-
-    foreach ($class_loader->getPrefixesPsr4() as $prefix => $paths) {
-      // Remove trailing path separators.
-      $prefix = trim($prefix, '\\');
-
-      // Remove the DRUPAL_ROOT prefix.
-      $path = str_replace(\Drupal::root() . '/', '', reset($paths));
-
-      // Only add missing contrib theme namespaces.
-      if (preg_match('/^(core|vendor)/', $path) === 0 && !isset($namespaces[$prefix])) {
-        $ns[$prefix] = $path;
-      }
+    $filenames = [];
+    foreach ($theme_handler->listInfo() as $theme => $data) {
+      $filenames[$theme] = $data->getPathname();
     }
 
-    // Replace the namespaces data.
-    $namespaces->exchangeArray($ns);
+    $extra_namespaces = $this->getThemeNamespacesPsr4($filenames);
+
+    /** @var \ArrayObject $namespaces */
+    $original_namespaces = $namespaces->getArrayCopy();
+    $merged_namespaces = array_merge($original_namespaces, $extra_namespaces);
+    $merged_namespaces = new \ArrayObject($merged_namespaces);
 
     // Construct the plugin manager now.
-    parent::__construct('Plugin/BootstrapLayouts', $namespaces, $module_handler, $plugin_interface, $plugin_definition_annotation_name);
+    parent::__construct('Plugin/BootstrapLayouts', $merged_namespaces, $module_handler, $plugin_interface, $plugin_definition_annotation_name);
 
     // Set the theme handler and manager.
     $this->themeHandler = $theme_handler;
@@ -127,6 +118,25 @@ class BootstrapLayoutsPluginManager extends DefaultPluginManager implements Cont
    */
   protected function providerExists($provider) {
     return $this->moduleHandler->moduleExists($provider) || $this->themeHandler->themeExists($provider);
+  }
+
+  /**
+   * Gets the PSR-4 base directories for theme namespaces.
+   *
+   * @param string[] $theme_file_names
+   *   Array where each key is a theme name, and each value is a path to the
+   *   respective *.info.yml file.
+   *
+   * @return string[]
+   *   Array where each key is a theme namespace like 'Drupal\olivero', and each
+   *   value is the PSR-4 base directory associated with the theme namespace.
+   */
+  protected function getThemeNamespacesPsr4($theme_file_names) {
+    $namespaces = [];
+    foreach ($theme_file_names as $theme => $filename) {
+      $namespaces["Drupal\\$theme"] = dirname($filename) . '/src';
+    }
+    return $namespaces;
   }
 
 }

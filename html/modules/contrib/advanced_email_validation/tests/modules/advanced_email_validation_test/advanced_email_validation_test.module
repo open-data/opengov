@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Contains hooks for the advanced_email_validation_test module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\advanced_email_validation_test\TestFieldNames;
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function advanced_email_validation_test_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  if ($entity_type->id() === 'user' && $bundle === 'user') {
+    if (isset($fields[TestFieldNames::CREATE])) {
+      $fields[TestFieldNames::CREATE]->addConstraint('AEVNewEmail', []);
+    }
+    if (isset($fields[TestFieldNames::UPDATE])) {
+      $fields[TestFieldNames::UPDATE]->addConstraint('AEVChangedEmail', []);
+    }
+    if (isset($fields[TestFieldNames::BOTH])) {
+      $fields[TestFieldNames::BOTH]->addConstraint('AEVNewEmail', []);
+      $fields[TestFieldNames::BOTH]->addConstraint('AEVChangedEmail', []);
+    }
+  }
+}

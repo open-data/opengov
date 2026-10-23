@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\search_api_db\DatabaseCompatibility;
 
@@ -38,7 +38,7 @@ class Pgsql extends CaseSensitiveDatabase {
     Connection $database,
     #[Autowire(service: 'transliteration')]
     TransliterationInterface $transliterator,
-    LoggerChannelFactoryInterface $logger_factory
+    LoggerChannelFactoryInterface $logger_factory,
   ) {
     parent::__construct($database, $transliterator);
 

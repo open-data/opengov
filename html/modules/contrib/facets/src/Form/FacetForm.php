@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\facets\FacetManager\DefaultFacetManager;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\Hierarchy\HierarchyPluginBase;
@@ -63,6 +64,13 @@ class FacetForm extends EntityForm {
   protected $facetsManager;
 
   /**
+   * The current route match service.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructs an FacetDisplayForm object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -75,13 +83,16 @@ class FacetForm extends EntityForm {
    *   The plugin manager for facet sources.
    * @param \Drupal\facets\FacetManager\DefaultFacetManager $facets_manager
    *   The facet manager.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ProcessorPluginManager $processor_plugin_manager, WidgetPluginManager $widget_plugin_manager, FacetSourcePluginManager $facet_source_plugin_manager, DefaultFacetManager $facets_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ProcessorPluginManager $processor_plugin_manager, WidgetPluginManager $widget_plugin_manager, FacetSourcePluginManager $facet_source_plugin_manager, DefaultFacetManager $facets_manager, RouteMatchInterface $route_match) {
     $this->entityTypeManager = $entity_type_manager;
     $this->processorPluginManager = $processor_plugin_manager;
     $this->widgetPluginManager = $widget_plugin_manager;
     $this->facetSourcePluginManager = $facet_source_plugin_manager;
     $this->facetsManager = $facets_manager;
+    $this->routeMatch = $route_match;
   }
 
   /**
@@ -93,7 +104,8 @@ class FacetForm extends EntityForm {
       $container->get('plugin.manager.facets.processor'),
       $container->get('plugin.manager.facets.widget'),
       $container->get('plugin.manager.facets.facet_source'),
-      $container->get('facets.manager')
+      $container->get('facets.manager'),
+      $container->get('current_route_match')
     );
   }
 
@@ -146,7 +158,7 @@ class FacetForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     // Redirect to facets settings page if Field Identifier is not set.
-    if ($facets = \Drupal::routeMatch()->getParameter('facets_facet')) {
+    if ($facets = $this->routeMatch->getParameter('facets_facet')) {
       if ($facets->getFieldIdentifier() === NULL) {
         $facet_settings_path = $facets->toUrl('settings-form')->toString();
         $response = new RedirectResponse($facet_settings_path);

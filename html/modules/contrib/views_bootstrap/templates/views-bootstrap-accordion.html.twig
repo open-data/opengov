@@ -1,34 +1,51 @@
-<div id="{{ id }}" {{ attributes.addClass(classes) }}>
+{% set accordion_header_element = group_title ? 'h3' : 'h2' %}
+{% if group_title %}
+  <h2>{{ group_title }}</h2>
+{% endif %}
+<div id="{{ id }}" {{ attributes }}>
   {% set i = 0 %}
   {% set len = rows | length %}
-  {% for key, row in rows -%}
+  {% for key, row in rows %}
     {% set i = i + 1 %}
-    {% set collapse_class = (
-        (i == 1 and options.collapse.first is defined and options.collapse.first > 0)
-        or (i == len and options.collapse.last is defined and options.collapse.last > 0)
-        or (i != 1 and i != len and options.collapse.middle is defined and options.collapse.middle > 0)
-        ) ? 'collapse show' : 'collapse'
-    %}
-    {% set collapse_class_boolean = (
-        (i == 1 and options.collapse.first is defined and options.collapse.first > 0)
-        or (i == len and options.collapse.last is defined and options.collapse.last > 0)
-        or (i != 1 and i != len and options.collapse.middle is defined and options.collapse.middle > 0)
-        ) ? 'true' : 'false'
-    %}
-      <div class="card">
-        <div class="class-header" id="heading{{ key }}">
-          <h5 class="mb-0">
-            <button class="btn btn-link" data-toggle="collapse" data-target="#{{ id }}-collapse-{{ key }}" aria-expanded="{{collapse_class_boolean}}" aria-controls="collapseOne">
-              {{ row.title }}
-            </button>
-          </h5>
-        </div>
+    {% set collapse_var = false %}
+    {% if behavior == 'specify' %}
+      {% if i == 1 and 'first' in collapse and collapse['first'] %}
+        {% set collapse_var = true %}
+      {% elseif i == len and 'last' in collapse and collapse['last'] %}
+        {% set collapse_var = true %}
+      {% elseif i != 1 and i != len and 'middle' in collapse and collapse['middle'] %}
+        {% set collapse_var = true %}
+      {% endif %}
+    {% elseif behavior == 'closed' %}
+      {% set collapse_var = false %}
+    {% elseif behavior == 'first' %}
+      {% set collapse_var = (i == 1) ? true : false %}
+    {% elseif behavior == 'all' %}
+      {% set collapse_var = true %}
+    {% endif %}
+    {% set collapse_class = (collapse_var) ? 'show' %}
+    {% set collapse_class_boolean = (collapse_var) ? 'true' : 'false' %}
+    {% set button_classes = (not collapse_var) ? 'collapsed' %}
+    {% set clean_key = ('key-' ~ key)|striptags|trim|clean_class %}
+    {% set heading_id = id ~ '-heading-' ~ clean_key %}
 
-        <div id="{{ id }}-collapse-{{ key }}" class="{{collapse_class}}" aria-labelledby="heading{{ key }}" data-parent="#{{ id }}">
-          <div class="card-body">
-              {{row.content}}
-          </div>
+    <div class="accordion-item">
+      <{{ accordion_header_element }} class="accordion-header" id="{{ heading_id }}">
+        <button class="accordion-button {{ button_classes }}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ id }}-collapse-{{ clean_key }}" aria-expanded="{{ collapse_class_boolean }}" aria-controls="{{ id }}-collapse-{{ clean_key }}">
+          {{ row.title }}
+        </button>
+      </{{ accordion_header_element }}>
+      <div id="{{ id }}-collapse-{{ clean_key }}" class="accordion-collapse collapse {{ collapse_class }}" aria-labelledby="{{ heading_id }}" data-bs-parent="#{{ id }}">
+        <div class="accordion-body">
+          {% if output == 'grouped' %}
+            {% for content in row.content %}
+              {{ content }}
+            {% endfor %}
+          {% else %}
+            {{ row.content }}
+          {% endif %}
         </div>
       </div>
-  {%- endfor %}
+    </div>
+  {% endfor %}
 </div>

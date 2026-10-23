@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\facets_summary\Entity\FacetsSummary;
 use Drupal\facets_summary\FacetsSummaryInterface;
 
@@ -15,6 +17,30 @@ use Drupal\facets_summary\FacetsSummaryInterface;
  * Builds a listing of facet entities.
  */
 class FacetListBuilder extends DraggableListBuilder {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The facet source plugin manager.
+   *
+   * @var \Drupal\facets\FacetSource\FacetSourcePluginManager
+   */
+  protected $facetSourcePluginManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->facetSourcePluginManager = $container->get('plugin.manager.facets.facet_source');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -104,7 +130,7 @@ class FacetListBuilder extends DraggableListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\facets\FacetInterface $entity */
-    $facet_configs = \Drupal::entityTypeManager()
+    $facet_configs = $this->entityTypeManager
       ->getStorage('facets_facet')
       ->load($entity->getConfigTarget());
     $row = [
@@ -224,8 +250,8 @@ class FacetListBuilder extends DraggableListBuilder {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $groups = $this->loadGroups();
 
-    $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
-    $form['facets_3_block_support'] = ['#markup' => '<p>' . t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
+    $form['facets_3_exposed_filters'] = ['#markup' => '<div class="messages messages--warning">' . $this->t('<strong>New in Facets 3: </strong>For new sites it is recommended to use the "Facets Exposed Filters" submodule for Facets on Views. This module uses native Views filters instead, which has many advantages.<br><a target="_blank" href="@documentation_url">Click here</a> for documentation on how to use this new workflow.', ['@documentation_url' => 'https://project.pages.drupalcode.org/facets/exposed_filters']) . '</div>'];
+    $form['facets_3_block_support'] = ['#markup' => '<p>' . $this->t('Adding Facets as a block <a target="_blank" href="@documentation_url_facet_blocks">is still supported</a> for backwards compatibility.', ['@documentation_url_facet_blocks' => 'https://project.pages.drupalcode.org/facets/facet_blocks_support']) . '</p>'];
 
     $form['facets'] = [
       '#type' => 'table',
@@ -304,7 +330,7 @@ class FacetListBuilder extends DraggableListBuilder {
         // message to notify users how to resolve their broken facets.
         if ($facet->getFacetSourceId() && substr($facet->getFacetSourceId(), 0, 16) == 'core_node_search') {
           $project_link = Link::fromTextAndUrl('https://www.drupal.org/project/facets_core_search', Url::fromUri('https://www.drupal.org/project/facets_core_search'))->toString();
-          \Drupal::messenger()->addError(
+          $this->messenger()->addError(
             $this->t(
               'Core search facets has been moved to a separate project. You need to download and enable this module from @project_link to continue using your core search facets.',
               ['@project_link' => $project_link]),
@@ -339,7 +365,7 @@ class FacetListBuilder extends DraggableListBuilder {
       $entity->setWeight($entity_values['weight']);
       $entity->save();
     }
-    \Drupal::messenger()->addMessage($this->t('The facets have been updated.'));
+    $this->messenger()->addMessage($this->t('The facets have been updated.'));
   }
 
   /**
@@ -352,10 +378,10 @@ class FacetListBuilder extends DraggableListBuilder {
    *   - lone_facets: All facets that aren't attached to any facet source.
    */
   public function loadGroups() {
-    $facet_source_plugin_manager = \Drupal::service('plugin.manager.facets.facet_source');
+    $facet_source_plugin_manager = $this->facetSourcePluginManager;
     $facets = $this->load();
     $facets_summaries = [];
-    if (\Drupal::moduleHandler()->moduleExists('facets_summary')) {
+    if ($this->moduleHandler()->moduleExists('facets_summary')) {
       $facets_summaries = FacetsSummary::loadMultiple();
     }
     $facet_sources = $facet_source_plugin_manager->getDefinitions();

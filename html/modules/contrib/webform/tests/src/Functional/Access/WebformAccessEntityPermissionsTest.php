@@ -52,8 +52,17 @@ class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
     $this->drupalGet('/admin/structure/webform');
     $assert_session->responseContains('test_own');
 
-    // Add test element to own webform.
+    // Check source editing is denied without the source permission.
     $this->drupalGet('/admin/structure/webform/manage/test_own');
+    $assert_session->statusCodeEquals(403);
+
+    // Check source editing is allowed with the source permission.
+    $own_account->addRole($this->drupalCreateRole(['edit webform source']));
+    $own_account->save();
+    $this->drupalGet('/admin/structure/webform/manage/test_own');
+    $assert_session->statusCodeEquals(200);
+
+    // Add test element to own webform.
     $edit = ['elements' => "test:\n  '#markup': 'test'"];
     $this->submitForm($edit, 'Save');
 

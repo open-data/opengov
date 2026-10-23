@@ -18,7 +18,7 @@ final class SimpleSitemapCommands extends DrushCommands {
   use AutowireTrait;
 
   /**
-   * SimplesitemapCommands constructor.
+   * SimpleSitemapCommands constructor.
    *
    * @param \Drupal\simple_sitemap\Manager\Generator $generator
    *   The simple_sitemap.generator service.

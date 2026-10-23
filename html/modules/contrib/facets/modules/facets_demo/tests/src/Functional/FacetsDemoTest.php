@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\facets_demo\Functional;
 
-use Drupal\Tests\facets\Functional\FacetsTestBase;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\Tests\facets\Functional\FacetsTestBase;
 
 /**
  * Tests the overall functionality of the Facets admin UI.
@@ -12,6 +12,9 @@ use Drupal\taxonomy\Entity\Term;
  */
 class FacetsDemoTest extends FacetsTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected $profile = 'standard';
 
   /**
@@ -33,11 +36,12 @@ class FacetsDemoTest extends FacetsTestBase {
     $term = Term::load(1);
     $term->setUnpublished();
     $term->save();
-    
+
     // Index all content.
     $this->indexItems($this->indexId);
 
-    // $this->assertEquals($this->indexItems($this->indexId), 5, '5 items were indexed.');
+    // $this->assertEquals($this->indexItems($this->indexId), 5, '5 items were
+    // indexed.');
   }
 
   /**
@@ -45,6 +49,7 @@ class FacetsDemoTest extends FacetsTestBase {
    */
   public function testDemoPage() {
     $this->drupalGet('movies');
+    $this->assertSession()->statusCodeEquals(200);
   }
 
 }

@@ -115,7 +115,8 @@ interface IndexInterface extends ConfigEntityInterface {
    * Retrieves this index's datasource plugins.
    *
    * @return array<string, \Drupal\search_api\Datasource\DatasourceInterface>
-   *   The datasource plugins used by this index, keyed by plugin ID.
+   *   The datasource plugins that are used by this index and that could be
+   *   loaded, keyed by plugin ID.
    */
   public function getDatasources();
 
@@ -157,6 +158,18 @@ interface IndexInterface extends ConfigEntityInterface {
    *   couldn't be loaded.
    */
   public function getDatasource($datasource_id);
+
+  /**
+   * Retrieves a specific datasource plugin for this index, if available.
+   *
+   * @param string $datasource_id
+   *   The ID of the datasource plugin to return.
+   *
+   * @return \Drupal\search_api\Datasource\DatasourceInterface|null
+   *   The datasource plugin with the given ID, if enabled for this index; NULL
+   *   otherwise.
+   */
+  public function getDatasourceIfAvailable(string $datasource_id): ?DatasourceInterface;
 
   /**
    * Adds a datasource to this index.
@@ -227,6 +240,14 @@ interface IndexInterface extends ConfigEntityInterface {
   public function getTrackerInstance();
 
   /**
+   * Retrieves the tracker plugin, if available.
+   *
+   * @return \Drupal\search_api\Tracker\TrackerInterface|null
+   *   The index's tracker plugin, if it could be loaded; NULL otherwise.
+   */
+  public function getTrackerInstanceIfAvailable(): ?TrackerInterface;
+
+  /**
    * Sets the tracker the index uses.
    *
    * @param \Drupal\search_api\Tracker\TrackerInterface $tracker
@@ -273,6 +294,15 @@ interface IndexInterface extends ConfigEntityInterface {
   public function getServerInstance();
 
   /**
+   * Retrieves the server the index is attached to, if available.
+   *
+   * @return \Drupal\search_api\ServerInterface|null
+   *   The server this index is linked to, if there is one and it could be
+   *   loaded; NULL otherwise.
+   */
+  public function getServerInstanceIfAvailable(): ?ServerInterface;
+
+  /**
    * Sets the server the index is attached to.
    *
    * @param \Drupal\search_api\ServerInterface|null $server
@@ -286,8 +316,8 @@ interface IndexInterface extends ConfigEntityInterface {
    * Retrieves this index's processors.
    *
    * @return array<string, \Drupal\search_api\Processor\ProcessorInterface>
-   *   An array of all enabled processors for this index, keyed by their plugin
-   *   IDs.
+   *   An array of all enabled processors for this index that could be loaded,
+   *   keyed by their plugin IDs.
    */
   public function getProcessors();
 
@@ -337,6 +367,18 @@ interface IndexInterface extends ConfigEntityInterface {
    *   couldn't be loaded.
    */
   public function getProcessor($processor_id);
+
+  /**
+   * Retrieves a specific processor plugin for this index, if available.
+   *
+   * @param string $processor_id
+   *   The ID of the processor plugin to return.
+   *
+   * @return \Drupal\search_api\Processor\ProcessorInterface|null
+   *   The processor plugin with the given ID, if it is enabled and could be
+   *   loaded; NULL otherwise.
+   */
+  public function getProcessorIfAvailable(string $processor_id): ?ProcessorInterface;
 
   /**
    * Adds a processor to this index.

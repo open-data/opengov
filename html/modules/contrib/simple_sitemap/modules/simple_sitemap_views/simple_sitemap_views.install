@@ -84,47 +84,8 @@ function simple_sitemap_views_schema() {
 }
 
 /**
- * Update views display extender config.
+ * Implements hook_update_last_removed().
  */
-function simple_sitemap_views_update_8301() {
-  $config_factory = \Drupal::configFactory();
-  $display_extender_name = 'simple_sitemap_display_extender';
-
-  // Find all views configs.
-  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
-    $view = $config_factory->getEditable($view_config_name);
-    $changed = FALSE;
-
-    // Go through each display on each view.
-    $displays = $view->get('display');
-    foreach ($displays as $display_name => $display) {
-      if (isset($display['display_options']['display_extenders'][$display_extender_name])) {
-        $options = $display['display_options']['display_extenders'][$display_extender_name];
-
-        if (!isset($options['variants']) && isset($options['variant'])) {
-          $variant = $options['variant'];
-          unset($options['variant']);
-
-          // Update display extender config.
-          $key = "display.$display_name.display_options.display_extenders.$display_extender_name";
-          $options = ['variants' => [$variant => $options]];
-          $view->set($key, $options);
-          $changed = TRUE;
-        }
-      }
-    }
-
-    if ($changed) {
-      $view->save(TRUE);
-    }
-  }
-}
-
-/**
- * Remove unnecessary indexes.
- */
-function simple_sitemap_views_update_8302() {
-  $schema = \Drupal::database()->schema();
-  $schema->dropIndex('simple_sitemap_views', 'view');
-  $schema->dropIndex('simple_sitemap_views', 'display');
+function simple_sitemap_views_update_last_removed(): int {
+  return 8302;
 }

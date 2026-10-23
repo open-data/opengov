@@ -146,7 +146,7 @@ class FacetsUrlGenerator {
         if ($facet_source_path) {
           $requestUrl = Url::fromUserInput($facet_source_path, [
             'query' => [
-              '_format' => \Drupal::request()->get('_format'),
+              '_format' => $request->attributes->get('_format'),
             ],
           ]);
         }

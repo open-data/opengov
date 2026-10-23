@@ -64,6 +64,9 @@ class SimpleSitemapController extends ControllerBase {
       ->addCacheTags(Cache::buildTags('simple_sitemap', (array) $variant))
       ->addCacheContexts(['url.query_args']);
 
+    $date = new \DateTime('@' . $this->generator->getDefaultSitemap()->fromPublished()->getCreated());
+    $response->setLastModified($date);
+
     return $response;
   }
 

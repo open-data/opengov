@@ -17,21 +17,23 @@
   --admin-toolbar-top-bar-height: 4rem;
 }
 
-:is(#extra-specificity-hack, [data-drupal-admin-styles]).gin--navigation-top-bar {
+:is(#extra-specificity-hack, [data-drupal-admin-styles]).admin--navigation-top-bar {
   height: auto;
   min-height: 4rem;
-  opacity: 0.95;
+  opacity: 0.999;
   border-block-end: 1px solid var(--admin-color-border-soft);
-  background: var(--admin-color-bg-surface);
+  background: color-mix(in lch, var(--admin-color-bg-surface) 80%, transparent);
   box-shadow: none;
   padding-inline: calc(var(--admin-toolbar-sidebar-width) + var(--admin-space-m)) var(--admin-space-m);
   padding-block: var(--admin-space-3xs);
+  backdrop-filter: blur(0.75rem);
 
-  .gin--high-contrast-mode & {
+  .high-contrast-mode & {
     background: var(--admin-color-bg-surface);
     backdrop-filter: none;
   }
 
+  /* @todo Figure out what this is attempting to do and fix it. */
   &--offset {
     margin-top: calc(4rem + var(--admin-space-s));
   }
@@ -59,7 +61,7 @@
   .local-actions,
   .local-actions__item,
   .form-actions,
-  .gin-sticky-form-actions {
+  .sticky-form-actions {
     width: auto;
     margin: 0;
   }
@@ -145,21 +147,14 @@
   a.button.button--danger {
     padding-block: calc(var(--admin-space-xs) - 0.5px);
   }
-
-  @supports (backdrop-filter: blur()) {
-    opacity: 0.999;
-    /* stylelint-disable-next-line color-function-notation */
-    background: rgb(from var(--layer-background) r g b/ 0.8);
-    backdrop-filter: blur(0.75rem);
-  }
 }
 
-body:has(.gin--navigation-top-bar .gin-sticky-form-actions) :where(#default_admin_sidebar) {
+body:has(.admin--navigation-top-bar .sticky-form-actions) :where(#default_admin_sidebar) {
   inset-block-start: 4rem !important;
   height: calc(100% - 4rem) !important;
 }
 
-:where(.gin--edit-form) .gin-sticky-form-actions {
+:where(.edit-form) .sticky-form-actions {
   gap: var(--admin-space-xs);
 
   .button {
@@ -171,10 +166,6 @@ body:has(.gin--navigation-top-bar .gin-sticky-form-actions) :where(#default_admi
   }
 }
 
-:where(.gin--edit-form) .gin-sticky-form-actions [data-drupal-selector="edit-delete"] {
+:where(.edit-form) .sticky-form-actions [data-drupal-selector="edit-delete"] {
   display: none;
-}
-
-#block-gin-page-title {
-  margin-block: var(--admin-space-2xs) var(--admin-space-s);
 }
