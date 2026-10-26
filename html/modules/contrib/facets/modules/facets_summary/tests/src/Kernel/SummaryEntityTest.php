@@ -6,6 +6,7 @@ use Drupal\facets_summary\Entity\FacetsSummary;
 use Drupal\facets_summary\Plugin\facets_summary\processor\ShowCountProcessor;
 use Drupal\facets_summary\Processor\ProcessorInterface;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Class SummaryEntityTest.
@@ -15,6 +16,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @group facets
  * @coversDefaultClass \Drupal\facets_summary\Entity\FacetsSummary
  */
+#[RunTestsInSeparateProcesses]
 class SummaryEntityTest extends KernelTestBase {
 
   /**

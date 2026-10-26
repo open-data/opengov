@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Handler;
 
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\file\Entity\File;
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 
@@ -42,13 +42,55 @@ class WebformHandlerRemotePostTest extends WebformBrowserTestBase {
 
     $assert_session = $this->assertSession();
 
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_handler_remote_post');
+    $completed_url = $webform->getHandler('remote_post')->getSetting('completed_url');
+
+    $webform_editor = $this->drupalCreateUser(['edit any webform']);
+    $remote_post_urls_administrator = $this->drupalCreateUser([
+      'edit any webform',
+      'administer webform remote post urls',
+    ]);
+
+    // Check that a webform editor cannot add a remote post handler.
+    $this->drupalLogin($webform_editor);
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_remote_post/handlers/add');
+    $assert_session->responseNotContains('Remote HTTP Operations');
+
+    // Check that a webform editor cannot edit remote post URLs.
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_remote_post/handlers/remote_post/edit');
+    $assert_session->fieldNotExists('settings[completed_url]');
+    $assert_session->responseContains($completed_url);
+    $assert_session->responseContains('You do not have permission to edit remote post URLs. Contact an administrator for access.');
+    $submit_xpath = $assert_session->buttonExists('Save')->getXpath();
+    $client = $this->getSession()->getDriver()->getClient();
+    $form = $client->getCrawler()->filterXPath($submit_xpath)->form();
+    $post = $form->getPhpValues();
+    $post['settings']['completed_url'] = 'https://example.com/forged';
+    $client->request($form->getMethod(), $form->getUri(), $post);
+    $this->container->get('entity_type.manager')->getStorage('webform')->resetCache(['test_handler_remote_post']);
+    $webform = Webform::load('test_handler_remote_post');
+    $this->assertSame($completed_url, $webform->getHandler('remote_post')->getSetting('completed_url'));
+
+    // Check that a remote post URLs administrator can edit remote post URLs.
+    $this->drupalLogin($remote_post_urls_administrator);
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_remote_post/handlers/add');
+    $assert_session->responseContains('Remote HTTP Operations');
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_remote_post/handlers/remote_post/edit');
+    $assert_session->fieldExists('settings[completed_url]');
+    $assert_session->responseNotContains('You do not have permission to edit remote post URLs. Contact an administrator for access.');
+
     $this->drupalLogin($this->rootUser);
+
+    // Check that a webform administrator can edit remote post URLs.
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_remote_post/handlers/remote_post/edit');
+    $assert_session->fieldExists('settings[completed_url]');
+    $assert_session->responseNotContains('You do not have permission to edit remote post URLs. Contact an administrator for access.');
 
     /* ********************************************************************** */
     // POST.
     /* ********************************************************************** */
 
-    /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_post');
 
     // Check 'completed' operation.
@@ -165,6 +207,50 @@ options:
     $this->postSubmission($webform, ['response_type' => 200]);
     $assert_session->responseContains('This is a custom 200 success message.');
     $assert_session->responseContains('Processed completed request.');
+
+    $handler = $webform->getHandler('remote_post');
+    $messages = $handler->getSetting('messages');
+    foreach ($messages as &$message) {
+      if ((int) $message['code'] === 200) {
+        $message['message'] = 'This is a response token [webform:handler:remote_post:unsafe_markup]';
+      }
+    }
+    unset($message);
+    $handler
+      ->setSetting('completed_custom_data', "custom_completed: true\nunsafe_markup: '<em>Allowed handler response markup</em><img src=x onerror=unsafeHandlerResponse()>'")
+      ->setSetting('messages', $messages);
+    $webform->save();
+
+    /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
+    $token_manager = \Drupal::service('webform.token_manager');
+    $token_data = [
+      'webform_handler' => [
+        'remote_post' => [
+          'unsafe_markup' => '<em>Allowed handler response markup</em><img src=x onerror=unsafeHandlerResponse()>',
+        ],
+      ],
+    ];
+
+    // Check that unsafe remote post response token markup is filtered directly.
+    $token_result = $token_manager->replaceNoRenderContext('[webform:handler:remote_post:unsafe_markup]', $webform, $token_data);
+    $this->assertStringContainsString('<em>Allowed handler response markup</em>', (string) $token_result);
+    $this->assertStringNotContainsString('onerror=unsafeHandlerResponse()', (string) $token_result);
+
+    // Check that unsafe remote post response token markup is filtered.
+    $this->postSubmission($webform, ['response_type' => 200]);
+    $assert_session->responseContains('This is a response token <em>Allowed handler response markup</em>');
+    $assert_session->responseNotContains('This is a response token <em>Allowed handler response markup</em><img src="x" onerror=unsafeHandlerResponse()>');
+
+    foreach ($messages as &$message) {
+      if ((int) $message['code'] === 200) {
+        $message['message'] = 'This is a custom 200 success message.';
+      }
+    }
+    unset($message);
+    $webform->getHandler('remote_post')
+      ->setSetting('completed_custom_data', "custom_completed: true")
+      ->setSetting('messages', $messages);
+    $webform->save();
 
     // Check 500 Internal Server Error.
     $this->postSubmission($webform, ['response_type' => '500']);

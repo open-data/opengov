@@ -95,6 +95,22 @@ elements: |
       - Three
       - Four
       - Five
+  textfield_custom_items_token_source:
+    '#type': hidden
+    '#default_value': 'TOKEN {{ 37 * 41 }}'
+  textfield_custom_items_token:
+    '#type': textfield
+    '#title': textfield_custom_items_token
+    '#multiple': true
+    '#format_items': custom
+    '#format_items_html': |
+      [webform_submission:values:textfield_custom_items_token_source:raw]
+
+    '#format_items_text': |
+      [webform_submission:values:textfield_custom_items_token_source:raw]
+
+    '#default_value':
+      - One
   image_custom:
     '#type': webform_image_file
     '#title': image_custom

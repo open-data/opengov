@@ -1,0 +1,267 @@
+views.style.views_bootstrap_accordion:
+  type: views_style
+  label: 'Views bootstrap accordion'
+  mapping:
+    panel_output:
+      type: string
+      label: "Accordion grouping"
+      options:
+        single: "One accordion item per result"
+        grouped: "Accordion content by grouped field"
+    panel_title_field:
+      type: string
+      label: "Panel title field"
+    flush:
+      type: boolean
+      label: "Flush Borders"
+    behavior:
+      type: string
+      label: "Collapse Options"
+      options:
+        closed: "All Items Closed"
+        all: "All Items Open"
+        specify: "Specify Behavior by Section"
+    sections:
+      type: sequence
+      label: "Open Elements"
+      sequence:
+        type: string
+
+views.style.views_bootstrap_cards:
+  type: views_style
+  label: 'Views bootstrap cards'
+  mapping:
+    display:
+      type: string
+      label: "Content display"
+      options:
+        fields: "Select by fields"
+        content: "Display row content"
+    card_title_field:
+      type: label
+      label: "Card title field"
+    card_content_field:
+      type: label
+      label: "Card content field"
+    card_image_field:
+      type: label
+      label: "Card image field"
+    card_group:
+      type: boolean
+      label: "Use card group"
+    row_class_custom:
+      type: label
+      label: "Custom row wrapper class"
+    col_class_custom:
+      type: label
+      label: "Custom col wrapper class"
+    card_group_class_custom:
+      type: label
+      label: "Custom card group class"
+    columns:
+      type: label
+      label: "Maximum cards per row"
+
+views.style.views_bootstrap_carousel:
+  type: views_style
+  label: 'Views bootstrap carousel'
+  mapping:
+    interval:
+      type: integer
+      label: "Interval"
+    keyboard:
+      type: boolean
+      label: "Keyboard"
+    ride:
+      type: string
+      label: "Ride (Autoplay)"
+      description: "See Bootstrap documentation"
+      options:
+        'carousel': 'Autoplay the carousel on load'
+        'true': 'Autoplay the carousel after user interaction'
+    navigation:
+      type: boolean
+      label: "Show navigation"
+    indicators:
+      type: boolean
+      label: "Show indicators"
+    pause:
+      type: boolean
+      label: "Pause on hover"
+    use_caption:
+      type: boolean
+      label: "Add captions to your slides for add title and description over the image."
+    caption_breakpoints:
+      type: string
+      label: "Hide captions"
+      options:
+        'd-none d-sm-block': 'Small'
+        'd-none d-md-block': 'Medium'
+        'd-none d-lg-block': 'Large'
+        'd-none d-xl-block': 'Extra Large'
+        'd-none d-xxl-block': 'Extra Extra Large'
+    wrap:
+      type: boolean
+      label: "Wrap"
+    effect:
+      type: string
+      label: "Effect"
+    columns:
+      type: integer
+      label: "Columns"
+    breakpoints:
+      type: string
+      label: "Breakpoints"
+      options:
+        'xs': "Extra Small"
+        'sm': "Small"
+        'md': "Medium"
+        'lg': "Large"
+        'xl': "Extra large"
+        'xxl': "Extra extra large"
+    display:
+      type: string
+      label: "Display"
+    image:
+      type: string
+      label: "Image"
+    title:
+      type: string
+      label: "Title"
+    description:
+      type: string
+      label: "Description"
+
+views.style.views_bootstrap_grid:
+  type: views_style
+  label: 'Views bootstrap grid'
+  mapping:
+    grid_class:
+      type: string
+      label: "Grid row custom class"
+    row_class:
+      type: string
+      label: "Custom column class"
+    col_xs:
+      type: string
+      label: "Column xs"
+    col_sm:
+      type: string
+      label: "Column sm"
+    col_md:
+      type: string
+      label: "Column md"
+    col_lg:
+      type: string
+      label: "Column lg"
+    col_xl:
+      type: string
+      label: "Column xl"
+    col_xxl:
+      type: string
+      label: "Column xxl"
+
+views.style.views_bootstrap_list_group:
+  type: views_style
+  label: 'Views bootstrap list group'
+  mapping:
+    list_group_class_custom:
+      type: string
+      label: "Custom list group class"
+    title_field:
+      type: label
+      label: "Title field"
+
+views.style.views_bootstrap_media_object:
+  type: views_style
+  label: 'Views bootstrap media object'
+  mapping:
+    heading_field:
+      type: label
+      label: "Heading field"
+    image_field:
+      type: label
+      label: "Image field"
+    image_placement:
+      type: label
+      label: "Image Placement"
+      options:
+        first: "Left"
+        last: "Right"
+    image_class:
+      type: string
+      label: "Image class"
+      options:
+        start: "Top"
+        center: "Middle"
+        end: "Bottom"
+    body_field:
+      type: label
+      label: "Body field"
+
+views.style.views_bootstrap_tab:
+  type: views_style
+  label: 'Views bootstrap tab'
+  mapping:
+    tab_output:
+      type: string
+      label: "Tab Output"
+      options:
+        single: "One tab per result"
+        grouped: "Tab content by grouped field"
+    tab_field:
+      type: label
+      label: "Tab field"
+    tab_type:
+      type: string
+      label: "Tab type"
+      options:
+        tabs: "Tabs"
+        pills: "Pills"
+        list: "List"
+    tab_position:
+      type: radios
+      label: "Position of tabs"
+      options:
+        basic: "Tabs/pills on the top"
+        left: "Tabs/pills on the left"
+        right: "Tabs/pills on the right"
+        below: "Tabs/pills on the bottom"
+        justified: "Tabs/pills justified on the top"
+        stacked: "Tabs/pills stacked"
+    tab_fade:
+      type: boolean
+      label: "Fade Effect"
+
+views.style.views_bootstrap_table:
+  type: views.style.table
+  label: 'Views bootstrap table'
+  mapping:
+    responsive:
+      type: boolean
+      label: "Responsive"
+    responsive_size:
+      type: string
+      label: "Responsive breakpoint behavior"
+    table_class_custom:
+      type: string
+      label: "Table custom class"
+    bootstrap_styles:
+      type: mapping
+      label: "Bootstrap styles"
+      mapping:
+        bordered:
+          type: string
+          label: 'Bordered'
+        borderless:
+          type: string
+          label: 'Borderless'
+        sm:
+          type: string
+          label: 'Condensed'
+        hover:
+          type: string
+          label: 'Hover'
+        striped:
+          type: string
+          label: 'Striped'

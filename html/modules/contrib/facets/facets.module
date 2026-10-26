@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Theme\ThemePreprocess;
 use Drupal\Core\Url;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Entity\FacetSource;
@@ -135,6 +136,17 @@ function facets_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_insert() for View entities.
+ */
+function facets_view_insert(View $view) {
+  // Facet source plugins are derived from Search API View displays. Clear their
+  // definitions so newly created or duplicated Views are immediately available
+  // as facet sources without requiring a full cache rebuild.
+  \Drupal::service('plugin.manager.facets.facet_source')
+    ->clearCachedDefinitions();
+}
+
+/**
  * Implements hook_preprocess_block().
  *
  * Adds a class for the widget to the facet block to allow for more specific
@@ -216,7 +228,7 @@ function facets_entity_predelete(EntityInterface $entity) {
  * @see https://www.drupal.org/node/1842756
  */
 function facets_preprocess_facets_item_list(array &$variables) {
-  /** @var \Drupal\facets\Entity\FacetInterface $facet */
+  /** @var \Drupal\facets\FacetInterface $facet */
   $facet = $variables['facet'];
   if ($facet !== NULL) {
     if ($facet->get('show_title') === TRUE) {
@@ -229,7 +241,16 @@ function facets_preprocess_facets_item_list(array &$variables) {
       $variables['cache_max_age'] = $facet->getCacheMaxAge() . ' seconds';
     }
   }
-  template_preprocess_item_list($variables);
+  DeprecationHelper::backwardsCompatibleCall(
+    \Drupal::VERSION,
+    '11.3.0',
+    function () use (&$variables): void {
+      \Drupal::service(ThemePreprocess::class)->preprocessItemList($variables);
+    },
+    function () use (&$variables): void {
+      template_preprocess_item_list($variables);
+    },
+  );
 }
 
 /**

@@ -83,6 +83,7 @@ class Result implements ResultInterface {
 
   /**
    * Private property for term weight.
+   *
    * @var int
    */
   protected $termWeight;

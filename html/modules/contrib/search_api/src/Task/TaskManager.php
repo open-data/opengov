@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
@@ -39,11 +40,21 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  *   type. Also, it should not be considered part of the framework.)
  *
  * @see \Drupal\search_api\Task\TaskEvent
+ * @see \Drupal\search_api\Event\SearchApiEvents::EXECUTE_TASK_EVENT_PREFIX
  */
 class TaskManager implements TaskManagerInterface {
 
   use DependencySerializationTrait;
   use StringTranslationTrait;
+
+  /**
+   * Whether a task is currently being executed.
+   *
+   * This is used to prevent nested execution of tasks: We never want to pause
+   * execution of one task to execute others. This mess up the proper order in
+   * which the tasks should be executed, and even lead to infinite loops.
+   */
+  protected static bool $hasActiveTask = FALSE;
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
@@ -177,8 +188,15 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function executeSpecificTask(TaskInterface $task) {
+    // Do not attempt to execute a task if one is currently being executed.
+    if (static::$hasActiveTask) {
+      return;
+    }
+
     $event = new TaskEvent($task);
-    $this->eventDispatcher->dispatch($event, 'search_api.task.' . $task->getType());
+    static::$hasActiveTask = TRUE;
+    $this->eventDispatcher->dispatch($event, SearchApiEvents::EXECUTE_TASK_EVENT_PREFIX . $task->getType());
+    static::$hasActiveTask = FALSE;
     if (!$event->isPropagationStopped()) {
       $id = $task->id();
       $type = $task->getType();
@@ -209,6 +227,11 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function executeAllTasks(array $conditions = [], $limit = NULL) {
+    // Just ignore all tasks while a task is currently being executed.
+    if (static::$hasActiveTask) {
+      return TRUE;
+    }
+
     // We have to use this roundabout way because tasks, during their execution,
     // might create additional tasks. (For example, see
     // \Drupal\search_api\Task\IndexTaskManager::trackItems().)

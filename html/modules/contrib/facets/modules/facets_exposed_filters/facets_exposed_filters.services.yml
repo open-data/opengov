@@ -1,0 +1,2 @@
+parameters:
+  facets_exposed_filters.skip_procedural_hook_scan: true

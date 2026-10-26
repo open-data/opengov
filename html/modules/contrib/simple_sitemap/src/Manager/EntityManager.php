@@ -74,7 +74,7 @@ class EntityManager implements SitemapGetterInterface {
   protected $entityFieldManager;
 
   /**
-   * Simplesitemap constructor.
+   * EntityManager constructor.
    *
    * @param \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper
    *   Helper class for working with entities.

@@ -31,7 +31,7 @@ parameters:
 			path: src/Manager/Generator.php
 
 		-
-			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\Plugin\\\\Field\\\\FieldType\\\\EntityReferenceItem\\<mixed\\>\\:\\:\\$alt\\.$#"
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\Plugin\\\\Field\\\\FieldType\\\\EntityReferenceItem\\<mixed\\>\\:\\:\\$description\\.$#"
 			count: 1
 			path: src/Plugin/simple_sitemap/UrlGenerator/EntityUrlGeneratorBase.php
 
@@ -53,9 +53,9 @@ parameters:
 		-
 			message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertEmpty\\(\\) with non\\-empty\\-array\\<Behat\\\\Mink\\\\Element\\\\NodeElement\\> will always evaluate to false\\.$#"
 			count: 1
-			path: tests/src/Functional/SimplesitemapTest.php
+			path: tests/src/Functional/SimpleSitemapTest.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method Drupal\\\\Core\\\\Database\\\\Query\\\\ConditionInterface\\:\\:condition\\(\\) expects array\\|Drupal\\\\Core\\\\Database\\\\Query\\\\SelectInterface\\|int\\|string\\|null, true given\\.$#"
 			count: 1
-			path: tests/src/Functional/SimplesitemapTest.php
+			path: tests/src/Functional/SimpleSitemapTest.php

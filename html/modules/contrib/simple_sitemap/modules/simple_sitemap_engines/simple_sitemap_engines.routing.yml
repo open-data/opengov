@@ -9,7 +9,7 @@ simple_sitemap.engines.status:
 simple_sitemap.engines.settings:
   path: '/admin/config/search/simplesitemap/engines/settings'
   defaults:
-    _form: '\Drupal\simple_sitemap_engines\Form\SimplesitemapEnginesForm'
+    _form: '\Drupal\simple_sitemap_engines\Form\SimpleSitemapEnginesForm'
     _title: 'Simple XML Sitemap'
   requirements:
     _permission: 'administer sitemap settings'

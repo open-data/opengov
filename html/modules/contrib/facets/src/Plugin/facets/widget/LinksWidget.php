@@ -20,6 +20,29 @@ use Drupal\facets\Widget\WidgetPluginBase;
 class LinksWidget extends WidgetPluginBase {
 
   /**
+   * The URL generator.
+   *
+   * @var \Drupal\facets\Utility\FacetsUrlGenerator
+   */
+  protected $urlGenerator;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->urlGenerator = \Drupal::service('facets.utility.url_generator');
+    $this->requestStack = \Drupal::service('request_stack');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
@@ -61,20 +84,18 @@ class LinksWidget extends WidgetPluginBase {
         return $item->getCount();
       }, $results));
 
-      $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
-      $url_processor = $urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
+      $url_processor = $this->urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
       $active_filters = $url_processor->getActiveFilters();
 
       unset($active_filters[$facet->id()]);
 
-      $urlGenerator = \Drupal::service('facets.utility.url_generator');
       if ($active_filters) {
-        $url = $urlGenerator->getUrl($active_filters, FALSE);
+        $url = $this->urlGenerator->getUrl($active_filters, FALSE);
       }
       else {
-        $request = \Drupal::request();
+        $request = $this->requestStack->getCurrentRequest();
         $facet_source = $facet->getFacetSource();
-        $url = $urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
+        $url = $this->urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
         $params = $request->query->all();
         unset($params[$url_processor->getFilterKey()]);
         if (\array_key_exists('page', $params)) {

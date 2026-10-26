@@ -10,7 +10,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ConsoleException;
 use Drupal\search_api\Event\ReindexScheduledEvent;
 use Drupal\search_api\Event\SearchApiEvents;
-use Drupal\search_api\IndexBatchHelper;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Drush\Log\SuccessInterface;
@@ -33,20 +32,6 @@ class CommandHelper implements LoggerAwareInterface {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
-  /**
-   * The storage for search index entities.
-   *
-   * @var \Drupal\search_api\Entity\SearchApiConfigEntityStorage
-   */
-  protected $indexStorage;
-
-  /**
-   * The storage for search server entities.
-   *
-   * @var \Drupal\search_api\Entity\SearchApiConfigEntityStorage
-   */
-  protected $serverStorage;
 
   /**
    * The module handler.
@@ -90,8 +75,6 @@ class CommandHelper implements LoggerAwareInterface {
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, $translation_function = 'dt') {
     $this->entityTypeManager = $entity_type_manager;
-    $this->indexStorage = $entity_type_manager->getStorage('search_api_index');
-    $this->serverStorage = $entity_type_manager->getStorage('search_api_server');
     $this->moduleHandler = $module_handler;
     $this->eventDispatcher = $event_dispatcher;
     $this->translationFunction = $translation_function;
@@ -347,7 +330,8 @@ class CommandHelper implements LoggerAwareInterface {
 
       // Create the batch.
       try {
-        IndexBatchHelper::create($index, $currentBatchSize, $current_limit, $timeLimit);
+        \Drupal::getContainer()->get('search_api.indexing_batch_helper')
+          ->createBatch($index, $currentBatchSize, $current_limit, $timeLimit);
         $batchSet = TRUE;
       }
       catch (SearchApiException) {
@@ -677,7 +661,7 @@ class CommandHelper implements LoggerAwareInterface {
     if ($indexIds === [NULL]) {
       $indexIds = NULL;
     }
-    return $this->indexStorage->loadMultiple($indexIds);
+    return $this->entityTypeManager->getStorage('search_api_index')->loadMultiple($indexIds);
   }
 
   /**
@@ -691,7 +675,7 @@ class CommandHelper implements LoggerAwareInterface {
    *   An array of search servers.
    */
   public function loadServers(?array $serverIds = NULL) {
-    return $this->serverStorage->loadMultiple($serverIds);
+    return $this->entityTypeManager->getStorage('search_api_server')->loadMultiple($serverIds);
   }
 
   /**

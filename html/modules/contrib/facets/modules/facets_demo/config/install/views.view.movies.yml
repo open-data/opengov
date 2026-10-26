@@ -244,7 +244,7 @@ display:
         type: bef
         options:
           submit_button: Filter
-          reset_button: true
+          reset_button: false
           reset_button_label: 'Reset filters'
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true

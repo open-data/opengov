@@ -179,8 +179,8 @@ function template_preprocess_search_api_server(array &$variables) {
   $classes = [];
 
   // Check if the backend used by the server is valid and get its label.
-  if ($server->hasValidBackend()) {
-    $backend = $server->getBackend();
+  $backend = $server->getBackendIfAvailable();
+  if ($backend) {
     $info = Html::escape($backend->label());
   }
   else {
@@ -255,8 +255,8 @@ function template_preprocess_search_api_index(array &$variables) {
   // Get the index.
   /** @var \Drupal\search_api\IndexInterface $index */
   $index = $variables['index'];
-  $server = $index->hasValidServer() ? $index->getServerInstance() : NULL;
-  $tracker = $index->hasValidTracker() ? $index->getTrackerInstance() : NULL;
+  $server = $index->getServerInstanceIfAvailable();
+  $tracker = $index->getTrackerInstanceIfAvailable();
 
   if (($description = $index->getDescription())) {
     // Sanitize the description and append to the output.

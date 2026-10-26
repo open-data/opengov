@@ -37,7 +37,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: '<p>When Captain James Hook kidnaps his children, an adult Peter Pan must return to Neverland and reclaim his youthful spirit in order to challenge his old enemy.</p>'
       format: basic_html

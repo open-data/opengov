@@ -2,12 +2,22 @@
 
 namespace Drupal\Tests\webform\Functional\Element;
 
+use Drupal\Core\Form\FormState;
+use Drupal\webform\Element\WebformElementAttributes;
+
 /**
  * Tests for webform element attributes.
  *
  * @group webform
  */
 class WebformElementAttributesTest extends WebformElementBrowserTestBase {
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  protected static $modules = ['webform_ui'];
 
   /**
    * Webforms to load.
@@ -21,6 +31,46 @@ class WebformElementAttributesTest extends WebformElementBrowserTestBase {
    */
   public function testAttributes(): void {
     $assert_session = $this->assertSession();
+
+    /* Access */
+
+    // Check that the attributes editor is hidden without source access.
+    $admin_webform_account = $this->drupalCreateUser(['administer webform']);
+    $this->drupalLogin($admin_webform_account);
+    $element = [
+      '#id' => 'webform-element-attributes',
+      '#title' => 'webform_element_attributes',
+      '#classes' => '',
+      '#default_value' => [
+        'class' => [],
+        'style' => '',
+        'custom' => 'test',
+      ],
+    ];
+    $complete_form = [];
+    $form_state = new FormState();
+    WebformElementAttributes::processWebformElementAttributes($element, $form_state, $complete_form);
+    $this->assertArrayHasKey('#access', $element['attributes']);
+    $this->assertFalse($element['attributes']['#access']);
+
+    // Check that the attributes editor is visible with source access.
+    $source_webform_account = $this->drupalCreateUser(['administer webform', 'edit webform source']);
+    $this->drupalLogin($source_webform_account);
+    $element = [
+      '#id' => 'webform-element-attributes',
+      '#title' => 'webform_element_attributes',
+      '#classes' => '',
+      '#default_value' => [
+        'class' => [],
+        'style' => '',
+        'custom' => 'test',
+      ],
+    ];
+    $complete_form = [];
+    $form_state = new FormState();
+    WebformElementAttributes::processWebformElementAttributes($element, $form_state, $complete_form);
+    $this->assertArrayHasKey('#access', $element['attributes']);
+    $this->assertTrue($element['attributes']['#access']);
 
     /* Rendering */
 

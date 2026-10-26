@@ -122,6 +122,90 @@ interface WebformSubmissionExportImportImporterInterface {
    */
   public function getElements();
 
+  /**
+   * Determine if remote CSV URL imports are supported.
+   *
+   * @return bool
+   *   TRUE if remote CSV URL imports have been enabled in settings.php.
+   */
+  public function isRemoteCsvUrlSupported(): bool;
+
+  /**
+   * Determine if remote CSV URL instructions are disabled.
+   *
+   * @return bool
+   *   TRUE if remote CSV URL instructions have been explicitly disabled.
+   */
+  public function isRemoteCsvUrlDisabled(): bool;
+
+  /**
+   * Get the configured remote CSV URL hosts.
+   *
+   * @return array
+   *   An array of allowed remote CSV URL hosts.
+   */
+  public function getRemoteCsvUrlHosts(): array;
+
+  /**
+   * Determine if a remote CSV URL is allowed.
+   *
+   * @param string $url
+   *   A remote CSV URL.
+   *
+   * @return bool
+   *   TRUE if the URL is allowed.
+   */
+  public function isRemoteCsvUrlAllowed(string $url): bool;
+
+  /**
+   * Get the contents of an allowed remote CSV URL.
+   *
+   * @param string $url
+   *   A remote CSV URL.
+   *
+   * @return string|null
+   *   The remote URL's contents, or NULL if it cannot be retrieved.
+   */
+  public function getRemoteCsvUrlContents(string $url): ?string;
+
+  /**
+   * Determine if remote file URLs are supported.
+   *
+   * @return bool
+   *   TRUE if remote file URLs have been enabled in settings.php.
+   */
+  public function isRemoteFileUrlSupported(): bool;
+
+  /**
+   * Get the configured remote file URL hosts.
+   *
+   * @return array
+   *   An array of allowed remote file URL hosts.
+   */
+  public function getRemoteFileUrlHosts(): array;
+
+  /**
+   * Determine if a remote file URL is allowed.
+   *
+   * @param string $url
+   *   A remote file URL.
+   *
+   * @return bool
+   *   TRUE if the URL is allowed.
+   */
+  public function isRemoteFileUrlAllowed(string $url): bool;
+
+  /**
+   * Get the contents of an allowed remote file URL.
+   *
+   * @param string $url
+   *   A remote file URL.
+   *
+   * @return string|null
+   *   The remote URL's contents, or NULL if it cannot be retrieved.
+   */
+  public function getRemoteFileUrlContents(string $url): ?string;
+
   /* ************************************************************************ */
   // Export.
   /* ************************************************************************ */

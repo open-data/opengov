@@ -6,6 +6,7 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\facets\FacetInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Provides the DefaultFacetManager test.
@@ -13,6 +14,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
  * @group facets
  * @coversDefaultClass \Drupal\facets\FacetManager\DefaultFacetManager
  */
+#[RunTestsInSeparateProcesses]
 class DefaultFacetManagerTest extends EntityKernelTestBase {
 
   /**
@@ -23,6 +25,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
     'search_api',
     'search_api_db',
     'search_api_test_db',
+    'search_api_test_example_content',
     'facets_processors_collection',
     'facets_search_api_dependency',
     'facets_query_processor',
@@ -67,6 +70,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
       ->save();
 
     $this->installConfig([
+      'search_api_test_example_content',
       'search_api_test_db',
       'facets_search_api_dependency',
     ]);

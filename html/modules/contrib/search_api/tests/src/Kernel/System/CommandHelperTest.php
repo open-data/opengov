@@ -7,9 +7,9 @@ use Drupal\search_api\ConsoleException;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\Utility\CommandHelper;
-use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 use Drupal\user\Entity\Role;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Psr\Log\NullLogger;
 
 /**
@@ -18,6 +18,7 @@ use Psr\Log\NullLogger;
  * @group search_api
  * @coversDefaultClass \Drupal\search_api\Utility\CommandHelper
  */
+#[RunTestsInSeparateProcesses]
 class CommandHelperTest extends KernelTestBase {
 
   use ExampleContentTrait;
@@ -51,12 +52,6 @@ class CommandHelperTest extends KernelTestBase {
     $this->installEntitySchema('search_api_task');
     $this->installConfig('search_api');
 
-    // Disable the use of batches for item tracking to simulate a CLI
-    // environment.
-    if (!Utility::isRunningInCli()) {
-      \Drupal::state()->set('search_api_use_tracking_batch', FALSE);
-    }
-
     // Create a test server.
     Server::create([
       'name' => 'Pink pony server',
@@ -68,8 +63,9 @@ class CommandHelperTest extends KernelTestBase {
     Role::create([
       'id' => 'anonymous',
       'label' => 'anonymous',
-    ])->save();
-    user_role_grant_permissions('anonymous', ['view test entity']);
+    ])
+      ->grantPermission('view test entity')
+      ->save();
 
     Index::create([
       'name' => 'Test Index',

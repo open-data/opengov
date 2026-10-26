@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\facets\Kernel\Entity;
 
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\facets\Entity\Facet;
-use Drupal\facets\Exception\Exception;
 use Drupal\facets\Exception\InvalidProcessorException;
 use Drupal\facets\Hierarchy\HierarchyPluginManager;
 use Drupal\facets\Plugin\facets\hierarchy\Taxonomy;
@@ -14,6 +15,7 @@ use Drupal\facets\Processor\ProcessorInterface;
 use Drupal\facets\Result\Result;
 use Drupal\facets\Widget\WidgetPluginManager;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Class FacetTest.
@@ -23,6 +25,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @group facets
  * @coversDefaultClass \Drupal\facets\Entity\Facet
  */
+#[RunTestsInSeparateProcesses]
 class FacetTest extends KernelTestBase {
 
   /**
@@ -276,6 +279,25 @@ class FacetTest extends KernelTestBase {
     $this->assertFalse($entity->isActiveValue('llama'));
     $this->assertTrue($entity->isActiveValue('badger'));
     $this->assertTrue($entity->isActiveValue('owl'));
+  }
+
+  /**
+   * Tests that nested facet results inherit active state by raw value lookup.
+   *
+   * @covers ::getResultsKeyedByRawValue
+   * @covers ::setResults
+   */
+  public function testNestedResultsAreMarkedActive(): void {
+    $entity = new Facet([], 'facets_facet');
+    $parent = new Result($entity, 'usb_a', 'USB-A', 2);
+    $child = new Result($entity, 'min_2', 'at least 2', 2);
+    $parent->setChildren([$child]);
+
+    $entity->setActiveItem('min_2');
+    $entity->setResults([$parent]);
+
+    $this->assertFalse($parent->isActive());
+    $this->assertTrue($child->isActive());
   }
 
   /**

@@ -5,19 +5,20 @@
  * Enables the creation of webforms and questionnaires.
  */
 
-use Drupal\Core\Hook\Attribute\LegacyHook;
-use Drupal\Core\Hook\Attribute\LegacyModuleImplementsAlter;
-use Drupal\webform\Hook\WebformHooks;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\Core\Hook\Attribute\LegacyModuleImplementsAlter;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\file\FileInterface;
+use Drupal\webform\Element\WebformHtmlEditor;
+use Drupal\webform\Hook\WebformHooks;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 
@@ -260,6 +261,8 @@ function webform_metatags_alter(array &$metatags, array &$context) {
  *   An array of page attachments.
  */
 function _webform_page_attachments(array &$attachments) {
+  $config = \Drupal::config('webform.settings');
+
   // Attach webform theme specific libraries.
   /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
   $theme_manager = \Drupal::service('webform.theme_manager');
@@ -278,12 +281,15 @@ function _webform_page_attachments(array &$attachments) {
   // Attach details element save open/close library.
   // This ensures pages without a webform will still be able to save the
   // details element state.
-  if (\Drupal::config('webform.settings')->get('ui.details_save')) {
+  if ($config->get('ui.details_save')) {
     $attachments['#attached']['library'][] = 'webform/webform.element.details.save';
   }
 
   // Add 'info' message style to all webform pages.
   $attachments['#attached']['library'][] = 'webform/webform.element.message';
+
+  // Add Webform's allowed HTML tags for JavaScript filtering.
+  $attachments['#attached']['drupalSettings']['webform']['xss']['allowedTags'] = WebformHtmlEditor::getAllowedTags();
 
   // Get current webform, if it does not exist exit.
   /** @var \Drupal\webform\WebformRequestInterface $request_handler */
@@ -294,7 +300,6 @@ function _webform_page_attachments(array &$attachments) {
   }
 
   // Assets: Add global CSS and JS.
-  $config = \Drupal::config('webform.settings');
   if ($config->get('assets.css')) {
     $attachments['#attached']['library'][] = 'webform/webform.css';
   }

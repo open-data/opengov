@@ -14,7 +14,7 @@ class PageManager extends BootstrapLayoutsHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function loadInstances(array $entity_ids = NULL) {
+  public function loadInstances(?array $entity_ids = NULL) {
     $layouts = [];
     $properties = ['variant' => 'panels_variant'];
     if ($entity_ids) {

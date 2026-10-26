@@ -37,7 +37,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: '<p>Marty McFly, a 17-year-old high school student, is accidentally sent 30 years into the past in a time-traveling DeLorean invented by his close friend, the maverick scientist Doc Brown.</p>'
       format: basic_html

@@ -40,7 +40,8 @@ class ViewsBootstrapListGroup extends StylePluginBase {
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
-    $options['link_field'] = ['default' => []];
+    $options['list_group_class_custom'] = ['default' => NULL];
+    $options['title_field'] = ['default' => ''];
     return $options;
   }
 
@@ -50,13 +51,27 @@ class ViewsBootstrapListGroup extends StylePluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
-    $fields = ['' => $this->t('<None>')];
-    $fields += $this->displayHandler->getFieldLabels(TRUE);
+    $form['help'] = [
+      '#markup' => $this->t('The Bootstrap list group displays content in an unordered list with list group classes (<a href=":docs">see documentation</a>).',
+        [':docs' => 'https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/views-bootstrap-for-bootstrap-5/list-group']),
+      '#weight' => -99,
+    ];
+
+    $form['list_group_class_custom'] = [
+      '#title' => $this->t('Custom list group class'),
+      '#description' => $this->t('Additional classes to provide on the list group. Separated by a space.'),
+      '#type' => 'textfield',
+      '#default_value' => $this->options['list_group_class_custom'],
+      '#weight' => 1,
+    ];
+
+    $form['row_class']['#weight'] = 2;
 
     $form['title_field'] = [
       '#type' => 'select',
       '#title' => $this->t('Title field'),
-      '#options' => $fields,
+      '#empty_option' => $this->t('- None -'),
+      '#options' => $this->displayHandler->getFieldLabels(TRUE),
       '#required' => FALSE,
       '#default_value' => $this->options['title_field'],
       '#description' => $this->t('Select the field that will be used as the title.'),

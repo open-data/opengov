@@ -1,3 +1,68 @@
+Search API 1.42 (2026-10-11):
+-----------------------------
+- ci: #3624636 Fixed failing pipelines.
+- ci: #3616723 Fixed various problems found by static analysis tools.
+- fix: #3564177 Fixed fatal errors caused by disabled indexes in some scenarios.
+- fix: #3195199 Follow-up: Fixed config schema of SearchApiBulkForm.
+
+Search API 1.41 (2026-06-08):
+-----------------------------
+- ci: #3594097 Fixed failing pipelines.
+- ci: #3592865 Fixed failing pipelines.
+- fix: #3490247 Fixed error in Bulk Operations views when results include
+  translated entities.
+- ci: #3575070 Fixed failing pipelines.
+- fix: #3556955 Fixed bug in exception handling in PHP 8.3 due to change in
+  error message.
+- fix: #3327645 Fixed view being recalculated with wrong data from cache.
+- feat: #3122003 Added options to control the number of displayed values in
+  Views fields.
+- chore: #3562994 Adapted to the deprecation of hook_requirements().
+- fix: #3558624 Fixed compatibility with PHP 8.5.
+- chore: #3556850 Moved tests from src/Tests/ to tests/src.
+- fix: #3558388 Fixed saving of “Format plural” settings in numeric Views
+  fields.
+- ci: #3560524 Updated ignored deprecations with the latest from Core.
+- fix: #2896419 Fixed broken Views data definitions if an exception occurs
+  inside search_api_views_data().
+- ci: #3553016 Fixed pipelines for Drupal 10 and Drupal 11.3.x
+- docs: #3549072 Improved documentation and discoverability of task events.
+- feat: #3547199 Added option to add the "Custom value" token property to a
+  specific datasource.
+
+Search API 1.40 (2025-11-01):
+-----------------------------
+- [#2891393] fix: Fixed wrong base language used for transliteration on
+  multilingual sites.
+- [#3552849] fix: Fixed bug when a processor defines both datasource-independent
+  and datasource-specific properties.
+- [#3489482] chore: Switched to OOP hook implementations.
+- [#3547428] feat: Added a token browser link for the “Custom value” field.
+- [#3551144] feat: Made IndexBatchHelper a service so it can be overridden.
+- [#3552912] fix: Fixed use of deprecated REQUIREMENT_* constants.
+- [#3552821] chore: Added the #[RunTestsInSeparateProcesses] attribute to all
+  non-Unit tests.
+- [#3552650] fix: Fixed missing dependencies of the
+  "drupal.search_api.processors" library.
+- [#3550113] fix: Fixed warning when adding the NumberFieldBoost processor.
+- [#3549688] fix: Fixed TypeError when creating excerpts.
+- [#3542808] feat: Added variants of plugin getters to our entity classes that
+  don’t throw exceptions.
+- [#3547098] fix: Fixed the config schema of the HTML Filter processor.
+- [#3549460] fix: Fixed hidden bug when entity properties are updated via
+  ConfigEntityBase::set().
+- [#3528597] feat: Added Views option to not sanitize indexed data on display.
+- [#3542807] chore: Moved all methods from the Basic tracker plugin to
+  TrackerPluginBase.
+- [#3546439] feat: Added an option to restrict the number of words in Views
+  fulltext searches.
+- [#3545235] fix: Fixed indexing when batch size -1 ("all") is selected.
+- [#3543230] fix: Fixed infinite loop for some backends after updateIndex()
+  fails.
+- [#3543806] feat: Added Option attributes to our Drush commands.
+- [#3542573] fix: Fixed the “Rendered entity” Views row style to properly handle
+  datasources that do not support viewing items.
+
 Search API 1.39 (2025-09-27):
 -----------------------------
 - [#3547811] fix: Fixed complex keywords queries in Postgres.

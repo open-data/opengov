@@ -122,7 +122,10 @@ class EntityHelper {
    *   The bundle of the entity.
    */
   public function getEntityBundle(EntityInterface $entity): string {
-    return $entity->getEntityTypeId() === 'menu_link_content' && method_exists($entity, 'getMenuName') ? $entity->getMenuName() : $entity->bundle();
+    $bundle = $entity->getEntityTypeId() === 'menu_link_content' && method_exists($entity, 'getMenuName')
+      ? ($entity->getMenuName() ?? $entity->bundle())
+      : $entity->bundle();
+    return $bundle ?? $entity->getEntityTypeId();
   }
 
   /**
@@ -162,9 +165,14 @@ class EntityHelper {
    *
    * @return bool
    *   TRUE if entity type is supported, FALSE if not.
+   *
+   * @see \Drupal\commerce_product\Entity\ProductVariation::toUrl()
+   * @see https://www.drupal.org/project/simple_sitemap/issues/3458079
    */
   public function supports(EntityTypeInterface $entity_type): bool {
-    return $entity_type instanceof ContentEntityTypeInterface && $entity_type->hasLinkTemplate('canonical');
+    // A product variation is a special case because it doesn't have a canonical
+    // link template. Product variation URLs depend on the parent product.
+    return $entity_type instanceof ContentEntityTypeInterface && ($entity_type->hasLinkTemplate('canonical') || $entity_type->id() === 'commerce_product_variation');
   }
 
   /**

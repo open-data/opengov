@@ -16,12 +16,14 @@ use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_test_views\EventListener;
 use Drupal\views\Entity\View;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the Views integration of the Search API.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class ViewsTest extends SearchApiBrowserTestBase {
 
   use ExampleContentTrait;
@@ -57,13 +59,6 @@ class ViewsTest extends SearchApiBrowserTestBase {
       ->addItemsAll(Index::load($this->indexId));
     $this->insertExampleContent();
     $this->indexItems($this->indexId);
-
-    // Do not use a batch for tracking the initial items after creating an
-    // index when running the tests via the GUI. Otherwise, it seems Drupal's
-    // Batch API gets confused and the test fails.
-    if (!Utility::isRunningInCli()) {
-      \Drupal::state()->set('search_api_use_tracking_batch', FALSE);
-    }
 
     $this->rebuildContainer();
   }
@@ -113,6 +108,29 @@ class ViewsTest extends SearchApiBrowserTestBase {
     $label = 'Fulltext search including short word';
     $this->checkResults($query, [1, 2, 4], $label);
     $this->assertSession()->pageTextNotContains('You must include at least one keyword to match in the content. Keywords must be at least 3 characters, and punctuation is ignored.');
+
+    // Enable the "Maximum number of words" setting.
+    $view = View::load('search_api_test_view');
+    $displays = $view->get('display');
+    $displays['default']['display_options']['filters']['search_api_fulltext']['expose']['value_max_words'] = 2;
+    $view->set('display', $displays);
+    $view->save();
+
+    $this->checkResults(['search_api_fulltext' => 'foo test'], [1, 2, 4], 'Search with multiple words should now work again');
+    $this->assertSession()->pageTextNotContains('Maximum number of words exceeded.');
+
+    $query = ['search_api_fulltext' => 'foo to test'];
+    $this->checkResults($query, [], 'Search with too many words');
+    $this->assertSession()->pageTextContains('Maximum number of words exceeded. You may enter a maximum of 2 words.');
+
+    // Revert the view change to the "Maximum number of words" setting.
+    $displays['default']['display_options']['filters']['search_api_fulltext']['expose']['value_max_words'] = '';
+    $view->set('display', $displays);
+    $view->save();
+
+    // Use the same search query to confirm the limit is no longer enforced.
+    $this->checkResults($query, [1, 2, 4], 'Search with multiple words should now work again');
+    $this->assertSession()->pageTextNotContains('Maximum number of words exceeded.');
 
     $this->checkResults(['id[value]' => 2], [2], 'Search with ID filter');
     $query = [
@@ -541,6 +559,8 @@ class ViewsTest extends SearchApiBrowserTestBase {
   protected function regressionTest3029582() {
     $yesterday = date('Y-m-d', strtotime('-1DAY'));
 
+    // phpcs:disable Drupal.Commenting.InlineComment.SpacingBefore
+
     // Should result in these filters:
     // [
     //   keywords = 'orange'
@@ -672,6 +692,8 @@ class ViewsTest extends SearchApiBrowserTestBase {
       'strawberry',
       'search-api-test-3029582',
     );
+
+    // phpcs:enable
   }
 
   /**
@@ -877,8 +899,16 @@ class ViewsTest extends SearchApiBrowserTestBase {
    *   (optional) A label for this search, to include in assert messages.
    * @param string $arguments
    *   (optional) A string to append to the search path.
+   * @param string $path
+   *   (optional) The path to the search page.
    */
-  protected function checkResults(array $query, ?array $expected_results = NULL, string $label = 'Search', string $arguments = '', string $path = 'search-api-test'): void {
+  protected function checkResults(
+    array $query,
+    ?array $expected_results = NULL,
+    string $label = 'Search',
+    string $arguments = '',
+    string $path = 'search-api-test',
+  ): void {
     $this->drupalGet($path . '/' . $arguments, ['query' => $query]);
 
     if (isset($expected_results)) {

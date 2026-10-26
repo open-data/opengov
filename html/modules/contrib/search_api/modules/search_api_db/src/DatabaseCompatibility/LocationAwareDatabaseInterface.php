@@ -77,7 +77,7 @@ interface LocationAwareDatabaseInterface extends DatabaseCompatibilityHandlerInt
    *
    * @param string $field_name
    *   The name of the location field.
-   * @param $value
+   * @param mixed $value
    *   The filter value.
    * @param string $operator
    *   The filter operator.

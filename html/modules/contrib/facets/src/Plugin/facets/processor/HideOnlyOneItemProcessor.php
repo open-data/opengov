@@ -34,7 +34,7 @@ class HideOnlyOneItemProcessor extends ProcessorPluginBase implements BuildProce
     /** @var \Drupal\facets\Result\Result $result */
     $result = reset($results);
 
-    return $result->isActive() ? $results : [];
+    return ($result->isActive() || $result->hasActiveChildren()) ? $results : [];
   }
 
 }

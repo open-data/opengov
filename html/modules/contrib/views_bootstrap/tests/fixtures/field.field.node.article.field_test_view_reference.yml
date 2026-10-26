@@ -1,0 +1,34 @@
+uuid: 12345678-1234-1234-1234-123456789ghi
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_test_view_reference
+    - node.type.article
+  module:
+    - viewsreference
+    - views_bootstrap
+id: node.article.field_test_view_reference
+field_name: field_test_view_reference
+entity_type: node
+bundle: article
+label: 'Test View Reference'
+description: 'A test ViewsReference field with Bootstrap settings enabled'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:view'
+  handler_settings:
+    target_bundles: null
+    auto_create: false
+  plugin_types:
+    block: block
+  preselect_views: {  }
+  enabled_settings:
+    bootstrap_grid: bootstrap_grid
+    bootstrap_cards: bootstrap_cards
+    title: title
+    limit: limit
+field_type: viewsreference

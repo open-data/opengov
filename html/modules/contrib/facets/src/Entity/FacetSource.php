@@ -17,7 +17,6 @@ use Drupal\facets\FacetSourceInterface;
  *     "form" = {
  *       "default" = "Drupal\facets\Form\FacetSourceEditForm",
  *       "edit" = "Drupal\facets\Form\FacetSourceEditForm",
- *       "display" = "Drupal\facets\Form\FacetSourceDisplayForm",
  *       "delete" = "Drupal\facets\Form\FacetSourceDeleteConfirmForm",
  *     },
  *   },

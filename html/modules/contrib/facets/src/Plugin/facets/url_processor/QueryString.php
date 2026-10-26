@@ -67,7 +67,7 @@ class QueryString extends UrlProcessorPluginBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('request_stack')->getCurrentRequest(),
+      $container->get('request_stack')->getMainRequest(),
       $container->get('entity_type.manager'),
       $container->get('event_dispatcher'),
       $container->get('facets.utility.url_generator')
@@ -282,7 +282,7 @@ class QueryString extends UrlProcessorPluginBase {
     }
 
     $request = Request::create($facet_source_path);
-    $request->attributes->set('_format', $this->request->get('_format'));
+    $request->attributes->set('_format', $this->request->attributes->get('_format'));
     $requestsByPath[$facet_source_path] = $request;
     return $request;
   }

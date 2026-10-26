@@ -25,6 +25,7 @@ services:
       - '@plugin.manager.facets.processor'
       - '@entity_type.manager'
       - '@current_route_match'
+      - '@event_dispatcher'
   facets.utility.date_handler:
     class: Drupal\facets\Utility\FacetsDateHandler
     arguments:

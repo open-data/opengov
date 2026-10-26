@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\simple_sitemap_views\Functional;
 
-use Drupal\Tests\simple_sitemap\Functional\SimplesitemapTestBase;
+use Drupal\Tests\simple_sitemap\Functional\SimpleSitemapTestBase;
 use Drupal\simple_sitemap\Entity\SimpleSitemapType;
 use Drupal\simple_sitemap_views\SimpleSitemapViews;
 use Drupal\views\Views;
@@ -10,7 +10,7 @@ use Drupal\views\Views;
 /**
  * Defines a base class for Simple XML Sitemap (Views) functional testing.
  */
-abstract class SimpleSitemapViewsTestBase extends SimplesitemapTestBase {
+abstract class SimpleSitemapViewsTestBase extends SimpleSitemapTestBase {
 
   /**
    * {@inheritdoc}

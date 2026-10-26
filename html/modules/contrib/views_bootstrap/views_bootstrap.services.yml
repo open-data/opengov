@@ -1,0 +1,5 @@
+
+services:
+  Drupal\views_bootstrap\Hook\ViewsBootstrapHooks:
+    class: Drupal\views_bootstrap\Hook\ViewsBootstrapHooks
+    autowire: true

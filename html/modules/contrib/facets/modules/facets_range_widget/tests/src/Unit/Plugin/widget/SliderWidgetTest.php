@@ -26,7 +26,7 @@ class SliderWidgetTest extends WidgetTestBase {
    */
   public function setUp(): void {
     parent::setUp();
-    $this->widget = new SliderWidget([], 'slider_widget', []);
+    $this->widget = new SliderWidget([], 'slider_widget', [], $this->urlProcessorManager);
   }
 
   /**

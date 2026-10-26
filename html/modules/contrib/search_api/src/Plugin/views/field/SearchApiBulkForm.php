@@ -12,8 +12,10 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\system\ActionConfigEntityInterface;
+use Drupal\views\Entity\Render\ConfigurableLanguageRenderer;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\BulkForm;
+use Drupal\views\Plugin\views\PluginBase;
 use Drupal\views\Plugin\views\style\Table;
 use Drupal\views\ResultRow;
 use Drupal\views\ViewExecutable;
@@ -26,9 +28,28 @@ class SearchApiBulkForm extends BulkForm {
 
   use SearchApiFieldTrait {
     preRender as traitPreRender;
-    defineOptions as ignoreDefineOptions;
-    buildOptionsForm as ignoreBuildOptionsForm;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defineOptions(): array {
+    // Intentionally overridden to avoid SearchApiFieldTrait implementation.
+    return parent::defineOptions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
+    // Intentionally overridden to avoid SearchApiFieldTrait implementation.
+    parent::buildOptionsForm($form, $form_state);
+  }
+
+  /**
+   * Static cache of entity translation renderers.
+   */
+  protected array $entityTranslationRenderers = [];
 
   /**
    * {@inheritdoc}
@@ -99,7 +120,7 @@ class SearchApiBulkForm extends BulkForm {
 
     // If the view is using a table style, provide a placeholder for a "select
     // all" checkbox.
-    if (($this->view->style_plugin ?? NULL) instanceof Table) {
+    if ($this->view->style_plugin instanceof Table) {
       // Add the tableselect css classes.
       $this->options['element_label_class'] .= 'select-all';
       // Hide the actual label of the field on the table header.
@@ -315,6 +336,59 @@ class SearchApiBulkForm extends BulkForm {
       }
     }
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityTranslationByRelationship(EntityInterface $entity, ResultRow $row, string $relationship = 'none'): EntityInterface {
+    if ($entity instanceof TranslatableInterface && count($entity->getTranslationLanguages()) > 1) {
+      $langcode = $this->getEntityTranslationRenderer($entity)->getLangcodeByRelationship($row, $relationship);
+      $translation = $this->getEntityRepository()->getTranslationFromContext($entity, $langcode);
+    }
+    return $translation ?? $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityTranslationRenderer(?EntityInterface $entity = NULL) {
+    // The standard BulkForm was designed to work with a single entity type.
+    // Results returned by Search API might contain entities of different entity
+    // types so the only way to get the right entity translation renderer is to
+    // inspect the entity.
+    if (!($entity instanceof EntityInterface)) {
+      throw new \RuntimeException('Entity is unavailable, entity translation renderer cannot be determined.');
+    }
+    $entity_type_id = $entity->getEntityTypeId();
+
+    if (isset($this->entityTranslationRenderers[$entity_type_id])) {
+      return $this->entityTranslationRenderers[$entity_type_id];
+    }
+
+    $entity_type = $entity->getEntityType();
+    $view = $this->getView();
+    $rendering_language = $view->display_handler->getOption('rendering_language');
+    $dynamic_renderers = [
+      '***LANGUAGE_entity_translation***' => 'TranslationLanguageRenderer',
+      '***LANGUAGE_entity_default***' => 'DefaultLanguageRenderer',
+    ];
+    if (isset($dynamic_renderers[$rendering_language])) {
+      // Dynamic language set based on result rows or instance defaults.
+      $class = '\Drupal\views\Entity\Render\\' . $dynamic_renderers[$rendering_language];
+      $renderer = new $class($view, $this->getLanguageManager(), $entity_type);
+    }
+    else {
+      if (str_contains($rendering_language, '***LANGUAGE_')) {
+        $langcode = PluginBase::queryLanguageSubstitutions()[$rendering_language];
+      }
+      else {
+        // Specific langcode set.
+        $langcode = $rendering_language;
+      }
+      $renderer = new ConfigurableLanguageRenderer($view, $this->getLanguageManager(), $entity_type, $langcode);
+    }
+    return $this->entityTranslationRenderers[$entity_type_id] = $renderer;
   }
 
 }

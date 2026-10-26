@@ -36,7 +36,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: '<p>Teenage hackers discover a criminal conspiracy with plans to use a computer virus that will capsize five oil tankers.</p>'
       format: basic_html

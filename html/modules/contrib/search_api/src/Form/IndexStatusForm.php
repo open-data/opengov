@@ -5,7 +5,7 @@ namespace Drupal\search_api\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\search_api\IndexBatchHelper;
+use Drupal\search_api\Utility\IndexingBatchHelperInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Task\IndexTaskManagerInterface;
@@ -24,12 +24,16 @@ class IndexStatusForm extends FormBase {
   protected $messenger;
 
   /**
-   * Constructs an IndexStatusForm object.
+   * The index task manager.
    *
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger.
+   * @var \Drupal\search_api\Task\IndexTaskManagerInterface|null
    */
-  public function __construct(MessengerInterface $messenger) {
+  protected $indexTaskManager;
+
+  public function __construct(
+    MessengerInterface $messenger,
+    protected IndexingBatchHelperInterface $indexingBatchHelper,
+  ) {
     $this->messenger = $messenger;
   }
 
@@ -37,17 +41,11 @@ class IndexStatusForm extends FormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $messenger = $container->get('messenger');
-
-    return new static($messenger);
+    return new static(
+      $container->get('messenger'),
+      $container->get('search_api.indexing_batch_helper'),
+    );
   }
-
-  /**
-   * The index task manager.
-   *
-   * @var \Drupal\search_api\Task\IndexTaskManagerInterface|null
-   */
-  protected $indexTaskManager;
 
   /**
    * Retrieves the index task manager.
@@ -255,8 +253,7 @@ class IndexStatusForm extends FormBase {
           break;
         }
         try {
-          IndexBatchHelper::setStringTranslation($this->getStringTranslation());
-          IndexBatchHelper::create($index, $values['batch_size'], $values['limit']);
+          $this->indexingBatchHelper->createBatch($index, $values['batch_size'], $values['limit']);
         }
         catch (SearchApiException) {
           $this->messenger->addWarning($this->t('Failed to create a batch, check the batch size and limit.'));

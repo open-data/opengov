@@ -263,6 +263,134 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
     return $this->elements;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function isRemoteCsvUrlSupported(): bool {
+    return !empty($this->getRemoteCsvUrlHosts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isRemoteCsvUrlDisabled(): bool {
+    return Settings::get('webform_submission_export_import_csv_hosts') === FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRemoteCsvUrlHosts(): array {
+    $hosts = Settings::get('webform_submission_export_import_csv_hosts', []);
+    return is_array($hosts) ? $hosts : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isRemoteCsvUrlAllowed(string $url): bool {
+    return $this->isRemoteUrlAllowed($url, $this->getRemoteCsvUrlHosts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRemoteCsvUrlContents(string $url): ?string {
+    return $this->isRemoteCsvUrlAllowed($url) ? $this->getRemoteUrlContents($url) : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isRemoteFileUrlSupported(): bool {
+    return !empty($this->getRemoteFileUrlHosts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isRemoteFileUrlAllowed(string $url): bool {
+    return $this->isRemoteUrlAllowed($url, $this->getRemoteFileUrlHosts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRemoteFileUrlContents(string $url): ?string {
+    return $this->isRemoteFileUrlAllowed($url) ? $this->getRemoteUrlContents($url) : NULL;
+  }
+
+  /**
+   * Get remote URL contents without following redirects.
+   *
+   * @param string $url
+   *   A remote URL.
+   *
+   * @return string|null
+   *   The remote URL's contents, or NULL if it cannot be retrieved.
+   */
+  protected function getRemoteUrlContents(string $url): ?string {
+    // HTTP stream context options also apply to HTTPS URLs.
+    $context = stream_context_create([
+      'http' => [
+        'follow_location' => 0,
+        'max_redirects' => 0,
+        'timeout' => 10,
+      ],
+    ]);
+    $contents = @file_get_contents($url, FALSE, $context);
+
+    // Reject failed and redirect responses. When redirects are disabled, PHP
+    // can still return the body of a redirect response.
+    $status_line = $http_response_header[0] ?? '';
+    if ($contents === FALSE || !preg_match('/^HTTP\/\S+\s+2\d\d\b/', $status_line)) {
+      return NULL;
+    }
+
+    return $contents;
+  }
+
+  /**
+   * Determine if a remote URL is allowed by a host list.
+   *
+   * @param string $url
+   *   A remote URL.
+   * @param array $hosts
+   *   An array of allowed remote URL hosts.
+   *
+   * @return bool
+   *   TRUE if the URL is allowed.
+   */
+  protected function isRemoteUrlAllowed(string $url, array $hosts): bool {
+    $url_parts = parse_url($url);
+    if (!$url_parts || empty($url_parts['scheme']) || empty($url_parts['host']) || !in_array(strtolower($url_parts['scheme']), ['http', 'https'], TRUE)) {
+      return FALSE;
+    }
+
+    $host = strtolower($url_parts['host']);
+    foreach ($hosts as $allowed_host) {
+      if (!is_string($allowed_host)) {
+        continue;
+      }
+      $pattern = '/^' . str_replace('\\*', '.*', preg_quote(strtolower($allowed_host), '/')) . '$/D';
+      if (preg_match($pattern, $host)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Get the configured remote file URL hosts.
+   *
+   * @return array
+   *   An array of allowed remote file URL hosts.
+   */
+  public function getRemoteFileUrlHosts(): array {
+    $hosts = Settings::get('webform_submission_export_import_file_hosts', []);
+    return is_array($hosts) ? $hosts : [];
+  }
+
   /* ************************************************************************ */
   // Export.
   /* ************************************************************************ */
@@ -767,29 +895,24 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
         continue;
       }
 
-      // Check URL status code.
-      $file_headers = @get_headers($new_file_uri);
-      if (!$file_headers || $file_headers[0] === 'HTTP/1.1 404 Not Found') {
-        $errors[] = $this->t('[@element_key] URL (@url) returns 404 file not found.', $t_args);
+      // Check that the remote URL is allowed before retrieving it.
+      if (!$this->isRemoteFileUrlAllowed($new_file_uri)) {
+        $errors[] = $this->t('[@element_key] Remote file URL (@url) is not allowed.', $t_args);
         continue;
       }
 
-      $new_file_hash = @sha1_file($new_file_uri);
-      if (!$new_file_hash) {
+      // Retrieve the remote file once without following redirects.
+      $temp_file_contents = $this->getRemoteFileUrlContents($new_file_uri);
+      if ($temp_file_contents === NULL) {
         $errors[] = $this->t('[@element_key] Unable to read file from URL (@url).', $t_args);
         continue;
       }
+
+      $new_file_hash = sha1($temp_file_contents);
 
       // Check existing file hashes.
       if (isset($existing_file_ids[$new_file_hash])) {
         $new_file_ids[$new_file_hash] = $existing_file_ids[$new_file_hash];
-        continue;
-      }
-
-      // Write new file URI to server and upload it.
-      $temp_file_contents = @file_get_contents($new_file_uri);
-      if (!$temp_file_contents) {
-        $errors[] = $this->t('[@element_key] Unable to read file from URL (@url).', $t_args);
         continue;
       }
 

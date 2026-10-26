@@ -2,6 +2,9 @@
 
 namespace Drupal\Tests\facets\Unit\Plugin\processor;
 
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
@@ -66,67 +69,29 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Provides mock data for the tests in this class.
    *
-   * We create a data definition for both entity reference and entity reference
-   * revision field types so we can test with both the label tranformation.
+   * We provide both supported reference field types.
    *
    * @return array
-   *   The facet and results test data.
+   *   Field type test data.
    */
-  public function facetDataProvider() {
-    $data = [];
-    foreach (['entity_reference', 'entity_reference_revision'] as $field_type) {
-      // Mock the typed data chain.
-      $target_field_definition = $this->createMock(EntityDataDefinition::class);
-      $target_field_definition->expects($this->once())
-        ->method('getEntityTypeId')
-        ->willReturn('entity_type');
-      $property_definition = $this->createMock(DataReferenceDefinitionInterface::class);
-      $property_definition->expects($this->any())
-        ->method('getTargetDefinition')
-        ->willReturn($target_field_definition);
-      $property_definition->expects($this->any())
-        ->method('getDataType')
-        ->willReturn($field_type);
-      $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
-      $data_definition->expects($this->any())
-        ->method('getPropertyDefinition')
-        ->willReturn($property_definition);
-      $data_definition->expects($this->any())
-        ->method('getPropertyDefinitions')
-        ->willReturn([$property_definition]);
-
-      // Create the actual facet.
-      $facet = $this->createMock(Facet::class);
-      $facet->expects($this->any())
-        ->method('getDataDefinition')
-        ->willReturn($data_definition);
-
-      // Add a field identifier.
-      $facet->expects($this->any())
-        ->method('getFieldIdentifier')
-        ->willReturn('testfield');
-
-      $results = [new Result($facet, 2, 2, 5)];
-      $facet->setResults($results);
-
-      $data[$field_type][] = $facet;
-      $data[$field_type][] = $results;
-    }
-
-    return $data;
+  public static function facetDataProvider(): array {
+    return [
+      'entity_reference' => ['entity_reference'],
+      'entity_reference_revision' => ['entity_reference_revision'],
+    ];
   }
 
   /**
    * Tests that node results were correctly changed.
    *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
+   * @param string $field_type
+   *   The field type under test.
    *
    * @dataProvider facetDataProvider
    */
-  public function testNodeResultsChanged(FacetInterface $facet, array $results) {
+  public function testNodeResultsChanged(string $field_type) {
+    [$facet, $results] = $this->createFacetAndResults($field_type);
+
     // Mock a node and add the label to it.
     $node = $this->createMock(Node::class);
     $node->expects($this->any())
@@ -167,14 +132,14 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Tests that term results were correctly changed.
    *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
+   * @param string $field_type
+   *   The field type under test.
    *
    * @dataProvider facetDataProvider
    */
-  public function testTermResultsChanged(FacetInterface $facet, array $results) {
+  public function testTermResultsChanged(string $field_type) {
+    [$facet, $results] = $this->createFacetAndResults($field_type);
+
     // Mock term.
     $term = $this->createMock(Term::class);
     $term->expects($this->once())
@@ -216,14 +181,14 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Test that deleted entities still in index results doesn't display.
    *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
+   * @param string $field_type
+   *   The field type under test.
    *
    * @dataProvider facetDataProvider
    */
-  public function testDeletedEntityResults(FacetInterface $facet, array $results) {
+  public function testDeletedEntityResults(string $field_type) {
+    [$facet, $results] = $this->createFacetAndResults($field_type);
+
     // Set original results.
     $term_storage = $this->createMock(EntityStorageInterface::class);
     $term_storage->expects($this->any())
@@ -238,6 +203,187 @@ class TranslateEntityProcessorTest extends UnitTestCase {
     $processor = new TranslateEntityProcessor([], 'translate_entity', [], $this->languageManager, $this->entityTypeManager);
     $filtered_results = $processor->build($facet, $results);
     $this->assertEmpty($filtered_results);
+  }
+
+  /**
+   * Tests when skip_access_check = FALSE (Default) entities are filtered out.
+   */
+  public function testAccessCheckEnabledFiltersEntities() {
+    $fixture = $this->createFacetTestFixture();
+    $facet = $fixture['facet'];
+    $entities = $fixture['entities'];
+    $results = $fixture['results'];
+
+    // Access handler mock.
+    $access_handler = $this->createMock(EntityAccessControlHandlerInterface::class);
+    $this->entityTypeManager->method('getAccessControlHandler')->willReturn($access_handler);
+
+    // Allow 1 & 2, deny 3 & 4.
+    $access_handler->method('access')
+      ->willReturnCallback(function ($entity) use ($entities) {
+        return in_array($entity, [$entities[1], $entities[2]], TRUE)
+          ? $this->mockAccessResult(TRUE)
+          : $this->mockAccessResult(FALSE);
+      });
+
+    $processor = new TranslateEntityProcessor(
+      ['skip_access_check' => FALSE],
+      'translate_entity',
+      [],
+      $this->languageManager,
+      $this->entityTypeManager
+    );
+
+    $filtered = $processor->build($facet, $results);
+    $this->assertCount(2, $filtered);
+  }
+
+  /**
+   * Tests when skip_access_check = TRUE, no entities are filtered out.
+   */
+  public function testAccessCheckDisabledKeepsAllEntities() {
+    $fixture = $this->createFacetTestFixture();
+    $facet = $fixture['facet'];
+    $results = $fixture['results'];
+
+    // Mock handler denies everything, but skip_access_check=TRUE should bypass.
+    $deny_handler = $this->createMock(EntityAccessControlHandlerInterface::class);
+    $deny_handler->method('access')->willReturn($this->mockAccessResult(FALSE));
+    $this->entityTypeManager->method('getAccessControlHandler')->willReturn($deny_handler);
+
+    $processor = new TranslateEntityProcessor(
+      ['skip_access_check' => TRUE],
+      'translate_entity',
+      [],
+      $this->languageManager,
+      $this->entityTypeManager
+    );
+
+    $filtered = $processor->build($facet, $results);
+    $this->assertCount(4, $filtered);
+  }
+
+  /**
+   * Helper to create an AccessResultInterface mock.
+   *
+   * @param bool $allowed
+   *   Whether access should be allowed.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|\PHPUnit\Framework\MockObject\MockObject
+   *   A mock access result.
+   */
+  protected function mockAccessResult(bool $allowed = TRUE) {
+    $result = $this->createMock(AccessResultInterface::class);
+    $result->method('isAllowed')->willReturn($allowed);
+    return $result;
+  }
+
+  /**
+   * Creates a complete facet mock, typed-data chain, results, and entity mocks.
+   *
+   * @return array
+   *   Array with keys:
+   *   - facet: the facet mock
+   *   - entities: array of 4 mocked entities keyed 1–4
+   *   - results: array of 4 Result objects
+   */
+  protected function createFacetTestFixture() {
+    // Four mock entities.
+    $entity1 = $this->createMock(EntityInterface::class);
+    $entity2 = $this->createMock(EntityInterface::class);
+    $entity3 = $this->createMock(EntityInterface::class);
+    $entity4 = $this->createMock(EntityInterface::class);
+    $entities = [
+      1 => $entity1,
+      2 => $entity2,
+      3 => $entity3,
+      4 => $entity4,
+    ];
+
+    // Mock storage.
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->method('loadMultiple')->willReturn($entities);
+    $this->entityTypeManager->method('getStorage')->willReturn($storage);
+
+    // Facet mock.
+    $facet = $this->createMock(FacetInterface::class);
+    $facet->expects($this->any())->method('addCacheableDependency')->willReturnSelf();
+    $facet->method('getFieldIdentifier')->willReturn('testfield');
+
+    // Typed data chain.
+    $target_field_definition = $this->createMock(EntityDataDefinition::class);
+    $target_field_definition->method('getEntityTypeId')->willReturn('entity_type');
+
+    $property_definition = $this->createMock(DataReferenceDefinitionInterface::class);
+    $property_definition->method('getTargetDefinition')->willReturn($target_field_definition);
+    $property_definition->method('getDataType')->willReturn('entity_reference');
+
+    $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
+    $data_definition->method('getPropertyDefinition')->willReturn($property_definition);
+    $data_definition->method('getPropertyDefinitions')->willReturn([$property_definition]);
+
+    $facet->method('getDataDefinition')->willReturn($data_definition);
+
+    // Result objects.
+    $results = [
+      new Result($facet, 1, 1, 1),
+      new Result($facet, 2, 2, 2),
+      new Result($facet, 3, 3, 3),
+      new Result($facet, 4, 4, 4),
+    ];
+
+    return [
+      'facet' => $facet,
+      'entities' => $entities,
+      'results' => $results,
+    ];
+  }
+
+  /**
+   * Creates a facet and single-result set for a given field type.
+   *
+   * @param string $field_type
+   *   The field type.
+   *
+   * @return array
+   *   A tuple containing:
+   *   - 0: Facet mock.
+   *   - 1: Result array.
+   */
+  protected function createFacetAndResults(string $field_type): array {
+    $target_field_definition = $this->createMock(EntityDataDefinition::class);
+    $target_field_definition->expects($this->once())
+      ->method('getEntityTypeId')
+      ->willReturn('entity_type');
+
+    $property_definition = $this->createMock(DataReferenceDefinitionInterface::class);
+    $property_definition->expects($this->any())
+      ->method('getTargetDefinition')
+      ->willReturn($target_field_definition);
+    $property_definition->expects($this->any())
+      ->method('getDataType')
+      ->willReturn($field_type);
+
+    $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
+    $data_definition->expects($this->any())
+      ->method('getPropertyDefinition')
+      ->willReturn($property_definition);
+    $data_definition->expects($this->any())
+      ->method('getPropertyDefinitions')
+      ->willReturn([$property_definition]);
+
+    $facet = $this->createMock(Facet::class);
+    $facet->expects($this->any())
+      ->method('getDataDefinition')
+      ->willReturn($data_definition);
+    $facet->expects($this->any())
+      ->method('getFieldIdentifier')
+      ->willReturn('testfield');
+
+    $results = [new Result($facet, 2, 2, 5)];
+    $facet->setResults($results);
+
+    return [$facet, $results];
   }
 
 }

@@ -10,12 +10,14 @@ use Drupal\search_api\Query\ConditionGroup;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_test\PluginTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests query functionality.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class QueryTest extends KernelTestBase {
 
   use PluginTestTrait;

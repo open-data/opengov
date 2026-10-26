@@ -33,8 +33,8 @@ class CustomValueProperty extends ConfigurablePropertyBase {
     $configuration = $field->getConfiguration();
 
     $module_handler = \Drupal::moduleHandler();
-    if ($module_handler->moduleExists('help')
-        && $module_handler->moduleExists('token')) {
+    $token_installed = $module_handler->moduleExists('token');
+    if ($token_installed && $module_handler->moduleExists('help')) {
       $description = $this->t('Use this field to set the data to be sent to the index. You can use <a href=":url">replacement tokens</a> depending on the type of item being indexed.', [':url' => Url::fromRoute('help.page', ['name' => 'token'])->toString()]);
     }
     else {
@@ -46,6 +46,24 @@ class CustomValueProperty extends ConfigurablePropertyBase {
       '#description' => $description,
       '#default_value' => $configuration['value'] ?? '',
     ];
+
+    // Allow the user to browse available tokens.
+    if ($token_installed) {
+      // Attempt to show only relevant token types.
+      $token_types = [];
+      $datasources = $field->getDatasource() ? [$field->getDatasource()] : $field->getIndex()->getDatasources();
+      foreach ($datasources as $datasource) {
+        $entity_type_id = $datasource->getEntityTypeId();
+        if ($entity_type_id) {
+          $token_types[] = $entity_type_id;
+        }
+      }
+      $form['tokens']['help'] = [
+        '#theme' => 'token_tree_link',
+        '#token_types' => $token_types ?: 'all',
+        '#dialog' => TRUE,
+      ];
+    }
 
     return $form;
   }

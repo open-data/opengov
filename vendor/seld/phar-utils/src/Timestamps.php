@@ -29,6 +29,8 @@ class Timestamps
      * The PHAR signature can then be produced in a reproducible manner.
      *
      * @param int|\DateTimeInterface|string $timestamp Date string or DateTime or unix timestamp to use
+     *
+     * @return void
      */
     public function updateTimestamps($timestamp = null)
     {
@@ -73,7 +75,7 @@ class Timestamps
             $pos += 4;
 
             // update timestamp to a fixed value
-            $timeStampBytes = pack('L', $timestamp);
+            $timeStampBytes = pack('V', $timestamp);
             $this->contents[$pos + 0] = $timeStampBytes[0];
             $this->contents[$pos + 1] = $timeStampBytes[1];
             $this->contents[$pos + 2] = $timeStampBytes[2];
@@ -98,6 +100,8 @@ class Timestamps
      *
      * @param  string $path
      * @param  int $signatureAlgo One of Phar::MD5, Phar::SHA1, Phar::SHA256 or Phar::SHA512
+     * @phpstan-param \Phar::MD5|\Phar::SHA1|\Phar::SHA256|\Phar::SHA512 $signatureAlgo
+     *
      * @return bool
      */
     public function save($path, $signatureAlgo)
@@ -120,7 +124,7 @@ class Timestamps
         //           signature
         $signature = hash($algo, substr($this->contents, 0, $pos), true)
             // sig type
-            . pack('L', $signatureAlgo)
+            . pack('V', $signatureAlgo)
             // ohai Greg & Marcus
             . 'GBMB';
 
@@ -129,6 +133,11 @@ class Timestamps
         return file_put_contents($path, $this->contents);
     }
 
+    /**
+     * @param int $pos
+     * @param int $bytes
+     * @return int
+     */
     private function readUint($pos, $bytes)
     {
         $res = unpack('V', substr($this->contents, $pos, $bytes));

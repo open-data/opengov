@@ -10,6 +10,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\recaptcha_v3\Entity\ReCaptchaV3Action;
 use Drupal\recaptcha_v3\ReCaptchaV3ActionInterface;
 use ReCaptcha\ReCaptcha;
@@ -60,27 +61,54 @@ function recaptcha_v3_theme_suggestions_captcha(array $variables) {
 }
 
 /**
- * Implements hook_library_info_alter().
+ * Implements hook_library_info_build().
+ *
+ * Build language-specific Google reCAPTCHA API libraries so the API is loaded
+ * with the correct `hl` parameter. This is required so that the v2 fallback
+ * (checkbox) renders in the current page language when v3 fails.
  */
-function recaptcha_v3_library_info_alter(&$libraries, $extension) {
-  if ($extension === 'recaptcha_v3' && isset($libraries['google.recaptcha'])) {
-    $config = \Drupal::config('recaptcha_v3.settings');
+function recaptcha_v3_library_info_build() {
+  $libraries = [];
 
-    $api_url = array_keys($libraries['google.recaptcha']['js']);
-    $api_url = array_shift($api_url);
+  $language_manager = \Drupal::service('language_manager');
+  $languages = $language_manager->getLanguages();
 
+  $config = \Drupal::config('recaptcha_v3.settings');
+  $site_key = $config->get('site_key');
+
+  if ($site_key) {
+    $recaptcha_src = 'https://www.google.com/recaptcha/api.js';
     if ($config->get('library_use_recaptcha_net')) {
-      // Load from recaptcha.net instead of google.com.
-      $parsed_api_url = parse_url($api_url);
-      $parsed_api_url['host'] = 'www.recaptcha.net';
-      $api_url = $parsed_api_url['scheme'] . '://' . $parsed_api_url['host'] . $parsed_api_url['path'];
+      $recaptcha_src = 'https://www.recaptcha.net/recaptcha/api.js';
     }
 
-    $site_key = $config->get('site_key');
-    $key = $api_url . '?render=' . $site_key;
-    $js = array_shift($libraries['google.recaptcha']['js']);
-    $libraries['google.recaptcha']['js'][$key] = $js;
+    foreach ($languages as $langcode => $language) {
+      $url = Url::fromUri($recaptcha_src, [
+        'query' => [
+          'render' => $site_key,
+          'hl' => $langcode,
+        ],
+        'absolute' => TRUE,
+      ])->toString();
+
+      $libraries['google.recaptcha_' . $langcode] = [
+        'version' => '1.x',
+        'header' => TRUE,
+        'js' => [
+          $url => [
+            'type' => 'external',
+            'minified' => TRUE,
+            'attributes' => [
+              'async' => TRUE,
+              'defer' => TRUE,
+            ],
+          ],
+        ],
+      ];
+    }
   }
+
+  return $libraries;
 }
 
 /**
@@ -172,6 +200,7 @@ function recaptcha_v3_captcha($op, $captcha_type = '', $captcha_sid = NULL) {
           ],
           '#attached' => [
             'library' => [
+              'recaptcha_v3/google.recaptcha_' . \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
               'recaptcha_v3/recaptcha_v3',
             ],
           ],
@@ -186,22 +215,7 @@ function recaptcha_v3_captcha($op, $captcha_type = '', $captcha_sid = NULL) {
           '#value' => 1,
         ];
         if ($config->get('hide_badge')) {
-          $captcha['form']['hide_badge'] = [
-            '#type' => 'html_tag',
-            '#tag' => 'div',
-            '#attributes' => [
-              'class' => ['recaptcha-no-badge-message'],
-            ],
-            '#value' => t('This site is protected by reCAPTCHA and the Google <a href=":privacy" target="_blank">Privacy Policy</a> and <a href=":terms" target="_blank">Terms of Service</a> apply.', [
-              ':privacy' => 'https://policies.google.com/privacy',
-              ':terms' => 'https://policies.google.com/terms',
-            ]),
-            '#attached' => [
-              'library' => [
-                'recaptcha_v3/recaptcha_v3_no_badge',
-              ],
-            ],
-          ];
+          $captcha['form']['captcha_response']['#attached']['library'][] = 'recaptcha_v3/recaptcha_v3_no_badge';
         }
         $captcha['solution'] = TRUE;
         $captcha['captcha_validate'] = 'recaptcha_v3_validate';
@@ -289,7 +303,7 @@ function recaptcha_v3_validate($solution, $captcha_response, $element, FormState
 
       if ($errors) {
         $errors_string = implode(' ', $errors);
-        \Drupal::logger('recaptcha_v3')->error(
+        \Drupal::logger('recaptcha_v3')->warning(
           'Google reCAPTCHA v3 validation failed: @error',
           ['@error' => $errors_string]
         );

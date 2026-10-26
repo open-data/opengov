@@ -37,7 +37,7 @@ default:
     -
       alias: ''
       langcode: en
-  body:
+  field_movie_body:
     -
       value: '<p>A troubled boy dives into a wondrous fantasy world through the pages of a mysterious book.</p>'
       format: basic_html

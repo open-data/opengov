@@ -7,12 +7,14 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\ServerInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the Search API overview page.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class OverviewPageTest extends SearchApiBrowserTestBase {
 
   /**

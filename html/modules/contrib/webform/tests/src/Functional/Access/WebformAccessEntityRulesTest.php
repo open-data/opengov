@@ -46,7 +46,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
     $account = $this->drupalCreateUser(['access content', 'edit webform source']);
 
     $webform_id = $webform->id();
-    $sid = $submissions[0]->id();
+    $sid = (string) $submissions[0]->id();
     $uid = $account->id();
     $rid = $account->getRoles(TRUE)[0];
 
@@ -112,14 +112,14 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
     $assert_session->statusCodeEquals(200);
 
     // Revoke create from anonymous and authenticated roles.
-    $access_rules = [
+    $create_denied_access_rules = [
       'create' => [
         'roles' => [],
         'users' => [],
         'permissions' => [],
       ],
     ] + $default_access_rules;
-    $webform->setAccessRules($access_rules)->save();
+    $webform->setAccessRules($create_denied_access_rules)->save();
 
     // Check create access denied.
     $this->drupalGet('/webform/' . $webform->id());
@@ -149,6 +149,27 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       $this->drupalGet($path);
       $assert_session->statusCodeEquals(403);
     }
+
+    // Check that malformed user access rules containing zero do not grant
+    // anonymous users access to submissions.
+    $access_rules = [
+      'view_any' => [
+        'roles' => [],
+        'users' => [
+          2668 => 2668,
+          2672 => 2672,
+          1188 => 0,
+          1997 => 0,
+        ],
+        'permissions' => [],
+      ],
+    ] + $create_denied_access_rules;
+    $webform->setAccessRules($access_rules)->save();
+    $this->drupalGet("admin/structure/webform/manage/$webform_id/results/submissions");
+    $assert_session->statusCodeEquals(403);
+    $this->drupalGet("admin/structure/webform/manage/$webform_id/submission/$sid");
+    $assert_session->statusCodeEquals(403);
+    $webform->setAccessRules($create_denied_access_rules)->save();
 
     // Login.
     $this->drupalLogin($account);

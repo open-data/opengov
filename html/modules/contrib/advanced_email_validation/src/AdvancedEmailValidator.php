@@ -30,7 +30,40 @@ class AdvancedEmailValidator implements AdvancedEmailValidatorInterface {
   /**
    * {@inheritdoc}
    */
+  public function validateEmail(string $email, array $configOverrides = [], array $errorMessages = []): EmailValidationResult {
+    $errorCode = $this->doValidate($email, $configOverrides);
+    $message = $errorCode === EmailValidator::NO_ERROR ? '' : $this->buildErrorMessage($errorCode, $errorMessages);
+    return new EmailValidationResult($errorCode, $message);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function validate(string $email, array $configOverrides = []): int {
+    @trigger_error('Drupal\advanced_email_validation\AdvancedEmailValidatorInterface::validate() is deprecated in advanced_email_validation:2.1.0 and is removed from advanced_email_validation:3.0.0. Use validateEmail() instead. See https://www.drupal.org/project/advanced_email_validation/issues/3534056', E_USER_DEPRECATED);
+    return $this->doValidate($email, $configOverrides);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function errorMessageFromCode(int $errorCode, array $errorMessages = []): string {
+    @trigger_error('Drupal\advanced_email_validation\AdvancedEmailValidatorInterface::errorMessageFromCode() is deprecated in advanced_email_validation:2.1.0 and is removed from advanced_email_validation:3.0.0. Use validateEmail() instead. See https://www.drupal.org/project/advanced_email_validation/issues/3534056', E_USER_DEPRECATED);
+    return $this->buildErrorMessage($errorCode, $errorMessages);
+  }
+
+  /**
+   * Runs the configured rules against an email address.
+   *
+   * @param string $email
+   *   The email address to be validated.
+   * @param array $configOverrides
+   *   Optional configuration overrides.
+   *
+   * @return int
+   *   The validation error code (see validateEmail()).
+   */
+  private function doValidate(string $email, array $configOverrides = []): int {
     $moduleConfig = $this->configFactory->get('advanced_email_validation.settings');
     $rules = $moduleConfig->get('rules');
     $domainLists = $moduleConfig->get('domain_lists');
@@ -53,9 +86,17 @@ class AdvancedEmailValidator implements AdvancedEmailValidatorInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Maps a validation error code to its configured, translatable message.
+   *
+   * @param int $errorCode
+   *   The validation error code.
+   * @param array $errorMessages
+   *   Optional error message overrides, keyed by rule.
+   *
+   * @return string
+   *   The configured message, or an empty string if the code has none.
    */
-  public function errorMessageFromCode(int $errorCode, array $errorMessages = []): string {
+  private function buildErrorMessage(int $errorCode, array $errorMessages = []): string {
     $moduleConfig = $this->configFactory->get('advanced_email_validation.settings');
     $errorMessages = !empty($errorMessages) ? $errorMessages : $moduleConfig->get('error_messages');
 

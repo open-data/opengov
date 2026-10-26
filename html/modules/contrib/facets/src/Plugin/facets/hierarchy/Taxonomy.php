@@ -93,6 +93,10 @@ class Taxonomy extends HierarchyPluginBase {
    * {@inheritdoc}
    */
   public function getParentIds($id) {
+    if (!is_scalar($id)) {
+      return [];
+    }
+
     $current_tid = $id;
     while ($parent = $this->taxonomyGetParent($current_tid)) {
       $current_tid = $parent;
@@ -125,6 +129,7 @@ class Taxonomy extends HierarchyPluginBase {
    * {@inheritdoc}
    */
   public function getChildIds(array $ids) {
+    $ids = $this->filterHierarchyIds($ids);
     $parents = [];
     foreach ($ids as $id) {
       $terms = $this->getTermStorage()->loadChildren($id);
@@ -140,6 +145,9 @@ class Taxonomy extends HierarchyPluginBase {
    * {@inheritdoc}
    */
   public function getSiblingIds(array $ids, array $activeIds = [], bool $parentSiblings = TRUE) {
+    $ids = $this->filterHierarchyIds($ids);
+    $activeIds = $this->filterHierarchyIds($activeIds);
+
     if (empty($ids)) {
       return [];
     }
@@ -201,6 +209,10 @@ class Taxonomy extends HierarchyPluginBase {
    *   Returns FALSE if no parent is found, else parent tid.
    */
   protected function taxonomyGetParent($tid) {
+    if (!is_scalar($tid)) {
+      return FALSE;
+    }
+
     if (isset($this->termParents[$tid])) {
       return $this->termParents[$tid];
     }
@@ -210,6 +222,22 @@ class Taxonomy extends HierarchyPluginBase {
       return FALSE;
     }
     return $this->termParents[$tid] = reset($parents)->id();
+  }
+
+  /**
+   * Filters hierarchy IDs to values that can be used as taxonomy IDs.
+   *
+   * Range facets can store active values as arrays. Taxonomy hierarchy methods
+   * expect scalar term IDs and use these values as cache keys.
+   *
+   * @param array $ids
+   *   Hierarchy IDs.
+   *
+   * @return array
+   *   Scalar hierarchy IDs.
+   */
+  protected function filterHierarchyIds(array $ids) {
+    return array_values(array_filter($ids, 'is_scalar'));
   }
 
   /**

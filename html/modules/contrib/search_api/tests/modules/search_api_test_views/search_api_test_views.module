@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -59,7 +60,7 @@ function search_api_test_views_entity_type_alter(array &$entity_types) {
 /**
  * Implements hook_entity_operation().
  */
-function search_api_test_views_entity_operation(EntityInterface $entity) {
+function search_api_test_views_entity_operation(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
   if ($entity->getEntityTypeId() !== 'entity_test_mulrev_changed') {
     return [];
   }

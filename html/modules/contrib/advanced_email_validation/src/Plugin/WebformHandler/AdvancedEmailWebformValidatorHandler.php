@@ -258,12 +258,12 @@ class AdvancedEmailWebformValidatorHandler extends WebformHandlerBase {
       if (!$email = $formState->getValue($emailField)) {
         continue;
       }
-      if (!$result = $this->advancedEmailValidator->validate($email, $configOverrides)) {
+      $result = $this->advancedEmailValidator->validateEmail($email, $configOverrides, $errorMessages);
+      if ($result->isValid()) {
         continue;
       }
-      $errorMessage = $this->advancedEmailValidator->errorMessageFromCode($result, $errorMessages);
-      if (!empty($errorMessage)) {
-        $formState->setErrorByName($emailField, $errorMessage);
+      if (!empty($result->message)) {
+        $formState->setErrorByName($emailField, $result->message);
       }
     }
   }

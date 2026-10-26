@@ -4,12 +4,14 @@ namespace Drupal\Tests\advanced_email_validation\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests module configuration.
  *
  * @group advanced_email_validation
  */
+#[RunTestsInSeparateProcesses]
 class EmailValidationTest extends KernelTestBase {
 
   /**
@@ -71,7 +73,7 @@ class EmailValidationTest extends KernelTestBase {
     $this->assertEquals(2, $violations->count(), 'Basic validation should fail with an invalid email address.');
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
 
-    $newError = $this->randomString();
+    $newError = $this->randomMachineName();
     $config = $this->config('advanced_email_validation.settings');
     $config->set('error_messages.basic', $newError)->save();
     $violations = $invalidEmailAccount->validate();
@@ -119,7 +121,7 @@ class EmailValidationTest extends KernelTestBase {
     ]);
     $violations = $invalidAccount->validate();
     // Core will fail validation on this one - hence 1 violation.
-    $this->assertEquals(1, $violations->count(), 'Validation should pass when the account is created.');
+    $this->assertEquals(1, $violations->count(), 'On create with invalid email and AEV disabled, only the core email constraint should fail (1 violation).');
     // Save the invalid account, so we can update it later:
     $invalidAccount->save();
 
@@ -127,7 +129,7 @@ class EmailValidationTest extends KernelTestBase {
     $invalidAccount->setEmail($this->randomString());
     $violations = $invalidAccount->validate();
     // Core will fail validation on this one - hence 1 violation.
-    $this->assertEquals(1, $violations->count(), 'Validation should pass when the account is updated.');
+    $this->assertEquals(1, $violations->count(), 'On update with invalid email and AEV disabled, only the core email constraint should fail (1 violation).');
   }
 
   /**
@@ -170,8 +172,7 @@ class EmailValidationTest extends KernelTestBase {
       'mail' => $this->randomString(),
     ]);
     $violations = $invalidAccount->validate();
-    // Core will fail validation as well on this one - hence 2 violations.
-    $this->assertEquals(2, $violations->count(), 'Validation should fail when the account is created.');
+    $this->assertEquals(2, $violations->count(), 'On create with invalid email and AEV enabled for creation, both AEV and core should fail (2 violations).');
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
 
     // Save the invalid account, so we can update it later:
@@ -180,8 +181,7 @@ class EmailValidationTest extends KernelTestBase {
     // Update the invalid account email and validate it:
     $invalidAccount->setEmail($this->randomString());
     $violations = $invalidAccount->validate();
-    // Core will fail validation on this one - hence 1 violation.
-    $this->assertEquals(1, $violations->count(), 'Validation should pass when the account is updated.');
+    $this->assertEquals(1, $violations->count(), 'On update with invalid email and AEV disabled for updates, only the core email constraint should fail (1 violation).');
   }
 
   /**
@@ -224,8 +224,7 @@ class EmailValidationTest extends KernelTestBase {
       'mail' => $this->randomString(),
     ]);
     $violations = $invalidAccount->validate();
-    // Core will fail validation on this one - hence 1 violation.
-    $this->assertEquals(1, $violations->count(), 'Validation should pass when the account is created.');
+    $this->assertEquals(1, $violations->count(), 'On create with invalid email and AEV disabled for creation, only the core email constraint should fail (1 violation).');
 
     // Save the invalid account, so we can update it later:
     $invalidAccount->save();
@@ -233,8 +232,7 @@ class EmailValidationTest extends KernelTestBase {
     // Update the invalid account email and validate it, validation should fail:
     $invalidAccount->setEmail($this->randomString());
     $violations = $invalidAccount->validate();
-    // Core will also fail validation on this one - hence 2 violations.
-    $this->assertEquals(2, $violations->count(), 'Validation should pass when the account is updated.');
+    $this->assertEquals(2, $violations->count(), 'On update with invalid email and AEV enabled for updates, both AEV and core should fail (2 violations).');
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
   }
 
@@ -277,8 +275,7 @@ class EmailValidationTest extends KernelTestBase {
       'mail' => $this->randomString(),
     ]);
     $violations = $invalidAccount->validate();
-    // Core will also fail validation on this one - hence 2 violations.
-    $this->assertEquals(2, $violations->count(), 'Validation should pass when the account is created.');
+    $this->assertEquals(2, $violations->count(), 'On create with invalid email and AEV enabled for creation, both AEV and core should fail (2 violations).');
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
 
     // Save the invalid account, so we can update it later:
@@ -287,8 +284,7 @@ class EmailValidationTest extends KernelTestBase {
     // Update the invalid account email and validate it. Validation should fail:
     $invalidAccount->setEmail($this->randomString());
     $violations = $invalidAccount->validate();
-    // Core will also fail validation on this one - hence 2 violations.
-    $this->assertEquals(2, $violations->count(), 'Validation should pass when the account is updated.');
+    $this->assertEquals(2, $violations->count(), 'On update with invalid email and AEV enabled for updates, both AEV and core should fail (2 violations).');
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
   }
 
@@ -315,7 +311,7 @@ class EmailValidationTest extends KernelTestBase {
     $this->assertEquals('Not a valid email address', $violations[0]->getMessage());
 
     // Change the error message.
-    $newError = $this->randomString();
+    $newError = $this->randomMachineName();
     $config = $this->config('advanced_email_validation.settings');
     $config->set('error_messages.mx_lookup', $newError)->save();
     $violations = $invalidMxAccount->validate();
@@ -325,6 +321,32 @@ class EmailValidationTest extends KernelTestBase {
     $config->set('rules.mx_lookup', 0)->save();
     $violations = $invalidMxAccount->validate();
     $this->assertEquals(0, $violations->count(), 'MX record validation should be skipped when configured off.');
+  }
+
+  /**
+   * Test an empty configured error message falls back to the default.
+   *
+   * When a rule is triggered but its configured error message is an empty
+   * string, the new-entity validator (AEVNewEmail) must produce exactly one
+   * violation carrying the constraint default, not two violations and not an
+   * empty-message violation.
+   */
+  public function testEmptyErrorMessageFallsBackToDefaultOnCreate(): void {
+    // Configure the MX lookup error message to an empty string. MX lookup is
+    // enabled by default, and an invalid domain triggers it.
+    $config = $this->config('advanced_email_validation.settings');
+    $config->set('error_messages.mx_lookup', '')->save();
+
+    // The address is syntactically valid, so core's email constraint passes;
+    // only the AEV constraint should fail on the MX lookup.
+    $accountName = $this->randomMachineName();
+    $invalidMxAccount = User::create([
+      'name' => $accountName,
+      'mail' => $this->randomMachineName() . '@invalidinvalidinvalid.com',
+    ]);
+    $violations = $invalidMxAccount->validate();
+    $this->assertEquals(1, $violations->count(), 'An empty configured error message must yield exactly one violation, not two.');
+    $this->assertEquals('Not a valid email address', $violations[0]->getMessage(), 'The empty configured message must fall back to the constraint default.');
   }
 
   /**
@@ -348,7 +370,7 @@ class EmailValidationTest extends KernelTestBase {
     $this->assertEquals('Free public email providers are not allowed', $violations[0]->getMessage());
 
     // Change the error message.
-    $newError = $this->randomString();
+    $newError = $this->randomMachineName();
     $config->set('error_messages.free', $newError)->save();
     $violations = $freeEmailAccount->validate();
     $this->assertEquals($newError, $violations[0]->getMessage());
@@ -419,7 +441,7 @@ class EmailValidationTest extends KernelTestBase {
     $this->assertEquals('Disposable emails are not allowed', $violations[0]->getMessage());
 
     // Change the error message.
-    $newError = $this->randomString();
+    $newError = $this->randomMachineName();
     $config->set('error_messages.disposable', $newError)->save();
     $violations = $disposableEmailAccount->validate();
     $this->assertEquals($newError, $violations[0]->getMessage());
@@ -494,7 +516,7 @@ class EmailValidationTest extends KernelTestBase {
     $this->assertEquals('Emails using this domain are not allowed', $violations[0]->getMessage());
 
     // Change the error message.
-    $newError = $this->randomString();
+    $newError = $this->randomMachineName();
     $config->set('error_messages.banned', $newError)->save();
     $violations = $drupalEmailAccount->validate();
     $this->assertEquals($newError, $violations[0]->getMessage());

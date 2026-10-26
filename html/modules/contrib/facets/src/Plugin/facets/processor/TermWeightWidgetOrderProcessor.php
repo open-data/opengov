@@ -5,6 +5,7 @@ namespace Drupal\facets\Plugin\facets\processor;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\UnchangingCacheableDependencyTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
@@ -73,6 +74,8 @@ class TermWeightWidgetOrderProcessor extends SortProcessorPluginBase implements 
     // Get the term weight once.
     if ($a->getTermWeight() === NULL || $b->getTermWeight() === NULL) {
       $ids = [];
+      $a_raw = NULL;
+      $b_raw = NULL;
       if ($a->getTermWeight() === NULL) {
         $a_raw = $a->getRawValue();
         $ids[] = $a_raw;
@@ -124,7 +127,8 @@ class TermWeightWidgetOrderProcessor extends SortProcessorPluginBase implements 
     foreach ($property_definitions as $definition) {
       if ($definition instanceof DataReferenceDefinitionInterface
         && $definition->getDataType() === 'entity_reference'
-        && $definition->getConstraint('EntityType') === 'taxonomy_term'
+        && $definition->getTargetDefinition() instanceof EntityDataDefinitionInterface
+        && $definition->getTargetDefinition()->getEntityTypeId() === 'taxonomy_term'
       ) {
         return TRUE;
       }

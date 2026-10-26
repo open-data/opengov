@@ -8,6 +8,7 @@ use Drupal\Core\Url;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformMessageManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -57,14 +58,28 @@ class WebformShareController extends ControllerBase {
    * @param string|null $version
    *   The iframe JavaScript library version.
    *
-   * @return array
-   *   The webform rendered in a page template with only the content.
+   * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+   *   The webform rendered in a page template with only the content or a
+   *   redirect response.
    *
    * @see \Drupal\webform_share\Theme\WebformShareThemeNegotiator
    * @see page--webform-share.html.twig
    * @see webform_share.libraries.yml
    */
   public function page(Request $request, $library = NULL, $version = NULL) {
+    // Direct Ajax wrapper requests are not form submissions; redirect them to
+    // the canonical shared page so form API protections are rendered normally.
+    if ($request->isMethodCacheable()
+      && ($request->query->has('ajax_form') || $request->query->has('_wrapper_format'))) {
+      $query = $request->query->all();
+      unset($query['ajax_form'], $query['_wrapper_format']);
+      $url = $request->getUriForPath($request->getPathInfo());
+      if ($query) {
+        $url .= '?' . http_build_query($query);
+      }
+      return new RedirectResponse($url);
+    }
+
     $webform = $this->requestHandler->getCurrentWebform();
     $source_entity = $this->requestHandler->getCurrentSourceEntity(['webform']);
 
@@ -99,7 +114,7 @@ class WebformShareController extends ControllerBase {
    * @param string|null $version
    *   The iframe JavaScript library version.
    *
-   * @return array
+   * @return \Drupal\Core\Cache\CacheableResponse
    *   The webform rendered in a page template with only the content.
    *
    * @see \Drupal\webform_share\Theme\WebformShareThemeNegotiator

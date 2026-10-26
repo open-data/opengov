@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\facets\FunctionalJavascript;
 
 use Drupal\block\Entity\Block;
+use Drupal\entity_test\EntityTestHelper;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\search_api\Entity\Index;
 
@@ -51,10 +52,10 @@ abstract class JsBase extends WebDriverTestBase {
    * Setup and insert test content.
    */
   protected function insertExampleContent() {
-    entity_test_create_bundle('item', NULL, 'entity_test_mulrev_changed');
-    entity_test_create_bundle('article', NULL, 'entity_test_mulrev_changed');
+    EntityTestHelper::createBundle('item', NULL, 'entity_test_mulrev_changed');
+    EntityTestHelper::createBundle('article', NULL, 'entity_test_mulrev_changed');
 
-    $entity_test_storage = \Drupal::entityTypeManager()
+    $entity_test_storage = $this->container->get('entity_type.manager')
       ->getStorage('entity_test_mulrev_changed');
     $entity_1 = $entity_test_storage->create([
       'name' => 'foo bar baz',
@@ -157,7 +158,7 @@ abstract class JsBase extends WebDriverTestBase {
     $widget_type = 'links',
     array $widget_settings = ['show_numbers' => TRUE, 'soft_limit' => 0],
   ) {
-    $facet_storage = \Drupal::entityTypeManager()->getStorage('facets_facet');
+    $facet_storage = $this->container->get('entity_type.manager')->getStorage('facets_facet');
     // Create and save a facet with a checkbox widget.
     $facet_storage->create([
       'id' => $id,

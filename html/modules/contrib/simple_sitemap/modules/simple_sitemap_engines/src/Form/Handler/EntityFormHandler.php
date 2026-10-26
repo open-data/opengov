@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\simple_sitemap\Form\Handler\EntityFormHandlerTrait;
-use Drupal\simple_sitemap_engines\Form\SimplesitemapEnginesForm;
+use Drupal\simple_sitemap_engines\Form\SimpleSitemapEnginesForm;
 
 /**
  * Defines the handler for entity forms.
@@ -75,7 +75,7 @@ class EntityFormHandler extends EntityFormHandlerBase {
 
     // Remove access to IndexNow override checkbox if no verification key has
     // been added.
-    if (SimplesitemapEnginesForm::getKeyLocation() === NULL) {
+    if (SimpleSitemapEnginesForm::getKeyLocation() === NULL) {
       $form['simple_sitemap_index_now']['#access'] = FALSE;
     }
 

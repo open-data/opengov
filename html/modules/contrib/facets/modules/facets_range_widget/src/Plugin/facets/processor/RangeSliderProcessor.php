@@ -5,6 +5,9 @@ namespace Drupal\facets_range_widget\Plugin\facets\processor;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Processor\BuildProcessorInterface;
 use Drupal\facets\Processor\PreQueryProcessorInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\facets\Utility\FacetsUrlGenerator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a processor that adds all range values between an min and max range.
@@ -20,7 +23,34 @@ use Drupal\facets\Processor\PreQueryProcessorInterface;
  *   }
  * )
  */
-class RangeSliderProcessor extends SliderProcessor implements PreQueryProcessorInterface, BuildProcessorInterface {
+class RangeSliderProcessor extends SliderProcessor implements PreQueryProcessorInterface, BuildProcessorInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * The URL generator.
+   *
+   * @var \Drupal\facets\Utility\FacetsUrlGenerator
+   */
+  protected $urlGenerator;
+
+  /**
+   * Constructs a new RangeSliderProcessor.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FacetsUrlGenerator $url_generator) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->urlGenerator = $url_generator;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('facets.utility.url_generator')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -52,16 +82,13 @@ class RangeSliderProcessor extends SliderProcessor implements PreQueryProcessorI
       unset($active_filters['']);
     }
 
-    /** @var \Drupal\facets\Utility\FacetsUrlGenerator $url_generator */
-    $url_generator = \Drupal::service('facets.utility.url_generator');
-
     /** @var \Drupal\facets\Result\ResultInterface[] $results */
     foreach ($results as &$result) {
       $new_active_filters = $active_filters;
       unset($new_active_filters[$facet->id()]);
       // Add one generic query filter with the min and max placeholder.
       $new_active_filters[$facet->id()][] = '(min:__range_slider_min__,max:__range_slider_max__)';
-      $url = $url_generator->getUrl($new_active_filters, FALSE);
+      $url = $this->urlGenerator->getUrl($new_active_filters, FALSE);
       $result->setUrl($url);
     }
 

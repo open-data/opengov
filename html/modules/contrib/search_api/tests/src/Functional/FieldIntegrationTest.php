@@ -4,12 +4,14 @@ namespace Drupal\Tests\search_api\Functional;
 
 use Drupal\Component\Serialization\Yaml;
 use Drupal\search_api\Entity\Index;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests field validation on index creation.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class FieldIntegrationTest extends SearchApiBrowserTestBase {
 
   /**
@@ -35,6 +37,8 @@ class FieldIntegrationTest extends SearchApiBrowserTestBase {
 
     // Check that all the fields defined in the config file made it into the
     // index.
+    ksort($fields);
+    ksort($field_settings);
     $this->assertEquals(array_keys($fields), array_keys($field_settings));
 
     // Make sure that the fields have the same type.

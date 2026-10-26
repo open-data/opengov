@@ -90,7 +90,10 @@ class SearchApiRenderedItem extends FieldPluginBase {
       }
 
       foreach ($bundles as $bundle_id => $bundle_label) {
-        $title = $this->t('View mode for datasource %datasource, bundle %bundle', ['%datasource' => $datasource_label, '%bundle' => $bundle_label]);
+        $title = $this->t('View mode for datasource %datasource, bundle %bundle', [
+          '%datasource' => $datasource_label,
+          '%bundle' => $bundle_label,
+        ]);
         $view_modes = $datasource->getViewModes($bundle_id);
         if (!$view_modes) {
           $form['view_modes'][$datasource_id][$bundle_id] = [
@@ -144,7 +147,7 @@ class SearchApiRenderedItem extends FieldPluginBase {
     }
     // Always use the default view mode if it was not set explicitly in the
     // options.
-    $bundle = $this->index->getDatasource($datasource_id)->getItemBundle($row->_object);
+    $bundle = $this->index->getDatasourceIfAvailable($datasource_id)->getItemBundle($row->_object);
     $view_mode = $this->options['view_modes'][$datasource_id][$bundle] ?? 'default';
     if ($view_mode === '') {
       return '';

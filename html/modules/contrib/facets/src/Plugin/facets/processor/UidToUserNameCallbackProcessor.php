@@ -3,6 +3,7 @@
 namespace Drupal\facets\Plugin\facets\processor;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\facets\FacetInterface;
@@ -49,7 +50,8 @@ class UidToUserNameCallbackProcessor extends ProcessorPluginBase implements Buil
   public function supportsFacet(FacetInterface $facet) {
     $data_definition = $facet->getDataDefinition();
     if ($data_definition->getDataType() === 'entity_reference' &&
-      $data_definition->getTargetDefinition()->getConstraint('EntityType') === "user") {
+      $data_definition->getTargetDefinition() instanceof EntityDataDefinitionInterface &&
+      $data_definition->getTargetDefinition()->getEntityTypeId() === "user") {
       return TRUE;
     }
 
@@ -62,7 +64,8 @@ class UidToUserNameCallbackProcessor extends ProcessorPluginBase implements Buil
       if (
         $definition instanceof DataReferenceDefinitionInterface &&
         $definition->getDataType() === 'entity_reference' &&
-        $definition->getTargetDefinition()->getConstraint('EntityType') === "user"
+        $definition->getTargetDefinition() instanceof EntityDataDefinitionInterface &&
+        $definition->getTargetDefinition()->getEntityTypeId() === "user"
       ) {
         return TRUE;
       }

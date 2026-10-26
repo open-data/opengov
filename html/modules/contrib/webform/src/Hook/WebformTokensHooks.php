@@ -4,6 +4,7 @@ namespace Drupal\webform\Hook;
 
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Hook\Attribute\Hook;
@@ -14,10 +15,10 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drupal\webform\Element\WebformHtmlEditor;
-use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformElement\WebformComputedBase;
 use Drupal\webform\Plugin\WebformElement\WebformMarkupBase;
+use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\Utility\WebformHtmlHelper;
 use Drupal\webform\Utility\WebformLogicHelper;
@@ -790,8 +791,8 @@ class WebformTokensHooks {
           $parents = explode(':', $key);
           $key_exists = NULL;
           $value = NestedArray::getValue($webform_handler, $parents, $key_exists);
-          // A handler response is always considered safe markup.
-          $replacements[$original] = $key_exists && is_scalar($value) ? Markup::create($value) : $original;
+          // A handler response can contain HTML, but it is not trusted input.
+          $replacements[$original] = $key_exists && is_scalar($value) ? Markup::create(Xss::filterAdmin((string) $value)) : $original;
         }
       }
       if ($url_tokens = $token_service->findWithPrefix($tokens, 'url')) {

@@ -137,6 +137,7 @@ class SearchApiFulltext extends FilterPluginBase {
     $options['expose']['contains']['expose_fields'] = ['default' => FALSE];
     $options['expose']['contains']['searched_fields_id'] = ['default' => ''];
     $options['expose']['contains']['value_maxlength'] = ['default' => 128];
+    $options['expose']['contains']['value_max_words'] = ['default' => ''];
 
     return $options;
   }
@@ -230,6 +231,14 @@ class SearchApiFulltext extends FilterPluginBase {
       '#type' => 'number',
       '#min' => 1,
       '#default_value' => $this->options['expose']['value_maxlength'],
+    ];
+
+    $form['expose']['value_max_words'] = [
+      '#title' => $this->t('Maximum number of words'),
+      '#description' => $this->t('Set a maximum number of words to allow as keywords input.'),
+      '#type' => 'number',
+      '#min' => 1,
+      '#default_value' => $this->options['expose']['value_max_words'],
     ];
 
     $form['expose']['expose_fields'] = [
@@ -368,12 +377,22 @@ class SearchApiFulltext extends FilterPluginBase {
       $form_state->setErrorByName($identifier, $msg);
     }
 
+    // Abort if the number of words exceeds the limit.
+    $words = preg_split('/\s+/', $input) ?: [];
+    $max_words = $this->options['expose']['value_max_words'];
+    if (is_numeric($max_words) && $max_words > 0 && count($words) > $max_words) {
+      $this->getQuery()->abort();
+      $msg = $this->t('Maximum number of words exceeded. You may enter a maximum of @count words.', [
+        '@count' => $max_words,
+      ]);
+      $form_state->setErrorByName($identifier, $msg);
+    }
+
     // Only continue if there is a minimum word length set.
     if ($this->options['min_length'] < 2) {
       return;
     }
 
-    $words = preg_split('/\s+/', $input) ?: [];
     foreach ($words as $i => $word) {
       if (mb_strlen($word) < $this->options['min_length']) {
         unset($words[$i]);

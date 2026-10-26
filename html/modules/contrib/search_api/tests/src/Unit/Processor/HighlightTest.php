@@ -1445,4 +1445,35 @@ Fusce in mauris eu leo fermentum feugiat. Proin varius diam ante, non eleifend i
     return FieldItemDataDefinition::create($field_definition);
   }
 
+  /**
+   * Tests that excerpt creation handles null values without errors.
+   */
+  public function testCreateExcerptHandlesNullValuesWithoutError(): void {
+    $field_data = [
+      [
+        'field_id' => 'content',
+        'values' => [NULL, 'test content', NULL],
+      ],
+    ];
+    $methods = [
+      'createExcerptForFields' => ['test'],
+      'createFallbackExcerpt' => 20,
+    ];
+
+    foreach ($methods as $method => $arg) {
+      $method = new \ReflectionMethod($this->processor, $method);
+      try {
+        $excerpt = $method->invoke(
+          $this->processor,
+          $field_data,
+          $arg,
+        );
+        $this->assertIsString($excerpt);
+      }
+      catch (\TypeError $e) {
+        $this->fail('TypeError should not occur when handling null values: ' . $e->getMessage());
+      }
+    }
+  }
+
 }

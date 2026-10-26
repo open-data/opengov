@@ -128,7 +128,6 @@ class ContentEntityTrackingManager {
 
     // Compare old and new languages for the entity to identify inserted,
     // updated and deleted translations (and, therefore, search items).
-    $entity_id = $entity->id();
     $new_translations = array_keys($entity->getTranslationLanguages());
     $old_translations = [];
     if (!$new) {
@@ -279,11 +278,6 @@ class ContentEntityTrackingManager {
    * @param \Drupal\search_api\IndexInterface $index
    *   The index that was updated.
    *
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   Thrown if a datasource referenced an unknown entity type.
-   * @throws \Drupal\search_api\SearchApiException
-   *   Never thrown, but static analysis tools think it could be.
-   *
    * @see search_api_search_api_index_update()
    */
   public function indexUpdate(IndexInterface $index) {
@@ -302,11 +296,13 @@ class ContentEntityTrackingManager {
     }
 
     foreach ($index->getDatasources() as $datasource_id => $datasource) {
-      if ($datasource->getBaseId() != static::DATASOURCE_BASE_ID
-          || !$original->isValidDatasource($datasource_id)) {
+      if (
+        $datasource->getBaseId() != static::DATASOURCE_BASE_ID
+        || !$original->isValidDatasource($datasource_id)
+      ) {
         continue;
       }
-      $old_datasource = $original->getDatasource($datasource_id);
+      $old_datasource = $original->getDatasourceIfAvailable($datasource_id);
       $old_config = $old_datasource->getConfiguration();
       $new_config = $datasource->getConfiguration();
 
@@ -317,13 +313,18 @@ class ContentEntityTrackingManager {
         $insert_task = ContentEntityTaskManager::INSERT_ITEMS_TASK_TYPE;
         $delete_task = ContentEntityTaskManager::DELETE_ITEMS_TASK_TYPE;
         $settings = [];
-        $entity_type = $this->entityTypeManager
-          ->getDefinition($datasource->getEntityTypeId());
-        if ($entity_type->hasKey('bundle')) {
-          $settings['bundles'] = $datasource->getBundles();
+        try {
+          $entity_type = $this->entityTypeManager
+            ->getDefinition($datasource->getEntityTypeId());
+          if ($entity_type->hasKey('bundle')) {
+            $settings['bundles'] = $datasource->getBundles();
+          }
+          if ($entity_type->isTranslatable()) {
+            $settings['languages'] = $this->languageManager->getLanguages();
+          }
         }
-        if ($entity_type->isTranslatable()) {
-          $settings['languages'] = $this->languageManager->getLanguages();
+        catch (PluginNotFoundException) {
+          // Ignore.
         }
 
         // Determine which bundles/languages have been newly selected or

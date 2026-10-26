@@ -4,10 +4,14 @@ namespace Drupal\facets_summary\Plugin\facets_summary\processor;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Path\CurrentPathStack;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\facets_summary\FacetsSummaryInterface;
 use Drupal\facets_summary\Processor\BuildProcessorInterface;
 use Drupal\facets_summary\Processor\ProcessorPluginBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides a processor that adds a link to reset facet filters.
@@ -21,7 +25,7 @@ use Drupal\facets_summary\Processor\ProcessorPluginBase;
  *   }
  * )
  */
-class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessorInterface {
+class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessorInterface, ContainerFactoryPluginInterface {
 
   /**
    * Indicates that reset link should be positioned before facet links.
@@ -39,6 +43,42 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
   const POSITION_REPLACE = 'replace';
 
   /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * The current path service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected $currentPath;
+
+  /**
+   * Constructs a new ResetFacetsProcessor.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, RequestStack $request_stack, CurrentPathStack $current_path) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->requestStack = $request_stack;
+    $this->currentPath = $current_path;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('request_stack'),
+      $container->get('path.current')
+    );
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function build(FacetsSummaryInterface $facets_summary, array $build, array $facets) {
@@ -50,8 +90,7 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
       return $build;
     }
 
-    $request_stack = \Drupal::requestStack();
-    $request = $request_stack->getMainRequest();
+    $request = $this->requestStack->getMainRequest();
     $query_params = $request->query->all();
 
     // Bypass all active facets and remove them from the query parameters array.
@@ -81,10 +120,7 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
       return $build;
     }
 
-    $path = \Drupal::service('path.current')->getPath();
-    /** @var \Drupal\path_alias\AliasManager $pathAliasManager */
-    $pathAliasManager = \Drupal::service('path_alias.manager');
-    $path = $pathAliasManager->getAliasByPath($path);
+    $path = $this->currentPath->getPath();
     try {
       $url = Url::fromUserInput($path);
     }

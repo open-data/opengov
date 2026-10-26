@@ -102,7 +102,8 @@ abstract class ViewsDisplayBase extends DisplayPluginBase {
   /**
    * Retrieves the view this search display is based on.
    *
-   * @returns \Drupal\views\ViewEntityInterface
+   * @return \Drupal\views\ViewEntityInterface
+   *   The view entity.
    */
   protected function getView() {
     $plugin_definition = $this->getPluginDefinition();

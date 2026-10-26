@@ -15,7 +15,7 @@ class Ds extends BootstrapLayoutsHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function loadInstances(array $entity_ids = NULL) {
+  public function loadInstances(?array $entity_ids = NULL) {
     $layouts = [];
     /** @var \Drupal\Core\Entity\Display\EntityDisplayInterface $display */
     foreach (EntityViewDisplay::loadMultiple($entity_ids) as $entity_id => $display) {

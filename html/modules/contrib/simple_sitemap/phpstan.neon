@@ -14,6 +14,7 @@ parameters:
           paths:
               - modules/simple_sitemap_engines/src/PathProcessor/IndexNowPathProcessor.php
               - src/PathProcessor/SitemapPathProcessor.php
+        - '#^Call to an undefined method Prophecy\\Prophecy\\ObjectProphecy#'
     drupal:
         entityMapping:
             simple_sitemap:

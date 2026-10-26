@@ -7,7 +7,7 @@ configure: advanced_email_validation.settings
 dependencies:
   - drupal:user
 
-# Information added by Drupal.org packaging script on 2024-10-21
-version: '2.0.2'
+# Information added by Drupal.org packaging script on 2026-06-10
+version: '2.1.0'
 project: 'advanced_email_validation'
-datestamp: 1729475968
+datestamp: 1781097836

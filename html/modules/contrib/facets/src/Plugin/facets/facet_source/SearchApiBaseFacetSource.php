@@ -3,6 +3,7 @@
 namespace Drupal\facets\Plugin\facets\facet_source;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\facets\Exception\InvalidQueryTypeException;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\FacetSource\SearchApiFacetSourceInterface;
@@ -37,6 +38,13 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
   protected $searchApiQueryHelper;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a SearchApiBaseFacetSource object.
    *
    * @param array $configuration
@@ -49,8 +57,10 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
    *   The query type plugin manager.
    * @param \Drupal\search_api\Utility\QueryHelper $search_results_cache
    *   The query type plugin manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryTypePluginManager $query_type_plugin_manager, QueryHelper $search_results_cache) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryTypePluginManager $query_type_plugin_manager, QueryHelper $search_results_cache, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $query_type_plugin_manager);
     // Since defaultConfiguration() depends on the plugin definition, we need to
     // override the constructor and set the definition property before calling
@@ -59,6 +69,7 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
     $this->pluginId = $plugin_id;
     $this->configuration = $configuration;
     $this->searchApiQueryHelper = $search_results_cache;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -70,7 +81,8 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
       $plugin_id,
       $plugin_definition,
       $container->get('plugin.manager.facets.query_type'),
-      $container->get('search_api.query_helper')
+      $container->get('search_api.query_helper'),
+      $container->get('module_handler')
     );
   }
 
@@ -203,7 +215,7 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
     $backend_plugin_id = $backend->getPluginId();
 
     // Let modules alter this mapping.
-    \Drupal::moduleHandler()->alter('facets_search_api_query_type_mapping', $backend_plugin_id, $query_types);
+    $this->moduleHandler->alter('facets_search_api_query_type_mapping', $backend_plugin_id, $query_types);
 
     return $query_types;
   }

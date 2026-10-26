@@ -3,18 +3,22 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Component\Utility\Bytes;
+use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Environment;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url as UrlGenerator;
+use Drupal\file\Element\ManagedFile;
 use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\webform\Element\WebformHtmlEditor;
@@ -41,10 +45,11 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    * @var array
    */
   protected static $downloadMimeTypes = [
+    'application/atom',
     'application/pdf',
     'application/xml',
-    'image/svg+xml',
     'text/html',
+    'text/xml',
   ];
 
   /**
@@ -204,6 +209,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     // Must come after #element_validate hook is defined.
     parent::prepare($element, $webform_submission);
+    $element['#value_callback'] = [static::class, 'valueCallback'];
 
     // Check if the URI scheme exists and can be used the upload location.
     $scheme_options = static::getVisibleStreamWrappers();
@@ -865,7 +871,93 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   }
 
   /**
+   * Form API callback. Validates managed file input before processing uploads.
+   *
+   * Mirrors the access checks in ManagedFile::valueCallback(), which are
+   * bypassed when a new upload is processed.
+   *
+   * @param array $element
+   *   A managed file element.
+   * @param mixed $input
+   *   The submitted input.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return array
+   *   The processed managed file value.
+   *
+   * @see \Drupal\file\Element\ManagedFile::valueCallback()
+   */
+  public static function valueCallback(array &$element, $input, FormStateInterface $form_state) {
+    $form_object = $form_state->getFormObject();
+    if ($input !== FALSE
+      && !empty($input['fids'])
+      && $form_object instanceof WebformSubmissionForm
+      && $form_object->getOperation() === 'add') {
+      $fids = array_map('intval', array_filter(explode(' ', $input['fids'])));
+      foreach ($fids as $fid) {
+        $file = File::load($fid);
+        $is_invalid = (!$file || !$file->isTemporary() || !$file->access('download'));
+        if (!$is_invalid && $file->getOwnerId() != \Drupal::currentUser()->id()) {
+          $is_invalid = TRUE;
+        }
+        if (!$is_invalid && \Drupal::currentUser()->isAnonymous()) {
+          // Use core's HMAC check for anonymous temporary file reuse.
+          // @see \Drupal\file\Element\ManagedFile::valueCallback()
+          $parents = array_merge($element['#parents'], ['file_' . $file->id(), 'fid_token']);
+          $token = NestedArray::getValue($form_state->getUserInput(), $parents);
+          $file_hmac = Crypt::hmacBase64('file-' . $file->id(), \Drupal::service('private_key')->get() . Settings::getHashSalt());
+          $is_invalid = ($token === NULL || !hash_equals($file_hmac, $token));
+        }
+        if ($is_invalid) {
+          // Do not include the file name because doing so confirms that a
+          // tampered file id maps to an existing managed file.
+          $form_state->setError($element, t('The uploaded file is invalid.'));
+          $input['fids'] = '';
+          break;
+        }
+      }
+    }
+
+    $result = ManagedFile::valueCallback($element, $input, $form_state);
+
+    // Drupal 11.4.5 filters default file IDs using file download access.
+    // Webform authorizes private files through their associated submission, so
+    // restore trusted default IDs to allow their file names to be displayed.
+    // Submitted IDs are validated above, and private file downloads continue to
+    // be protected by Webform's submission-aware access checks.
+    // @see \Drupal\webform\Hook\WebformHooks::fileAccess()
+    // @see ::accessFileDownload()
+    // @see \Drupal\Tests\webform\Functional\Element\WebformElementManagedFilePreviewTest
+    // @see https://www.drupal.org/project/drupal/issues/3593472
+    if (empty($result['fids'])
+      && $input === FALSE
+      && !empty($element['#default_value'])
+      && !empty($element['#webform_key'])
+      && $form_object instanceof WebformSubmissionForm
+    ) {
+      /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+      $webform_submission = $form_object->getEntity();
+      $element_data = $webform_submission->getElementData($element['#webform_key']);
+      if ($element_data) {
+        $element_fids = (array) $element_data;
+        $default_fids = $element['#default_value'];
+        $result['fids'] = array_values(array_intersect($default_fids, $element_fids));
+      }
+    }
+
+    return $result;
+  }
+
+  /**
    * Form API callback. Consolidate the array of fids for this field into a single fids.
+   *
+   * @param array $element
+   *   A managed file element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param array $complete_form
+   *   The complete form.
    */
   public static function validateManagedFile(array &$element, FormStateInterface $form_state, &$complete_form) {
     // Issue #3130448: Add custom #required_message support to
@@ -881,8 +973,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       }
     }
 
-    if (!empty($element['#files'])) {
-      $fids = array_keys($element['#files']);
+    $fids = array_map('intval', $element['#value']['fids'] ?? []);
+
+    if ($fids) {
       if (empty($element['#multiple'])) {
         $form_state->setValueForElement($element, reset($fids));
       }
@@ -1389,7 +1482,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $illegal_characters = '/[%#&{}\<>*?\/ $!\'":@+`|=]/';
       $filename_fallback = preg_replace($illegal_characters, '', $filename_fallback);
       // Force some files to be downloaded instead of opening in the browser.
-      if (in_array($headers['Content-Type'], static::$downloadMimeTypes)) {
+      if (static::isDownloadMimeType($headers['Content-Type'])) {
         $headers['Content-Disposition'] = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, (string) $filename, $filename_fallback);
       }
       else {
@@ -1403,6 +1496,19 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     else {
       return NULL;
     }
+  }
+
+  /**
+   * Determine if a mime type should always be downloaded.
+   *
+   * @param string $mime_type
+   *   The mime type.
+   *
+   * @return bool
+   *   TRUE if the mime type should always be downloaded.
+   */
+  protected static function isDownloadMimeType(string $mime_type): bool {
+    return in_array($mime_type, static::$downloadMimeTypes) || str_ends_with($mime_type, '+xml');
   }
 
   /**

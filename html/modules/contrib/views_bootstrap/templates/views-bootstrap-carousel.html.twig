@@ -11,62 +11,92 @@
  *   slide item. If false, carousel will not automatically cycle.
  * - pause: Pauses the cycling of the carousel on mouseenter and
  *   resumes the cycling of the carousel on mouseleave.
+ * - keyboard: Whether the carousel should react to keyboard events.
  * - wrap: Whether the carousel should cycle continuously or have
  *   hard stops.
+ * - columns: The number of items displayed per slide on larger screens.
+ * - breakpoints: Bootstrap column classes for responsive behavior. On screens
+ *   below the selected breakpoint, displays 1 item per slide at full width
+ *   (col-12). At the breakpoint and above, displays the number of columns
+ *   specified. For example, 'col-12 col-md-4' shows 1 item on mobile and
+ *   3 items (12/4=3) on medium screens and larger.
  *
  * @see template_preprocess_views_bootstrap_carousel()
  *
  * @ingroup themeable
  */
 #}
+{{ attach_library('views_bootstrap/components') }}
+<div id="{{ id }}" class="carousel {{ effect }}"{% if ride %} data-bs-ride="{{ ride }}"
+     data-bs-interval="{{ interval }}"{% endif %} data-bs-keyboard="{{ keyboard ? 'true' : 'false' }}"
+     data-bs-pause="{{ pause ? 'hover' : 'false' }}" data-bs-wrap="{{ wrap ? 'true' : 'false' }}">
 
-<div id="{{ id }}" class="carousel {{ effect }}"
-    data-interval="{{ interval }}"
-    {% if ride %} data-ride="carousel" {% endif %}
-    data-pause="{% if pause %}hover{% else %}false{% endif %}"
->
-  {# Show indicators if set in view. #}
-  {%  if indicators %}
-  <ol class="carousel-indicators">
-      {% for key, row in rows %}
-          {% set indicator_classes = [loop.first ? 'active'] %}
-          <li class="{{ indicator_classes|join(' ') }}" data-target="#{{ id }}" data-slide-to="{{ key }}"></li>
+  {# Carousel indicators #}
+  {% if indicators %}
+    <div class="carousel-indicators">
+      {% for row in rows %}
+        {% if loop.index0 % columns == 0 %}
+          {% set slide_index = (loop.index0 / columns)|round(0, 'floor') %}
+          <button type="button" data-bs-target="#{{ id }}" data-bs-slide-to="{{ slide_index }}"
+            {% if loop.first %}class="active" aria-current="true"{% endif %}
+            aria-label="{{ 'Slide @number'|t({'@number': slide_index + 1}) }}"></button>
+        {% endif %}
       {% endfor %}
-  </ol>
+    </div>
   {% endif %}
 
-  {# Carousel body. #}
+  {# Carousel rows #}
   <div class="carousel-inner">
     {% for row in rows %}
+      {#
+       Create the carousel-item and row container before the first column in each row.
+       #}
+      {% if (loop.index-1) % columns == 0 %}
         {% set row_classes = ['carousel-item', loop.first ? 'active'] %}
-        <div class="{{ row_classes|join(' ') }}">
-        {{ row.image }}
-        {% if row.title or row.description %}
-            {%  if use_caption %}
-            <div class="carousel-caption d-none d-md-block">
-            {% endif %}
-            {% if row.title %}
+        <div {{ row.attributes.addClass(row_classes) }}>
+          <div class="row">
+      {% endif %}
+      {# Create columns. #}
+      <div class="{{ breakpoints }} position-relative">
+        {% if display == 'fields' %}
+          {{ row.image }}
+          {% if row.title or row.description %}
+        {%  if use_caption %}
+            <div class="carousel-caption {{ caption_breakpoints }}">
+          {% endif %}
+              {% if row.title %}
                 <h3>{{ row.title }}</h3>
-            {% endif %}
-            {% if row.description %}
-                <p>{{ row.description }}</p>
-            {% endif %}
+              {% endif %}
+              {% if row.description %}
+                <div class="carousel-description">{{ row.description }}</div>
+              {% endif %}
             {%  if use_caption %}
-            </div>
+              </div>
             {% endif %}
+          {% endif %}
+        {% else %}
+          {{ row.content }}
         {% endif %}
+      </div>
+      {#
+       Close the row and carousel-item divs for the last column in the row or
+       the last item in the list of items.
+       #}
+      {% if (loop.index is divisible by columns) or (loop.index == rows|length) %}
+          </div>
         </div>
+      {% endif %}
     {% endfor %}
   </div>
   {# Controls #}
   {% if navigation %}
-    <a class="carousel-control-prev" href="#{{ id }}" role="button" data-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#{{ id }}" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">{{ 'Previous'|t }}</span>
-    </a>
-    <a class="carousel-control-next" href="#{{ id }}" role="button" data-slide="next">
+      <span class="visually-hidden">{{ 'Previous'|t }}</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#{{ id }}" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">{{ 'Next'|t }}</span>
-    </a>
+      <span class="visually-hidden">{{ 'Next'|t }}</span>
+    </button>
   {% endif %}
 </div>

@@ -139,7 +139,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
       $container->get('plugin.manager.facets.query_type'),
       $container->get('search_api.query_helper'),
       $container->get('plugin.manager.search_api.display'),
-      $request_stack->getMainRequest(),
+      $request_stack->getCurrentRequest(),
       $container->get('module_handler')
     );
   }
@@ -163,7 +163,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    */
   public function getPath() {
     if ($this->isRenderedInCurrentRequest()) {
-      return \Drupal::service('path.current')->getPath();
+      return $this->request->getPathInfo();
     }
     return $this->getDisplay()->getPath();
   }
@@ -402,7 +402,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
     $backend_plugin_id = $backend->getPluginId();
 
     // Let modules alter this mapping.
-    \Drupal::moduleHandler()
+    $this->moduleHandler
       ->alter('facets_search_api_query_type_mapping', $backend_plugin_id, $query_types);
 
     return $query_types;

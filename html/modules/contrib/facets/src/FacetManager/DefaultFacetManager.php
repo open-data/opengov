@@ -18,6 +18,7 @@ use Drupal\facets\Processor\PreQueryProcessorInterface;
 use Drupal\facets\Processor\ProcessorInterface;
 use Drupal\facets\Processor\ProcessorPluginManager;
 use Drupal\facets\QueryType\QueryTypePluginManager;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * The facet manager.
@@ -91,6 +92,13 @@ class DefaultFacetManager {
   private $routeMatch;
 
   /**
+   * The event dispatcher.
+   *
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
    * Constructs a new instance of the DefaultFacetManager.
    *
    * @param \Drupal\facets\QueryType\QueryTypePluginManager $query_type_plugin_manager
@@ -103,16 +111,19 @@ class DefaultFacetManager {
    *   The entity type plugin manager.
    * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
    *   The current route match.
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(QueryTypePluginManager $query_type_plugin_manager, FacetSourcePluginManager $facet_source_manager, ProcessorPluginManager $processor_plugin_manager, EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match) {
+  public function __construct(QueryTypePluginManager $query_type_plugin_manager, FacetSourcePluginManager $facet_source_manager, ProcessorPluginManager $processor_plugin_manager, EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, EventDispatcherInterface $event_dispatcher) {
     $this->queryTypePluginManager = $query_type_plugin_manager;
     $this->facetSourcePluginManager = $facet_source_manager;
     $this->processorPluginManager = $processor_plugin_manager;
     $this->facetStorage = $entity_type_manager->getStorage('facets_facet');
     $this->routeMatch = $route_match;
+    $this->eventDispatcher = $event_dispatcher;
   }
 
   /**
@@ -371,9 +382,8 @@ class DefaultFacetManager {
 
       $facet->setResults($results);
 
-      $eventDispatcher = \Drupal::service('event_dispatcher');
       $event = new PostBuildFacet($facet);
-      $eventDispatcher->dispatch($event);
+      $this->eventDispatcher->dispatch($event);
 
       $this->builtFacets[$facet->getFacetSourceId()][$facet->id()] = $event->getFacet();
     }

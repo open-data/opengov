@@ -3,17 +3,20 @@
 namespace Drupal\Tests\facets\Unit\Plugin\widget;
 
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Tests\facets\Unit\Drupal10CompatibilityUnitTestCase;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Result\Result;
 use Drupal\Core\Field\WidgetPluginManager;
 use Drupal\Core\Routing\UrlGeneratorInterface;
+use Drupal\facets\Utility\FacetsUrlGenerator;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\UrlProcessor\UrlProcessorInterface;
+use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Base class for widget unit tests.
@@ -42,6 +45,27 @@ abstract class WidgetTestBase extends Drupal10CompatibilityUnitTestCase {
   protected $originalResults;
 
   /**
+   * The mocked url processor plugin manager.
+   *
+   * @var \Drupal\facets\FacetSource\FacetSourcePluginManager|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $urlProcessorManager;
+
+  /**
+   * The mocked facets url generator.
+   *
+   * @var \Drupal\facets\Utility\FacetsUrlGenerator|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $facetsUrlGenerator;
+
+  /**
+   * The request stack used by widget tests.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
    * Sets up the container and other variables used in all the tests.
    */
   protected function setUp(): void {
@@ -68,17 +92,26 @@ abstract class WidgetTestBase extends Drupal10CompatibilityUnitTestCase {
     $widget_manager = $this->prophesize(WidgetPluginManager::class);
 
     $url_processor = $this->createMock(UrlProcessorInterface::class);
-    $manager = $this->createMock(FacetSourcePluginManager::class);
+    $manager = $this->createMock(UrlProcessorPluginManager::class);
     $manager->method('createInstance')->willReturn($url_processor);
+    $this->urlProcessorManager = $manager;
+
+    $this->facetsUrlGenerator = $this->createMock(FacetsUrlGenerator::class);
+
+    $request_stack = new RequestStack();
+    $request_stack->push(Request::create('https://example.com/facets-test'));
+    $this->requestStack = $request_stack;
 
     $em = $this->prophesize(EntityTypeManager::class);
 
     $container = new ContainerBuilder();
     $container->set('plugin.manager.facets.widget', $widget_manager->reveal());
     $container->set('plugin.manager.facets.url_processor', $manager);
+    $container->set('facets.utility.url_generator', $this->facetsUrlGenerator);
     $container->set('string_translation', $string_translation->reveal());
     $container->set('url_generator', $url_generator->reveal());
     $container->set('entity_type.manager', $em->reveal());
+    $container->set('request_stack', $this->requestStack);
     \Drupal::setContainer($container);
   }
 

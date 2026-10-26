@@ -14,6 +14,16 @@ services:
       - { name: paramconverter, priority: 10 }
     lazy: true
 
+  search_api.indexing_batch_helper:
+    class: Drupal\search_api\Utility\IndexingBatchHelper
+    arguments:
+      - '@lock'
+      - '@string_translation'
+      - '@config.factory'
+      - '@datetime.time'
+      - '@messenger'
+      - '@logger.channel.search_api'
+
   plugin.manager.search_api.backend:
     class: Drupal\search_api\Backend\BackendPluginManager
 
@@ -89,3 +99,12 @@ services:
 
   search_api.vbo_view_data_provider:
     class: Drupal\search_api\Contrib\ViewsBulkOperationsEventSubscriber
+
+  Drupal\search_api\Hook\ContentEntityDatasourceHooks:
+    class: Drupal\search_api\Hook\ContentEntityDatasourceHooks
+
+  Drupal\search_api\Hook\SearchApiHooks:
+    class: Drupal\search_api\Hook\SearchApiHooks
+
+  Drupal\search_api\Hook\SearchApiViewsHooks:
+    class: Drupal\search_api\Hook\SearchApiViewsHooks

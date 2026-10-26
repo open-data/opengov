@@ -3,15 +3,18 @@
 namespace Drupal\Tests\search_api\Kernel\Server;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\search_api\ServerInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api_test\PluginTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests whether the storage of search servers works correctly.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class ServerStorageTest extends KernelTestBase {
 
   use PluginTestTrait;
@@ -29,11 +32,9 @@ class ServerStorageTest extends KernelTestBase {
   ];
 
   /**
-   * The search server storage.
-   *
-   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
+   * The entity type manager.
    */
-  protected $storage;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}
@@ -42,14 +43,14 @@ class ServerStorageTest extends KernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('search_api_task');
-    $this->storage = $this->container->get('entity_type.manager')->getStorage('search_api_server');
+    $this->entityTypeManager = $this->container->get('entity_type.manager');
   }
 
   /**
    * Tests all CRUD operations as a queue of operations.
    */
   public function testServerCrud() {
-    $this->assertInstanceOf(ConfigEntityStorage::class, $this->storage, 'The Search API Server storage controller is loaded.');
+    $this->assertInstanceOf(ConfigEntityStorage::class, $this->entityTypeManager->getStorage('search_api_server'), 'The Search API Server storage controller is loaded.');
 
     $server = $this->serverCreate();
     $this->serverLoad($server);
@@ -69,7 +70,7 @@ class ServerStorageTest extends KernelTestBase {
       'name' => 'Test server',
       'backend' => 'search_api_test',
     ];
-    $server = $this->storage->create($server_data);
+    $server = $this->entityTypeManager->getStorage('search_api_server')->create($server_data);
 
     $this->assertInstanceOf(ServerInterface::class, $server, 'The newly created entity is a Search API Server.');
     $server->save();
@@ -89,11 +90,11 @@ class ServerStorageTest extends KernelTestBase {
    *   The server used for this test.
    */
   public function serverLoad(ServerInterface $server) {
-    $loaded_server = $this->storage->load($server->id());
+    $loaded_server = $this->entityTypeManager->getStorage('search_api_server')->load($server->id());
     $this->assertSame($server->label(), $loaded_server->label());
 
-    $this->storage->resetCache();
-    $loaded_server = $this->storage->load($server->id());
+    $this->entityTypeManager->getStorage('search_api_server')->resetCache();
+    $loaded_server = $this->entityTypeManager->getStorage('search_api_server')->load($server->id());
     $this->assertSame($server->label(), $loaded_server->label());
   }
 
@@ -121,8 +122,8 @@ class ServerStorageTest extends KernelTestBase {
    *   The server used for this test.
    */
   public function serverDelete(ServerInterface $server) {
-    $this->storage->delete([$server]);
-    $loaded_server = $this->storage->load($server->id());
+    $this->entityTypeManager->getStorage('search_api_server')->delete([$server]);
+    $loaded_server = $this->entityTypeManager->getStorage('search_api_server')->load($server->id());
     $this->assertNull($loaded_server);
   }
 

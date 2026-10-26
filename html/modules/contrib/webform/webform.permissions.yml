@@ -9,9 +9,18 @@
   title: 'Access the webform user submission page'
   description: 'Allows a user to view their submissions via ''Submissions'' tab on their profile page.'
 
+'access webform submission export import':
+  title: 'Access webform submission export/import'
+  description: 'Allows users to upload and download webform submission export/import files.'
+  restrict access: true
+
 'administer webform':
   title: 'Administer webforms'
   description: 'Allows administration of global YAML configuration and options.'
+  restrict access: true
+'administer webform remote post urls':
+  title: 'Administer webform remote post URLs'
+  description: 'Allows users to edit URLs configured in Webform Remote Post handlers. Remote URLs can send submissions to untrusted or internal services.'
   restrict access: true
 'administer webform submission':
   title: 'Administer webform submissions'

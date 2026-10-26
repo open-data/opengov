@@ -48,9 +48,11 @@ include:
 #
 # Docs at https://git.drupalcode.org/project/gitlab_templates/-/blob/1.0.x/includes/include.drupalci.variables.yml
 ################
-# variables:
-#   SKIP_ESLINT: '1'
+variables:
+  _CSPELL_WORDS: 'aburrows, Demenchuk, Dmitry, shelane, Shelane, ericpugh, ikeigenwijs, mrded, multicolumn, tabid, Verheyde, updatedb, viewsreference'
 
+phpunit:
+  allow_failure: false
 
 ###################################################################################
 #

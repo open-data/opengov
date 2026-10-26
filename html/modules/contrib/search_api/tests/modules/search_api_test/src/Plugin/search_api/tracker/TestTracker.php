@@ -6,8 +6,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\search_api\Attribute\SearchApiTracker;
+use Drupal\search_api\Plugin\IndexPluginBase;
 use Drupal\search_api\Plugin\PluginFormTrait;
-use Drupal\search_api\Tracker\TrackerPluginBase;
+use Drupal\search_api\Tracker\TrackerInterface;
 use Drupal\search_api_test\TestPluginTrait;
 
 /**
@@ -18,7 +19,7 @@ use Drupal\search_api_test\TestPluginTrait;
   label: new TranslatableMarkup('&quot;Test&quot; tracker'),
   description: new TranslatableMarkup('This is the <em>test tracker</em> plugin description.'),
 )]
-class TestTracker extends TrackerPluginBase implements PluginFormInterface {
+class TestTracker extends IndexPluginBase implements TrackerInterface, PluginFormInterface {
 
   use PluginFormTrait;
   use TestPluginTrait;

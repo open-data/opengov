@@ -125,7 +125,7 @@ class WebformElementAttributes extends FormElementBase {
       '#mode' => 'yaml',
       '#title' => t('@title custom attributes (YAML)', $t_args),
       '#description' => t('Enter additional attributes to be added the @type.', $t_args),
-      '#attributes__access' => (!\Drupal::moduleHandler()->moduleExists('webform_ui') || \Drupal::currentUser()->hasPermission('edit webform source')),
+      '#access' => (!\Drupal::moduleHandler()->moduleExists('webform_ui') || \Drupal::currentUser()->hasPermission('edit webform source')),
       '#default_value' => WebformYaml::encode($attributes),
     ];
 

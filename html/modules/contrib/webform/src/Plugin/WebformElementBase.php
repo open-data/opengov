@@ -993,7 +993,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
       }
 
       // Ignore tokens in #template and #format_* properties.
-      if (in_array($key, ['#template', '#format_html', '#format_text', 'format_items_html', 'format_items_text'])) {
+      if (in_array($key, ['#template', '#format_html', '#format_text', '#format_items_html', '#format_items_text'])) {
         continue;
       }
 

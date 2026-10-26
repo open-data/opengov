@@ -4,12 +4,14 @@ namespace Drupal\Tests\search_api\Functional;
 
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\search_api\Entity\Index;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the overall functionality of indexing specific logic.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class LanguageIntegrationTest extends SearchApiBrowserTestBase {
 
   /**

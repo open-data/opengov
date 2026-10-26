@@ -5,6 +5,7 @@ namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\EntityHelper;
@@ -55,6 +56,11 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
   protected $entitiesManager;
 
   /**
+   * The module handler service.
+   */
+  protected ModuleHandlerInterface $moduleHandler;
+
+  /**
    * EntityUrlGenerator constructor.
    *
    * @param array $configuration
@@ -79,6 +85,8 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
    *   The UrlGenerator plugins manager.
    * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
    *   The memory cache.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface|null $module_handler
+   *   The module handler service.
    */
   public function __construct(
     array $configuration,
@@ -92,6 +100,7 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     EntityManager $entities_manager,
     UrlGeneratorManager $url_generator_manager,
     MemoryCacheInterface $memory_cache,
+    ?ModuleHandlerInterface $module_handler = NULL,
   ) {
     parent::__construct(
       $configuration,
@@ -106,6 +115,12 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     $this->entitiesManager = $entities_manager;
     $this->urlGeneratorManager = $url_generator_manager;
     $this->entityMemoryCache = $memory_cache;
+    if ($module_handler === NULL) {
+      @trigger_error('Calling ' . __METHOD__ . ' without the $module_handler argument is deprecated in simple_sitemap:4.3.0 and will be required in simple_sitemap:5.0.0. See https://www.drupal.org/project/simple_sitemap/issues/3087347', E_USER_DEPRECATED);
+      // @phpstan-ignore-next-line
+      $module_handler = \Drupal::moduleHandler();
+    }
+    $this->moduleHandler = $module_handler;
     $this->entitiesPerDataset = $this->settings->get('entities_per_queue_item', 50);
   }
 
@@ -129,7 +144,8 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
       $container->get('simple_sitemap.entity_helper'),
       $container->get('simple_sitemap.entity_manager'),
       $container->get('plugin.manager.simple_sitemap.url_generator'),
-      $container->get('entity.memory_cache')
+      $container->get('entity.memory_cache'),
+      $container->get('module_handler')
     );
   }
 
@@ -164,18 +180,15 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
               $query->condition($keys['bundle'], $bundle_name);
             }
 
-            // @todo Remove the below and add hooks for greater flexibility.
-            if (!empty($keys['published'])) {
-              $query->condition($keys['published'], 1);
-            }
-            elseif (!empty($keys['status'])) {
-              $query->condition($keys['status'], 1);
-            }
-
             // Shift access check to EntityUrlGeneratorBase for language
             // specific access.
             // See https://www.drupal.org/project/simple_sitemap/issues/3102450.
             $query->accessCheck(FALSE);
+
+            // Add tag and metadata to the query.
+            $query->addTag('simple_sitemap')
+              ->addMetaData('sitemap', $this->sitemap)
+              ->addMetaData('bundle', $bundle_name);
 
             $data_set = [
               'entity_type' => $entity_type_name,
@@ -267,6 +280,9 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
       throw new SkipElementException();
     }
 
+    // Allow other modules to process the entity.
+    $this->moduleHandler->invokeAll('simple_sitemap_entity_process', [$entity]);
+
     return $this->constructPathData($url, $entity_settings[$this->sitemap->id()]);
   }
 
@@ -291,6 +307,13 @@ class EntityUrlGenerator extends EntityUrlGeneratorBase {
     if ($this->entityTypeManager->getDefinition($data_set['entity_type'])->isStaticallyCacheable()) {
       $this->entityMemoryCache->deleteAll();
     }
+
+    // Make sure to clear cached access check results, so it does not build up
+    // resulting in a constant increase of memory.
+    // See https://www.drupal.org/project/simple_sitemap/issues/3518739
+    $this->entityTypeManager
+      ->getAccessControlHandler($data_set['entity_type'])
+      ->resetCache();
 
     return array_merge([], ...$url_variant_sets);
   }

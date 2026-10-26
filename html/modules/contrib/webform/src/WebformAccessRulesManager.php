@@ -160,11 +160,11 @@ class WebformAccessRulesManager implements WebformAccessRulesManagerInterface {
    *
    * @see \Drupal\webform\Plugin\WebformElementBase::checkAccessRule
    */
-  protected function checkAccessRule(array $access_rule, AccountInterface $account) {
+  protected function checkAccessRule(array $access_rule, AccountInterface $account): bool {
     if (!empty($access_rule['roles']) && array_intersect($access_rule['roles'], $account->getRoles())) {
       return TRUE;
     }
-    elseif (!empty($access_rule['users']) && in_array($account->id(), $access_rule['users'])) {
+    elseif ($account->id() && !empty($access_rule['users']) && in_array($account->id(), $access_rule['users'])) {
       return TRUE;
     }
     elseif (!empty($access_rule['permissions'])) {

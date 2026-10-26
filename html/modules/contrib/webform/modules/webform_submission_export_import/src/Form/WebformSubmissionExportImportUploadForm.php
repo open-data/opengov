@@ -125,6 +125,9 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
    *   An associative array containing the structure of the form.
    */
   protected function buildUploadForm(array $form, FormStateInterface $form_state) {
+    $is_remote_csv_url_supported = $this->importer->isRemoteCsvUrlSupported();
+    $is_remote_file_url_supported = $this->importer->isRemoteFileUrlSupported();
+
     // Warning.
     $form['experimental_warning'] = [
       '#type' => 'webform_message',
@@ -140,6 +143,8 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     $form['details'] = [
       'title' => [
         '#markup' => $this->t('Please note'),
+        '#prefix' => '<div><strong>',
+        '#suffix' => '</strong></div>',
       ],
       'list' => [
         '#theme' => 'item_list',
@@ -147,7 +152,9 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
           $this->t('All submission properties and data is optional.'),
           $this->t('If UUIDs are included, existing submissions will always be updated.'),
           $this->t('If UUIDs are not included, already imported and unchanged records will not create duplication submissions.'),
-          $this->t('File uploads must use publicly access URLs which begin with http:// or https://.'),
+          $is_remote_file_url_supported
+            ? $this->t('File uploads must use publicly accessible URLs which begin with http:// or https:// and be served from allowed hosts.')
+            : $this->t('Remote file uploads are not supported.'),
           $this->t('Entity references can use UUIDs or entity IDs.'),
           $this->t('Composite (single) values are annotated using double underscores. (e.g. ELEMENT_KEY__SUB_ELEMENT_KEY)'),
           $this->t('Multiple values are comma delimited with any nested commas URI escaped (%2C).'),
@@ -156,6 +163,28 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
         ],
       ],
     ];
+
+    // Display instructions for remote URL support if not enabled and the user
+    // has permission to administer site configuration.
+    if (!$is_remote_csv_url_supported
+      && !$this->importer->isRemoteCsvUrlDisabled()
+      && $this->currentUser()->hasPermission('administer site configuration')) {
+      $form['remote_url'] = [
+        '#type' => 'webform_message',
+        '#message_type' => 'info',
+        '#message_id' => 'webform_submission_export_import_remote_url',
+        '#message_close' => TRUE,
+        '#message_storage' => WebformMessage::STORAGE_STATE,
+        '#message_message' => [
+          '#theme' => 'item_list',
+          '#items' => [
+            $this->t("To enable remote CSV imports, add <code>\$settings['webform_submission_export_import_csv_hosts'] = ['docs.google.com', '*.google.com', 'example.com', '192.0.2.10'];</code> to settings.php."),
+            $this->t("To enable remote managed-file URLs within imported CSV data, add <code>\$settings['webform_submission_export_import_file_hosts'] = ['files.example.com', '*.google.com'];</code> to settings.php."),
+            $this->t("Set <code>\$settings['webform_submission_export_import_csv_hosts'] = FALSE;</code> to hide these instructions and the Remote URL CSV import option."),
+          ],
+        ],
+      ];
+    }
 
     // Examples.
     $download_url = $this->requestHandler->getCurrentWebformUrl('webform_submission_export_import.results_import.example.download');
@@ -176,42 +205,50 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
       '#title' => $this->t('Import data source'),
       '#open' => TRUE,
     ];
-    $form['import']['import_type'] = [
-      '#title' => 'Type',
-      '#type' => 'radios',
-      '#prefix' => '<div class="container-inline">',
-      '#suffix' => '</div>',
-      '#options' => [
-        'file' => $this->t('File upload'),
-        'url' => $this->t('Remote URL'),
-      ],
-      '#default_value' => 'file',
-    ];
+    if ($is_remote_csv_url_supported) {
+      $form['import']['import_type'] = [
+        '#title' => 'Type',
+        '#type' => 'radios',
+        '#prefix' => '<div class="container-inline">',
+        '#suffix' => '</div>',
+        '#options' => [
+          'file' => $this->t('File upload'),
+          'url' => $this->t('Remote URL'),
+        ],
+        '#default_value' => 'file',
+      ];
+    }
     $form['import']['import_file'] = [
       '#type' => 'file',
       '#title' => $this->t('Upload Submission CSV file'),
-      '#states' => [
+    ];
+    if ($is_remote_csv_url_supported) {
+      $form['import']['import_file']['#states'] = [
         'visible' => [
           ':input[name="import_type"]' => ['value' => 'file'],
         ],
         'required' => [
           ':input[name="import_type"]' => ['value' => 'file'],
         ],
-      ],
-    ];
-    $form['import']['import_url'] = [
-      '#type' => 'url',
-      '#title' => $this->t('Enter Submission CSV remote URL'),
-      '#description' => $this->t('Remote URL could be a <a href=":href">published Google Sheet</a>.', [':href' => 'https://help.aftership.com/hc/en-us/articles/115008490908-CSV-Auto-Fetch-using-Google-Drive-Spreadsheet']),
-      '#states' => [
-        'visible' => [
-          ':input[name="import_type"]' => ['value' => 'url'],
+      ];
+      $hosts = $this->importer->getRemoteCsvUrlHosts();
+      $hosts_summary = (in_array('*', $hosts, TRUE)) ? $this->t('any host') : implode(', ', $hosts);
+      $form['import']['import_url'] = [
+        '#type' => 'url',
+        '#title' => $this->t('Enter Submission CSV remote URL'),
+        '#description' => $this->t('Remote URLs are limited to: @hosts.', [
+          '@hosts' => $hosts_summary,
+        ]),
+        '#states' => [
+          'visible' => [
+            ':input[name="import_type"]' => ['value' => 'url'],
+          ],
+          'required' => [
+            ':input[name="import_type"]' => ['value' => 'url'],
+          ],
         ],
-        'required' => [
-          ':input[name="import_type"]' => ['value' => 'url'],
-        ],
-      ],
-    ];
+      ];
+    }
     $form['actions'] = [
       '#type' => 'actions',
     ];
@@ -234,7 +271,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
    *   The current state of the form.
    */
   public function validateUploadForm(array &$form, FormStateInterface $form_state) {
-    $import_type = $form_state->getValue('import_type');
+    $import_type = $form_state->getValue('import_type', 'file');
     switch ($import_type) {
       case 'file':
         $files = $this->getRequest()->files->get('files', []);
@@ -244,7 +281,10 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
         break;
 
       case 'url':
-        // @todo Determine if remote URL needs to be validated.
+        $import_url = $form_state->getValue('import_url');
+        if (!$this->importer->isRemoteCsvUrlAllowed($import_url)) {
+          $form_state->setErrorByName('import_url', $this->t('The remote URL is not allowed.'));
+        }
         break;
     }
   }
@@ -260,7 +300,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
   public function submitUploadForm(array &$form, FormStateInterface $form_state) {
     $validators = ['FileExtension' => ['extensions' => 'csv']];
 
-    $import_type = $form_state->getValue('import_type');
+    $import_type = $form_state->getValue('import_type', 'file');
 
     $file = NULL;
     switch ($import_type) {
@@ -271,8 +311,14 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
 
       case 'url':
         $import_url = $form_state->getValue('import_url');
+        $contents = $this->importer->getRemoteCsvUrlContents($import_url);
+        if ($contents === NULL) {
+          $this->messenger()->addError($this->t('Unable to retrieve remote CSV file.'));
+          break;
+        }
+
         $file_path = tempnam($this->fileSystem->getTempDirectory(), 'webform_submission_export_import_') . '.csv';
-        file_put_contents($file_path, file_get_contents($import_url));
+        file_put_contents($file_path, $contents);
 
         $form_field_name = $this->t('Submission CSV (Comma Separated Values) file');
         // Mimic Symfony and Drupal's upload file handling.
@@ -289,6 +335,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
         $form_state->setRebuild();
       }
       else {
+        $this->importer->deleteImportUri();
         $this->messenger()->addError($this->t("Unable to parse CSV file. Please review the CSV file's formatting."));
       }
     }
@@ -626,7 +673,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     }
 
     // Context results are not being passed to batchFinish via Drush,
-    // therefor we are going to show them when this is finished.
+    // therefore we are going to show them when this is finished.
     if ($context['finished'] >= 1) {
       static::displayStats($context['sandbox']['stats']);
     }

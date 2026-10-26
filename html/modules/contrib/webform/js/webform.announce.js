@@ -21,10 +21,11 @@
    */
   Drupal.behaviors.webformAnnounce = {
     attach(context) {
-      $(once('data-webform-announce', '[data-webform-announce]', context)).each(function () {
-        Drupal.announce($(this).data('webform-announce'));
-      });
-    }
+      $(once('data-webform-announce', '[data-webform-announce]', context)).each(
+        function () {
+          Drupal.announce(Drupal.checkPlain($(this).data('webform-announce')));
+        },
+      );
+    },
   };
-
 })(jQuery, Drupal, once);

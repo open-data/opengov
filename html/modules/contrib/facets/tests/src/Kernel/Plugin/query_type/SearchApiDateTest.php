@@ -11,12 +11,14 @@ use Drupal\search_api\Backend\BackendInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\views\query\SearchApiQuery;
 use Drupal\search_api\ServerInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel test for date query type.
  *
  * @group facets
  */
+#[RunTestsInSeparateProcesses]
 class SearchApiDateTest extends Drupal10CompatibilityKernelTestBase {
 
   /**

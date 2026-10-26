@@ -33,21 +33,48 @@ variables:
   _PHPUNIT_CONCURRENT: '1'
   _CSPELL_FLAGWORDS: please
   _CSPELL_IGNORE_PATHS: ./phpcs.xml
-  # Use these to test against other versions of Drupal:
-#  OPT_IN_TEST_PREVIOUS_MINOR: '1'
-#  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
-#  OPT_IN_TEST_NEXT_MINOR: '1'
-#  OPT_IN_TEST_NEXT_MAJOR: '1'
-  # Use this to test against the maximum supported PHP version.
-#  OPT_IN_TEST_MAX_PHP: '1'
-  # Use this to test against other database systems.
-#  OPT_IN_TEST_POSTGRES: '1'
-#  OPT_IN_TEST_SQLITE: '1'
+  # Provide the option to run other test suites as well.
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  OPT_IN_TEST_PREVIOUS_MINOR: 1
+  OPT_IN_TEST_NEXT_MINOR: 1
+  OPT_IN_TEST_NEXT_MAJOR: 1
+  OPT_IN_TEST_DRUPAL_CMS: 1
+  OPT_IN_TEST_MAX_PHP: 1
+  # Uncomment to automatically run various optional tests:
+#  _AUTORUN_PREVIOUS_MINOR: all
+#  _AUTORUN_NEXT_MINOR: all
+#  _AUTORUN_PREVIOUS_MAJOR: all
+#  _AUTORUN_NEXT_MAJOR: all
+#  _AUTORUN_DRUPAL_CMS: all
+#  _AUTORUN_MAX_PHP: all
 
 # Overrides for the "phpunit" job.
 phpunit:
   variables:
+    # For Drupal 11.5+.
+    DRUPAL_DEPRECATION_FILTER_CONFIG: '{"projectIgnoreFile":"$CI_PROJECT_DIR/.ignored-deprecations.txt"}'
+    # For older Drupal versions.
+    # @todo Remove once we depend on Drupal 11.5+.
     SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=$CI_PROJECT_DIR/.ignored-deprecations.txt"
+
+.composer-base:
+  after_script:
+    # It seems the $INSTALLED_DRUPAL_VERSION variable set in "script" does not
+    # survive to "after_script", so set it here again.
+    - export INSTALLED_DRUPAL_VERSION=$(php -r "include '$CI_PROJECT_DIR/vendor/autoload.php'; echo \Drupal::VERSION;")
+    # Just to spite every contrib module developer trying to stay up to date,
+    # the "next minor" Drupal 11.5 system identifies as "11.4-dev". Fix that
+    # with prejudice.
+    - |
+      if [ $INSTALLED_DRUPAL_VERSION = '11.4-dev' ] ; then
+        export INSTALLED_DRUPAL_VERSION=11.5-dev
+        sed -i 's/11\.4-dev/11.5-dev/g' "$CI_PROJECT_DIR/$_WEB_ROOT/core/lib/Drupal.php"
+      fi
+    # For newer versions of Drupal (11.5+), require "drupal/text_with_summary".
+    - |
+      if [[ $INSTALLED_DRUPAL_VERSION =~ ^(11\.[5-9]|12\.|13\.) ]]; then
+        composer require --dev 'drupal/text_with_summary' '1.0.x-dev || 2.0.x-dev'
+      fi
 
 # Add support for running tests with Postgres.
 .opt-in-postgres-rule: &opt-in-postgres-rule

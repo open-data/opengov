@@ -184,23 +184,7 @@ class MySql extends GenericDatabase implements LocationAwareDatabaseInterface {
   }
 
   /**
-   * Adds location-based conditions to a database query.
-   *
-   * The "expression_alias" key refers to the ST_Distance_Sphere() SQL
-   * expression's alias added in self::addLocationFilter().
-   *
-   * @param string $field_name
-   *   The name of the location field.
-   * @param $value
-   *   The filter value.
-   * @param string $operator
-   *   The filter operator.
-   * @param \Drupal\search_api\Query\QueryInterface $query
-   *   The search query.
-   * @param \Drupal\Core\Database\Query\SelectInterface $db_query
-   *   The database query.
-   *
-   * @see self::addLocationFilter()
+   * {@inheritdoc}
    */
   public function addLocationDbCondition(string $field_name, $value, string $operator, QueryInterface $query, SelectInterface $db_query): void {
     $location_options = (array) $query->getOption('search_api_location', []);

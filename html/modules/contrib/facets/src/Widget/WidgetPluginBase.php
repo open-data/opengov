@@ -31,10 +31,18 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
   protected $facet;
 
   /**
+   * The URL processor plugin manager.
+   *
+   * @var \Drupal\facets\UrlProcessor\UrlProcessorPluginManager
+   */
+  protected $urlProcessorManager;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
     $this->setConfiguration($configuration);
   }
 
@@ -54,9 +62,8 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
 
     $widget = $facet->getWidget();
 
-    $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
     /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $url_processor */
-    $url_processor = $urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
+    $url_processor = $this->urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
 
     return [
       '#theme' => $this->getFacetItemListThemeHook($facet),
@@ -186,9 +193,8 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
       $items['#attributes']['class'][] = 'is-active';
     }
 
-    $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
     /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $url_processor */
-    $url_processor = $urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
+    $url_processor = $this->urlProcessorManager->createInstance($facet->getFacetSourceConfig()->getUrlProcessorName(), ['facet' => $facet]);
 
     $items['#wrapper_attributes'] = ['class' => $classes];
     $items['#attributes']['data-drupal-facet-item-id'] = Html::getClass($facet->getUrlAlias() . '-' . strtr($result->getRawValue(), ' \'\"', '---'));

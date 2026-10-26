@@ -25,9 +25,21 @@ views.filter.facets_filter:
         min_count:
           type: integer
           label: 'Minimum count'
+        missing:
+          type: boolean
+          label: 'Missing'
+        missing_label:
+          type: label
+          label: 'Missing label'
         show_numbers:
           type: boolean
           label: 'Show the amount of results'
+        show_only_one_result:
+          type: boolean
+          label: 'Show only one result'
+        depends_on_exposed_filter:
+          type: string
+          label: 'Depends on exposed filter'
         processor_configs:
           type: sequence
           label: 'Processor settings'
@@ -46,3 +58,19 @@ views.filter.facets_filter:
                   label: 'The processor''s weight for this stage'
               settings:
                 type: plugin.plugin_configuration.facets_processor.[%parent.processor_id]
+
+plugin.plugin_configuration.facets_processor.exposed_range_slider:
+  type: mapping
+  label: 'Exposed range slider'
+  mapping:
+    step:
+      type: float
+      label: 'Slider step'
+
+better_exposed_filters.filter.facets_exposed_range_slider:
+  label: 'Exposed facet range slider'
+  type: better_exposed_filters.filter.bef_sliders
+  mapping:
+    snap_to_values:
+      type: boolean
+      label: 'Snap to available facet values'

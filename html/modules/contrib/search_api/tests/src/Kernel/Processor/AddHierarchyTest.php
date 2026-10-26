@@ -10,6 +10,7 @@ use Drupal\search_api\Query\Query;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\search_api\Kernel\ResultsTrait;
 use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the "Hierarchy" processor.
@@ -20,6 +21,7 @@ use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
  *
  * @coversDefaultClass \Drupal\search_api\Plugin\search_api\processor\AddHierarchy
  */
+#[RunTestsInSeparateProcesses]
 class AddHierarchyTest extends ProcessorTestBase {
 
   use NodeCreationTrait;

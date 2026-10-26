@@ -373,6 +373,54 @@ class Index extends ConfigEntityBase implements IndexInterface {
   /**
    * {@inheritdoc}
    */
+  public function set($property_name, $value): static {
+    parent::set($property_name, $value);
+
+    // Make sure this change properly propagates to any cached properties.
+    if (isset($this->$property_name)) {
+      $cached_property = [
+        'field_settings' => 'fieldInstances',
+        'datasource_settings' => 'datasourceInstances',
+        'processor_settings' => 'processorInstances',
+      ][$property_name] ?? NULL;
+      if ($cached_property && isset($this->$cached_property)) {
+        $old_plugins = (array) $this->$cached_property;
+        // If plugins were added, just reset the cached property.
+        if (array_diff_key($value, $old_plugins)) {
+          $this->$cached_property = NULL;
+        }
+        else {
+          // Remove any plugins whose settings were removed.
+          $this->$cached_property = array_intersect_key($old_plugins, $value);
+          foreach ($value as $plugin_id => $config) {
+            $plugin = $this->{$cached_property}[$plugin_id];
+            if ($config !== $plugin->getConfiguration()) {
+              $plugin->setConfiguration($config);
+            }
+          }
+        }
+      }
+      elseif ($property_name === 'tracker_settings' && $this->trackerInstance) {
+        $new_config = reset($value);
+        $new_id = key($value);
+        if ($new_id !== $this->trackerInstance->getPluginId()) {
+          $this->trackerInstance = NULL;
+        }
+        elseif ($new_config !== $this->trackerInstance->getConfiguration()) {
+          $this->trackerInstance->setConfiguration($new_config);
+        }
+      }
+      elseif ($property_name === 'server' && $value !== $this->serverInstance?->id()) {
+        $this->serverInstance = NULL;
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getDescription() {
     return $this->description;
   }
@@ -458,6 +506,13 @@ class Index extends ConfigEntityBase implements IndexInterface {
     }
 
     return $datasources[$datasource_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDatasourceIfAvailable(string $datasource_id): ?DatasourceInterface {
+    return $this->getDatasources()[$datasource_id] ?? NULL;
   }
 
   /**
@@ -559,6 +614,18 @@ class Index extends ConfigEntityBase implements IndexInterface {
   /**
    * {@inheritdoc}
    */
+  public function getTrackerInstanceIfAvailable(): ?TrackerInterface {
+    try {
+      return $this->hasValidTracker() ? $this->getTrackerInstance() : NULL;
+    }
+    catch (SearchApiException) {
+      return NULL;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setTracker(TrackerInterface $tracker) {
     $this->trackerInstance = $tracker;
     return $this;
@@ -576,7 +643,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
    * {@inheritdoc}
    */
   public function isServerEnabled() {
-    return $this->hasValidServer() && $this->getServerInstance()->status();
+    return (bool) $this->getServerInstanceIfAvailable()?->status();
   }
 
   /**
@@ -599,6 +666,18 @@ class Index extends ConfigEntityBase implements IndexInterface {
     }
 
     return $this->serverInstance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getServerInstanceIfAvailable(): ?ServerInterface {
+    try {
+      return $this->getServerInstance();
+    }
+    catch (SearchApiException) {
+      return NULL;
+    }
   }
 
   /**
@@ -695,6 +774,13 @@ class Index extends ConfigEntityBase implements IndexInterface {
     }
 
     return $processors[$processor_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProcessorIfAvailable(string $processor_id): ?ProcessorInterface {
+    return $this->getProcessors()[$processor_id] ?? NULL;
   }
 
   /**
@@ -861,8 +947,8 @@ class Index extends ConfigEntityBase implements IndexInterface {
     }
 
     $fields = $this->fieldInstances;
-    if ($include_server_defined && $this->hasValidServer()) {
-      $fields += $this->getServerInstance()->getBackendDefinedFields($this);
+    if ($include_server_defined) {
+      $fields += $this->getServerInstanceIfAvailable()?->getBackendDefinedFields($this) ?? [];
     }
     return $fields;
   }
@@ -929,7 +1015,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
    * {@inheritdoc}
    */
   public function getPropertyDefinitions($datasource_id) {
-    if (!isset($this->properties[$datasource_id])) {
+    if (!isset($this->properties["$datasource_id"])) {
       if (isset($datasource_id)) {
         $datasource = $this->getDatasource($datasource_id);
         $properties = $datasource->getPropertyDefinitions();
@@ -943,10 +1029,10 @@ class Index extends ConfigEntityBase implements IndexInterface {
         $properties += $processor->getPropertyDefinitions($datasource);
       }
 
-      $this->properties[$datasource_id] = $properties;
+      $this->properties["$datasource_id"] = $properties;
     }
 
-    return $this->properties[$datasource_id];
+    return $this->properties["$datasource_id"];
   }
 
   /**
@@ -966,7 +1052,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     $items_by_datasource = [];
     foreach ($item_ids as $item_id) {
       [$datasource_id, $raw_id] = Utility::splitCombinedId($item_id);
-      $items_by_datasource[$datasource_id][$raw_id] = $item_id;
+      $items_by_datasource["$datasource_id"][$raw_id] = $item_id;
     }
 
     // Load the items from the datasources and keep track of which were
@@ -980,14 +1066,14 @@ class Index extends ConfigEntityBase implements IndexInterface {
           $id = $raw_ids[$raw_id];
           $items[$id] = $item;
           // Remember that we successfully loaded this item.
-          unset($items_by_datasource[$datasource_id][$raw_id]);
+          unset($items_by_datasource["$datasource_id"][$raw_id]);
         }
       }
       catch (SearchApiException $e) {
         $this->logException($e);
         // If the complete datasource could not be loaded, don't report all its
         // individual requested items as missing.
-        unset($items_by_datasource[$datasource_id]);
+        unset($items_by_datasource["$datasource_id"]);
       }
     }
 
@@ -1034,7 +1120,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
         return 0;
       }
       try {
-        $tracker = $this->getTrackerInstance();
+        $tracker = $this->getTrackerInstanceIfAvailable();
         $next_set = $tracker->getRemainingItems($limit, $datasource_id);
         if (!$next_set) {
           return 0;
@@ -1136,9 +1222,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
       }
 
       if ($processed_ids) {
-        if ($this->hasValidTracker()) {
-          $this->getTrackerInstance()->trackItemsIndexed($processed_ids);
-        }
+        $this->getTrackerInstanceIfAvailable()?->trackItemsIndexed($processed_ids);
         // Since we've indexed items now, triggering reindexing would have some
         // effect again. Therefore, we reset the flag.
         $this->setHasReindexed(FALSE);
@@ -1184,6 +1268,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
    */
   public function stopBatchTracking() {
     if (!$this->isBatchTracking()) {
+      // @todo A RuntimeException (or subclass) would make more sense here.
       throw new SearchApiException('Trying to leave "batch tracking" mode on index "' . $this->label() . '" which was not entered first.');
     }
     --static::$batchTrackingIndexes[$this->id];
@@ -1224,7 +1309,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
       foreach ($ids as $id) {
         $item_ids[] = Utility::createCombinedId($datasource_id, $id);
       }
-      $this->getTrackerInstance()->$tracker_method($item_ids);
+      $this->getTrackerInstanceIfAvailable()->$tracker_method($item_ids);
       if (!$this->isReadOnly() && $this->getOption('index_directly')
           && !$this->isBatchTracking()) {
         \Drupal::getContainer()->get('search_api.post_request_indexing')
@@ -1245,14 +1330,12 @@ class Index extends ConfigEntityBase implements IndexInterface {
     foreach ($ids as $id) {
       $item_ids[] = Utility::createCombinedId($datasource_id, $id);
     }
-    if ($this->hasValidTracker()) {
-      $this->getTrackerInstance()->trackItemsDeleted($item_ids);
-    }
+    $this->getTrackerInstanceIfAvailable()?->trackItemsDeleted($item_ids);
     // Delete the items from the search server, and make sure they aren't
     // indexed again in the same page request due to an already scheduled
     // indexing operation.
-    if (!$this->isReadOnly() && $this->hasValidServer()) {
-      $this->getServerInstance()->deleteItems($this, $item_ids);
+    if (!$this->isReadOnly()) {
+      $this->getServerInstanceIfAvailable()?->deleteItems($this, $item_ids);
       if ($this->getOption('index_directly') && !$this->isBatchTracking()) {
         \Drupal::getContainer()->get('search_api.post_request_indexing')
           ->removeFromIndexing($this->id(), $item_ids);
@@ -1632,6 +1715,9 @@ class Index extends ConfigEntityBase implements IndexInterface {
    *
    * @param \Drupal\search_api\IndexInterface $original
    *   The previous version of the index.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   *   Thrown if any necessary operation failed.
    */
   protected function reactToServerSwitch(IndexInterface $original) {
     // Asserts that the index was enabled before saving and will still be
@@ -1639,18 +1725,14 @@ class Index extends ConfigEntityBase implements IndexInterface {
     assert($this->status() && $original->status(), '::reactToServerSwitch should only be called when the index is enabled');
 
     if ($this->getServerId() != $original->getServerId()) {
-      if ($original->hasValidServer()) {
-        $original->getServerInstance()->removeIndex($this);
-      }
-      if ($this->hasValidServer()) {
-        $this->getServerInstance()->addIndex($this);
-      }
+      $original->getServerInstanceIfAvailable()?->removeIndex($this);
+      $this->getServerInstanceIfAvailable()?->addIndex($this);
       // When the server changes we also need to trigger a reindex.
       $this->reindex();
     }
-    elseif ($this->hasValidServer()) {
+    else {
       // Tell the server the index configuration got updated.
-      $this->getServerInstance()->updateIndex($this);
+      $this->getServerInstanceIfAvailable()?->updateIndex($this);
     }
   }
 
@@ -1662,6 +1744,9 @@ class Index extends ConfigEntityBase implements IndexInterface {
    *
    * @param \Drupal\search_api\IndexInterface $original
    *   The previous version of the index.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   *   Thrown if any necessary operation failed.
    */
   protected function reactToDatasourceSwitch(IndexInterface $original) {
     // Asserts that the index was enabled before saving and will still be
@@ -1675,9 +1760,8 @@ class Index extends ConfigEntityBase implements IndexInterface {
       $removed = array_diff($original_datasource_ids, $new_datasource_ids);
       $index_task_manager = \Drupal::getContainer()->get('search_api.index_task_manager');
       $index_task_manager->stopTracking($this, $removed);
-      if ($this->hasValidServer()) {
-        /** @var \Drupal\search_api\ServerInterface $server */
-        $server = $this->getServerInstance();
+      $server = $this->getServerInstanceIfAvailable();
+      if ($server) {
         foreach ($removed as $datasource_id) {
           $server->deleteAllIndexItems($this, $datasource_id);
         }
@@ -1717,6 +1801,9 @@ class Index extends ConfigEntityBase implements IndexInterface {
    *
    * @param \Drupal\search_api\IndexInterface $original
    *   The previous version of the index.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   *   Thrown if any necessary operation failed.
    */
   protected function reactToProcessorChanges(IndexInterface $original) {
     $old_processors = $original->getProcessors();
@@ -1770,9 +1857,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     foreach ($entities as $index) {
       if ($index->status()) {
         $index_task_manager->stopTracking($index);
-        if ($index->hasValidServer()) {
-          $index->getServerInstance()->removeIndex($index);
-        }
+        $index->getServerInstanceIfAvailable()?->removeIndex($index);
       }
     }
   }
@@ -1922,8 +2007,8 @@ class Index extends ConfigEntityBase implements IndexInterface {
 
     // The server needs special treatment, since it is a dependency of the index
     // itself, and not one of its plugins.
-    if ($this->hasValidServer()) {
-      $name = $this->getServerInstance()->getConfigDependencyName();
+    $name = $this->getServerInstanceIfAvailable()?->getConfigDependencyName();
+    if ($name) {
       $dependency_data['config'][$name]['optional']['index'][$this->id] = $this;
     }
 
@@ -2152,7 +2237,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     $plugins = [];
 
     if ($this->hasValidTracker()) {
-      $plugins['tracker'][$this->getTrackerId()] = $this->getTrackerInstance();
+      $plugins['tracker'][$this->getTrackerId()] = $this->getTrackerInstanceIfAvailable();
     }
     $plugins['processors'] = $this->getProcessors();
     $plugins['datasources'] = $this->getDatasources();

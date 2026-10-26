@@ -58,4 +58,26 @@ class ShowOnlyDeepestLevelItemsProcessorTest extends UnitTestCase {
     $this->assertSame('c', $built_results[1]->getRawValue());
   }
 
+  /**
+   * Tests support for exposed facet filters.
+   *
+   * @covers ::supportsFacet
+   */
+  public function testSupportsExposedFacetFilter(): void {
+    $facet = new Facet(['facet_type' => 'facets_exposed_filter'], 'facets_facet');
+
+    $this->assertTrue($this->processor->supportsFacet($facet));
+  }
+
+  /**
+   * Tests unsupported facet types.
+   *
+   * @covers ::supportsFacet
+   */
+  public function testRejectsUnsupportedFacetType(): void {
+    $facet = new Facet(['facet_type' => 'custom_facet_type'], 'facets_facet');
+
+    $this->assertFalse($this->processor->supportsFacet($facet));
+  }
+
 }

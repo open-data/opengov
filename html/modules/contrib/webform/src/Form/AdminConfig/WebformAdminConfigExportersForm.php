@@ -64,7 +64,7 @@ class WebformAdminConfigExportersForm extends WebformAdminConfigBaseForm {
     $form['export_settings']['temp_directory'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Temporary directory'),
-      '#description' => $this->t('A local file system path where temporary export files will be stored. This directory should be persistent between requests and should not be accessible over the web.'),
+      '#description' => $this->t('A local file system path where temporary export files will be stored in a webform subdirectory. This directory should be persistent between requests and should not be accessible over the web.'),
       '#required' => TRUE,
       '#default_value' => $config->get('export.temp_directory') ?: $this->fileSystem->getTempDirectory(),
     ];
