@@ -4,7 +4,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "ckeditor5": "~34.1.0"
+    "ckeditor5": "~47.7.4"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-utils": "^30.0.0",
